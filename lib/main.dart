@@ -8,6 +8,7 @@ import 'screens/family_details_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/profile_photos_screen.dart';
 import 'services/auth_provider.dart';
+import 'services/navigation_provider.dart';
 import 'utils/theme_provider.dart';
 import 'models/user_model.dart';
 
@@ -24,6 +25,7 @@ class MatrimonyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => NavigationProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
@@ -175,7 +177,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                   child: ClipOval(
                     child: Image.asset(
-                      'assets/images/app_logo.png',
+                      'assets/images/app_logo_1.png',
                       fit: BoxFit.contain,
                       width: 80,
                       height: 80,

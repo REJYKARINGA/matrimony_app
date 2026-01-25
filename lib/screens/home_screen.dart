@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
+import '../services/shortlist_service.dart';
+import '../services/notification_service.dart';
 import '../models/user_model.dart';
 import 'profile_screen_view.dart';
 import 'matching_screen.dart';
@@ -11,6 +15,12 @@ import 'messages_screen.dart';
 import 'subscription_screen.dart';
 import 'settings_screen.dart';
 import 'view_profile_screen.dart';
+import 'notification_screen.dart';
+import '../services/reverb_service.dart';
+import '../services/message_service.dart';
+import '../services/navigation_provider.dart';
+import '../services/profile_view_service.dart';
+import '../widgets/common_footer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,11 +32,48 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   bool _isRefreshing = false;
+  int _unreadMessageCount = 0;
+  Timer? _pollingTimer;
 
   @override
   void initState() {
     super.initState();
     _refreshUserData();
+    _loadUnreadMessageCount();
+    _startPolling();
+
+    // Initialize Reverb real-time listening
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ReverbService.initialize(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollingTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(minutes: 5), (timer) {
+      _loadUnreadMessageCount();
+    });
+  }
+
+  Future<void> _loadUnreadMessageCount() async {
+    try {
+      final response = await MessageService.getUnreadCount();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _unreadMessageCount = data['unread_count'] ?? 0;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading unread message count: $e');
+    }
   }
 
   Future<void> _refreshUserData() async {
@@ -37,6 +84,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.loadCurrentUserWithProfile();
+
+      // Trigger Reverb test broadcast
+      try {
+        await ApiService.triggerTestBroadcast();
+      } catch (e) {
+        print('Error triggering test broadcast: $e');
+      }
 
       setState(() {
         _isRefreshing = false;
@@ -49,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const MatchingScreen(),
     const MessagesScreen(),
     const SettingsScreen(),
+    const Center(child: Text('Search Screen Coming Soon')),
   ];
 
   void _onItemTapped(int index) {
@@ -61,46 +116,98 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData icon,
     IconData activeIcon,
     String label,
-    int index,
-  ) {
+    int index, {
+    bool showBadge = false,
+  }) {
     bool isSelected = _selectedIndex == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => _onItemTapped(index),
+        onTap: () {
+          _onItemTapped(index);
+          if (index == 2) {
+            _loadUnreadMessageCount();
+          }
+        },
         child: Container(
           color: Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Colors.white.withOpacity(0.25)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  isSelected ? activeIcon : icon,
-                  color: Colors.white,
-                  size: 20,
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    isSelected ? activeIcon : icon,
+                    color: isSelected
+                        ? const Color(0xFF6A5AE0)
+                        : Colors.grey.shade600,
+                    size: 24,
+                  ),
+                  const SizedBox(height: 4),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: TextStyle(
+                      color: isSelected
+                          ? const Color(0xFF6A5AE0)
+                          : Colors.grey.shade600,
+                      fontSize: 10,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                    ),
+                    child: Text(label),
+                  ),
+                ],
               ),
-              const SizedBox(height: 1),
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 300),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: isSelected ? 9 : 8,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              if (showBadge)
+                Positioned(
+                  top: 0,
+                  right: 15,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF4B4B),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                  ),
                 ),
-                child: Text(label),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterMatchButton() {
+    bool isSelected = _selectedIndex == 1; // 1 is Matches
+    return GestureDetector(
+      onTap: () => _onItemTapped(1),
+      child: Transform.translate(
+        offset: const Offset(0, -20),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFFF2D55).withOpacity(0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
               ),
             ],
+          ),
+          child: Center(
+            child: Icon(
+              isSelected ? Icons.favorite : Icons.favorite_border,
+              color: const Color(0xFFFF2D55),
+              size: 28,
+            ),
           ),
         ),
       ),
@@ -110,6 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final navProvider = Provider.of<NavigationProvider>(context);
 
     // Check if user has completed their profile
     if (authProvider.user != null && authProvider.user!.userProfile == null) {
@@ -119,66 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: Container(
-        height: 65,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFB47FFF), // Purple
-              Color(0xFF5CB3FF), // Blue
-              Color(0xFF4CD9A6), // Green
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25),
-            topRight: Radius.circular(25),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFF5CB3FF),
-              blurRadius: 20,
-              offset: Offset(0, -3),
-              spreadRadius: 0,
-            ),
-          ],
-        ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildNavItem(Icons.home_outlined, Icons.home, 'Home', 0),
-                _buildNavItem(
-                  Icons.favorite_outline,
-                  Icons.favorite,
-                  'Matches',
-                  1,
-                ),
-                _buildNavItem(
-                  Icons.chat_bubble_outline,
-                  Icons.chat_bubble,
-                  'Messages',
-                  2,
-                ),
-                _buildNavItem(
-                  Icons.person_outline,
-                  Icons.person,
-                  'Settings',
-                  3,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: Colors.white,
+      body: _widgetOptions.elementAt(navProvider.selectedIndex),
+      bottomNavigationBar: const CommonFooter(),
     );
   }
 }
@@ -194,74 +245,202 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<User> _recommendedUsers = [];
   bool _isLoadingRecommended = true;
   String? _recommendedError;
-  Set<int> _sentInterests = {}; // Track which users have received interests
+  late Set<int> _sentInterests;
+  late Set<int> _matchedUserIds;
   bool _isLoadingInterests = false;
+  late Map<int, Timer?> _interestTimers;
+  late Map<int, int> _interestCountdown;
+  late Set<int> _shortlistedUserIds;
+  int _unreadNotificationCount = 0;
+  List<dynamic> _visitors = [];
+  bool _isLoadingVisitors = true;
 
   @override
   void initState() {
     super.initState();
-    // Load sent interests first, then load recommended users
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadSentInterests().then((_) {
+    _sentInterests = {};
+    _interestTimers = {};
+    _interestCountdown = {};
+    _shortlistedUserIds = {};
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await Future.wait([
+          _loadUnreadCount(),
+          _loadShortlistedProfiles(),
+          _loadInterestsAndMatches(),
+          _loadVisitors(),
+        ]);
+      } catch (e) {
+        print('Error during initial data load: $e');
+      } finally {
         _loadRecommendedUsers();
-      });
+      }
     });
   }
 
-  Future<void> _loadSentInterests() async {
+  Future<void> _loadVisitors() async {
     try {
-      final response = await MatchingService.getSentInterests();
-
+      final response = await ProfileViewService.getVisitors();
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        List<dynamic> interestsData;
+        if (mounted) {
+          setState(() {
+            _visitors = data['visitors'] ?? [];
+            _isLoadingVisitors = false;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading visitors: $e');
+      if (mounted) {
+        setState(() {
+          _isLoadingVisitors = false;
+        });
+      }
+    }
+  }
 
-        // Handle different response formats
-        if (data is List) {
-          interestsData = data;
-        } else if (data is Map<String, dynamic>) {
-          // Check for paginated format
-          if (data.containsKey('data')) {
-            interestsData = data['data'] is List ? List.from(data['data']) : [];
-          } else {
-            interestsData = [];
-          }
+  Future<void> _loadShortlistedProfiles() async {
+    try {
+      final response = await ShortlistService.getShortlistedProfiles();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<dynamic> shortlistedData;
+
+        if (data is Map<String, dynamic> && data.containsKey('shortlisted')) {
+          final shortlistedMap = data['shortlisted'] as Map<String, dynamic>;
+          shortlistedData = shortlistedMap['data'] is List
+              ? List.from(shortlistedMap['data'])
+              : [];
         } else {
-          interestsData = [];
+          shortlistedData = [];
         }
 
-        // Extract the receiver user IDs from the interests
-        Set<int> sentInterestIds = {};
+        Set<int> ids = {};
+        for (var item in shortlistedData) {
+          if (item is Map<String, dynamic> &&
+              item.containsKey('shortlisted_user_id')) {
+            ids.add(int.parse(item['shortlisted_user_id'].toString()));
+          }
+        }
+
+        if (mounted) {
+          setState(() {
+            _shortlistedUserIds = ids;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading shortlisted profiles: $e');
+    }
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final response = await NotificationService.getUnreadCount();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _unreadNotificationCount = data['unread_count'] ?? 0;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading unread count: $e');
+    }
+  }
+
+  Future<void> _loadInterestsAndMatches() async {
+    try {
+      final sentResponse = await MatchingService.getSentInterests();
+      final receivedResponse = await MatchingService.getReceivedInterests();
+
+      Set<int> sentIds = {};
+      Set<int> matchedIds = {};
+
+      if (sentResponse.statusCode == 200) {
+        final data = json.decode(sentResponse.body);
+        List<dynamic> interestsData = [];
+        if (data is Map<String, dynamic> && data.containsKey('interests')) {
+          final interestsMap = data['interests'];
+          if (interestsMap is Map<String, dynamic> &&
+              interestsMap.containsKey('data')) {
+            interestsData = List.from(interestsMap['data']);
+          } else if (interestsMap is List) {
+            interestsData = List.from(interestsMap);
+          }
+        }
         for (var interest in interestsData) {
-          if (interest is Map<String, dynamic> &&
-              interest.containsKey('receiver_id')) {
-            // Ensure the receiver_id is an integer
-            if (interest['receiver_id'] is int) {
-              sentInterestIds.add(interest['receiver_id']);
-            } else if (interest['receiver_id'] is String) {
-              try {
-                sentInterestIds.add(int.parse(interest['receiver_id']));
-              } catch (e) {
-                print(
-                  'Could not parse receiver_id: ${interest["receiver_id"]} - $e',
-                );
-              }
+          if (interest is Map<String, dynamic>) {
+            int? receiverId = interest['receiver_id'] is int
+                ? interest['receiver_id']
+                : int.tryParse(interest['receiver_id'].toString());
+            if (receiverId != null) {
+              sentIds.add(receiverId);
+              if (interest['status'] == 'accepted') matchedIds.add(receiverId);
             }
           }
         }
+      }
 
+      if (receivedResponse.statusCode == 200) {
+        final data = json.decode(receivedResponse.body);
+        List<dynamic> interestsData = [];
+        if (data is Map<String, dynamic> && data.containsKey('interests')) {
+          final interestsMap = data['interests'];
+          if (interestsMap is Map<String, dynamic> &&
+              interestsMap.containsKey('data')) {
+            interestsData = List.from(interestsMap['data']);
+          } else if (interestsMap is List) {
+            interestsData = List.from(interestsMap);
+          }
+        }
+        for (var interest in interestsData) {
+          if (interest is Map<String, dynamic>) {
+            int? senderId = interest['sender_id'] is int
+                ? interest['sender_id']
+                : int.tryParse(interest['sender_id'].toString());
+            if (senderId != null && interest['status'] == 'accepted')
+              matchedIds.add(senderId);
+          }
+        }
+      }
+
+      if (mounted) {
         setState(() {
-          _sentInterests = sentInterestIds;
+          _sentInterests = sentIds;
+          _matchedUserIds = matchedIds;
         });
       }
     } catch (e) {
-      print('Error loading sent interests: $e');
-      // Initialize with empty set if there's an error
-      if (mounted) {
+      print('Error loading interests and matches: $e');
+    }
+  }
+
+  Future<void> _handleQuickInterest(int userId) async {
+    try {
+      final response = await MatchingService.sendInterest(userId);
+      if (response.statusCode == 200 || response.statusCode == 201) {
         setState(() {
-          _sentInterests = {};
+          _sentInterests.add(userId);
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Interest sent successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to send interest'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -275,95 +454,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final response = await MatchingService.getSuggestions();
 
       if (response.statusCode == 200) {
-        final responseBody = response.body;
-        dynamic decodedData;
+        final decodedData = json.decode(response.body);
+        List<dynamic> usersData = [];
 
-        try {
-          decodedData = json.decode(responseBody);
-        } catch (e) {
-          setState(() {
-            _recommendedError = 'Error parsing response data: $e';
-            _isLoadingRecommended = false;
-          });
-          return;
-        }
-
-        List<dynamic> usersData;
-
-        // Handle the specific response format from the backend API
-        // The response structure is: {"suggestions": {"data": [...]}}
         if (decodedData is List) {
-          // Response is a direct list of users
           usersData = List.from(decodedData);
         } else if (decodedData is Map<String, dynamic>) {
-          // Check if it's the paginated format: {"suggestions": {"data": [...]}}
           if (decodedData.containsKey('suggestions') &&
               decodedData['suggestions'] is Map<String, dynamic>) {
-            var suggestionsData =
-                decodedData['suggestions'] as Map<String, dynamic>;
-            usersData = suggestionsData['data'] is List
-                ? List.from(suggestionsData['data'])
-                : [];
+            usersData = List.from(decodedData['suggestions']['data'] ?? []);
+          } else if (decodedData.containsKey('users')) {
+            usersData = List.from(decodedData['users'] ?? []);
+          } else if (decodedData.containsKey('data')) {
+            usersData = List.from(decodedData['data'] ?? []);
           }
-          // Or check if it has a 'users' key
-          else if (decodedData.containsKey('users')) {
-            usersData = decodedData['users'] is List
-                ? List.from(decodedData['users'])
-                : [];
-          }
-          // Or fallback to direct data key
-          else if (decodedData.containsKey('data')) {
-            usersData = decodedData['data'] is List
-                ? List.from(decodedData['data'])
-                : [];
-          } else {
-            // Unexpected response format
-            usersData = [];
-          }
-        } else {
-          // Unexpected response format
-          usersData = [];
         }
 
         List<User> allUsers = [];
-
-        // Safely parse each user
         for (var userData in usersData) {
           if (userData is Map<String, dynamic>) {
             try {
               allUsers.add(User.fromJson(userData));
             } catch (e) {
-              print('Error parsing user data: $e');
-              print('Problematic user data: $userData');
+              print('Error parsing user: $e');
             }
           }
         }
 
-        // Get current user's profile to determine gender for filtering
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        final currentUser = authProvider.user;
-        final currentUserProfile = currentUser?.userProfile;
+        final currentUserProfile = authProvider.user?.userProfile;
 
         List<User> filteredUsers;
-
-        // If user is admin, show all users regardless of gender
-        if (currentUser?.role == 'admin') {
+        if (authProvider.user?.role == 'admin') {
           filteredUsers = allUsers;
+        } else if (currentUserProfile?.gender != null) {
+          String gender = currentUserProfile!.gender!.toLowerCase();
+          filteredUsers = allUsers
+              .where(
+                (u) =>
+                    u.userProfile?.gender != null &&
+                    u.userProfile!.gender!.toLowerCase() != gender,
+              )
+              .toList();
+          if (filteredUsers.isEmpty) filteredUsers = allUsers;
         } else {
-          // For non-admin users, show only opposite gender users
-          if (currentUserProfile?.gender != null) {
-            String currentUserGender = currentUserProfile!.gender!;
-            filteredUsers = allUsers.where((user) {
-              // Filter out users with the same gender as current user
-              // Also make sure the other user has a gender specified
-              return user.userProfile?.gender != null &&
-                  user.userProfile!.gender!.toLowerCase() !=
-                      currentUserGender.toLowerCase();
-            }).toList();
-          } else {
-            // If current user has no gender specified, show all users
-            filteredUsers = allUsers;
-          }
+          filteredUsers = allUsers;
         }
 
         setState(() {
@@ -388,61 +523,197 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-
-    // Check if user has completed their profile
-    if (authProvider.user != null && authProvider.user!.userProfile == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacementNamed('/create-profile');
-      });
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     final user = authProvider.user;
     final profile = user?.userProfile;
 
+    if (authProvider.user != null && authProvider.user!.userProfile == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // App Bar with Gradient
-          SliverAppBar(
-            floating: false,
-            pinned: true,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFB47FFF), // Purple
-                    Color(0xFF5CB3FF), // Blue
-                    Color(0xFF4CD9A6), // Green
-                  ],
-                  stops: [0.0, 0.5, 1.0],
-                ),
+          // Personal Greeting Header
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey.shade200, width: 2),
+                    ),
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundImage: profile?.profilePicture != null
+                          ? NetworkImage(
+                              ApiService.getImageUrl(profile!.profilePicture!),
+                            )
+                          : null,
+                      child: profile?.profilePicture == null
+                          ? const Icon(Icons.person, color: Color(0xFF5CB3FF))
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hey, ${profile?.firstName ?? 'User'}!',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      const Text(
+                        "Let's Find A Match",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        const Icon(
+                          Icons.notifications_none_rounded,
+                          color: Color(0xFF1A1A1A),
+                          size: 28,
+                        ),
+                        if (_unreadNotificationCount > 0)
+                          Positioned(
+                            right: 2,
+                            top: 2,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFF4B4B),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (c) => const NotificationScreen(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            title: const Text('Dashboard'),
-            foregroundColor: Colors.white,
-            actions: [
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  // TODO: Navigate to notifications
-                },
-              ),
-            ],
           ),
 
-          // Profile cards
+          // Visitors section
+          if (_visitors.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+                    child: Text(
+                      'Recent Visitors',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 90,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      itemCount: _visitors.length,
+                      itemBuilder: (context, index) {
+                        final visitor = _visitors[index];
+                        final pic = visitor['user_profile']?['profile_picture'];
+                        return GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) =>
+                                  ViewProfileScreen(userId: visitor['id']),
+                            ),
+                          ).then((_) => _loadVisitors()),
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            child: CustomPaint(
+                              painter: DashedCirclePainter(
+                                color: const Color(0xFFFF2D55),
+                                dashWidth: 14,
+                                dashSpace: 8,
+                                strokeWidth: 3,
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(6.0),
+                                child: CircleAvatar(
+                                  radius: 34,
+                                backgroundColor: Colors.grey.shade100,
+                                backgroundImage: pic != null
+                                    ? NetworkImage(ApiService.getImageUrl(pic))
+                                    : null,
+                                child: pic == null
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                            colors: [
+                                              Colors.grey.shade200,
+                                              Colors.grey.shade300,
+                                            ],
+                                          ),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.grey,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  ),
+                  const Divider(
+                    height: 24,
+                    indent: 16,
+                    endIndent: 16,
+                    thickness: 0.5,
+                  ),
+                ],
+              ),
+            ),
+
+          // Cards List - Full Width Responsive
           _isLoadingRecommended
               ? const SliverToBoxAdapter(
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(32.0),
+                      padding: EdgeInsets.all(32),
                       child: CircularProgressIndicator(
                         color: Color(0xFF5CB3FF),
                       ),
@@ -452,448 +723,478 @@ class _DashboardScreenState extends State<DashboardScreen> {
               : _recommendedError != null
               ? SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16),
                     child: Text(_recommendedError!),
                   ),
                 )
               : _recommendedUsers.isEmpty
               ? const SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16),
                     child: Text('No recommendations available'),
                   ),
                 )
               : SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8.0,
-                      ),
-                      child: _buildDynamicProfileCard(
-                        context,
-                        _recommendedUsers[index],
-                      ),
+                    return _buildDynamicProfileCard(
+                      context,
+                      _recommendedUsers[index],
                     );
                   }, childCount: _recommendedUsers.length),
                 ),
-
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
   }
 
-  static bool _isProfileIncomplete(profile) {
-    return profile.bio == null ||
-        profile.education == null ||
-        profile.occupation == null;
-  }
-
-  static Widget _buildStatCard(
-    BuildContext context,
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 28),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Widget _buildActionCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 32),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildDynamicProfileCard(BuildContext context, User user) {
     final profile = user.userProfile;
-
-    // Calculate age from date of birth
     String ageText = '';
     if (profile?.dateOfBirth != null) {
-      final today = DateTime.now();
-      final birthDate = profile!.dateOfBirth!;
-      int age = today.year - birthDate.year;
-      if (today.month < birthDate.month ||
-          (today.month == birthDate.month && today.day < birthDate.day)) {
+      final birth = profile!.dateOfBirth!;
+      int age = DateTime.now().year - birth.year;
+      if (DateTime.now().month < birth.month ||
+          (DateTime.now().month == birth.month &&
+              DateTime.now().day < birth.day))
         age--;
-      }
-      ageText = '$age years';
+      ageText = '$age';
     }
 
-    String locationText = '';
-    if (profile?.city != null) {
-      locationText += profile!.city!;
-    }
-    if (profile?.state != null) {
-      if (locationText.isNotEmpty) locationText += ', ';
-      locationText += profile!.state!;
-    }
+    String loc = [
+      profile?.city,
+      profile?.state,
+    ].where((e) => e != null).join(', ');
 
-    return GestureDetector(
-      onTap: () {
-        // Navigate to view user profile
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ViewProfileScreen(userId: user.id!),
-          ),
-        );
+    return SwipeCard(
+      onSwipeRight: () {
+        _handleQuickInterest(user.id!);
+        setState(() {
+          _recommendedUsers.removeWhere((u) => u.id == user.id);
+        });
       },
-      child: Stack(
-        children: [
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF5CB3FF).withOpacity(0.15),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
+      onSwipeLeft: () {
+        setState(() {
+          _recommendedUsers.removeWhere((u) => u.id == user.id);
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        height: 480,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(32),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 25,
+              offset: const Offset(0, 12),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 140,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFFB47FFF).withOpacity(0.1),
-                        const Color(0xFF5CB3FF).withOpacity(0.1),
-                      ],
-                    ),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(15),
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(15),
-                    ),
-                    child: Image.network(
-                      profile?.profilePicture != null &&
-                              profile!.profilePicture!.isNotEmpty
-                          ? ApiService.getImageUrl(profile.profilePicture!)
-                          : (profile?.gender?.toLowerCase() == 'female'
-                                ? 'https://media.gettyimages.com/id/1987096880/photo/womens-health-appointment.jpg?s=612x612&w=0&k=20&c=FsN7Z3w1j44RKO-_B5LcbzAK4-NHlmwiQq9aKeMi8Qw='
-                                : 'https://media.gettyimages.com/id/1540766473/photo/young-adult-male-design-professional-smiles-for-camera.jpg?s=612x612&w=0&k=20&c=BbwgfMOtFOIJn1Km-ASix_EBbF9SHW5h0FtWbna5nFk='),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32),
+          child: Stack(
+          children: [
+            Positioned.fill(
+              child: profile?.profilePicture != null
+                  ? Image.network(
+                      ApiService.getImageUrl(profile!.profilePicture!),
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Color(0xFF5CB3FF),
-                        );
-                      },
-                    ),
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildPlaceholderBackground(profile?.gender),
+                    )
+                  : _buildPlaceholderBackground(profile?.gender),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.45),
+                      Colors.black.withOpacity(0.85),
+                    ],
+                    stops: const [0.0, 0.45, 0.7, 1.0],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+            ),
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 100,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
                       Text(
-                        '${profile?.firstName ?? 'User'} ${profile?.lastName ?? ''}',
+                        '${profile?.firstName ?? 'User'}, $ageText',
                         style: const TextStyle(
-                          fontSize: 16,
+                          color: Colors.white,
+                          fontSize: 26,
                           fontWeight: FontWeight.bold,
+                          letterSpacing: -0.8,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${ageText}${locationText.isNotEmpty ? ' • $locationText' : ''}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade300,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red),
-                              onPressed: () {
-                                // TODO: Implement close/dismiss action
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade300,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.chat_bubble_outline,
-                                color: Color(0xFF5CB3FF),
-                              ),
-                              onPressed: () {
-                                // Navigate to messages
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const MessagesScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade300,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.star_outline,
-                                color: Color(0xFFFFB800),
-                              ),
-                              onPressed: () {
-                                // TODO: Implement shortlist action
-                              },
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: _sentInterests.contains(user.id ?? -1)
-                                  ? null
-                                  : const LinearGradient(
-                                      colors: [
-                                        Color(0xFFB47FFF),
-                                        Color(0xFF5CB3FF),
-                                      ],
-                                    ),
-                              color: _sentInterests.contains(user.id ?? -1)
-                                  ? Colors.white
-                                  : null,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: _sentInterests.contains(user.id ?? -1)
-                                      ? Colors.grey.shade300
-                                      : const Color(
-                                          0xFF5CB3FF,
-                                        ).withOpacity(0.3),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                _sentInterests.contains(user.id ?? -1)
-                                    ? Icons.check
-                                    : Icons.favorite_outline,
-                                color: _sentInterests.contains(user.id ?? -1)
-                                    ? Colors.green
-                                    : Colors.white,
-                              ),
-                              onPressed: () async {
-                                // Check if interest already sent
-                                if (_sentInterests.contains(user.id ?? -1)) {
-                                  // Interest already sent, show message
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Interest already sent to this user',
-                                      ),
-                                      backgroundColor: Colors.blue,
-                                    ),
-                                  );
-                                } else {
-                                  // Send interest to user
-                                  try {
-                                    final response =
-                                        await MatchingService.sendInterest(
-                                          user.id!,
-                                        );
-                                    if (response.statusCode == 200) {
-                                      // Add to sent interests set
-                                      setState(() {
-                                        _sentInterests.add(user.id!);
-                                      });
-
-                                      // Show success message
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Interest sent successfully!',
-                                          ),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                    } else {
-                                      // Show error message
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Failed to send interest: ${response.statusCode}',
-                                          ),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                    }
-                                  } catch (e) {
-                                    // Show error message
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Error sending interest: $e',
-                                        ),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.verified_rounded,
+                        color: Color(0xFF5CB3FF),
+                        size: 20,
                       ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.white.withOpacity(0.8),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        loc.isNotEmpty ? loc : 'Unknown Location',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade300,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+            // Floating Action Buttons Row
+            Positioned(
+              bottom: 24,
+              left: 20,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Pass (Close)
+                  GestureDetector(
+                    onTap: () {},
+                    child: _buildFloatingButton(
+                      icon: Icons.close_rounded,
+                      color: Colors.white,
+                      iconColor: Colors.grey.shade600,
+                      size: 50,
+                    ),
+                  ),
+
+                  // Chat
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => ChatScreen(
+                            otherUserId: user.id!,
+                            otherUserName: '${user.userProfile?.firstName ?? 'User'}',
+                            otherUserImage: user.userProfile?.profilePicture != null
+                                ? ApiService.getImageUrl(user.userProfile!.profilePicture!)
+                                : null,
+                            isMatched: _matchedUserIds.contains(user.id),
+                            isInterestSent: _sentInterests.contains(user.id),
+                          ),
+                        ),
+                      );
+                    },
+                    child: _buildFloatingButton(
+                      icon: Icons.chat_bubble_rounded,
+                      color: const Color(0xFF5CB3FF),
+                      iconColor: Colors.white,
+                      size: 50,
+                      shadowColor: const Color(0xFF5CB3FF).withOpacity(0.3),
+                    ),
+                  ),
+
+                  // Star (Save)
+                  GestureDetector(
+                    onTap: () async {
+                      if (_shortlistedUserIds.contains(user.id!)) {
+                        if ((await ShortlistService.removeFromShortlist(user.id!)).statusCode == 200) {
+                          setState(() => _shortlistedUserIds.remove(user.id!));
+                        }
+                      } else {
+                        if ((await ShortlistService.addToShortlist(user.id!)).statusCode == 200) {
+                          setState(() => _shortlistedUserIds.add(user.id!));
+                        }
+                      }
+                    },
+                    child: _buildFloatingButton(
+                      icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
+                      color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
+                      iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
+                      size: 50,
+                      shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+                    ),
+                  ),
+
+                  // Like (Heart/Check)
+                  GestureDetector(
+                    onTap: () => _handleQuickInterest(user.id!),
+                    child: _buildFloatingButton(
+                      icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
+                      color: _sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
+                      iconColor: Colors.white,
+                      size: 60,
+                      shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                    ),
                   ),
                 ],
               ),
-              child: IconButton(
-                icon: const Icon(Icons.visibility, color: Color(0xFF5CB3FF)),
-                onPressed: () {
-                  // Navigate to view user profile
-                  Navigator.push(
+            ),
+            // Clickable area for card - positioned to avoid button areas
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 140, // Leave space for buttons at bottom
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ViewProfileScreen(userId: user.id!),
+                      builder: (c) => ViewProfileScreen(userId: user.id!),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildPlaceholderBackground(String? gender) {
+    bool isFemale = gender?.toLowerCase() == 'female';
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isFemale
+              ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
+          size: 80,
+          color: isFemale
+              ? const Color(0xFFFF2D55).withOpacity(0.3)
+              : const Color(0xFF5CB3FF).withOpacity(0.3),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingButton({
+    required IconData icon,
+    required Color color,
+    required Color iconColor,
+    required double size,
+    Color? shadowColor,
+  }) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor ?? Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
+      child: Center(
+        child: Icon(icon, color: iconColor, size: size * 0.5),
+      ),
+    );
+  }
+
+  Widget _buildActionChip({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: Colors.white.withOpacity(0.1), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DashedCirclePainter extends CustomPainter {
+  final Color color;
+  final double dashWidth;
+  final double dashSpace;
+  final double strokeWidth;
+
+  DashedCirclePainter({
+    required this.color,
+    this.dashWidth = 5,
+    this.dashSpace = 3,
+    this.strokeWidth = 1,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final double radius = (size.width - strokeWidth) / 2;
+    final Offset center = Offset(size.width / 2, size.height / 2);
+
+    final double circumference = 2 * 3.141592653589793238 * radius;
+    final int dashCount = (circumference / (dashWidth + dashSpace)).floor();
+    
+    // Adjust dashSpace slightly to fill the circle perfectly
+    final double actualDashSpace = (circumference / dashCount) - dashWidth;
+
+    for (int i = 0; i < dashCount; i++) {
+      final double startAngle = (i * (dashWidth + actualDashSpace)) / radius;
+      final double sweepAngle = dashWidth / radius;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        sweepAngle,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class SwipeCard extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onSwipeRight;
+  final VoidCallback onSwipeLeft;
+
+  const SwipeCard({
+    Key? key,
+    required this.child,
+    required this.onSwipeRight,
+    required this.onSwipeLeft,
+  }) : super(key: key);
+
+  @override
+  State<SwipeCard> createState() => _SwipeCardState();
+}
+
+class _SwipeCardState extends State<SwipeCard> {
+  Offset _offset = Offset.zero;
+  double _angle = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onPanUpdate: (details) {
+            setState(() {
+              _offset += details.delta;
+              _angle = 0.1 * (_offset.dx / 150);
+            });
+          },
+          onPanEnd: (details) {
+            if (_offset.dx > 100) {
+              widget.onSwipeRight();
+            } else if (_offset.dx < -100) {
+              widget.onSwipeLeft();
+            }
+            setState(() {
+              _offset = Offset.zero;
+              _angle = 0;
+            });
+          },
+          child: Stack(
+            children: [
+              Transform.translate(
+                offset: _offset,
+                child: Transform.rotate(
+                  angle: _angle,
+                  child: widget.child,
+                ),
+              ),
+              if (_offset.dx.abs() > 20)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: Center(
+                      child: Opacity(
+                        opacity: (_offset.dx.abs() / 150).clamp(0.0, 1.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: (_offset.dx > 0 
+                                ? const Color(0xFF42D368) 
+                                : const Color(0xFFFF4B4B)).withOpacity(0.9),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 20,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            _offset.dx > 0 ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
+                            color: Colors.white,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

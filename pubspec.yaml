@@ -65,6 +65,10 @@ dependencies:
   # Permissions
   permission_handler: ^11.1.0
 
+  # Real-time WebSockets
+  laravel_echo: any
+  pusher_client: any
+
 
 dev_dependencies:
   flutter_test:

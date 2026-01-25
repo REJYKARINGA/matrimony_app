@@ -10,6 +10,10 @@ class MessageService {
     return await ApiService.makeRequest('${ApiService.baseUrl}/messages/$userId');
   }
 
+  static Future<http.Response> getUnreadCount() async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/messages/unread-count');
+  }
+
   static Future<http.Response> sendMessage(int receiverId, String message) async {
     return await ApiService.makeRequest(
       '${ApiService.baseUrl}/messages',

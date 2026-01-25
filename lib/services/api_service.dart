@@ -5,31 +5,31 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static String get baseUrl {
-    // Always use Railway production URL
-    return 'https://matrimonybackend-production.up.railway.app/api';
-
-    // Uncomment these lines if you want to test locally during development
-    // if (kIsWeb) {
-    //   return 'http://localhost:8000/api';
-    // }
-    // if (defaultTargetPlatform == TargetPlatform.android) {
-    //   return 'http://192.168.220.3:8000/api';
-    // }
-    // return 'http://localhost:8000/api';
-  }
-
   // static String get baseUrl {
-  //     if (kIsWeb) {
-  //       return 'https://matrimonybackend-production.up.railway.app/api';
-  //       // return 'http://localhost:8000/api';
-  //     }
-  //     if (defaultTargetPlatform == TargetPlatform.android) {
-  //       // Use your actual IP address when running on Android emulator/device
-  //       return 'http://192.168.220.3:8000/api';
-  //     }
-  //     return 'http://localhost:8000/api';
-  //   }
+  //   // Always use Railway production URL
+  //   return 'https://matrimonybackend-production.up.railway.app/api';
+
+  //   // Uncomment these lines if you want to test locally during development
+  //   // if (kIsWeb) {
+  //   //   return 'http://localhost:8000/api';
+  //   // }
+  //   // if (defaultTargetPlatform == TargetPlatform.android) {
+  //   //   return 'http://192.168.220.3:8000/api';
+  //   // }
+  //   // return 'http://localhost:8000/api';
+  // }
+
+  static String get baseUrl {
+    if (kIsWeb) {
+      // return 'https://matrimonybackend-production.up.railway.app/api';
+      return 'http://localhost:8000/api';
+    }
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // Use your actual IP address when running on Android emulator/device
+      return 'http://192.168.220.3:8000/api';
+    }
+    return 'http://localhost:8000/api';
+  }
 
   static String get authUrl => '$baseUrl/auth';
 
@@ -277,5 +277,11 @@ class ApiService {
       // For relative URLs that don't start with /storage/, append to base URL
       return baseUrl + imageUrl;
     }
+  }
+
+  // Test method for Reverb broadcasting
+  static Future<http.Response> triggerTestBroadcast() async {
+    // Hit the /api/auth/test-broadcast endpoint
+    return await makeRequest('$authUrl/test-broadcast');
   }
 }
