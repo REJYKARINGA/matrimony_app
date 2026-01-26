@@ -637,6 +637,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedDistrict;
   late TextEditingController _stateController;
   late TextEditingController _countryController;
+  late TextEditingController _countyController;
+  late TextEditingController _postalCodeController;
   late TextEditingController _bioController;
   bool _isLoading = false;
 
@@ -714,6 +716,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _countryController = TextEditingController(
       text: widget.user?.userProfile?.country ?? '',
     );
+    _countyController = TextEditingController(
+      text: widget.user?.userProfile?.county ?? '',
+    );
+    _postalCodeController = TextEditingController(
+      text: widget.user?.userProfile?.postalCode ?? '',
+    );
     _bioController = TextEditingController(
       text: widget.user?.userProfile?.bio ?? '',
     );
@@ -744,8 +752,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         annualIncome: double.tryParse(_annualIncomeController.text),
         city: _cityController.text,
         district: _selectedDistrict,
+        county: _countyController.text,
         state: _stateController.text,
         country: _countryController.text,
+        postalCode: _postalCodeController.text,
         bio: _bioController.text,
       );
 
@@ -783,11 +793,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _cityController.text = data['city'] ?? _cityController.text;
           _stateController.text = data['state'] ?? '';
           _countryController.text = data['country'] ?? '';
+          _countyController.text = data['county'] ?? '';
+          _postalCodeController.text = data['postal_code'] ?? '';
 
           String? detDistrict = data['district'];
           if (detDistrict != null) {
             detDistrict = detDistrict.replaceAll(' District', '').trim();
-            // Try Case-insensitive match
             try {
               _selectedDistrict = _keralaDistricts.firstWhere(
                 (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
@@ -1079,12 +1090,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                             if (address != null) {
                               setState(() {
-                                _cityController.text = address['city'] ?? '';
-                                _stateController.text = address['state'] ?? '';
-                                _countryController.text = address['country'] ?? '';
+                                _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
+                                _stateController.text = (address['state'] ?? '').toString();
+                                _countryController.text = (address['country'] ?? '').toString();
+                                _countyController.text = (address['county'] ?? '').toString();
+                                _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
                                 
                                 // Handle district mapping
-                                String? detDistrict = address['district'];
+                                String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
                                 if (detDistrict != null) {
                                   detDistrict = detDistrict.replaceAll(' District', '').trim();
                                   try {
@@ -1146,6 +1159,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
+                  controller: _countyController,
+                  decoration: const InputDecoration(
+                    labelText: 'County / Taluk',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
                   controller: _stateController,
                   decoration: const InputDecoration(
                     labelText: 'State',
@@ -1153,12 +1174,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                TextFormField(
-                  controller: _countryController,
-                  decoration: const InputDecoration(
-                    labelText: 'Country',
-                    border: OutlineInputBorder(),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _countryController,
+                        decoration: const InputDecoration(
+                          labelText: 'Country',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _postalCodeController,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          labelText: 'Postal Code',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -1269,6 +1307,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _cityController.dispose();
     _stateController.dispose();
     _countryController.dispose();
+    _countyController.dispose();
+    _postalCodeController.dispose();
     _bioController.dispose();
     super.dispose();
   }

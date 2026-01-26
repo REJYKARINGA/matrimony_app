@@ -76,8 +76,10 @@ class UserProfile {
   final double? annualIncome;
   final String? city;
   final String? district;
+  final String? county;
   final String? state;
   final String? country;
+  final String? postalCode;
 
   UserProfile({
     this.id,
@@ -100,8 +102,10 @@ class UserProfile {
     this.annualIncome,
     this.city,
     this.district,
+    this.county,
     this.state,
     this.country,
+    this.postalCode,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -126,8 +130,10 @@ class UserProfile {
       annualIncome: json['annual_income'] != null ? double.tryParse(json['annual_income'].toString()) : null,
       city: json['city'],
       district: json['district'],
+      county: json['county'],
       state: json['state'],
       country: json['country'],
+      postalCode: json['postal_code'],
     );
   }
 
@@ -153,8 +159,10 @@ class UserProfile {
       'annual_income': annualIncome,
       'city': city,
       'district': district,
+      'county': county,
       'state': state,
       'country': country,
+      'postal_code': postalCode,
     };
   }
 }

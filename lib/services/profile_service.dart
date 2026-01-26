@@ -27,8 +27,10 @@ class ProfileService {
     double? annualIncome,
     String? city,
     String? district,
+    String? county,
     String? state,
     String? country,
+    String? postalCode,
   }) async {
     final body = {
       if (firstName != null) 'first_name': firstName,
@@ -49,8 +51,10 @@ class ProfileService {
       if (annualIncome != null) 'annual_income': annualIncome,
       if (city != null) 'city': city,
       if (district != null) 'district': district,
+      if (county != null) 'county': county,
       if (state != null) 'state': state,
       if (country != null) 'country': country,
+      if (postalCode != null) 'postal_code': postalCode,
     };
 
     return await ApiService.makeRequest(

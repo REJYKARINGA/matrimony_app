@@ -71,7 +71,8 @@ class LocationService {
   static Future<Map<String, String>?> getAddressFromCoordinates(double lat, double lon) async {
     try {
       // Using OpenStreetMap's Nominatim API (Free, no key required)
-      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=10&addressdetails=1');
+      // Increased zoom for better address/postal code accuracy
+      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=18&addressdetails=1');
       
       final response = await ApiService.makeRequest(url.toString(), method: 'GET');
 
@@ -80,10 +81,12 @@ class LocationService {
         final address = data['address'];
         
         return {
-          'city': address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '',
-          'district': address['state_district'] ?? address['district'] ?? address['county'] ?? '',
-          'state': address['state'] ?? '',
-          'country': address['country'] ?? '',
+          'city': (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString(),
+          'district': (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString(),
+          'county': (address['county'] ?? '').toString(),
+          'state': (address['state'] ?? '').toString(),
+          'country': (address['country'] ?? '').toString(),
+          'postal_code': (address['postcode'] ?? address['postal_code'] ?? '').toString(),
         };
       }
       return null;
@@ -107,12 +110,14 @@ class LocationService {
           final address = data['address'];
           
           return {
-            'lat': double.tryParse(data['lat'] ?? '0'),
-            'lon': double.tryParse(data['lon'] ?? '0'),
-            'city': address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? query,
-            'district': address['state_district'] ?? address['district'] ?? address['county'] ?? '',
-            'state': address['state'] ?? '',
-            'country': address['country'] ?? '',
+            'lat': double.tryParse(data['lat']?.toString() ?? '0'),
+            'lon': double.tryParse(data['lon']?.toString() ?? '0'),
+            'city': (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? query).toString(),
+            'district': (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString(),
+            'county': (address['county'] ?? '').toString(),
+            'state': (address['state'] ?? '').toString(),
+            'country': (address['country'] ?? '').toString(),
+            'postal_code': (address['postcode'] ?? address['postal_code'] ?? '').toString(),
           };
         }
       }
