@@ -49,6 +49,13 @@ class _CommonFooterState extends State<CommonFooter> {
     final navProvider = Provider.of<NavigationProvider>(context);
     final selectedIndex = navProvider.selectedIndex;
 
+    // Define the sequence of indices as they appear in the Row
+    final List<int> menuOrder = [0, 4, 1, 2, 3];
+    final int itemPosition = menuOrder.indexOf(selectedIndex);
+    
+    // Calculate alignment: -1.0 (left) to 1.0 (right)
+    final double alignmentX = (itemPosition * 2 / 4) - 1;
+
     return Container(
       height: 75,
       decoration: BoxDecoration(
@@ -67,35 +74,55 @@ class _CommonFooterState extends State<CommonFooter> {
       ),
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _buildNavItem(Icons.home_outlined, Icons.home, 'Home', 0, selectedIndex, navProvider),
-              _buildNavItem(Icons.search, Icons.search, 'Search', 4, selectedIndex, navProvider),
-              _buildCenterMatchButton(selectedIndex, navProvider),
-              _buildNavItem(
-                Icons.chat_bubble_outline,
-                Icons.chat_bubble,
-                'Chat',
-                2,
-                selectedIndex,
-                navProvider,
-                showBadge: _unreadMessageCount > 0,
+        child: Stack(
+          children: [
+            // Background Layer: Unselected Icons & Labels
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildStaticNavItem(Icons.home_outlined, 'Home', 0, selectedIndex, navProvider),
+                    _buildStaticNavItem(Icons.search_rounded, 'Search', 4, selectedIndex, navProvider),
+                    _buildStaticNavItem(Icons.favorite_border, 'Match', 1, selectedIndex, navProvider),
+                    _buildStaticNavItem(
+                      Icons.chat_bubble_outline,
+                      'Chat',
+                      2,
+                      selectedIndex,
+                      navProvider,
+                      showBadge: _unreadMessageCount > 0,
+                    ),
+                    _buildStaticNavItem(Icons.person_outline, 'Profile', 3, selectedIndex, navProvider),
+                  ],
+                ),
               ),
-              _buildNavItem(Icons.person_outline, Icons.person, 'Profile', 3, selectedIndex, navProvider),
-            ],
-          ),
+            ),
+
+            // Top Layer: Animated Sliding Bubble
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: AnimatedAlign(
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOutBack,
+                  alignment: Alignment(alignmentX, 0),
+                  child: FractionallySizedBox(
+                    widthFactor: 0.2, // One fifth of the width
+                    child: _buildFloatingIndicator(selectedIndex),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(
+  Widget _buildStaticNavItem(
     IconData icon,
-    IconData activeIcon,
     String label,
     int index,
     int selectedIndex,
@@ -108,81 +135,101 @@ class _CommonFooterState extends State<CommonFooter> {
         onTap: () => _onItemTapped(index, navProvider),
         child: Container(
           color: Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isSelected ? activeIcon : icon,
-                    color: isSelected ? const Color(0xFF6A5AE0) : Colors.grey.shade600,
-                    size: 24,
-                  ),
-                  const SizedBox(height: 4),
-                  AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 300),
-                    style: TextStyle(
-                      color: isSelected ? const Color(0xFF6A5AE0) : Colors.grey.shade600,
-                      fontSize: 10,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    ),
-                    child: Text(label),
-                  ),
-                ],
-              ),
-              if (showBadge)
-                Positioned(
-                  top: 0,
-                  right: 15,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF4B4B),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
-                    ),
+          child: Opacity(
+            opacity: isSelected ? 0.0 : 1.0, // Hide when bubble is over it
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Icon(icon, color: Colors.grey.shade600, size: 24),
+                    if (showBadge)
+                      Positioned(
+                        top: -2,
+                        right: -4,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFF4B4B),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCenterMatchButton(int selectedIndex, NavigationProvider navProvider) {
-    bool isSelected = selectedIndex == 1;
-    return GestureDetector(
-      onTap: () => _onItemTapped(1, navProvider),
-      child: Transform.translate(
-        offset: const Offset(0, -20),
-        child: Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFFF2D55).withOpacity(0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Center(
-            child: Icon(
-              isSelected ? Icons.favorite : Icons.favorite_border,
-              color: const Color(0xFFFF2D55),
-              size: 28,
+              ],
             ),
           ),
         ),
       ),
     );
   }
+
+  Widget _buildFloatingIndicator(int selectedIndex) {
+    IconData activeIcon;
+    Color activeColor;
+    
+    switch (selectedIndex) {
+      case 0: activeIcon = Icons.home; activeColor = const Color(0xFF6A5AE0); break;
+      case 4: activeIcon = Icons.search_rounded; activeColor = const Color(0xFF6A5AE0); break;
+      case 1: activeIcon = Icons.favorite; activeColor = const Color(0xFFFF2D55); break;
+      case 2: activeIcon = Icons.chat_bubble; activeColor = const Color(0xFF6A5AE0); break;
+      case 3: activeIcon = Icons.person; activeColor = const Color(0xFF6A5AE0); break;
+      default: activeIcon = Icons.home; activeColor = const Color(0xFF6A5AE0);
+    }
+
+    return Transform.translate(
+      offset: const Offset(0, -14),
+      child: Container(
+        width: 54,
+        height: 54,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: activeColor.withOpacity(0.35),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(activeIcon, color: activeColor, size: 28),
+            if (selectedIndex == 2 && _unreadMessageCount > 0)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF4B4B),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }

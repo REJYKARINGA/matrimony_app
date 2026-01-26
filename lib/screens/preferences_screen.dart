@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../services/profile_service.dart';
 import '../services/location_service.dart';
+import '../widgets/common_footer.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({Key? key}) : super(key: key);
@@ -409,7 +410,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                   ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),
@@ -419,6 +420,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: const CommonFooter(),
     );
   }
 

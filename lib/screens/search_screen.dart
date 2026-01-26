@@ -8,6 +8,7 @@ import '../services/matching_service.dart';
 import '../services/shortlist_service.dart';
 import 'view_profile_screen.dart';
 import 'messages_screen.dart';
+import '../widgets/common_footer.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -614,7 +615,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           ? const Center(child: Text('No matches found'))
           : ListView.builder(
         controller: _scrollController,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
         itemCount: _users.length + (_isLoading ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _users.length) {
@@ -629,6 +630,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           return _buildDynamicProfileCard(user);
         },
       ),
+      bottomNavigationBar: const CommonFooter(),
     );
   }
 
