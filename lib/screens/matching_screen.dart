@@ -413,159 +413,284 @@ class _MatchingScreenState extends State<MatchingScreen>
 
   Widget _buildProfileCard(
     User user, {
-    bool isSuggestion = false,
     bool isMatch = false,
     bool isInterest = false,
     String? status,
   }) {
+    final profile = user.userProfile;
     final theme = Theme.of(context);
+    
+    String ageText = '';
+    if (profile?.dateOfBirth != null) {
+      final birth = profile!.dateOfBirth!;
+      int age = DateTime.now().year - birth.year;
+      if (DateTime.now().month < birth.month ||
+          (DateTime.now().month == birth.month &&
+              DateTime.now().day < birth.day))
+        age--;
+      ageText = '$age';
+    }
 
-    return Card(
-      color: theme.brightness == Brightness.dark
-          ? Colors.grey[800]
-          : Colors.white,
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 8.0,
-        ),
-        leading: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: user.userProfile?.profilePicture == null
-                ? const LinearGradient(colors: [gradientPurple, gradientBlue])
-                : null,
+    String loc = [
+      profile?.city,
+      profile?.state,
+    ].where((e) => e != null).join(', ');
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      height: 480,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
           ),
-          child: CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.transparent,
-            backgroundImage: user.userProfile?.profilePicture != null
-                ? NetworkImage(ApiService.getImageUrl(user.userProfile!.profilePicture!))
-                : null,
-            child: user.userProfile?.profilePicture == null
-                ? const Icon(Icons.person, color: Colors.white, size: 30)
-                : null,
-          ),
-        ),
-        title: Text(
-          '${user.userProfile?.firstName ?? ''} ${user.userProfile?.lastName ?? ''}',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: theme.brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black87,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Stack(
           children: [
-            const SizedBox(height: 4),
-            Text(
-              '${user.userProfile?.age != null ? '${user.userProfile!.age} years' : ''} • ${user.userProfile?.city ?? ''}',
-              style: TextStyle(
-                color: theme.brightness == Brightness.dark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
-                fontSize: 14,
+            // Background Image
+            Positioned.fill(
+              child: profile?.profilePicture != null
+                  ? Image.network(
+                      ApiService.getImageUrl(profile!.profilePicture!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildPlaceholderBackground(profile?.gender),
+                    )
+                  : _buildPlaceholderBackground(profile?.gender),
+            ),
+            // Gradient Overlay
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.45),
+                      Colors.black.withOpacity(0.85),
+                    ],
+                    stops: const [0.0, 0.45, 0.7, 1.0],
+                  ),
+                ),
               ),
             ),
-            if (isInterest && status != null) ...[
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: status == 'accepted'
-                      ? gradientGreen.withOpacity(0.2)
-                      : status == 'rejected'
-                      ? Colors.red.withOpacity(0.2)
-                      : gradientBlue.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: status == 'accepted'
-                        ? gradientGreen
-                        : status == 'rejected'
-                        ? Colors.red
-                        : gradientBlue,
-                    width: 1,
+            // Status Badge
+            if (isInterest && status != null)
+              Positioned(
+                top: 24,
+                right: 24,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: (status == 'accepted' 
+                            ? const Color(0xFF4CD9A6) 
+                            : status == 'rejected' 
+                                ? Colors.redAccent 
+                                : const Color(0xFF5CB3FF)).withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                ),
-                child: Text(
-                  'Status: ${status.toUpperCase()}',
-                  style: TextStyle(
-                    color: status == 'accepted'
-                        ? gradientGreen
-                        : status == 'rejected'
-                        ? Colors.red
-                        : gradientBlue,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                  child: Text(
+                    status.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ),
-            ],
-          ],
-        ),
-        trailing: isSuggestion
-            ? Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [gradientPurple, gradientBlue],
+            // Profile Details
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 100,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '${profile?.firstName ?? 'User'}, $ageText',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.8,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.verified_rounded,
+                        color: Color(0xFF5CB3FF),
+                        size: 20,
+                      ),
+                    ],
                   ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: gradientBlue.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.favorite, color: Colors.white),
-                  onPressed: () => _sendInterest(user.id!),
-                ),
-              )
-            : isMatch
-            ? Container(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [gradientBlue, gradientGreen],
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.white.withOpacity(0.8),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        loc.isNotEmpty ? loc : 'Unknown Location',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: gradientGreen.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.message, color: Colors.white),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Messaging feature coming soon!'),
+                ],
+              ),
+            ),
+            // Action Buttons
+            Positioned(
+              bottom: 24,
+              left: 20,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (isMatch)
+                    _buildFloatingButton(
+                      onTap: () {
+                        // Messaging logic
+                      },
+                      icon: Icons.chat_bubble_rounded,
+                      color: const Color(0xFF5CB3FF),
+                    )
+                  else if (isInterest && status == 'pending' && user.id != _currentUserId)
+                    Row(
+                      children: [
+                        _buildFloatingButton(
+                          onTap: () => _handleInterestAction(user.id!, false),
+                          icon: Icons.close_rounded,
+                          color: Colors.redAccent,
+                        ),
+                        const SizedBox(width: 20),
+                        _buildFloatingButton(
+                          onTap: () => _handleInterestAction(user.id!, true),
+                          icon: Icons.favorite_rounded,
+                          color: const Color(0xFF4CD9A6),
+                        ),
+                      ],
+                    )
+                  else
+                    const SizedBox.shrink(),
+                ],
+              ),
+            ),
+            // InkWell for full card tap
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewProfileScreen(userId: user.id!),
                       ),
                     );
                   },
                 ),
-              )
-            : null,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ViewProfileScreen(userId: user.id!),
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildFloatingButton({
+    required VoidCallback onTap,
+    required IconData icon,
+    required Color color,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: Colors.white, size: 28),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderBackground(String? gender) {
+    return Container(
+      color: Colors.grey[200],
+      child: Center(
+        child: Icon(
+          gender == 'female' ? Icons.woman : Icons.man,
+          size: 100,
+          color: Colors.grey[400],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleInterestAction(int userId, bool accept) async {
+    try {
+      final status = await MatchingService.getReceivedInterests();
+      if (status.statusCode == 200) {
+        final data = json.decode(status.body);
+        final List<dynamic> received = data['interests']['data'] ?? [];
+        final interest = received.firstWhere(
+          (i) => i['sender_id'] == userId && i['status'] == 'pending',
+          orElse: () => null,
+        );
+
+        if (interest != null) {
+          final response = accept 
+            ? await MatchingService.acceptInterest(interest['id'])
+            : await MatchingService.rejectInterest(interest['id']);
+
+          if (response.statusCode == 200) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(accept ? 'Interest accepted!' : 'Interest declined'),
+                backgroundColor: accept ? gradientGreen : Colors.redAccent,
+              ),
+            );
+            _loadData();
+          }
+        }
+      }
+    } catch (e) {
+      print('Error handling interest: $e');
+    }
   }
 
   Future<void> _sendInterest(int userId) async {
