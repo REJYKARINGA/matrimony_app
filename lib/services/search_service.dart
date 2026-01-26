@@ -15,6 +15,7 @@ class SearchService {
     int? minAge,
     int? maxAge,
     String? location,
+    String? field,
     int page = 1,
   }) async {
     Map<String, String> queryParams = {'page': page.toString()};
@@ -26,6 +27,7 @@ class SearchService {
     if (minAge != null) queryParams['min_age'] = minAge.toString();
     if (maxAge != null) queryParams['max_age'] = maxAge.toString();
     if (location != null) queryParams['location'] = location;
+    if (field != null) queryParams['field'] = field;
 
     String queryString = Uri(queryParameters: queryParams).query;
     return await ApiService.makeRequest('${ApiService.baseUrl}/search?$queryString');

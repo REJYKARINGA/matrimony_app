@@ -251,6 +251,26 @@ class _SearchScreenState extends State<SearchScreen> {
         gradientColors = [const Color(0xFFFC466B), const Color(0xFF3F5EFB)];
         iconBackgroundColor = const Color(0xFFF3E5F5);
         break;
+      case 'height':
+        iconData = Icons.height_rounded;
+        gradientColors = [const Color(0xFF74EBD5), const Color(0xFF9FACE6)];
+        iconBackgroundColor = const Color(0xFFE0F2F1);
+        break;
+      case 'income':
+        iconData = Icons.payments_rounded;
+        gradientColors = [const Color(0xFF13547A), const Color(0xFF80D0C7)];
+        iconBackgroundColor = const Color(0xFFE0F7FA);
+        break;
+      case 'mother_tongue':
+        iconData = Icons.translate_rounded;
+        gradientColors = [const Color(0xFF667EEA), const Color(0xFF764BA2)];
+        iconBackgroundColor = const Color(0xFFE8EAF6);
+        break;
+      case 'new_members':
+        iconData = Icons.person_add_rounded;
+        gradientColors = [const Color(0xFFF093FB), const Color(0xFFF5576C)];
+        iconBackgroundColor = const Color(0xFFFCE4EC);
+        break;
       default:
         iconData = Icons.grid_view_rounded;
         gradientColors = [const Color(0xFF757F9A), const Color(0xFFD7DDE8)];
@@ -571,6 +591,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         location: location,
         minAge: minAge,
         maxAge: maxAge,
+        field: field,
         page: _currentPage,
       );
 
@@ -608,6 +629,16 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.tune_rounded, color: Color(0xFF6A5AE0)),
+            onPressed: () {
+               Navigator.of(context).pushReplacementNamed('/preferences');
+            },
+            tooltip: 'Update Preferences',
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: _error != null
           ? Center(child: Text(_error!))

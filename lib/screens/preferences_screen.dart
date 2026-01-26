@@ -23,7 +23,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   // Basic preferences
   late String? _maritalStatus;
   late String? _religion;
-  late TextEditingController _casteController;
+  List<String> _selectedCastes = [];
+  final TextEditingController _casteController = TextEditingController();
   late TextEditingController _educationController;
   late TextEditingController _occupationController;
 
@@ -101,7 +102,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _heightRange = const RangeValues(140, 180);
     _maritalStatus = null;
     _religion = null;
-    _casteController = TextEditingController(text: '');
+    _selectedCastes = [];
+    _casteController.text = '';
     _educationController = TextEditingController(text: '');
     _occupationController = TextEditingController(text: '');
     _incomeRange = const RangeValues(0, 30);
@@ -125,10 +127,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     );
     _maritalStatus = preferences['marital_status'];
     _religion = preferences['religion'];
-    _casteController = TextEditingController(text: preferences['caste'] ?? '');
-    _educationController = TextEditingController(
-      text: preferences['education'] ?? '',
-    );
+    
+    if (preferences['caste'] != null) {
+      if (preferences['caste'] is List) {
+        _selectedCastes = List<String>.from(preferences['caste']);
+      } else {
+        _selectedCastes = [preferences['caste'].toString()];
+      }
+    } else {
+      _selectedCastes = [];
+    }
+    _casteController.text = '';
+    
+    _educationController = TextEditingController(text: preferences['education'] ?? '');
     _occupationController = TextEditingController(
       text: preferences['occupation'] ?? '',
     );
@@ -160,7 +171,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         maxHeight: _heightRange.end.round(),
         maritalStatus: _maritalStatus,
         religion: _religion,
-        caste: _casteController.text,
+        caste: _selectedCastes,
         education: _educationController.text,
         occupation: _occupationController.text,
         minIncome: (_incomeRange.start * 12 / 100),
@@ -343,10 +354,20 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             },
                           ),
                           const SizedBox(height: 10),
-                          _buildTextField(
-                            _casteController,
+                          _buildMultiSelectField(
                             'Preferred Caste',
+                            _casteController,
+                            _selectedCastes,
                             Icons.people_outline,
+                            'Enter caste/sub-caste and add',
+                            (value) {
+                              if (value.isNotEmpty && !_selectedCastes.contains(value)) {
+                                setState(() {
+                                  _selectedCastes.add(value);
+                                  _casteController.clear();
+                                });
+                              }
+                            },
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(
@@ -523,6 +544,74 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMultiSelectField(
+    String label,
+    TextEditingController controller,
+    List<String> selectedItems,
+    IconData icon,
+    String hint,
+    Function(String) onAdd,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            hintText: hint,
+            prefixIcon: Icon(icon, color: const Color(0xFF5CB3FF)),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.add_circle_rounded, color: Color(0xFFB47FFF)),
+              onPressed: () => onAdd(controller.text.trim()),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide(color: const Color(0xFF5CB3FF), width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+          ),
+          onFieldSubmitted: (value) => onAdd(value.trim()),
+        ),
+        if (selectedItems.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: selectedItems.map((item) {
+              return Chip(
+                label: Text(
+                  item,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                backgroundColor: const Color(0xFFB47FFF),
+                deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                onDeleted: () {
+                  setState(() {
+                    selectedItems.remove(item);
+                  });
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide.none,
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ],
     );
   }
 

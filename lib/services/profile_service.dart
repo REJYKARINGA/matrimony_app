@@ -142,7 +142,7 @@ class ProfileService {
     int? maxHeight,
     String? maritalStatus,
     String? religion,
-    String? caste,
+    dynamic caste,
     String? education,
     String? occupation,
     double? minIncome,

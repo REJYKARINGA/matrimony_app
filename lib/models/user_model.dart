@@ -232,7 +232,7 @@ class Preference {
   final int? maxHeight;
   final String? maritalStatus;
   final String? religion;
-  final String? caste;
+  final List<String>? caste;
   final String? education;
   final String? occupation;
   final double? minIncome;
@@ -257,6 +257,15 @@ class Preference {
   });
 
   factory Preference.fromJson(Map<String, dynamic> json) {
+    List<String>? casteList;
+    if (json['caste'] != null) {
+      if (json['caste'] is List) {
+        casteList = List<String>.from(json['caste']);
+      } else {
+        casteList = [json['caste'].toString()];
+      }
+    }
+
     return Preference(
       id: json['id'],
       userId: json['user_id'],
@@ -266,7 +275,7 @@ class Preference {
       maxHeight: json['max_height'],
       maritalStatus: json['marital_status'],
       religion: json['religion'],
-      caste: json['caste'],
+      caste: casteList,
       education: json['education'],
       occupation: json['occupation'],
       minIncome: json['min_income'] != null ? double.tryParse(json['min_income'].toString()) : null,
