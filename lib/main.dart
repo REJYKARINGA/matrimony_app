@@ -7,6 +7,7 @@ import 'screens/create_profile_screen.dart';
 import 'screens/family_details_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/profile_photos_screen.dart';
+import 'screens/landing_screen.dart';
 import 'services/auth_provider.dart';
 import 'services/navigation_provider.dart';
 import 'utils/theme_provider.dart';
@@ -42,6 +43,7 @@ class MatrimonyApp extends StatelessWidget {
               '/home': (context) => const HomeScreen(),
               '/preferences': (context) => const PreferencesScreen(),
               '/profile-photos': (context) => const ProfilePhotosScreen(),
+              '/landing': (context) => const LandingScreen(),
             },
           );
         },
@@ -98,7 +100,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Navigator.of(context).pushReplacementNamed('/home');
       }
     } else {
-      Navigator.of(context).pushReplacementNamed('/login');
+      Navigator.of(context).pushReplacementNamed('/landing');
     }
   }
 
