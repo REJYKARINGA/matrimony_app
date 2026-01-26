@@ -15,10 +15,10 @@ class MatchingScreen extends StatefulWidget {
 class _MatchingScreenState extends State<MatchingScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  List<User> _suggestions = [];
   List<dynamic> _matches = [];
   List<dynamic> _sentInterests = [];
   List<dynamic> _receivedInterests = [];
+  List<dynamic> _declinedInterests = [];
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -27,10 +27,25 @@ class _MatchingScreenState extends State<MatchingScreen>
   static const Color gradientBlue = Color(0xFF5CB3FF);
   static const Color gradientGreen = Color(0xFF4CD9A6);
 
+  int? _currentUserId;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    try {
+      final userResponse = await ApiService.getUser();
+      if (userResponse.statusCode == 200) {
+        final userData = json.decode(userResponse.body);
+        _currentUserId = userData['user']['id'];
+      }
+    } catch (e) {
+      print('Error fetching user: $e');
+    }
     _loadData();
   }
 
@@ -41,38 +56,38 @@ class _MatchingScreenState extends State<MatchingScreen>
     });
 
     try {
-      // Load all data concurrently
+      // Load all relevant data concurrently (Suggestions removed)
       final results = await Future.wait([
-        MatchingService.getSuggestions(),
         MatchingService.getMatches(),
         MatchingService.getSentInterests(),
         MatchingService.getReceivedInterests(),
       ]);
 
-      // Process suggestions
+      // Process matches
       if (results[0].statusCode == 200) {
         final data = json.decode(results[0].body);
-        _suggestions = (data['suggestions']['data'] as List)
-            .map((item) => User.fromJson(item))
-            .toList();
-      }
-
-      // Process matches
-      if (results[1].statusCode == 200) {
-        final data = json.decode(results[1].body);
-        _matches = data['matches']['data'];
+        _matches = data['matches']['data'] ?? [];
       }
 
       // Process sent interests
-      if (results[2].statusCode == 200) {
-        final data = json.decode(results[2].body);
-        _sentInterests = data['interests']['data'];
+      if (results[1].statusCode == 200) {
+        final data = json.decode(results[1].body);
+        final List<dynamic> sent = data['interests']['data'] ?? [];
+        _sentInterests = sent.where((i) => i['status'] != 'rejected').toList();
+        
+        // Collect declined sent interests
+        _declinedInterests = sent.where((i) => i['status'] == 'rejected').toList();
       }
 
       // Process received interests
-      if (results[3].statusCode == 200) {
-        final data = json.decode(results[3].body);
-        _receivedInterests = data['interests']['data'];
+      if (results[2].statusCode == 200) {
+        final data = json.decode(results[2].body);
+        final List<dynamic> received = data['interests']['data'] ?? [];
+        _receivedInterests = received.where((i) => i['status'] != 'rejected').toList();
+        
+        // Collect declined received interests & combine
+        final declinedReceived = received.where((i) => i['status'] == 'rejected').toList();
+        _declinedInterests.addAll(declinedReceived);
       }
 
       setState(() {
@@ -109,10 +124,10 @@ class _MatchingScreenState extends State<MatchingScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Suggestions'),
             Tab(text: 'Matches'),
             Tab(text: 'Sent'),
             Tab(text: 'Received'),
+            Tab(text: 'Declined'),
           ],
           indicatorColor: Colors.white,
           indicatorWeight: 3,
@@ -131,16 +146,16 @@ class _MatchingScreenState extends State<MatchingScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildSuggestionsTab(),
           _buildMatchesTab(),
           _buildSentInterestsTab(),
           _buildReceivedInterestsTab(),
+          _buildDeclinedInterestsTab(),
         ],
       ),
     );
   }
 
-  Widget _buildSuggestionsTab() {
+  Widget _buildDeclinedInterestsTab() {
     final theme = Theme.of(context);
 
     if (_isLoading) {
@@ -151,94 +166,25 @@ class _MatchingScreenState extends State<MatchingScreen>
       );
     }
 
-    if (_errorMessage != null) {
+    if (_declinedInterests.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              Icons.block_outlined,
               size: 64,
-              color: theme.brightness == Brightness.dark
-                  ? Colors.red[300]
-                  : Colors.red,
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: theme.brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black87,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [gradientPurple, gradientBlue],
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ElevatedButton(
-                onPressed: _loadData,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Retry',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_suggestions.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.sentiment_satisfied_alt_outlined,
-              size: 64,
-              color: gradientBlue.withOpacity(0.5),
+              color: Colors.grey.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
             Text(
-              'No suggestions available',
+              'No declined interests',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: theme.brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Check your preferences to see more matches',
-              style: TextStyle(
-                fontSize: 14,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
               ),
             ),
           ],
@@ -251,10 +197,23 @@ class _MatchingScreenState extends State<MatchingScreen>
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.all(8.0),
-        itemCount: _suggestions.length,
+        itemCount: _declinedInterests.length,
         itemBuilder: (context, index) {
-          final user = _suggestions[index];
-          return _buildProfileCard(user, isSuggestion: true);
+          final interest = _declinedInterests[index];
+          // Check who the target profile is
+          final bool isSentByMe = interest['sender_id'] == _currentUserId;
+          
+          final userJson = isSentByMe ? interest['receiver'] : interest['sender'];
+          final user = User.fromJson({
+            'email': userJson['email'] ?? '',
+            ...userJson,
+          });
+
+          return _buildProfileCard(
+            user,
+            isInterest: true,
+            status: interest['status'],
+          );
         },
       ),
     );
