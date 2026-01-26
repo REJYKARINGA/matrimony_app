@@ -62,7 +62,7 @@ class LandingScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "Perfect Date!",
+                      "Perfect Match!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 42,
@@ -73,9 +73,9 @@ class LandingScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const Spacer(),
-              
+
               // Decorative Circular Profile Pattern (Simulating Image 1)
               SizedBox(
                 height: size.height * 0.4,
@@ -92,7 +92,8 @@ class LandingScreen extends StatelessWidget {
                         border: Border.all(
                           color: Colors.white.withOpacity(0.3),
                           width: 1.5,
-                          style: BorderStyle.solid, // Flutter doesn't native dash, but solid thin looks good
+                          style: BorderStyle
+                              .solid, // Flutter doesn't native dash, but solid thin looks good
                         ),
                       ),
                     ),
@@ -108,14 +109,34 @@ class LandingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     // Profile Avatars positioned around
-                    _buildAnimatedAvatar(0, -140, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'),
-                    _buildAnimatedAvatar(120, -60, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150'),
-                    _buildAnimatedAvatar(-120, -60, 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'),
-                    _buildAnimatedAvatar(80, 80, 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150'),
-                    _buildAnimatedAvatar(-80, 80, 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150'),
-                    
+                    _buildAnimatedAvatar(
+                      0,
+                      -140,
+                      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+                    ),
+                    _buildAnimatedAvatar(
+                      120,
+                      -60,
+                      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+                    ),
+                    _buildAnimatedAvatar(
+                      -120,
+                      -60,
+                      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
+                    ),
+                    _buildAnimatedAvatar(
+                      80,
+                      80,
+                      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150',
+                    ),
+                    _buildAnimatedAvatar(
+                      -80,
+                      80,
+                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
+                    ),
+
                     // Center Avatar (Focus)
                     Container(
                       width: 80,
@@ -131,7 +152,9 @@ class LandingScreen extends StatelessWidget {
                         ],
                       ),
                       child: const CircleAvatar(
-                        backgroundImage: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'),
+                        backgroundImage: NetworkImage(
+                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+                        ),
                       ),
                     ),
                   ],
@@ -139,7 +162,7 @@ class LandingScreen extends StatelessWidget {
               ),
 
               const Spacer(),
-              
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
@@ -152,9 +175,9 @@ class LandingScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              
+
               // Action Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -209,9 +232,7 @@ class LandingScreen extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
         ),
-        child: CircleAvatar(
-          backgroundImage: NetworkImage(url),
-        ),
+        child: CircleAvatar(backgroundImage: NetworkImage(url)),
       ),
     );
   }
