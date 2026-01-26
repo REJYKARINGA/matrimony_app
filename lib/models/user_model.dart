@@ -165,6 +165,19 @@ class UserProfile {
       'postal_code': postalCode,
     };
   }
+
+  int? get age {
+    if (dateOfBirth != null) {
+      var today = DateTime.now();
+      var age = today.year - dateOfBirth!.year;
+      if (today.month < dateOfBirth!.month ||
+          (today.month == dateOfBirth!.month && today.day < dateOfBirth!.day)) {
+        age--;
+      }
+      return age;
+    }
+    return null;
+  }
 }
 
 class FamilyDetail {

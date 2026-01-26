@@ -11,8 +11,47 @@ import 'contact_us_screen.dart';
 import 'engagement_poster_info_screen.dart';
 import 'search_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+import '../services/payment_service.dart';
+import 'wallet_transactions_screen.dart';
+import 'dart:convert';
+
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  double _walletBalance = 0.0;
+  bool _isWalletLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWalletBalance();
+  }
+
+  Future<void> _loadWalletBalance() async {
+    if (!mounted) return;
+    setState(() => _isWalletLoading = true);
+    try {
+      final response = await PaymentService.getWalletBalance();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _walletBalance = double.tryParse(data['balance'].toString()) ?? 0.0;
+            _isWalletLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isWalletLoading = false);
+      }
+    }
+  }
 
   Widget _buildSectionHeader(String title) {
     return Padding(
@@ -106,10 +145,55 @@ class SettingsScreen extends StatelessWidget {
         ),
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: InkWell(
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const WalletTransactionsScreen()),
+                );
+                _loadWalletBalance();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.account_balance_wallet, size: 20, color: Colors.white),
+                    const SizedBox(width: 8),
+                    _isWalletLoading
+                        ? const SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            '₹${_walletBalance.toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
           await authProvider.loadCurrentUserWithProfile();
+          await _loadWalletBalance();
         },
         child: ListView(
           children: [
@@ -344,6 +428,21 @@ class SettingsScreen extends StatelessWidget {
                           builder: (context) => const SearchScreen(),
                         ),
                       );
+                    },
+                  ),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.account_balance_wallet,
+                    title: 'Wallet & Transactions',
+                    subtitle: 'Recharge and view history',
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const WalletTransactionsScreen(),
+                        ),
+                      );
+                      _loadWalletBalance();
                     },
                   ),
                   _buildMenuItem(

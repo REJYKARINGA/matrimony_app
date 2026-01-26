@@ -69,6 +69,7 @@ dependencies:
   # Real-time WebSockets
   laravel_echo: any
   pusher_client: any
+  razorpay_flutter: ^1.4.0
 
 
 dev_dependencies:

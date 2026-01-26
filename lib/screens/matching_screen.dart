@@ -743,18 +743,3 @@ class _MatchingScreenState extends State<MatchingScreen>
     super.dispose();
   }
 }
-
-extension on UserProfile {
-  int? get age {
-    if (dateOfBirth != null) {
-      var today = DateTime.now();
-      var age = today.year - dateOfBirth!.year;
-      if (today.month < dateOfBirth!.month ||
-          (today.month == dateOfBirth!.month && today.day < dateOfBirth!.day)) {
-        age--;
-      }
-      return age;
-    }
-    return null;
-  }
-}
