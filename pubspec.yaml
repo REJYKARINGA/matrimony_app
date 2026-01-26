@@ -64,6 +64,7 @@ dependencies:
 
   # Permissions
   permission_handler: ^11.1.0
+  geolocator: ^11.0.0
 
   # Real-time WebSockets
   laravel_echo: any

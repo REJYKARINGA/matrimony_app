@@ -21,6 +21,7 @@ import '../services/message_service.dart';
 import '../services/navigation_provider.dart';
 import '../services/profile_view_service.dart';
 import '../widgets/common_footer.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -103,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const MatchingScreen(),
     const MessagesScreen(),
     const SettingsScreen(),
-    const Center(child: Text('Search Screen Coming Soon')),
+    const SearchScreen(),
   ];
 
   void _onItemTapped(int index) {

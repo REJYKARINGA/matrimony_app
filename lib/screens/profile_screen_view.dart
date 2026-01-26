@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../models/user_model.dart';
+import '../services/location_service.dart';
 import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
 import '../services/api_service.dart';
@@ -771,6 +772,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  Future<void> _triggerCityLookup() async {
+    if (_cityController.text.trim().isEmpty) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final data = await LocationService.searchAddressByCity(_cityController.text);
+      if (data != null) {
+        setState(() {
+          _cityController.text = data['city'] ?? _cityController.text;
+          _stateController.text = data['state'] ?? '';
+          _countryController.text = data['country'] ?? '';
+
+          String? detDistrict = data['district'];
+          if (detDistrict != null) {
+            detDistrict = detDistrict.replaceAll(' District', '').trim();
+            // Try Case-insensitive match
+            try {
+              _selectedDistrict = _keralaDistricts.firstWhere(
+                (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
+                orElse: () => _selectedDistrict ?? _keralaDistricts.first,
+              );
+            } catch (_) {}
+          }
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location details auto-filled!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not find location details.')),
+        );
+      }
+    } catch (e) {
+      print('Lookup error: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1016,16 +1056,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Location',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Location',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {
+                        setState(() => _isLoading = true);
+                        try {
+                          final position = await LocationService.getCurrentLocation();
+                          if (position != null) {
+                            await LocationService.updateLocationToServer(position);
+                            
+                            // Get address from coordinates
+                            final address = await LocationService.getAddressFromCoordinates(
+                              position.latitude, 
+                              position.longitude
+                            );
+
+                            if (address != null) {
+                              setState(() {
+                                _cityController.text = address['city'] ?? '';
+                                _stateController.text = address['state'] ?? '';
+                                _countryController.text = address['country'] ?? '';
+                                
+                                // Handle district mapping
+                                String? detDistrict = address['district'];
+                                if (detDistrict != null) {
+                                  detDistrict = detDistrict.replaceAll(' District', '').trim();
+                                  try {
+                                    _selectedDistrict = _keralaDistricts.firstWhere(
+                                      (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
+                                      orElse: () => _selectedDistrict ?? _keralaDistricts.first,
+                                    );
+                                  } catch (_) {}
+                                }
+                              });
+                            }
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Location detected and fields updated!')),
+                            );
+                          }
+                        } finally {
+                          setState(() => _isLoading = false);
+                        }
+                      },
+                      icon: const Icon(Icons.my_location, size: 18),
+                      label: const Text('Detect GPS'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _cityController,
-                  decoration: const InputDecoration(
+                  textInputAction: TextInputAction.search,
+                  onFieldSubmitted: (_) => _triggerCityLookup(),
+                  decoration: InputDecoration(
                     labelText: 'City',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    helperText: 'Enter city and tap icon or enter to auto-fill',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.travel_explore, color: Color(0xFFB47FFF)),
+                      onPressed: _triggerCityLookup,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),

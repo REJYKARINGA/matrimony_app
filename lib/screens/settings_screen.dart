@@ -9,6 +9,7 @@ import 'profile_photos_screen.dart';
 import 'account_settings_screen.dart';
 import 'contact_us_screen.dart';
 import 'engagement_poster_info_screen.dart';
+import 'search_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -340,7 +341,7 @@ class SettingsScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MatchingScreen(),
+                          builder: (context) => const SearchScreen(),
                         ),
                       );
                     },
