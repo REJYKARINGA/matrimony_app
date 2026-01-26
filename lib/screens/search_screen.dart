@@ -4,7 +4,10 @@ import '../services/search_service.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
 import '../services/location_service.dart';
+import '../services/matching_service.dart';
+import '../services/shortlist_service.dart';
 import 'view_profile_screen.dart';
+import 'messages_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -399,12 +402,95 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   int _currentPage = 1;
   bool _hasMore = true;
   final ScrollController _scrollController = ScrollController();
+  Set<int> _sentInterests = {};
+  Set<int> _matchedUserIds = {};
+  Set<int> _shortlistedUserIds = {};
 
   @override
   void initState() {
     super.initState();
     _loadResults();
+    _loadInterestsAndMatches();
+    _loadShortlistedProfiles();
     _scrollController.addListener(_onScroll);
+  }
+
+  Future<void> _loadShortlistedProfiles() async {
+    try {
+      final response = await ShortlistService.getShortlistedProfiles();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<dynamic> shortlistedData;
+        if (data is Map<String, dynamic> && data.containsKey('shortlisted')) {
+          final shortlistedMap = data['shortlisted'] as Map<String, dynamic>;
+          shortlistedData = shortlistedMap['data'] is List ? List.from(shortlistedMap['data']) : [];
+        } else {
+          shortlistedData = [];
+        }
+        Set<int> ids = {};
+        for (var item in shortlistedData) {
+          if (item is Map<String, dynamic> && item.containsKey('shortlisted_user_id')) {
+            ids.add(int.parse(item['shortlisted_user_id'].toString()));
+          }
+        }
+        if (mounted) setState(() => _shortlistedUserIds = ids);
+      }
+    } catch (e) {
+      print('Error loading shortlists: $e');
+    }
+  }
+
+  Future<void> _loadInterestsAndMatches() async {
+    try {
+      final sentResponse = await MatchingService.getSentInterests();
+      final receivedResponse = await MatchingService.getReceivedInterests();
+      Set<int> sentIds = {};
+      Set<int> matchedIds = {};
+
+      if (sentResponse.statusCode == 200) {
+        final data = json.decode(sentResponse.body);
+        List<dynamic> interestsData = data['interests']?['data'] ?? [];
+        for (var interest in interestsData) {
+          int? receiverId = int.tryParse(interest['receiver_id'].toString());
+          if (receiverId != null) {
+            sentIds.add(receiverId);
+            if (interest['status'] == 'accepted') matchedIds.add(receiverId);
+          }
+        }
+      }
+
+      if (receivedResponse.statusCode == 200) {
+        final data = json.decode(receivedResponse.body);
+        List<dynamic> interestsData = data['interests']?['data'] ?? [];
+        for (var interest in interestsData) {
+          int? senderId = int.tryParse(interest['sender_id'].toString());
+          if (senderId != null && interest['status'] == 'accepted') matchedIds.add(senderId);
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _sentInterests = sentIds;
+          _matchedUserIds = matchedIds;
+        });
+      }
+    } catch (e) {
+      print('Error loading interests/matches: $e');
+    }
+  }
+
+  Future<void> _handleQuickInterest(int userId) async {
+    try {
+      final response = await MatchingService.sendInterest(userId);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() => _sentInterests.add(userId));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Interest sent!'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -540,106 +626,253 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             );
           }
           final user = _users[index];
-          return _buildUserListItem(user);
+          return _buildDynamicProfileCard(user);
         },
       ),
     );
   }
 
-  Widget _buildUserListItem(User user) {
+  Widget _buildDynamicProfileCard(User user) {
     final profile = user.userProfile;
     String ageText = '';
     if (profile?.dateOfBirth != null) {
       final birth = profile!.dateOfBirth!;
       int age = DateTime.now().year - birth.year;
-      ageText = '$age yrs';
+      if (DateTime.now().month < birth.month ||
+          (DateTime.now().month == birth.month &&
+              DateTime.now().day < birth.day))
+        age--;
+      ageText = '$age';
     }
 
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ViewProfileScreen(userId: user.id!),
-        ),
+    String loc = [
+      profile?.city,
+      profile?.state,
+    ].where((e) => e != null).join(', ');
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      height: 480,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 25,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(32),
+        child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(15),
+            Positioned.fill(
               child: profile?.profilePicture != null
                   ? Image.network(
-                ApiService.getImageUrl(profile!.profilePicture!),
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-                errorBuilder: (c, e, s) => Container(
-                  width: 80,
-                  height: 80,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.person),
+                      ApiService.getImageUrl(profile!.profilePicture!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildPlaceholderBackground(profile?.gender),
+                    )
+                  : _buildPlaceholderBackground(profile?.gender),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.1),
+                      Colors.black.withOpacity(0.45),
+                      Colors.black.withOpacity(0.85),
+                    ],
+                    stops: const [0.0, 0.45, 0.7, 1.0],
+                  ),
                 ),
-              )
-                  : Container(
-                width: 80,
-                height: 80,
-                color: Colors.grey.shade200,
-                child: const Icon(Icons.person),
               ),
             ),
-            const SizedBox(width: 16),
-            Expanded(
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${profile?.firstName ?? ''} ${profile?.lastName ?? ''}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${ageText != '' ? '$ageText, ' : ''}${profile?.religion ?? ''}, ${profile?.caste ?? ''}',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${profile?.occupation ?? ''}',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                  ),
-                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on,
-                          size: 14, color: Color(0xFF6A5AE0)),
+                      Text(
+                        '${profile?.firstName ?? 'User'}, $ageText',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.8,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.verified_rounded,
+                        color: Color(0xFF5CB3FF),
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.white.withOpacity(0.8),
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        '${profile?.city ?? ''}, ${profile?.state ?? ''}',
-                        style: const TextStyle(fontSize: 12),
+                        loc.isNotEmpty ? loc : 'Unknown Location',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey),
+            Positioned(
+              bottom: 24,
+              left: 20,
+              right: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => ChatScreen(
+                            otherUserId: user.id!,
+                            otherUserName: '${user.userProfile?.firstName ?? 'User'}',
+                            otherUserImage: user.userProfile?.profilePicture != null
+                                ? ApiService.getImageUrl(user.userProfile!.profilePicture!)
+                                : null,
+                            isMatched: _matchedUserIds.contains(user.id),
+                            isInterestSent: _sentInterests.contains(user.id),
+                          ),
+                        ),
+                      );
+                    },
+                    child: _buildFloatingButton(
+                      icon: Icons.chat_bubble_rounded,
+                      color: const Color(0xFF5CB3FF),
+                      iconColor: Colors.white,
+                      size: 50,
+                      shadowColor: const Color(0xFF5CB3FF).withOpacity(0.3),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      if (_shortlistedUserIds.contains(user.id!)) {
+                        if ((await ShortlistService.removeFromShortlist(user.id!)).statusCode == 200) {
+                          setState(() => _shortlistedUserIds.remove(user.id!));
+                        }
+                      } else {
+                        if ((await ShortlistService.addToShortlist(user.id!)).statusCode == 200) {
+                          setState(() => _shortlistedUserIds.add(user.id!));
+                        }
+                      }
+                    },
+                    child: _buildFloatingButton(
+                      icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
+                      color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
+                      iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
+                      size: 50,
+                      shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _handleQuickInterest(user.id!),
+                    child: _buildFloatingButton(
+                      icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
+                      color: _sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
+                      iconColor: Colors.white,
+                      size: 60,
+                      shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (c) => ViewProfileScreen(userId: user.id!),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderBackground(String? gender) {
+    bool isFemale = gender?.toLowerCase() == 'female';
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isFemale
+              ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
+          size: 80,
+          color: isFemale
+              ? const Color(0xFFFF2D55).withOpacity(0.3)
+              : const Color(0xFF5CB3FF).withOpacity(0.3),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFloatingButton({
+    required IconData icon,
+    required Color color,
+    required Color iconColor,
+    required double size,
+    Color? shadowColor,
+  }) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor ?? Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Icon(icon, color: iconColor, size: size * 0.5),
       ),
     );
   }
