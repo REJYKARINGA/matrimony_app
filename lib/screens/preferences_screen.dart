@@ -13,12 +13,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   final _formKey = GlobalKey<FormState>();
 
   // Age preferences
-  late TextEditingController _minAgeController;
-  late TextEditingController _maxAgeController;
-
+  RangeValues _ageRange = const RangeValues(18, 50);
+  
   // Height preferences
-  late TextEditingController _minHeightController;
-  late TextEditingController _maxHeightController;
+  RangeValues _heightRange = const RangeValues(140, 180);
 
   // Basic preferences
   late String? _maritalStatus;
@@ -28,8 +26,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   late TextEditingController _occupationController;
 
   // Income preferences
-  late TextEditingController _minIncomeController;
-  late TextEditingController _maxIncomeController;
+  RangeValues _incomeRange = const RangeValues(0, 30);
 
   // Location preferences
   late TextEditingController _preferredLocationsController;
@@ -97,32 +94,30 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   }
 
   void _initializeEmptyControllers() {
-    _minAgeController = TextEditingController(text: '');
-    _maxAgeController = TextEditingController(text: '');
-    _minHeightController = TextEditingController(text: '');
-    _maxHeightController = TextEditingController(text: '');
+    _ageRange = const RangeValues(18, 50);
+    _heightRange = const RangeValues(140, 180);
     _maritalStatus = null;
     _religion = null;
     _casteController = TextEditingController(text: '');
     _educationController = TextEditingController(text: '');
     _occupationController = TextEditingController(text: '');
-    _minIncomeController = TextEditingController(text: '');
-    _maxIncomeController = TextEditingController(text: '');
+    _incomeRange = const RangeValues(0, 30);
     _preferredLocationsController = TextEditingController(text: '');
   }
 
   void _initializeControllersWithData(Map<String, dynamic> preferences) {
-    _minAgeController = TextEditingController(
-      text: preferences['min_age']?.toString() ?? '',
+    double ageStart = double.tryParse(preferences['min_age']?.toString() ?? '18') ?? 18;
+    double ageEnd = double.tryParse(preferences['max_age']?.toString() ?? '50') ?? 50;
+    _ageRange = RangeValues(
+      ageStart.clamp(18, 70),
+      ageEnd.clamp(18, 70)
     );
-    _maxAgeController = TextEditingController(
-      text: preferences['max_age']?.toString() ?? '',
-    );
-    _minHeightController = TextEditingController(
-      text: preferences['min_height']?.toString() ?? '',
-    );
-    _maxHeightController = TextEditingController(
-      text: preferences['max_height']?.toString() ?? '',
+
+    double heightStart = double.tryParse(preferences['min_height']?.toString() ?? '140') ?? 140;
+    double heightEnd = double.tryParse(preferences['max_height']?.toString() ?? '180') ?? 180;
+    _heightRange = RangeValues(
+      heightStart.clamp(100, 220),
+      heightEnd.clamp(100, 220)
     );
     _maritalStatus = preferences['marital_status'];
     _religion = preferences['religion'];
@@ -133,11 +128,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _occupationController = TextEditingController(
       text: preferences['occupation'] ?? '',
     );
-    _minIncomeController = TextEditingController(
-      text: preferences['min_income']?.toString() ?? '',
-    );
-    _maxIncomeController = TextEditingController(
-      text: preferences['max_income']?.toString() ?? '',
+    double incomeStartAnnual = double.tryParse(preferences['min_income']?.toString() ?? '0') ?? 0;
+    double incomeEndAnnual = double.tryParse(preferences['max_income']?.toString() ?? '30') ?? 30;
+    // Store internally as Monthly Thousands (K)
+    _incomeRange = RangeValues(
+      (incomeStartAnnual * 100 / 12).clamp(0, 800),
+      (incomeEndAnnual * 100 / 12).clamp(0, 800)
     );
     _preferredLocationsController = TextEditingController(
       text: preferences['preferred_locations'] != null
@@ -155,17 +151,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
     try {
       final response = await ProfileService.updatePreferences(
-        minAge: int.tryParse(_minAgeController.text),
-        maxAge: int.tryParse(_maxAgeController.text),
-        minHeight: int.tryParse(_minHeightController.text),
-        maxHeight: int.tryParse(_maxHeightController.text),
+        minAge: _ageRange.start.round(),
+        maxAge: _ageRange.end.round(),
+        minHeight: _heightRange.start.round(),
+        maxHeight: _heightRange.end.round(),
         maritalStatus: _maritalStatus,
         religion: _religion,
         caste: _casteController.text,
         education: _educationController.text,
         occupation: _occupationController.text,
-        minIncome: double.tryParse(_minIncomeController.text),
-        maxIncome: double.tryParse(_maxIncomeController.text),
+        minIncome: (_incomeRange.start * 12 / 100),
+        maxIncome: (_incomeRange.end * 12 / 100),
         preferredLocations: _preferredLocationsController.text.isNotEmpty
             ? _preferredLocationsController.text
                   .split(',')
@@ -305,55 +301,25 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSection('Age Preferences', [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  _minAgeController,
-                                  'Min Age',
-                                  Icons.calendar_today,
-                                  isNumber: true,
-                                  validator: _ageValidator,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildTextField(
-                                  _maxAgeController,
-                                  'Max Age',
-                                  Icons.calendar_today,
-                                  isNumber: true,
-                                  validator: _ageValidator,
-                                ),
-                              ),
-                            ],
+                        _buildSection('Age Preference', [
+                          _buildRangeSlider(
+                            'Age: ${_ageRange.start.round()} - ${_ageRange.end.round()} Years',
+                            _ageRange,
+                            18,
+                            70,
+                            (values) => setState(() => _ageRange = values),
+                            Icons.calendar_month_rounded,
                           ),
                         ]),
 
-                        _buildSection('Height Preferences', [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  _minHeightController,
-                                  'Min Height (cm)',
-                                  Icons.height,
-                                  isNumber: true,
-                                  validator: _heightValidator,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildTextField(
-                                  _maxHeightController,
-                                  'Max Height (cm)',
-                                  Icons.height,
-                                  isNumber: true,
-                                  validator: _heightValidator,
-                                ),
-                              ),
-                            ],
+                        _buildSection('Height Preference', [
+                          _buildRangeSlider(
+                            'Height: ${_heightRange.start.round()} - ${_heightRange.end.round()} cm',
+                            _heightRange,
+                            100,
+                            220,
+                            (values) => setState(() => _heightRange = values),
+                            Icons.height_rounded,
                           ),
                         ]),
 
@@ -398,30 +364,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                         ]),
 
-                        _buildSection('Income Preferences', [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildTextField(
-                                  _minIncomeController,
-                                  'Min Income (Lakhs)',
-                                  Icons.currency_rupee,
-                                  isNumber: true,
-                                  validator: _incomeValidator,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildTextField(
-                                  _maxIncomeController,
-                                  'Max Income (Lakhs)',
-                                  Icons.currency_rupee,
-                                  isNumber: true,
-                                  validator: _incomeValidator,
-                                ),
-                              ),
-                            ],
-                          ),
+                        _buildSection('Income Preference', [
+                          _buildIncomeRangeSlider(),
                         ]),
 
                         _buildSection('Location Preferences', [
@@ -586,6 +530,176 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     );
   }
 
+  Widget _buildIncomeRangeSlider() {
+    double minAnnual = (_incomeRange.start * 12 / 100);
+    double maxAnnual = (_incomeRange.end * 12 / 100);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.payments_rounded, size: 20, color: Color(0xFF5CB3FF)),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Monthly: ₹${_formatSalary(_incomeRange.start)} - ₹${_formatSalary(_incomeRange.end)}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CD9A6).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Annual: ${minAnnual.toStringAsFixed(1)} - ${maxAnnual.toStringAsFixed(1)} L',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2E8B57),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: const Color(0xFFB47FFF),
+              inactiveTrackColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              thumbColor: Colors.white,
+              overlayColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              valueIndicatorColor: const Color(0xFFB47FFF),
+              rangeThumbShape: const RoundRangeSliderThumbShape(
+                enabledThumbRadius: 10,
+                elevation: 4,
+              ),
+            ),
+            child: RangeSlider(
+              values: _incomeRange,
+              min: 0,
+              max: 800, // 8 Lakhs per month
+              divisions: 160, // 5k increments
+              labels: RangeLabels(
+                '₹${_formatSalary(_incomeRange.start)}',
+                '₹${_formatSalary(_incomeRange.end)}',
+              ),
+              onChanged: (values) => setState(() => _incomeRange = values),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('₹0', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                Text('₹8L/mo', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatSalary(double kAmount) {
+    if (kAmount < 100) {
+      return '${kAmount.round()}k';
+    } else {
+      return '${(kAmount / 100).toStringAsFixed(1)}L';
+    }
+  }
+
+  Widget _buildRangeSlider(
+    String label,
+    RangeValues values,
+    double min,
+    double max,
+    void Function(RangeValues) onChanged,
+    IconData icon,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: const Color(0xFF5CB3FF)),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: const Color(0xFFB47FFF),
+              inactiveTrackColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              thumbColor: Colors.white,
+              overlayColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              activeTickMarkColor: Colors.transparent,
+              inactiveTickMarkColor: Colors.transparent,
+              valueIndicatorColor: const Color(0xFFB47FFF),
+              rangeThumbShape: const RoundRangeSliderThumbShape(
+                enabledThumbRadius: 10,
+                elevation: 4,
+              ),
+            ),
+            child: RangeSlider(
+              values: values,
+              min: min,
+              max: max,
+              divisions: (max - min).toInt(),
+              labels: RangeLabels(
+                values.start.round().toString(),
+                values.end.round().toString(),
+              ),
+              onChanged: onChanged,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${min.round()}', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                Text('${max.round()}', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTextField(
     TextEditingController controller,
     String label,
@@ -695,15 +809,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   @override
   void dispose() {
-    _minAgeController.dispose();
-    _maxAgeController.dispose();
-    _minHeightController.dispose();
-    _maxHeightController.dispose();
     _casteController.dispose();
     _educationController.dispose();
     _occupationController.dispose();
-    _minIncomeController.dispose();
-    _maxIncomeController.dispose();
     _preferredLocationsController.dispose();
     super.dispose();
   }
