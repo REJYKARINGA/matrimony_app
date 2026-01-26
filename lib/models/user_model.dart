@@ -237,6 +237,7 @@ class Preference {
   final String? occupation;
   final double? minIncome;
   final double? maxIncome;
+  final int? maxDistance;
   final List<String>? preferredLocations;
 
   Preference({
@@ -253,6 +254,7 @@ class Preference {
     this.occupation,
     this.minIncome,
     this.maxIncome,
+    this.maxDistance,
     this.preferredLocations,
   });
 
@@ -280,6 +282,7 @@ class Preference {
       occupation: json['occupation'],
       minIncome: json['min_income'] != null ? double.tryParse(json['min_income'].toString()) : null,
       maxIncome: json['max_income'] != null ? double.tryParse(json['max_income'].toString()) : null,
+      maxDistance: json['max_distance'],
       preferredLocations: json['preferred_locations'] != null 
           ? List<String>.from(json['preferred_locations']) 
           : null,
@@ -301,6 +304,7 @@ class Preference {
       'occupation': occupation,
       'min_income': minIncome,
       'max_income': maxIncome,
+      'max_distance': maxDistance,
       'preferred_locations': preferredLocations,
     };
   }

@@ -33,6 +33,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   // Location preferences
   List<String> _preferredLocations = [];
+  double _maxDistance = 50.0;
   final TextEditingController _locationSearchController = TextEditingController();
 
   bool _isLoading = false;
@@ -108,6 +109,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _occupationController = TextEditingController(text: '');
     _incomeRange = const RangeValues(0, 30);
     _preferredLocations = [];
+    _maxDistance = 50.0;
     _locationSearchController.text = '';
   }
 
@@ -153,6 +155,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _preferredLocations = preferences['preferred_locations'] != null
         ? List<String>.from(preferences['preferred_locations'])
         : [];
+    _maxDistance = double.tryParse(preferences['max_distance']?.toString() ?? '50') ?? 50.0;
     _locationSearchController.text = '';
   }
 
@@ -176,6 +179,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         occupation: _occupationController.text,
         minIncome: (_incomeRange.start * 12 / 100),
         maxIncome: (_incomeRange.end * 12 / 100),
+        maxDistance: _maxDistance.round(),
         preferredLocations: _preferredLocations,
       );
 
@@ -380,6 +384,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             _occupationController,
                             'Preferred Occupation',
                             Icons.work_outline,
+                          ),
+                        ]),
+
+                        _buildSection('Distance Preference', [
+                          _buildSingleSlider(
+                            'Search Radius: ${_maxDistance.round()} km',
+                            _maxDistance,
+                            1,
+                            200,
+                            (value) => setState(() => _maxDistance = value),
+                            Icons.near_me_outlined,
                           ),
                         ]),
 
@@ -796,6 +811,73 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               children: [
                 Text('${min.round()}', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
                 Text('${max.round()}', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleSlider(
+    String label,
+    double value,
+    double min,
+    double max,
+    void Function(double) onChanged,
+    IconData icon,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: const Color(0xFF5CB3FF)),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: const Color(0xFFB47FFF),
+              inactiveTrackColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              thumbColor: Colors.white,
+              overlayColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              valueIndicatorColor: const Color(0xFFB47FFF),
+              activeTickMarkColor: Colors.transparent,
+              inactiveTickMarkColor: Colors.transparent,
+            ),
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: (max - min).toInt(),
+              label: value.round().toString(),
+              onChanged: onChanged,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('${min.round()} km', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                Text('${max.round()} km', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
               ],
             ),
           ),

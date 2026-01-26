@@ -147,6 +147,7 @@ class ProfileService {
     String? occupation,
     double? minIncome,
     double? maxIncome,
+    int? maxDistance,
     List<String>? preferredLocations,
   }) async {
     final body = {
@@ -161,6 +162,7 @@ class ProfileService {
       if (occupation != null) 'occupation': occupation,
       if (minIncome != null) 'min_income': minIncome,
       if (maxIncome != null) 'max_income': maxIncome,
+      if (maxDistance != null) 'max_distance': maxDistance,
       if (preferredLocations != null) 'preferred_locations': preferredLocations,
     };
 

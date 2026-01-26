@@ -36,4 +36,12 @@ class SearchService {
   static Future<http.Response> getNearbyProfiles({double radius = 50, int page = 1}) async {
     return await ApiService.makeRequest('${ApiService.baseUrl}/location/nearby?radius=$radius&page=$page');
   }
+
+  static Future<http.Response> logDiscoveryClick(String category) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/search/log-click',
+      method: 'POST',
+      body: {'category': category},
+    );
+  }
 }

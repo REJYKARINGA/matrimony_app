@@ -390,6 +390,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _navigateToResults(dynamic category) {
+    // Log click for trending sort
+    SearchService.logDiscoveryClick(category['field'] ?? 'unknown');
+    
     Navigator.push(
       context,
       MaterialPageRoute(
