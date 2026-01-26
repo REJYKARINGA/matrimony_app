@@ -74,17 +74,20 @@ class _SearchScreenState extends State<SearchScreen> {
             pinned: true,
             elevation: 0,
             backgroundColor: Colors.white,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: const Text(
-                'Discover Matches',
-                style: TextStyle(
-                  color: Color(0xFF1A1A1A),
-                  fontWeight: FontWeight.w800,
-                  fontSize: 22,
-                  letterSpacing: -0.5,
-                ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: const Text(
+              'Discover Matches',
+              style: TextStyle(
+                color: Color(0xFF1A1A1A),
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
               ),
+            ),
+            centerTitle: true,
+            flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -110,16 +113,31 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                     ),
-                    Positioned(
-                      bottom: 40,
-                      left: 20,
-                      child: Text(
-                        "Find your perfect soulmate\nbased on your preferences",
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0, top: 70.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Discover Matches',
+                            style: TextStyle(
+                              color: Color(0xFF1A1A1A),
+                              fontWeight: FontWeight.w900,
+                              fontSize: 32,
+                              letterSpacing: -1.0,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Find your perfect soulmate\nbased on your preferences",
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 15,
+                              height: 1.4,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

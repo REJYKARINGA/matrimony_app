@@ -161,7 +161,7 @@ class ProfileService {
       if (occupation != null) 'occupation': occupation,
       if (minIncome != null) 'min_income': minIncome,
       if (maxIncome != null) 'max_income': maxIncome,
-      if (preferredLocations != null) 'preferred_locations': json.encode(preferredLocations),
+      if (preferredLocations != null) 'preferred_locations': preferredLocations,
     };
 
     return await ApiService.makeRequest(

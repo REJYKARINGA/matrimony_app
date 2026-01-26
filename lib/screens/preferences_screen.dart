@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../services/profile_service.dart';
+import '../services/location_service.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({Key? key}) : super(key: key);
@@ -29,7 +30,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   RangeValues _incomeRange = const RangeValues(0, 30);
 
   // Location preferences
-  late TextEditingController _preferredLocationsController;
+  List<String> _preferredLocations = [];
+  final TextEditingController _locationSearchController = TextEditingController();
 
   bool _isLoading = false;
   bool _isDataLoading = true;
@@ -102,7 +104,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _educationController = TextEditingController(text: '');
     _occupationController = TextEditingController(text: '');
     _incomeRange = const RangeValues(0, 30);
-    _preferredLocationsController = TextEditingController(text: '');
+    _preferredLocations = [];
+    _locationSearchController.text = '';
   }
 
   void _initializeControllersWithData(Map<String, dynamic> preferences) {
@@ -135,11 +138,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       (incomeStartAnnual * 100 / 12).clamp(0, 800),
       (incomeEndAnnual * 100 / 12).clamp(0, 800)
     );
-    _preferredLocationsController = TextEditingController(
-      text: preferences['preferred_locations'] != null
-          ? (preferences['preferred_locations'] as List).join(', ')
-          : '',
-    );
+    _preferredLocations = preferences['preferred_locations'] != null
+        ? List<String>.from(preferences['preferred_locations'])
+        : [];
+    _locationSearchController.text = '';
   }
 
   Future<void> _savePreferences() async {
@@ -162,12 +164,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         occupation: _occupationController.text,
         minIncome: (_incomeRange.start * 12 / 100),
         maxIncome: (_incomeRange.end * 12 / 100),
-        preferredLocations: _preferredLocationsController.text.isNotEmpty
-            ? _preferredLocationsController.text
-                  .split(',')
-                  .map((e) => e.trim())
-                  .toList()
-            : [],
+        preferredLocations: _preferredLocations,
       );
 
       if (response.statusCode == 200) {
@@ -369,13 +366,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                         ]),
 
                         _buildSection('Location Preferences', [
-                          _buildTextField(
-                            _preferredLocationsController,
-                            'Preferred Locations (comma separated)',
-                            Icons.location_city,
-                            maxLines: 3,
-                            hint: 'e.g., Kochi, Thiruvananthapuram, Kozhikode',
-                          ),
+                          _buildLocationSelector(),
                         ]),
 
                         const SizedBox(height: 24),
@@ -436,16 +427,38 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       width: double.infinity,
       height: size.height * 0.22,
       decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(40),
+          bottomRight: Radius.circular(40),
+        ),
+        image: DecorationImage(
+          image: const NetworkImage(
+            'https://i.pinimg.com/originals/58/36/4b/58364b97bba4c044562b44d6df4010ae.jpg',
+          ),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+            Colors.black.withOpacity(0.3),
+            BlendMode.darken,
+          ),
+          onError: (exception, stackTrace) {
+            // Graceful fallback is handled by the container color
+          },
+        ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFB47FFF), // Purple
-            Color(0xFF5CB3FF), // Blue
-            Color(0xFF4CD9A6), // Green
+            const Color(0xFFB47FFF).withOpacity(0.8),
+            const Color(0xFF5CB3FF).withOpacity(0.8),
           ],
-          stops: [0.0, 0.5, 1.0],
         ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFB47FFF).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Stack(
         children: [
@@ -700,6 +713,80 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     );
   }
 
+  Widget _buildLocationSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTextField(
+          _locationSearchController,
+          'Add Preferred District/City',
+          Icons.location_city_rounded,
+          hint: 'Type a place and tap search icon',
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.person_search_rounded, color: Color(0xFFB47FFF)),
+            onPressed: () async {
+              final query = _locationSearchController.text.trim();
+              if (query.isEmpty) return;
+              
+              setState(() => _isLoading = true);
+              try {
+                final data = await LocationService.searchAddressByCity(query);
+                if (data != null) {
+                  String? district = data['district'];
+                  if (district != null) {
+                    district = district.replaceAll(' District', '').trim();
+                    if (!_preferredLocations.contains(district)) {
+                      setState(() {
+                        _preferredLocations.add(district!);
+                        _locationSearchController.clear();
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('District already in list')),
+                      );
+                    }
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Could not find location')),
+                  );
+                }
+              } finally {
+                setState(() => _isLoading = false);
+              }
+            },
+          ),
+        ),
+        if (_preferredLocations.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _preferredLocations.map((location) {
+              return Chip(
+                label: Text(
+                  location,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                ),
+                backgroundColor: const Color(0xFFB47FFF),
+                deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                onDeleted: () {
+                  setState(() {
+                    _preferredLocations.remove(location);
+                  });
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide.none,
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildTextField(
     TextEditingController controller,
     String label,
@@ -707,6 +794,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     bool isNumber = false,
     int maxLines = 1,
     String? hint,
+    Widget? suffixIcon,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
@@ -717,6 +805,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon, color: Color(0xFF5CB3FF)),
+        suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -812,7 +901,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _casteController.dispose();
     _educationController.dispose();
     _occupationController.dispose();
-    _preferredLocationsController.dispose();
+    _locationSearchController.dispose();
     super.dispose();
   }
 }
