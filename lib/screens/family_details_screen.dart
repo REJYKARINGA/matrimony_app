@@ -86,8 +86,8 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     _elderBrotherController = TextEditingController(text: '');
     _youngerSisterController = TextEditingController(text: '');
     _youngerBrotherController = TextEditingController(text: '');
-    _fatherAlive = null;
-    _motherAlive = null;
+    _fatherAlive = true;
+    _motherAlive = true;
     _guardianController = TextEditingController(text: '');
     _show = null;
   }
@@ -125,8 +125,8 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     _youngerBrotherController = TextEditingController(
       text: familyDetails['younger_brother']?.toString() ?? '',
     );
-    _fatherAlive = familyDetails['father_alive'];
-    _motherAlive = familyDetails['mother_alive'];
+    _fatherAlive = familyDetails['father_alive'] ?? true;
+    _motherAlive = familyDetails['mother_alive'] ?? true;
     _guardianController = TextEditingController(
       text: familyDetails['guardian'] ?? '',
     );
