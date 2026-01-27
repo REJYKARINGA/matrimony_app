@@ -238,46 +238,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: CircleAvatar(
                       radius: 35,
                       backgroundColor: Colors.white,
-                      child:
-                          profile?.profilePicture != null &&
+                      backgroundImage: profile?.profilePicture != null &&
                               profile!.profilePicture!.isNotEmpty
-                          ? ClipOval(
-                              child: Image.network(
-                                ApiService.getImageUrl(profile.profilePicture!),
-                                width: 70,
-                                height: 70,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 70,
-                                    height: 70,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color(0xFFB47FFF),
-                                          Color(0xFF5CB3FF),
-                                        ],
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        profile.firstName
-                                                ?.substring(0, 1)
-                                                .toUpperCase() ??
-                                            'U',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
+                          ? NetworkImage(
+                              ApiService.getImageUrl(profile.profilePicture!),
                             )
-                          : Container(
+                          : null,
+                      child: profile?.profilePicture == null ||
+                              profile!.profilePicture!.isEmpty
+                          ? Container(
                               width: 70,
                               height: 70,
                               decoration: const BoxDecoration(
@@ -302,7 +271,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                 ),
                               ),
-                            ),
+                            )
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 16),
