@@ -25,8 +25,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   late String? _religion;
   List<String> _selectedCastes = [];
   final TextEditingController _casteController = TextEditingController();
-  late TextEditingController _educationController;
-  late TextEditingController _occupationController;
+  
+  // Education and Occupation options from API
+  List<Map<String, dynamic>> _educationOptions = [];
+  List<Map<String, dynamic>> _occupationOptions = [];
+  List<int> _selectedEducationIds = [];
+  List<int> _selectedOccupationIds = [];
 
   // Income preferences
   RangeValues _incomeRange = const RangeValues(0, 30);
@@ -59,6 +63,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   @override
   void initState() {
     super.initState();
+    _loadPreferenceOptions();
     _loadPreferences();
   }
 
@@ -105,8 +110,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _religion = null;
     _selectedCastes = [];
     _casteController.text = '';
-    _educationController = TextEditingController(text: '');
-    _occupationController = TextEditingController(text: '');
+    _selectedEducationIds = [];
+    _selectedOccupationIds = [];
     _incomeRange = const RangeValues(0, 30);
     _preferredLocations = [];
     _maxDistance = 50.0;
@@ -141,10 +146,22 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     }
     _casteController.text = '';
     
-    _educationController = TextEditingController(text: preferences['education'] ?? '');
-    _occupationController = TextEditingController(
-      text: preferences['occupation'] ?? '',
-    );
+    // Handle education and occupation as arrays of IDs
+    if (preferences['education'] != null) {
+      if (preferences['education'] is List) {
+        _selectedEducationIds = List<int>.from(preferences['education'].map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0));
+      }
+    } else {
+      _selectedEducationIds = [];
+    }
+    
+    if (preferences['occupation'] != null) {
+      if (preferences['occupation'] is List) {
+        _selectedOccupationIds = List<int>.from(preferences['occupation'].map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0));
+      }
+    } else {
+      _selectedOccupationIds = [];
+    }
     double incomeStartAnnual = double.tryParse(preferences['min_income']?.toString() ?? '0') ?? 0;
     double incomeEndAnnual = double.tryParse(preferences['max_income']?.toString() ?? '30') ?? 30;
     // Store internally as Monthly Thousands (K)
@@ -175,8 +192,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         maritalStatus: _maritalStatus,
         religion: _religion,
         caste: _selectedCastes,
-        education: _educationController.text,
-        occupation: _occupationController.text,
+        education: _selectedEducationIds,
+        occupation: _selectedOccupationIds,
         minIncome: (_incomeRange.start * 12 / 100),
         maxIncome: (_incomeRange.end * 12 / 100),
         maxDistance: _maxDistance.round(),
@@ -374,16 +391,36 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             },
                           ),
                           const SizedBox(height: 10),
-                          _buildTextField(
-                            _educationController,
+                          _buildCheckboxSelector(
                             'Preferred Education',
+                            _educationOptions,
+                            _selectedEducationIds,
                             Icons.school,
+                            (id, selected) {
+                              setState(() {
+                                if (selected) {
+                                  _selectedEducationIds.add(id);
+                                } else {
+                                  _selectedEducationIds.remove(id);
+                                }
+                              });
+                            },
                           ),
                           const SizedBox(height: 10),
-                          _buildTextField(
-                            _occupationController,
+                          _buildCheckboxSelector(
                             'Preferred Occupation',
+                            _occupationOptions,
+                            _selectedOccupationIds,
                             Icons.work_outline,
+                            (id, selected) {
+                              setState(() {
+                                if (selected) {
+                                  _selectedOccupationIds.add(id);
+                                } else {
+                                  _selectedOccupationIds.remove(id);
+                                }
+                              });
+                            },
                           ),
                         ]),
 
@@ -1069,11 +1106,138 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return null;
   }
 
+  Future<void> _loadPreferenceOptions() async {
+    try {
+      final response = await ProfileService.getPreferenceOptions();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          setState(() {
+            _educationOptions = List<Map<String, dynamic>>.from(
+              data['data']['educations'].map((e) => {
+                'id': e['id'],
+                'name': e['name'],
+                'order_number': e['order_number'],
+                'popularity_count': e['popularity_count'] ?? 0,
+              })
+            );
+            _occupationOptions = List<Map<String, dynamic>>.from(
+              data['data']['occupations'].map((o) => {
+                'id': o['id'],
+                'name': o['name'],
+                'order_number': o['order_number'],
+                'popularity_count': o['popularity_count'] ?? 0,
+              })
+            );
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading preference options: $e');
+    }
+  }
+
+  Widget _buildCheckboxSelector(
+    String label,
+    List<Map<String, dynamic>> options,
+    List<int> selectedIds,
+    IconData icon,
+    Function(int, bool) onChanged,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: const Color(0xFF5CB3FF)),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (options.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Loading options...',
+                style: TextStyle(color: Colors.grey),
+              ),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: options.map((option) {
+                final isSelected = selectedIds.contains(option['id']);
+                final isTrending = (option['popularity_count'] ?? 0) > 10; // Threshold for trending
+                
+                return FilterChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(option['name']),
+                      if (isTrending) ...[
+                        const SizedBox(width: 4),
+                        const Icon(Icons.trending_up, size: 14, color: Color(0xFFB47FFF)),
+                      ],
+                    ],
+                  ),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    onChanged(option['id'], selected);
+                  },
+                  selectedColor: const Color(0xFFB47FFF).withOpacity(0.3),
+                  checkmarkColor: const Color(0xFFB47FFF),
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      color: isSelected
+                          ? const Color(0xFFB47FFF)
+                          : Colors.grey.shade300,
+                      width: isSelected ? 2 : 1,
+                    ),
+                  ),
+                  labelStyle: TextStyle(
+                    color: isSelected ? const Color(0xFFB47FFF) : Colors.black87,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                );
+              }).toList(),
+            ),
+          if (selectedIds.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              '${selectedIds.length} selected',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _casteController.dispose();
-    _educationController.dispose();
-    _occupationController.dispose();
     _locationSearchController.dispose();
     super.dispose();
   }

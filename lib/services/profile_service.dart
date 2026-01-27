@@ -143,8 +143,8 @@ class ProfileService {
     String? maritalStatus,
     String? religion,
     dynamic caste,
-    String? education,
-    String? occupation,
+    dynamic education,
+    dynamic occupation,
     double? minIncome,
     double? maxIncome,
     int? maxDistance,
@@ -171,6 +171,10 @@ class ProfileService {
       method: 'PUT',
       body: body,
     );
+  }
+
+  static Future<http.Response> getPreferenceOptions() async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/preferences/all-options');
   }
 
   static Future<http.Response> uploadProfilePhoto(String filePath) async {
