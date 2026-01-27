@@ -493,6 +493,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ]),
 
+                      _buildPhotosSection(),
+
                       // Bio
                       if ((_user?.userProfile?.bio ?? '').isNotEmpty) ...[
                         const SizedBox(height: 20),
@@ -675,6 +677,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPhotosSection() {
+    final photos = _user?.profilePhotos ?? [];
+    if (photos.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildSectionTitle('Profile Photos'),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
+              child: const Text(
+                'Manage',
+                style: TextStyle(
+                  color: Color(0xFFB47FFF),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          height: 150,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: photos.length,
+            itemBuilder: (context, index) {
+              final photo = photos[index];
+              return Container(
+                margin: const EdgeInsets.only(right: 12),
+                width: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    ApiService.getImageUrl(photo.photoUrl),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.broken_image, color: Colors.grey),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
