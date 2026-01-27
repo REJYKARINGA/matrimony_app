@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../models/user_model.dart';
@@ -55,6 +57,80 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _errorMessage = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final ImagePicker picker = ImagePicker();
+    
+    // Show dialog to choose source
+    final source = await showDialog<ImageSource>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Image Source'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Camera'),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Gallery'),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      setState(() => _isLoading = true);
+      
+      try {
+        // 1. Upload photo to get URL
+        final uploadResponse = await ProfileService.uploadProfilePhoto(image.path);
+        
+        if (uploadResponse.statusCode == 200) {
+          final uploadData = json.decode(uploadResponse.body);
+          final String photoUrl = uploadData['photo']['photo_url']; // Ensure backend returns full URL or handle path
+          
+          // 2. Update user profile with new photo URL
+          // The backend might return a relative path or full URL. user_profile expects what?
+          // Based on ApiService.getImageUrl logic, it handles both.
+          // But updateMyProfile expects a string.
+          
+          // Actually, uploadProfilePhoto backend returns:
+          // 'photo' => [ ..., 'photo_url' => Storage::url($path), ... ]
+          // Storage::url usually returns /storage/path.
+          
+          final updateResponse = await ProfileService.updateMyProfile(
+            profilePicture: photoUrl
+          );
+
+          if (updateResponse.statusCode == 200) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Profile picture updated successfully')),
+            );
+            _loadProfile(); // Reload to refresh UI and verification status
+          } else {
+            throw Exception('Failed to update profile picture link');
+          }
+        } else {
+          throw Exception('Failed to upload image');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating profile picture: $e')),
+        );
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -226,23 +302,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Positioned(
                               bottom: 0,
                               right: 0,
-                              child: Container(
-                                height: 36,
-                                width: 36,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 10,
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  size: 18,
-                                  color: Color(0xFFB47FFF),
+                              child: GestureDetector(
+                                onTap: _pickAndUploadImage,
+                                child: Container(
+                                  height: 36,
+                                  width: 36,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    size: 18,
+                                    color: Color(0xFFB47FFF),
+                                  ),
                                 ),
                               ),
                             ),

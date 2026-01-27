@@ -172,4 +172,21 @@ class ProfileService {
       body: body,
     );
   }
+
+  static Future<http.Response> uploadProfilePhoto(String filePath) async {
+    String? token = await ApiService.getToken();
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse('${ApiService.baseUrl}/profiles/photos'),
+    );
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    request.files.add(await http.MultipartFile.fromPath('photo', filePath));
+
+    var streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
+  }
 }
