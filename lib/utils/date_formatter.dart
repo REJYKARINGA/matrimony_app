@@ -4,7 +4,7 @@ class DateFormatter {
   /// Format a DateTime object to a user-friendly string (e.g., "January 15, 1990")
   static String formatDate(DateTime? date) {
     if (date == null) return '';
-    return DateFormat('MMMM dd, yyyy').format(date);
+    return DateFormat('dd MMM, yyyy').format(date);
   }
 
   /// Format a DateTime object to a short string (e.g., "Jan 15, 1990")

@@ -532,86 +532,125 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
+      backgroundColor: const Color(0xFFFBFBFF),
+      body: Stack(
+        children: [
+          // Background Blobs
+          Positioned(
+            top: -100,
+            right: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF6A5AE0).withOpacity(0.05),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 200,
+            left: -150,
+            child: Container(
+              width: 400,
+              height: 400,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFFF2D55).withOpacity(0.03),
+              ),
+            ),
+          ),
+          CustomScrollView(
         slivers: [
           // Personal Greeting Header
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade200, width: 2),
-                    ),
-                    child: CircleAvatar(
-                      radius: 24,
-                      backgroundImage: profile?.profilePicture != null
-                          ? NetworkImage(
-                              ApiService.getImageUrl(profile!.profilePicture!),
-                            )
-                          : null,
-                      child: profile?.profilePicture == null
-                          ? const Icon(Icons.person, color: Color(0xFF5CB3FF))
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Hey, ${profile?.firstName ?? 'User'}!',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                      const Text(
-                        "Let's Find A Match",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    icon: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        const Icon(
-                          Icons.notifications_none_rounded,
-                          color: Color(0xFF1A1A1A),
-                          size: 28,
-                        ),
-                        if (_unreadNotificationCount > 0)
-                          Positioned(
-                            right: 2,
-                            top: 2,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFF4B4B),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (c) => const NotificationScreen(),
-                      ),
-                    ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.grey.shade200, width: 2),
+                      ),
+                      child: CircleAvatar(
+                        radius: 24,
+                        backgroundImage: user?.displayImage != null
+                            ? NetworkImage(
+                                ApiService.getImageUrl(user!.displayImage!),
+                              )
+                            : null,
+                        child: user?.displayImage == null
+                            ? const Icon(Icons.person, color: Color(0xFF5CB3FF))
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hey, ${profile?.firstName ?? 'User'}!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                        const Text(
+                          "Let's Find A Match",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A1A1A),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          const Icon(
+                            Icons.notifications_none_rounded,
+                            color: Color(0xFF1A1A1A),
+                            size: 28,
+                          ),
+                          if (_unreadNotificationCount > 0)
+                            Positioned(
+                              right: 2,
+                              top: 2,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFFF4B4B),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => const NotificationScreen(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -746,7 +785,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
-    );
+    ],
+  ),
+);
   }
 
   Widget _buildDynamicProfileCard(BuildContext context, User user) {
@@ -798,9 +839,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Stack(
           children: [
             Positioned.fill(
-              child: profile?.profilePicture != null
+              child: user.displayImage != null
                   ? Image.network(
-                      ApiService.getImageUrl(profile!.profilePicture!),
+                      ApiService.getImageUrl(user.displayImage!),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
                           _buildPlaceholderBackground(profile?.gender),
@@ -900,8 +941,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           builder: (c) => ChatScreen(
                             otherUserId: user.id!,
                             otherUserName: '${user.userProfile?.firstName ?? 'User'}',
-                            otherUserImage: user.userProfile?.profilePicture != null
-                                ? ApiService.getImageUrl(user.userProfile!.profilePicture!)
+                            otherUserImage: user.displayImage != null
+                                ? ApiService.getImageUrl(user.displayImage!)
                                 : null,
                             isMatched: _matchedUserIds.contains(user.id),
                             isInterestSent: _sentInterests.contains(user.id),

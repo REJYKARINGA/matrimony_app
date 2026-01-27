@@ -456,9 +456,9 @@ class _MatchingScreenState extends State<MatchingScreen>
           children: [
             // Background Image
             Positioned.fill(
-              child: profile?.profilePicture != null
+              child: user.displayImage != null
                   ? Image.network(
-                      ApiService.getImageUrl(profile!.profilePicture!),
+                      ApiService.getImageUrl(user.displayImage!),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
                           _buildPlaceholderBackground(profile?.gender),

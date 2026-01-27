@@ -203,10 +203,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                               child: CircleAvatar(
                                                 radius: 32,
                                                 backgroundColor: Colors.grey.shade100,
-                                                backgroundImage: profile?.profilePicture != null
-                                                    ? NetworkImage(ApiService.getImageUrl(profile!.profilePicture!))
+                                                backgroundImage: user.displayImage != null
+                                                    ? NetworkImage(ApiService.getImageUrl(user.displayImage!))
                                                     : null,
-                                                child: profile?.profilePicture == null
+                                                child: user.displayImage == null
                                                     ? Icon(Icons.person, color: Colors.grey.shade400, size: 30)
                                                     : null,
                                               ),
@@ -284,8 +284,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     ? '${userProfile['first_name'] ?? 'User'}'
                                     : otherUser['email'] ?? 'User';
                                 
-                                final profilePic = userProfile != null && userProfile['profile_picture'] != null
-                                    ? ApiService.getImageUrl(userProfile['profile_picture'])
+                                final otherUserObj = User.fromJson(otherUser);
+                                final profilePic = otherUserObj.displayImage != null
+                                    ? ApiService.getImageUrl(otherUserObj.displayImage!)
                                     : null;
 
                                 final bool isUnread = !chat['is_read'] && chat['receiver']['id'] == currentUserId;

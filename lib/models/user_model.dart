@@ -58,6 +58,22 @@ class User {
       'last_login': lastLogin?.toIso8601String(),
     };
   }
+
+  /// Get the best image to display for this user
+  String? get displayImage {
+    if (profilePhotos != null && profilePhotos!.isNotEmpty) {
+      try {
+        final primary = profilePhotos!.firstWhere(
+          (p) => p.isPrimary == true,
+          orElse: () => profilePhotos!.first,
+        );
+        return primary.photoUrl;
+      } catch (e) {
+        return profilePhotos!.first.photoUrl;
+      }
+    }
+    return userProfile?.profilePicture;
+  }
 }
 
 class UserProfile {

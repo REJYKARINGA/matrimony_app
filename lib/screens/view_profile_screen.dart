@@ -182,19 +182,18 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     if (_isLoading) {
       return Scaffold(
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
-              stops: [0.0, 0.5, 1.0],
+              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
             ),
           ),
           child: SafeArea(
             child: Column(
               children: [
                 _buildAppBar(),
-                Expanded(
+                const Expanded(
                   child: Center(
                     child: CircularProgressIndicator(
                       color: Colors.white,
@@ -212,12 +211,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     if (_errorMessage != null) {
       return Scaffold(
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
-              stops: [0.0, 0.5, 1.0],
+              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
             ),
           ),
           child: SafeArea(
@@ -236,7 +234,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 20,
-                            offset: Offset(0, 10),
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
@@ -244,19 +242,19 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.red.shade50,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.error_outline,
                               size: 48,
                               color: Colors.red,
                             ),
                           ),
                           const SizedBox(height: 20),
-                          Text(
+                          const Text(
                             'Oops!',
                             style: TextStyle(
                               fontSize: 24,
@@ -277,7 +275,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           ElevatedButton(
                             onPressed: _loadUserProfile,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFB47FFF),
+                              backgroundColor: const Color(0xFFB47FFF),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 40,
@@ -309,50 +307,29 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     }
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
-            stops: [0.0, 0.5, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildAppBar(),
-              Expanded(
-                child: FadeTransition(
-                  opacity: _fadeAnimation,
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(30),
-                          topRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: SingleChildScrollView(
-                        physics: BouncingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            _buildProfileHeader(),
-                            _buildActionButtons(),
-                            _buildProfileDetails(),
-                            SizedBox(height: 20),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+      backgroundColor: Colors.white,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _buildSliverAppBar(),
+          SliverToBoxAdapter(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
               ),
-            ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                   _buildActionButtons(),
+                   _buildPhotoGallery(),
+                   _buildProfileDetails(),
+                   const SizedBox(height: 50),
+                ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -387,177 +364,257 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildProfileHeader() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 5),
+  Widget _buildSliverAppBar() {
+    final displayImage = _user?.displayImage;
+    return SliverAppBar(
+      expandedHeight: 420.0,
+      floating: false,
+      pinned: true,
+      backgroundColor: const Color(0xFF5CB3FF),
+      elevation: 0,
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CircleAvatar(
+          backgroundColor: Colors.black.withOpacity(0.3),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+            onPressed: () => Navigator.pop(context),
           ),
-        ],
+        ),
       ),
-      child: Column(
-        children: [
-          SizedBox(height: 10),
-          Stack(
-            children: [
+      actions: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.black.withOpacity(0.3),
+            child: IconButton(
+              icon: const Icon(Icons.share, color: Colors.white, size: 20),
+              onPressed: () {},
+            ),
+          ),
+        ),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background blur/image
+            if (displayImage != null) ...[
+               Image.network(
+                ApiService.getImageUrl(displayImage),
+                fit: BoxFit.cover,
+              ),
               Container(
-                padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle,
                   gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFFB47FFF),
-                      Color(0xFF5CB3FF),
-                      Color(0xFF4CD9A6),
+                      Colors.black.withOpacity(0.4),
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.8),
                     ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFFB47FFF).withOpacity(0.3),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                  ),
-                  child: ClipOval(
-                    child: _user?.userProfile?.profilePicture != null
-                        ? Image.network(
-                            ApiService.getImageUrl(
-                              _user!.userProfile!.profilePicture!,
-                            ),
-                            width: 140,
-                            height: 140,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  width: 140,
-                                  height: 140,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Color(0xFFB47FFF).withOpacity(0.2),
-                                        Color(0xFF5CB3FF).withOpacity(0.2),
-                                      ],
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 70,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                ),
-                          )
-                        : Container(
-                            width: 140,
-                            height: 140,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color(0xFFB47FFF).withOpacity(0.2),
-                                  Color(0xFF5CB3FF).withOpacity(0.2),
-                                ],
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.person,
-                              size: 70,
-                              color: Colors.grey.shade400,
-                            ),
-                          ),
+                    stops: const [0.0, 0.4, 1.0],
                   ),
                 ),
               ),
-              if ((_interestReceived != null &&
-                      _interestReceived['status'] == 'accepted') ||
-                  (_interestSent != null &&
-                      _interestSent['status'] == 'accepted'))
-                Positioned(
-                  bottom: 5,
-                  right: 5,
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF4CD9A6),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF4CD9A6).withOpacity(0.5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Icon(Icons.favorite, color: Colors.white, size: 20),
+            ] else
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
                   ),
                 ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-              letterSpacing: 0.5,
+              ),
+
+            // Profile Info Overlay
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 40,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.verified, color: Color(0xFF4CD9A6), size: 24),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (_user?.userProfile?.age != null)
+                        _buildBadge(Icons.cake, '${_user!.userProfile!.age} Years'),
+                      const SizedBox(width: 12),
+                      if (_user?.userProfile?.city != null)
+                        _buildBadge(Icons.location_on, _user!.userProfile!.city!),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_user?.userProfile?.age != null) ...[
-                _buildQuickInfo(
-                  Icons.cake_outlined,
-                  '${_user!.userProfile!.age} years',
-                ),
-                SizedBox(width: 20),
-              ],
-              if ((_user?.userProfile?.city ?? '').isNotEmpty)
-                _buildQuickInfo(
-                  Icons.location_on_outlined,
-                  _user!.userProfile!.city!,
-                ),
-            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBadge(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 14),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuickInfo(IconData icon, String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Color(0xFFB47FFF).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: Color(0xFFB47FFF)),
-          SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFFB47FFF),
-              fontWeight: FontWeight.w600,
-            ),
+  Widget _buildPhotoGallery() {
+    final photos = _user?.profilePhotos ?? [];
+    if (photos.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 30, 20, 15),
+          child: Text(
+            'Photo Gallery',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
           ),
-        ],
+        ),
+        SizedBox(
+          height: 140,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: photos.length,
+            physics: const BouncingScrollPhysics(),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _showFullScreenImage(index, photos),
+                child: Container(
+                  width: 140,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF5CB3FF).withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                    image: DecorationImage(
+                      image: NetworkImage(ApiService.getImageUrl(photos[index].photoUrl!)),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showFullScreenImage(int initialIndex, List<ProfilePhoto> photos) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              PageView.builder(
+                itemCount: photos.length,
+                controller: PageController(initialPage: initialIndex),
+                itemBuilder: (context, index) {
+                  return InteractiveViewer(
+                    child: Center(
+                      child: Image.network(
+                        ApiService.getImageUrl(photos[index].photoUrl!),
+                        fit: BoxFit.contain,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // Watermark
+              Positioned(
+                bottom: 40,
+                right: 20,
+                child: Opacity(
+                  opacity: 0.5,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Vivah4Ever',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                          shadows: const [
+                            Shadow(blurRadius: 10, color: Colors.black, offset: Offset(2, 2)),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        'Kerala Matrimony',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.6),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // Back Button
+              Positioned(
+                top: 40,
+                left: 20,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black45,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white, size: 24),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -681,11 +738,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   otherUserId: _user!.id!,
                   otherUserName:
                       '${_user!.userProfile?.firstName} ${_user!.userProfile?.lastName}',
-                  otherUserImage: _user!.userProfile?.profilePicture != null
-                      ? ApiService.getImageUrl(
-                          _user!.userProfile!.profilePicture!,
-                        )
-                      : null,
+                  otherUserImage: _user?.displayImage != null
+                    ? ApiService.getImageUrl(_user!.displayImage!)
+                    : null,
                 ),
               ),
             );

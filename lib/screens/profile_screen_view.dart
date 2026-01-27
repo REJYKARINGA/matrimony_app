@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../models/user_model.dart';
@@ -136,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
+              colors: [Color(0xFFFF6B6B), Color(0xFFA64AFF)],
             ),
           ),
           child: const Center(child: CircularProgressIndicator(color: Colors.white)),
@@ -151,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
+              colors: [Color(0xFFFF6B6B), Color(0xFFA64AFF)],
             ),
           ),
           child: Center(
@@ -162,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -170,11 +171,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onPressed: _loadProfile,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFFB47FFF),
+                    foregroundColor: const Color(0xFFFF2D78),
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 10,
+                    shadowColor: const Color(0xFFFF2D78).withOpacity(0.3),
                   ),
-                  child: const Text('Retry'),
+                  child: const Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -184,84 +187,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildQuickStats(),
-                _buildSection('Personal Information', [
-                  _buildGrid([
-                    _buildCompactInfo(Icons.cake_outlined, 'DOB', DateFormatter.formatDate(_user?.userProfile?.dateOfBirth)),
-                    _buildCompactInfo(Icons.wc_outlined, 'Gender', _user?.userProfile?.gender),
-                    _buildCompactInfo(Icons.height, 'Height', '${_user?.userProfile?.height ?? '-'} cm'),
-                    _buildCompactInfo(Icons.monitor_weight_outlined, 'Weight', '${_user?.userProfile?.weight ?? '-'} kg'),
-                    _buildCompactInfo(Icons.favorite_border, 'Status', _user?.userProfile?.maritalStatus?.replaceAll('_', ' ')),
-                    _buildCompactInfo(Icons.language_outlined, 'Tongue', _user?.userProfile?.motherTongue),
-                  ]),
-                ]),
-                _buildSection('Religion & Community', [
-                  _buildGrid([
-                    _buildCompactInfo(Icons.church_outlined, 'Religion', _user?.userProfile?.religion),
-                    _buildCompactInfo(Icons.people_outline, 'Caste', _user?.userProfile?.caste),
-                    _buildCompactInfo(Icons.group_work_outlined, 'Sub-Caste', _user?.userProfile?.subCaste),
-                  ]),
-                ]),
-                _buildSection('Education & Occupation', [
-                  _buildCompactInfo(Icons.school_outlined, 'Education', _user?.userProfile?.education, isFullWidth: true),
-                  const SizedBox(height: 12),
-                  _buildGrid([
-                    _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.userProfile?.occupation),
-                    _buildCompactInfo(Icons.currency_rupee, 'Income', _user?.userProfile?.annualIncome != null ? '₹${_user!.userProfile!.annualIncome}' : null),
-                  ]),
-                ]),
-                _buildSection('Family Details', [
-                  _buildGrid([
-                    _buildCompactInfo(Icons.person_outline, 'Father', _user?.familyDetails?.fatherName),
-                    _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.fatherOccupation),
-                    _buildCompactInfo(Icons.person_outline, 'Mother', _user?.familyDetails?.motherName),
-                    _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.motherOccupation),
-                  ]),
-                  const SizedBox(height: 12),
-                  _buildGrid([
-                    _buildCompactInfo(Icons.people_alt_outlined, 'Siblings', _user?.familyDetails?.siblings?.toString()),
-                    _buildCompactInfo(Icons.home_outlined, 'Family Type', _user?.familyDetails?.familyType),
-                  ]),
-                  if (_user?.familyDetails?.elderBrother != null || _user?.familyDetails?.youngerBrother != null) ...[
-                    const SizedBox(height: 12),
-                    _buildCompactInfo(Icons.person_pin_outlined, 'Brothers', '${_user?.familyDetails?.elderBrother ?? 0} Elder, ${_user?.familyDetails?.youngerBrother ?? 0} Younger', isFullWidth: true),
+      backgroundColor: const Color(0xFFF8F7FF),
+      body: Stack(
+        children: [
+          _buildBackgroundBlobs(),
+          CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildSliverAppBar(),
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildQuickStats(),
+                    _buildSection('Personal Information', [
+                      _buildGrid([
+                        _buildCompactInfo(Icons.cake_outlined, 'DOB', DateFormatter.formatDate(_user?.userProfile?.dateOfBirth)),
+                        _buildCompactInfo(Icons.wc_outlined, 'Gender', _user?.userProfile?.gender),
+                        _buildCompactInfo(Icons.height, 'Height', '${_user?.userProfile?.height ?? '-'} cm'),
+                        _buildCompactInfo(Icons.monitor_weight_outlined, 'Weight', '${_user?.userProfile?.weight ?? '-'} kg'),
+                        _buildCompactInfo(Icons.favorite_border, 'Status', _user?.userProfile?.maritalStatus?.replaceAll('_', ' ')),
+                        _buildCompactInfo(Icons.language_outlined, 'Tongue', _user?.userProfile?.motherTongue),
+                      ]),
+                    ]),
+                    _buildSection('Religion & Community', [
+                      _buildGrid([
+                        _buildCompactInfo(Icons.church_outlined, 'Religion', _user?.userProfile?.religion),
+                        _buildCompactInfo(Icons.people_outline, 'Caste', _user?.userProfile?.caste),
+                        _buildCompactInfo(Icons.group_work_outlined, 'Sub-Caste', _user?.userProfile?.subCaste),
+                      ]),
+                    ]),
+                    _buildSection('Education & Occupation', [
+                      _buildCompactInfo(Icons.school_outlined, 'Education', _user?.userProfile?.education, isFullWidth: true),
+                      const SizedBox(height: 12),
+                      _buildGrid([
+                        _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.userProfile?.occupation),
+                        _buildCompactInfo(Icons.currency_rupee, 'Income', _user?.userProfile?.annualIncome != null ? '₹${_user!.userProfile!.annualIncome}' : null),
+                      ]),
+                    ]),
+                    _buildSection('Family Details', [
+                      _buildGrid([
+                        _buildCompactInfo(Icons.person_outline, 'Father', _user?.familyDetails?.fatherName),
+                        _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.fatherOccupation),
+                        _buildCompactInfo(Icons.person_outline, 'Mother', _user?.familyDetails?.motherName),
+                        _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.motherOccupation),
+                      ]),
+                      const SizedBox(height: 12),
+                      _buildGrid([
+                        _buildCompactInfo(Icons.people_alt_outlined, 'Siblings', _user?.familyDetails?.siblings?.toString()),
+                        _buildCompactInfo(Icons.home_outlined, 'Family Type', _user?.familyDetails?.familyType),
+                      ]),
+                      if (_user?.familyDetails?.elderBrother != null || _user?.familyDetails?.youngerBrother != null) ...[
+                        const SizedBox(height: 12),
+                        _buildCompactInfo(Icons.person_pin_outlined, 'Brothers', '${_user?.familyDetails?.elderBrother ?? 0} Elder, ${_user?.familyDetails?.youngerBrother ?? 0} Younger', isFullWidth: true),
+                      ],
+                      if (_user?.familyDetails?.elderSister != null || _user?.familyDetails?.youngerSister != null) ...[
+                        const SizedBox(height: 12),
+                        _buildCompactInfo(Icons.person_pin_outlined, 'Sisters', '${_user?.familyDetails?.elderSister ?? 0} Elder, ${_user?.familyDetails?.youngerSister ?? 0} Younger', isFullWidth: true),
+                      ],
+                    ]),
+                    _buildSection('Partner Preferences', [
+                      _buildGrid([
+                        _buildCompactInfo(Icons.calendar_today_outlined, 'Age', '${_user?.preferences?.minAge ?? '-'}-${_user?.preferences?.maxAge ?? '-'} yrs'),
+                        _buildCompactInfo(Icons.height, 'Height', '${_user?.preferences?.minHeight ?? '-'}-${_user?.preferences?.maxHeight ?? '-'} cm'),
+                      ]),
+                      const SizedBox(height: 12),
+                      _buildCompactInfo(Icons.favorite_border, 'Marital Status', _user?.preferences?.maritalStatus, isFullWidth: true),
+                      const SizedBox(height: 12),
+                      _buildCompactInfo(Icons.map_outlined, 'Locations', _user?.preferences?.preferredLocations?.join(', '), isFullWidth: true),
+                    ]),
+                    _buildPhotosSection(),
+                    if ((_user?.userProfile?.bio ?? '').isNotEmpty)
+                      _buildSection('About Me', [
+                        Text(
+                          _user!.userProfile!.bio!,
+                          style: const TextStyle(fontSize: 15, color: Color(0xFF757575), height: 1.6, fontWeight: FontWeight.w500),
+                        ),
+                      ]),
+                    const SizedBox(height: 32),
+                    _buildActionButtons(),
+                    const SizedBox(height: 50),
                   ],
-                  if (_user?.familyDetails?.elderSister != null || _user?.familyDetails?.youngerSister != null) ...[
-                    const SizedBox(height: 12),
-                    _buildCompactInfo(Icons.person_pin_outlined, 'Sisters', '${_user?.familyDetails?.elderSister ?? 0} Elder, ${_user?.familyDetails?.youngerSister ?? 0} Younger', isFullWidth: true),
-                  ],
-                ]),
-                _buildSection('Partner Preferences', [
-                  _buildGrid([
-                    _buildCompactInfo(Icons.calendar_today_outlined, 'Age', '${_user?.preferences?.minAge ?? '-'}-${_user?.preferences?.maxAge ?? '-'} yrs'),
-                    _buildCompactInfo(Icons.height, 'Height', '${_user?.preferences?.minHeight ?? '-'}-${_user?.preferences?.maxHeight ?? '-'} cm'),
-                  ]),
-                  const SizedBox(height: 12),
-                  _buildCompactInfo(Icons.favorite_border, 'Marital Status', _user?.preferences?.maritalStatus, isFullWidth: true),
-                  const SizedBox(height: 12),
-                  _buildCompactInfo(Icons.map_outlined, 'Locations', _user?.preferences?.preferredLocations?.join(', '), isFullWidth: true),
-                ]),
-                _buildPhotosSection(),
-                if ((_user?.userProfile?.bio ?? '').isNotEmpty)
-                  _buildSection('About Me', [
-                    Text(
-                      _user!.userProfile!.bio!,
-                      style: TextStyle(fontSize: 15, color: Colors.grey[800], height: 1.5),
-                    ),
-                  ]),
-                const SizedBox(height: 32),
-                _buildActionButtons(),
-                const SizedBox(height: 50),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -274,18 +283,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
       pinned: true,
       elevation: 0,
       stretch: true,
-      backgroundColor: const Color(0xFF5CB3FF),
+      backgroundColor: const Color(0xFFF8F7FF),
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground],
         background: Stack(
           fit: StackFit.expand,
           children: [
+            if (_user?.displayImage != null)
+              Image.network(
+                ApiService.getImageUrl(_user!.displayImage!),
+                fit: BoxFit.cover,
+              ),
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    if (_user?.displayImage != null)...[
+                      const Color(0xFFF8F7FF).withOpacity(0.2),
+                      const Color(0xFFFDF2F8).withOpacity(0.7),
+                    ] else...[
+                      const Color(0xFFF8F7FF),
+                      const Color(0xFFFDF2F8),
+                    ]
+                  ],
                 ),
               ),
             ),
@@ -307,11 +329,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: CircleAvatar(
                         radius: 70,
                         backgroundColor: Colors.white,
-                        backgroundImage: _user?.userProfile?.profilePicture != null
-                            ? NetworkImage(ApiService.getImageUrl(_user!.userProfile!.profilePicture!))
+                        backgroundImage: _user?.displayImage != null
+                            ? NetworkImage(ApiService.getImageUrl(_user!.displayImage!))
                             : null,
-                        child: _user?.userProfile?.profilePicture == null
-                            ? const Icon(Icons.person, size: 70, color: Color(0xFFB47FFF))
+                        child: _user?.displayImage == null
+                            ? const Icon(Icons.person, size: 70, color: Color(0xFFFF2D78))
                             : null,
                       ),
                     ),
@@ -320,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                        child: const Icon(Icons.camera_alt, size: 20, color: Color(0xFFB47FFF)),
+                        child: const Icon(Icons.camera_alt, size: 20, color: Color(0xFFFF2D78)),
                       ),
                     ),
                   ],
@@ -328,17 +350,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 16),
                 Text(
                   '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFFFF2D78), letterSpacing: 0.5),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.verified_user, color: Colors.white.withOpacity(0.8), size: 16),
+                    Icon(Icons.verified_user, color: const Color(0xFFFF2D78).withOpacity(0.6), size: 16),
                     const SizedBox(width: 4),
                     Text(
                       _user?.email ?? '',
-                      style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 14),
+                      style: TextStyle(color: const Color(0xFFFF2D78).withOpacity(0.8), fontSize: 14),
                     ),
                   ],
                 ),
@@ -348,12 +370,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        icon: const Icon(Icons.arrow_back, color: Color(0xFFFF2D78)),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.edit_note, color: Colors.white, size: 28),
+          icon: const Icon(Icons.edit_note, color: Color(0xFFFF2D78), size: 28),
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: _user))),
         ),
       ],
@@ -367,7 +389,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: const Color(0xFFA64AFF).withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 10))],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -385,9 +407,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStatItem(IconData icon, String label) {
     return Column(
       children: [
-        Icon(icon, color: const Color(0xFF5CB3FF), size: 22),
+        Icon(icon, color: const Color(0xFFFF2D78), size: 22),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A))),
       ],
     );
   }
@@ -402,7 +424,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
+          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A), letterSpacing: 0.3)),
           const SizedBox(height: 16),
           ...children,
         ],
@@ -436,29 +458,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildCompactInfo(IconData icon, String label, String? value, {bool isFullWidth = false}) {
     if (value == null || value.isEmpty || value == 'null') return const SizedBox.shrink();
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
-        children: [
-          Icon(icon, size: 20, color: const Color(0xFFB47FFF).withOpacity(0.8)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500)),
-                const SizedBox(height: 2),
-                Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87), maxLines: 1, overflow: TextOverflow.ellipsis),
-              ],
-            ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.5)),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFA64AFF).withOpacity(0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-        ],
+          child: Row(
+            mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFF2D78).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 20, color: const Color(0xFFFF2D78)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF757575), fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 2),
+                    Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -469,34 +511,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children: [
           Expanded(
-            child: _buildPrimaryButton(Icons.family_restroom, 'Family Details', const Color(0xFFB47FFF), () async {
+            child: _buildPrimaryButton(Icons.family_restroom, 'Family Details', const Color(0xFFF0E6FF), () async {
               if (await Navigator.push(context, MaterialPageRoute(builder: (context) => const FamilyDetailsScreen())) == true) _loadProfile();
-            }),
+            }, isOutlined: true),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: _buildPrimaryButton(Icons.settings, 'Preferences', const Color(0xFF5CB3FF), () => Navigator.pushNamed(context, '/preferences')),
+            child: _buildPrimaryButton(Icons.settings, 'Preferences', const Color(0xFFF0E6FF), () => Navigator.pushNamed(context, '/preferences'), isOutlined: true),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPrimaryButton(IconData icon, String label, Color color, VoidCallback onPressed) {
+  Widget _buildPrimaryButton(IconData icon, String label, Color color, VoidCallback onPressed, {bool isOutlined = false}) {
     return Container(
       height: 54,
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [color, color.withOpacity(0.8)]),
+        gradient: isOutlined ? null : const LinearGradient(colors: [Color(0xFFFF6B6B), Color(0xFFA64AFF)]),
+        color: isOutlined ? const Color(0xFFF0E6FF) : null,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: (isOutlined ? const Color(0xFFA64AFF) : const Color(0xFFFF6B6B)).withOpacity(0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 6)
+          )
+        ],
       ),
       child: ElevatedButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, size: 20),
-        label: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+        icon: Icon(icon, size: 20, color: isOutlined ? const Color(0xFFA64AFF) : Colors.white),
+        label: Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: isOutlined ? const Color(0xFFA64AFF) : Colors.white)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
+          foregroundColor: isOutlined ? const Color(0xFFA64AFF) : Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
@@ -516,10 +565,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Profile Photos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Text('Profile Photos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A))),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
-                child: const Text('Manage', style: TextStyle(color: Color(0xFFB47FFF), fontWeight: FontWeight.bold)),
+                child: const Text('Manage', style: TextStyle(color: Color(0xFFA64AFF), fontWeight: FontWeight.w800)),
               ),
             ],
           ),
@@ -538,7 +587,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(image: NetworkImage(ApiService.getImageUrl(photos[index].photoUrl)), fit: BoxFit.cover),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))],
+                      boxShadow: [BoxShadow(color: const Color(0xFFA64AFF).withOpacity(0.1), blurRadius: 15, offset: const Offset(0, 6))],
                     ),
                   ),
                 );
@@ -640,6 +689,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildBackgroundBlobs() {
+    return Stack(
+      children: [
+        Positioned(
+          top: 100,
+          left: -100,
+          child: Container(
+            width: 300,
+            height: 300,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFFF6B6B).withOpacity(0.2),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 400,
+          right: -150,
+          child: Container(
+            width: 400,
+            height: 400,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFFF2D78).withOpacity(0.15),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 100,
+          left: -50,
+          child: Container(
+            width: 250,
+            height: 250,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFFF2D78).withOpacity(0.1),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

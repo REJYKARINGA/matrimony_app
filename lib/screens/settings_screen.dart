@@ -238,14 +238,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: CircleAvatar(
                       radius: 35,
                       backgroundColor: Colors.white,
-                      backgroundImage: profile?.profilePicture != null &&
-                              profile!.profilePicture!.isNotEmpty
+                      backgroundImage: user?.displayImage != null &&
+                              user!.displayImage!.isNotEmpty
                           ? NetworkImage(
-                              ApiService.getImageUrl(profile.profilePicture!),
+                              ApiService.getImageUrl(user.displayImage!),
                             )
                           : null,
-                      child: profile?.profilePicture == null ||
-                              profile!.profilePicture!.isEmpty
+                      child: user?.displayImage == null ||
+                              user!.displayImage!.isEmpty
                           ? Container(
                               width: 70,
                               height: 70,
