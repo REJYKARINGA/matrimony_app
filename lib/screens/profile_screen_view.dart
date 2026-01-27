@@ -94,22 +94,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => _isLoading = true);
       
       try {
-        // 1. Upload photo to get URL
-        final uploadResponse = await ProfileService.uploadProfilePhoto(image.path);
+        // 1. Upload photo via ProfileService
+        final response = await ProfileService.uploadProfilePhoto(image);
         
-        if (uploadResponse.statusCode == 200) {
-          final uploadData = json.decode(uploadResponse.body);
-          final String photoUrl = uploadData['photo']['photo_url']; // Ensure backend returns full URL or handle path
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          final uploadData = json.decode(response.body);
+          final String photoUrl = uploadData['photo']['photo_url']; 
           
           // 2. Update user profile with new photo URL
-          // The backend might return a relative path or full URL. user_profile expects what?
-          // Based on ApiService.getImageUrl logic, it handles both.
-          // But updateMyProfile expects a string.
-          
-          // Actually, uploadProfilePhoto backend returns:
-          // 'photo' => [ ..., 'photo_url' => Storage::url($path), ... ]
-          // Storage::url usually returns /storage/path.
-          
           final updateResponse = await ProfileService.updateMyProfile(
             profilePicture: photoUrl
           );
@@ -118,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Profile picture updated successfully')),
             );
-            _loadProfile(); // Reload to refresh UI and verification status
+            _loadProfile(); // Reload to refresh UI
           } else {
             throw Exception('Failed to update profile picture link');
           }
@@ -129,6 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error updating profile picture: $e')),
         );
+      } finally {
         setState(() => _isLoading = false);
       }
     }

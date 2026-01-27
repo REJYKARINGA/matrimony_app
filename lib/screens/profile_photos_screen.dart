@@ -73,37 +73,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
       });
 
       try {
-        var request = http.MultipartRequest(
-          'POST',
-          Uri.parse('${ApiService.baseUrl}/profiles/photos'),
-        );
-
-        // Add authorization header
-        String? token = await ApiService.getToken();
-        if (token != null) {
-          request.headers['Authorization'] = 'Bearer $token';
-        }
-
-        // Handle file differently based on platform
-        if (kIsWeb) {
-          // For web, read file as bytes
-          List<int> imageBytes = await image.readAsBytes();
-          request.files.add(
-            http.MultipartFile.fromBytes(
-              'photo',
-              imageBytes,
-              filename: image.name,
-            ),
-          );
-        } else {
-          // For mobile/desktop, use file path
-          request.files.add(
-            await http.MultipartFile.fromPath('photo', image.path),
-          );
-        }
-
-        final streamedResponse = await request.send();
-        final response = await http.Response.fromStream(streamedResponse);
+        final response = await ProfileService.uploadProfilePhoto(image);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -418,9 +388,9 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(16),
-                                      child: photo['photo_url'] != null
+                                      child: (photo['photo_url'] != null)
                                           ? Image.network(
-                                              ApiService.getImageUrl(photo['photo_url']),
+                                              ApiService.getImageUrl(photo['photo_url'] ?? photo['full_photo_url']),
                                               fit: BoxFit.cover,
                                               errorBuilder:
                                                   (context, error, stackTrace) {

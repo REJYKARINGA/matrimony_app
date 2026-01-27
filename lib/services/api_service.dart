@@ -266,17 +266,28 @@ class ApiService {
   }
 
   // Helper method to construct proper image URLs
-  static String getImageUrl(String imageUrl) {
-    if (imageUrl.startsWith('/storage/')) {
-      // For storage URLs, remove '/api' from base URL to get the correct path
-      return baseUrl.replaceAll('/api', '') + imageUrl;
-    } else if (imageUrl.startsWith('http')) {
-      // For absolute URLs, return as is
+  static String getImageUrl(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) return '';
+    
+    if (imageUrl.startsWith('http')) {
       return imageUrl;
-    } else {
-      // For relative URLs that don't start with /storage/, append to base URL
-      return baseUrl + imageUrl;
     }
+    
+    // Ensure relative paths start with a slash
+    String path = imageUrl.startsWith('/') ? imageUrl : '/$imageUrl';
+    
+    // For web, use the proxy to avoid CORS issues
+    if (kIsWeb && path.startsWith('/storage/')) {
+      return '$baseUrl/images/proxy?path=${Uri.encodeComponent(path)}';
+    }
+    
+    // If it's a storage path but doesn't have the base URL
+    if (path.startsWith('/storage/')) {
+      return baseUrl.replaceAll('/api', '') + path;
+    }
+    
+    // Fallback: append to base URL (without /api)
+    return baseUrl.replaceAll('/api', '') + path;
   }
 
   // Test method for Reverb broadcasting

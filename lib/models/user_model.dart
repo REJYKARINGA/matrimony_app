@@ -10,6 +10,7 @@ class User {
   final UserProfile? userProfile;
   final FamilyDetail? familyDetails;
   final Preference? preferences;
+  final List<ProfilePhoto>? profilePhotos;
 
   User({
     this.id,
@@ -23,6 +24,7 @@ class User {
     this.userProfile,
     this.familyDetails,
     this.preferences,
+    this.profilePhotos,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,9 @@ class User {
       userProfile: json['user_profile'] != null ? UserProfile.fromJson(json['user_profile']) : null,
       familyDetails: json['family_details'] != null ? FamilyDetail.fromJson(json['family_details']) : null,
       preferences: json['preferences'] != null ? Preference.fromJson(json['preferences']) : null,
+      profilePhotos: json['profile_photos'] != null 
+          ? (json['profile_photos'] as List).map((i) => ProfilePhoto.fromJson(i)).toList()
+          : null,
     );
   }
 
@@ -323,6 +328,42 @@ class Preference {
       'max_income': maxIncome,
       'max_distance': maxDistance,
       'preferred_locations': preferredLocations,
+    };
+  }
+}
+
+class ProfilePhoto {
+  final int? id;
+  final int? userId;
+  final String? photoUrl;
+  final String? fullPhotoUrl;
+  final bool? isPrimary;
+
+  ProfilePhoto({
+    this.id,
+    this.userId,
+    this.photoUrl,
+    this.fullPhotoUrl,
+    this.isPrimary,
+  });
+
+  factory ProfilePhoto.fromJson(Map<String, dynamic> json) {
+    return ProfilePhoto(
+      id: json['id'],
+      userId: json['user_id'],
+      photoUrl: json['photo_url'],
+      fullPhotoUrl: json['full_photo_url'],
+      isPrimary: json['is_primary'] == 1 || json['is_primary'] == true,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'photo_url': photoUrl,
+      'full_photo_url': fullPhotoUrl,
+      'is_primary': isPrimary,
     };
   }
 }

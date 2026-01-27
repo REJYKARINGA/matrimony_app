@@ -2,6 +2,8 @@ import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
 import '../models/user_model.dart';
 import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
 
 class ProfileService {
   static Future<http.Response> getMyProfile() async {
@@ -179,7 +181,7 @@ class ProfileService {
     return await ApiService.makeRequest('${ApiService.baseUrl}/preferences/all-options');
   }
 
-  static Future<http.Response> uploadProfilePhoto(String filePath) async {
+  static Future<http.Response> uploadProfilePhoto(XFile image) async {
     String? token = await ApiService.getToken();
     var request = http.MultipartRequest(
       'POST',
@@ -190,7 +192,18 @@ class ProfileService {
       request.headers['Authorization'] = 'Bearer $token';
     }
 
-    request.files.add(await http.MultipartFile.fromPath('photo', filePath));
+    if (kIsWeb) {
+      List<int> imageBytes = await image.readAsBytes();
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'photo',
+          imageBytes,
+          filename: image.name,
+        ),
+      );
+    } else {
+      request.files.add(await http.MultipartFile.fromPath('photo', image.path));
+    }
 
     var streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);
