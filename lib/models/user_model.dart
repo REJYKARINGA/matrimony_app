@@ -196,7 +196,14 @@ class FamilyDetail {
   final String? familyType;
   final String? familyStatus;
   final String? familyLocation;
+  final int? elderSister;
+  final int? elderBrother;
+  final int? youngerSister;
+  final int? youngerBrother;
+  final bool? fatherAlive;
+  final bool? motherAlive;
   final bool? isDisabled;
+  final String? guardian;
 
   FamilyDetail({
     this.id,
@@ -209,7 +216,14 @@ class FamilyDetail {
     this.familyType,
     this.familyStatus,
     this.familyLocation,
+    this.elderSister,
+    this.elderBrother,
+    this.youngerSister,
+    this.youngerBrother,
+    this.fatherAlive,
+    this.motherAlive,
     this.isDisabled,
+    this.guardian,
   });
 
   factory FamilyDetail.fromJson(Map<String, dynamic> json) {
@@ -224,7 +238,14 @@ class FamilyDetail {
       familyType: json['family_type'],
       familyStatus: json['family_status'],
       familyLocation: json['family_location'],
+      elderSister: json['elder_sister'],
+      elderBrother: json['elder_brother'],
+      youngerSister: json['younger_sister'],
+      youngerBrother: json['younger_brother'],
+      fatherAlive: json['father_alive'] == 1 || json['father_alive'] == true,
+      motherAlive: json['mother_alive'] == 1 || json['mother_alive'] == true,
       isDisabled: json['is_disabled'] == 1 || json['is_disabled'] == true,
+      guardian: json['guardian'],
     );
   }
 
@@ -240,7 +261,14 @@ class FamilyDetail {
       'family_type': familyType,
       'family_status': familyStatus,
       'family_location': familyLocation,
+      'elder_sister': elderSister,
+      'elder_brother': elderBrother,
+      'younger_sister': youngerSister,
+      'younger_brother': youngerBrother,
+      'father_alive': fatherAlive,
+      'mother_alive': motherAlive,
       'is_disabled': isDisabled,
+      'guardian': guardian,
     };
   }
 }

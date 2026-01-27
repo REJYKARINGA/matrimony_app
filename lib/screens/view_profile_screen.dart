@@ -762,7 +762,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             if (_user?.userProfile?.dateOfBirth != null)
               _buildDetailRow(
                 'Date of Birth',
-                DateFormatter.formatDate(_user!.userProfile!.dateOfBirth!),
+                DateFormatter.formatDate(_user?.userProfile?.dateOfBirth),
               ),
             if ((_user?.userProfile?.gender ?? '').isNotEmpty)
               _buildDetailRow('Gender', _user!.userProfile!.gender!),
