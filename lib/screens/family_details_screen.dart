@@ -26,6 +26,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   late TextEditingController _youngerBrotherController;
   late bool? _fatherAlive;
   late bool? _motherAlive;
+  late bool? _isDisabled;
   late TextEditingController _guardianController;
   late bool? _show;
 
@@ -88,6 +89,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     _youngerBrotherController = TextEditingController(text: '');
     _fatherAlive = true;
     _motherAlive = true;
+    _isDisabled = false;
     _guardianController = TextEditingController(text: '');
     _show = null;
   }
@@ -127,6 +129,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     );
     _fatherAlive = familyDetails['father_alive'] ?? true;
     _motherAlive = familyDetails['mother_alive'] ?? true;
+    _isDisabled = familyDetails['is_disabled'] ?? false;
     _guardianController = TextEditingController(
       text: familyDetails['guardian'] ?? '',
     );
@@ -156,6 +159,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         youngerBrother: int.tryParse(_youngerBrotherController.text),
         fatherAlive: _fatherAlive,
         motherAlive: _motherAlive,
+        isDisabled: _isDisabled,
         guardian: _guardianController.text,
         show: _show,
       );
@@ -604,6 +608,12 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 12),
+                        _buildBoolDropdown(
+                          value: _isDisabled,
+                          label: 'Is Disabled',
+                          onChanged: (value) => setState(() => _isDisabled = value),
                         ),
                         const SizedBox(height: 12),
                         _buildTextField(

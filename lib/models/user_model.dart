@@ -191,6 +191,7 @@ class FamilyDetail {
   final String? familyType;
   final String? familyStatus;
   final String? familyLocation;
+  final bool? isDisabled;
 
   FamilyDetail({
     this.id,
@@ -203,6 +204,7 @@ class FamilyDetail {
     this.familyType,
     this.familyStatus,
     this.familyLocation,
+    this.isDisabled,
   });
 
   factory FamilyDetail.fromJson(Map<String, dynamic> json) {
@@ -217,6 +219,7 @@ class FamilyDetail {
       familyType: json['family_type'],
       familyStatus: json['family_status'],
       familyLocation: json['family_location'],
+      isDisabled: json['is_disabled'] == 1 || json['is_disabled'] == true,
     );
   }
 
@@ -232,6 +235,7 @@ class FamilyDetail {
       'family_type': familyType,
       'family_status': familyStatus,
       'family_location': familyLocation,
+      'is_disabled': isDisabled,
     };
   }
 }
@@ -246,8 +250,8 @@ class Preference {
   final String? maritalStatus;
   final String? religion;
   final List<String>? caste;
-  final String? education;
-  final String? occupation;
+  final dynamic education;
+  final dynamic occupation;
   final double? minIncome;
   final double? maxIncome;
   final int? maxDistance;

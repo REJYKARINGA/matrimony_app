@@ -106,6 +106,7 @@ class ProfileService {
     int? youngerBrother,
     bool? fatherAlive,
     bool? motherAlive,
+    bool? isDisabled,
     String? guardian,
     bool? show,
   }) async {
@@ -124,6 +125,7 @@ class ProfileService {
       if (youngerBrother != null) 'younger_brother': youngerBrother,
       if (fatherAlive != null) 'father_alive': fatherAlive,
       if (motherAlive != null) 'mother_alive': motherAlive,
+      if (isDisabled != null) 'is_disabled': isDisabled,
       if (guardian != null) 'guardian': guardian,
       if (show != null) 'show': show,
     };
