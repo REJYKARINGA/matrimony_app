@@ -204,10 +204,7 @@ class _MatchingScreenState extends State<MatchingScreen>
           final bool isSentByMe = interest['sender_id'] == _currentUserId;
           
           final userJson = isSentByMe ? interest['receiver'] : interest['sender'];
-          final user = User.fromJson({
-            'email': userJson['email'] ?? '',
-            ...userJson,
-          });
+          final user = User.fromJson(userJson);
 
           return _buildProfileCard(
             user,
@@ -275,15 +272,10 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemBuilder: (context, index) {
           final match = _matches[index];
           final currentUser = _currentUserId; 
-          final user = match['user1']['id'] != currentUser
-              ? User.fromJson({
-                  'email': match['user1']['email'] ?? '',
-                  ...match['user1'],
-                })
-              : User.fromJson({
-                  'email': match['user2']['email'] ?? '',
-                  ...match['user2'],
-                });
+          final otherUserJson = match['user1']['id'].toString() != currentUser.toString()
+              ? match['user1']
+              : match['user2'];
+          final user = User.fromJson(otherUserJson);
 
           return _buildProfileCard(user, isMatch: true);
         },
@@ -336,10 +328,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _sentInterests.length,
         itemBuilder: (context, index) {
           final interest = _sentInterests[index];
-          final user = User.fromJson({
-            'email': interest['receiver']['email'] ?? '',
-            ...interest['receiver'],
-          });
+          final user = User.fromJson(interest['receiver']);
 
           return _buildProfileCard(
             user,
@@ -396,10 +385,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _receivedInterests.length,
         itemBuilder: (context, index) {
           final interest = _receivedInterests[index];
-          final user = User.fromJson({
-            'email': interest['sender']['email'] ?? '',
-            ...interest['sender'],
-          });
+          final user = User.fromJson(interest['sender']);
 
           return _buildProfileCard(
             user,
