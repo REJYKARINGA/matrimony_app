@@ -12,6 +12,7 @@ class User {
   final FamilyDetail? familyDetails;
   final Preference? preferences;
   final List<ProfilePhoto>? profilePhotos;
+  final UserVerification? verification;
 
   User({
     this.id,
@@ -27,6 +28,7 @@ class User {
     this.familyDetails,
     this.preferences,
     this.profilePhotos,
+    this.verification,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class User {
       profilePhotos: json['profile_photos'] != null 
           ? (json['profile_photos'] as List).map((i) => ProfilePhoto.fromJson(i)).toList()
           : null,
+      verification: json['verification'] != null ? UserVerification.fromJson(json['verification']) : null,
     );
   }
 
@@ -76,6 +79,32 @@ class User {
       }
     }
     return userProfile?.profilePicture;
+  }
+}
+
+class UserVerification {
+  final int? id;
+  final int? userId;
+  final String? status;
+  final String? rejectionReason;
+  final DateTime? verifiedAt;
+
+  UserVerification({
+    this.id,
+    this.userId,
+    this.status,
+    this.rejectionReason,
+    this.verifiedAt,
+  });
+
+  factory UserVerification.fromJson(Map<String, dynamic> json) {
+    return UserVerification(
+      id: json['id'],
+      userId: json['user_id'],
+      status: json['status'],
+      rejectionReason: json['rejection_reason'],
+      verifiedAt: json['verified_at'] != null ? DateTime.parse(json['verified_at']) : null,
+    );
   }
 }
 

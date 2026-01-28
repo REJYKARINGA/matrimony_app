@@ -13,6 +13,7 @@ import '../utils/date_formatter.dart';
 import 'family_details_screen.dart';
 import 'preferences_screen.dart';
 import 'profile_photos_screen.dart';
+import 'verification_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -264,7 +265,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: const TextStyle(fontSize: 15, color: Color(0xFF757575), height: 1.6, fontWeight: FontWeight.w500),
                         ),
                       ]),
-                    const SizedBox(height: 32),
+                    _buildSection('Trust & Safety', [
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), shape: BoxShape.circle),
+                          child: const Icon(Icons.verified_user_outlined, color: Colors.green, size: 20),
+                        ),
+                        title: const Text('Account Verification', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        subtitle: const Text('Verify your identity to get a verification badge', style: TextStyle(fontSize: 12)),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationScreen())),
+                      ),
+                    ]),
+                    const SizedBox(height: 16),
                     _buildActionButtons(),
                     const SizedBox(height: 50),
                   ],
@@ -356,8 +371,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.verified_user, color: const Color(0xFFFF2D78).withOpacity(0.6), size: 16),
-                    const SizedBox(width: 4),
+                    if (_user?.verification?.status == 'verified') ...[
+                      Icon(Icons.verified_user, color: const Color(0xFFFF2D78).withOpacity(0.6), size: 16),
+                      const SizedBox(width: 4),
+                    ],
                     Text(
                       _user?.email ?? '',
                       style: TextStyle(color: const Color(0xFFFF2D78).withOpacity(0.8), fontSize: 14),
