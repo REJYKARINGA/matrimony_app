@@ -9,6 +9,9 @@ import '../utils/date_formatter.dart';
 import 'messages_screen.dart';
 import 'dart:js' as js;
 import 'dart:html' as html;
+import 'package:provider/provider.dart';
+import '../services/auth_provider.dart';
+import 'verification_screen.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final int userId;
@@ -385,12 +388,26 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       ),
       actions: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.black.withOpacity(0.3),
-            child: IconButton(
-              icon: const Icon(Icons.share, color: Colors.white, size: 20),
-              onPressed: () {},
+          padding: const EdgeInsets.only(right: 16.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.account_balance_wallet, color: Colors.white, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  '₹${_walletBalance.toStringAsFixed(0)}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -1076,30 +1093,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ),
           if (!_contactUnlocked) ...[
             SizedBox(height: 16),
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.shade200),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, color: Colors.orange, size: 20),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Unlock contact details for ₹49',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.orange.shade800,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+
             SizedBox(height: 12),
             Row(
               children: [
@@ -1123,7 +1117,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       ],
                     ),
                     child: ElevatedButton.icon(
-                      onPressed: () => _showPaymentOptions(),
+                      onPressed: () => _checkVerificationAndProceed(() => _showPaymentOptions()),
                       icon: Icon(Icons.account_balance_wallet, size: 18),
                       label: Text(
                         'Wallet',
@@ -1159,7 +1153,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       ],
                     ),
                     child: ElevatedButton.icon(
-                      onPressed: () => _unlockWithDirectPayment(),
+                      onPressed: () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
                       icon: Icon(Icons.payment, size: 18),
                       label: Text(
                         'Pay Now',
@@ -1180,38 +1174,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ],
             ),
             SizedBox(height: 8),
-            Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _walletBalance < 49
-                      ? Colors.red.shade50
-                      : Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.account_balance_wallet,
-                      size: 14,
-                      color: _walletBalance < 49 ? Colors.red : Colors.green,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      'Balance: ₹${_walletBalance.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _walletBalance < 49
-                            ? Colors.red.shade700
-                            : Colors.green.shade700,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+
           ],
         ],
       ),
@@ -1370,6 +1333,59 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     final start = phone.substring(0, phone.length >= 6 ? 3 : 2);
     final end = phone.substring(phone.length - 2);
     return '$start••••••$end';
+  }
+
+  void _checkVerificationAndProceed(VoidCallback onSuccess) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isVerified = authProvider.user?.verification?.status == 'verified';
+
+    if (isVerified) {
+      onSuccess();
+    } else {
+      _showVerificationDialog();
+    }
+  }
+
+  void _showVerificationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.verified_user_outlined, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('Verification Required'),
+          ],
+        ),
+        content: Text(
+          'You need a verified account to unlock contact details. Please verify your ID to proceed.',
+          style: TextStyle(fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const VerificationScreen()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFFB47FFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text('Verify Now'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showPaymentOptions() {
