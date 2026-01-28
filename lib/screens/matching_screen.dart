@@ -274,7 +274,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _matches.length,
         itemBuilder: (context, index) {
           final match = _matches[index];
-          final currentUser = 1; // This would come from auth provider
+          final currentUser = _currentUserId; 
           final user = match['user1']['id'] != currentUser
               ? User.fromJson({
                   'email': match['user1']['email'] ?? '',
