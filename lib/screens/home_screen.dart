@@ -916,7 +916,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     children: [
                       Text(
-                        '${profile?.firstName ?? 'User'}, $ageText',
+                        '${user.matrimonyId ?? 'User'}, $ageText',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 26,
@@ -981,7 +981,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         MaterialPageRoute(
                           builder: (c) => ChatScreen(
                             otherUserId: user.id!,
-                            otherUserName: '${user.userProfile?.firstName ?? 'User'}',
+                            otherUserName: '${user.matrimonyId ?? 'User'}',
                             otherUserImage: user.displayImage != null
                                 ? ApiService.getImageUrl(user.displayImage!)
                                 : null,
@@ -1332,7 +1332,7 @@ class MatchCelebrationDialog extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "You and ${otherUser.userProfile?.firstName} are both interested in each other",
+                "You and ${otherUser.matrimonyId} are both interested in each other",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -1383,7 +1383,7 @@ class MatchCelebrationDialog extends StatelessWidget {
                             MaterialPageRoute(
                               builder: (context) => ChatScreen(
                                 otherUserId: otherUser.id!,
-                                otherUserName: '${otherUser.userProfile?.firstName} ${otherUser.userProfile?.lastName}',
+                                otherUserName: '${otherUser.matrimonyId ?? 'User'}',
                                 otherUserImage: otherUser.displayImage != null 
                                   ? ApiService.getImageUrl(otherUser.displayImage!)
                                   : null,

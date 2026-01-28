@@ -228,7 +228,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          profile?.firstName ?? 'User',
+                                          user.matrimonyId ?? 'User',
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey.shade700,
@@ -279,10 +279,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     ? chat['sender']
                                     : chat['receiver'];
 
-                                final userProfile = otherUser['user_profile'];
-                                final otherUserName = userProfile != null 
-                                    ? '${userProfile['first_name'] ?? 'User'}'
-                                    : otherUser['email'] ?? 'User';
+                                 final otherUserName = otherUser['matrimony_id'] ?? 'User';
                                 
                                 final otherUserObj = User.fromJson(otherUser);
                                 final profilePic = otherUserObj.displayImage != null
@@ -301,7 +298,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         MaterialPageRoute(
                                           builder: (context) => ChatScreen(
                                             otherUserId: otherUser['id'],
-                                            otherUserName: userProfile != null ? '${userProfile['first_name']} ${userProfile['last_name'] ?? ''}' : otherUserName,
+                                            otherUserName: otherUserName,
                                             otherUserImage: profilePic,
                                           ),
                                         ),

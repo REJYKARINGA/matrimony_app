@@ -527,7 +527,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                   Row(
                     children: [
                       Text(
-                        '${profile?.firstName ?? 'User'}, $ageText',
+                        '${user.matrimonyId ?? 'User'}, $ageText',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 26,

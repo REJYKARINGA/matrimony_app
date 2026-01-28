@@ -741,7 +741,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                   Row(
                     children: [
                       Text(
-                        '${profile?.firstName ?? 'User'}, $ageText',
+                        '${user.matrimonyId ?? 'User'}, $ageText',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 26,
@@ -792,7 +792,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         MaterialPageRoute(
                           builder: (c) => ChatScreen(
                             otherUserId: user.id!,
-                            otherUserName: '${user.userProfile?.firstName ?? 'User'}',
+                            otherUserName: '${user.matrimonyId ?? 'User'}',
                             otherUserImage: user.userProfile?.profilePicture != null
                                 ? ApiService.getImageUrl(user.userProfile!.profilePicture!)
                                 : null,

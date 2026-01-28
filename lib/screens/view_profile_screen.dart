@@ -440,7 +440,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   Row(
                     children: [
                       Text(
-                        '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
+                        '${_user?.matrimonyId ?? 'User'}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 32,
@@ -737,7 +737,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 builder: (context) => ChatScreen(
                   otherUserId: _user!.id!,
                   otherUserName:
-                      '${_user!.userProfile?.firstName} ${_user!.userProfile?.lastName}',
+                      '${_user!.matrimonyId ?? 'User'}',
                   otherUserImage: _user?.displayImage != null
                     ? ApiService.getImageUrl(_user!.displayImage!)
                     : null,
