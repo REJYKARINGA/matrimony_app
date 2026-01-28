@@ -270,6 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _loadShortlistedProfiles(),
           _loadInterestsAndMatches(),
           _loadVisitors(),
+          _checkNewMatches(),
         ]);
       } catch (e) {
         print('Error during initial data load: $e');
@@ -277,6 +278,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _loadRecommendedUsers();
       }
     });
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final response = await NotificationService.getUnreadCount();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _unreadNotificationCount = data['unread_count'] ?? 0;
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading unread count: $e');
+    }
   }
 
   Future<void> _loadVisitors() async {
@@ -336,20 +353,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Future<void> _loadUnreadCount() async {
+  Future<void> _checkNewMatches() async {
     try {
-      final response = await NotificationService.getUnreadCount();
+      final response = await NotificationService.getNotifications();
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (mounted) {
-          setState(() {
-            _unreadNotificationCount = data['unread_count'] ?? 0;
-          });
+        final List<dynamic> notifications = data['notifications']['data'] ?? [];
+        
+        final matchNotification = notifications.firstWhere(
+          (n) => n['type'] == 'match' && (n['is_read'] == false || n['is_read'] == 0),
+          orElse: () => null,
+        );
+
+        if (matchNotification != null) {
+          final senderData = matchNotification['sender'];
+          if (senderData != null) {
+            final otherUser = User.fromJson(senderData);
+            // Mark as read immediately so it doesn't pop up again
+            await NotificationService.markAsRead(matchNotification['id']);
+            if (mounted) {
+              _showMatchPopup(otherUser);
+              _loadUnreadCount(); // Update the bell icon count
+            }
+          }
         }
       }
     } catch (e) {
-      print('Error loading unread count: $e');
+      print('Error checking for matches: $e');
     }
+  }
+
+  void _showMatchPopup(User otherUser) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.85),
+      builder: (context) => MatchCelebrationDialog(
+        otherUser: otherUser,
+      ),
+    );
   }
 
   Future<void> _loadInterestsAndMatches() async {
@@ -1237,6 +1278,198 @@ class _SwipeCardState extends State<SwipeCard> {
           ),
         );
       },
+    );
+  }
+}
+class MatchCelebrationDialog extends StatelessWidget {
+  final User otherUser;
+
+  const MatchCelebrationDialog({
+    Key? key,
+    required this.otherUser,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final currentUser = Provider.of<AuthProvider>(context, listen: false).user;
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background Glow
+          Container(
+            width: double.infinity,
+            height: 500,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF2D55).withOpacity(0.2),
+                  blurRadius: 100,
+                  spreadRadius: 20,
+                ),
+              ],
+            ),
+          ),
+          
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "It's a Match!",
+                style: TextStyle(
+                  fontSize: 48,
+                  fontFamily: 'Pacifico', // Fallback to normal if not available
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(blurRadius: 10, color: Colors.black45, offset: Offset(0, 4)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "You and ${otherUser.userProfile?.firstName} are both interested in each other",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 40),
+              
+              // Avatars Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildPulseAvatar(currentUser?.displayImage, -1),
+                  const SizedBox(width: -20), // Overlap
+                  _buildPulseAvatar(otherUser.displayImage, 1),
+                ],
+              ),
+              
+              const SizedBox(height: 50),
+              
+              // Action Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF2D55), Color(0xFFFF5277)],
+                        ),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFF2D55).withOpacity(0.4),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                otherUserId: otherUser.id!,
+                                otherUserName: '${otherUser.userProfile?.firstName} ${otherUser.userProfile?.lastName}',
+                                otherUserImage: otherUser.displayImage != null 
+                                  ? ApiService.getImageUrl(otherUser.displayImage!)
+                                  : null,
+                              ),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          "SEND A MESSAGE",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "KEEP BROWSING",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.8),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          // Confetti-like bits (Static representation)
+          Positioned(top: 100, left: 40, child: _buildConfetti(Colors.blueAccent, 10)),
+          Positioned(top: 150, right: 60, child: _buildConfetti(Colors.pinkAccent, 12)),
+          Positioned(bottom: 120, left: 80, child: _buildConfetti(Colors.yellowAccent, 8)),
+          Positioned(bottom: 180, right: 30, child: _buildConfetti(Colors.greenAccent, 10)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPulseAvatar(String? imageUrl, double rotation) {
+    return Transform.rotate(
+      angle: rotation * 0.1,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: CircleAvatar(
+          radius: 60,
+          backgroundColor: Colors.grey.shade200,
+          backgroundImage: imageUrl != null ? NetworkImage(ApiService.getImageUrl(imageUrl)) : null,
+          child: imageUrl == null ? const Icon(Icons.person, size: 60, color: Colors.grey) : null,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildConfetti(Color color, double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(2),
+      ),
     );
   }
 }
