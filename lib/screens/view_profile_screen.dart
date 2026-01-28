@@ -453,17 +453,20 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     ],
                   ),
                   const SizedBox(height: 4),
-                  if ((_user?.userProfile?.religion ?? '').isNotEmpty || (_user?.userProfile?.caste ?? '').isNotEmpty)
-                    Text(
-                      '${_user?.userProfile?.religion ?? ''}${(_user?.userProfile?.religion != null && _user?.userProfile?.caste != null) ? ', ' : ''}${_user?.userProfile?.caste ?? ''}'
-                          .toUpperCase(),
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
+                  Row(
+                    children: [
+                      Text(
+                        '${_user?.userProfile?.caste ?? ''}${(_user?.userProfile?.caste != null && _user?.userProfile?.maritalStatus != null) ? ', ' : ''}${(_user?.userProfile?.maritalStatus?.toLowerCase() == 'never_married' ? 'Single' : (_user?.userProfile?.maritalStatus ?? '').replaceAll('_', ' '))}'
+                            .toUpperCase(),
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
@@ -960,10 +963,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
 
   Widget _buildDetailRow(String label, String value) {
     // Capitalize the value: replace underscores with spaces and capitalize words
-    String formattedValue = value.replaceAll('_', ' ').split(' ').map((word) {
-      if (word.isEmpty) return word;
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    String formattedValue = value.toLowerCase() == 'never_married'
+        ? 'Single'
+        : value.replaceAll('_', ' ').split(' ').map((word) {
+            if (word.isEmpty) return word;
+            return word[0].toUpperCase() + word.substring(1).toLowerCase();
+          }).join(' ');
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),

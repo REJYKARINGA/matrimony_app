@@ -460,10 +460,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (value == null || value.isEmpty || value == 'null') return const SizedBox.shrink();
 
     // Capitalize the value
-    String formattedValue = value.replaceAll('_', ' ').split(' ').map((word) {
-      if (word.isEmpty) return word;
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    }).join(' ');
+    String formattedValue = value.toLowerCase() == 'never_married'
+        ? 'Single'
+        : value.replaceAll('_', ' ').split(' ').map((word) {
+            if (word.isEmpty) return word;
+            return word[0].toUpperCase() + word.substring(1).toLowerCase();
+          }).join(' ');
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),

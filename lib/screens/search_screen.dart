@@ -344,7 +344,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            category['value'].toString(),
+                            category['value'].toString().toLowerCase() == 'never_married'
+                                ? 'Single'
+                                : category['value'].toString().replaceAll('_', ' ').split(' ').map((word) {
+                                    if (word.isEmpty) return word;
+                                    return word[0].toUpperCase() + word.substring(1).toLowerCase();
+                                  }).join(' '),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -686,6 +691,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       profile?.district,
     ].where((e) => e != null).join(', ');
 
+    String maritalStatus = profile?.maritalStatus?.toLowerCase() == 'never_married' 
+        ? 'Single' 
+        : (profile?.maritalStatus ?? '').replaceAll('_', ' ').split(' ').map((word) {
+            if (word.isEmpty) return word;
+            return word[0].toUpperCase() + word.substring(1).toLowerCase();
+          }).join(' ');
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       height: 480,
@@ -758,9 +770,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  if (profile?.religion != null || profile?.caste != null)
+                  const SizedBox(height: 4),
+                  if (profile?.caste != null || maritalStatus.isNotEmpty)
                     Text(
-                      '${profile?.religion ?? ''}${profile?.religion != null && profile?.caste != null ? ', ' : ''}${profile?.caste ?? ''}'
+                      '${profile?.caste ?? ''}${profile?.caste != null && maritalStatus.isNotEmpty ? ', ' : ''}$maritalStatus'
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),

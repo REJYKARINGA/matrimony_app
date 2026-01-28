@@ -422,6 +422,13 @@ class _MatchingScreenState extends State<MatchingScreen>
       profile?.district,
     ].where((e) => e != null).join(', ');
 
+    String maritalStatus = profile?.maritalStatus?.toLowerCase() == 'never_married' 
+        ? 'Single' 
+        : (profile?.maritalStatus ?? '').replaceAll('_', ' ').split(' ').map((word) {
+            if (word.isEmpty) return word;
+            return word[0].toUpperCase() + word.substring(1).toLowerCase();
+          }).join(' ');
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       height: 480,
@@ -530,9 +537,10 @@ class _MatchingScreenState extends State<MatchingScreen>
                     ],
                   ),
                   const SizedBox(height: 4),
-                  if (profile?.religion != null || profile?.caste != null)
+                  const SizedBox(height: 4),
+                  if (profile?.caste != null || maritalStatus.isNotEmpty)
                     Text(
-                      '${profile?.religion ?? ''}${profile?.religion != null && profile?.caste != null ? ', ' : ''}${profile?.caste ?? ''}'
+                      '${profile?.caste ?? ''}${profile?.caste != null && maritalStatus.isNotEmpty ? ', ' : ''}$maritalStatus'
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),

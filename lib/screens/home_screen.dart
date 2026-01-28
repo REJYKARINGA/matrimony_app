@@ -849,6 +849,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       profile?.district,
     ].where((e) => e != null).join(', ');
 
+    String maritalStatus = profile?.maritalStatus?.toLowerCase() == 'never_married' 
+        ? 'Single' 
+        : (profile?.maritalStatus ?? '').replaceAll('_', ' ').split(' ').map((word) {
+            if (word.isEmpty) return word;
+            return word[0].toUpperCase() + word.substring(1).toLowerCase();
+          }).join(' ');
+
     return SwipeCard(
       onSwipeRight: () {
         _handleQuickInterest(user.id!);
@@ -933,9 +940,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  if (profile?.religion != null || profile?.caste != null)
+                  const SizedBox(height: 4),
+                  if (profile?.caste != null || maritalStatus.isNotEmpty)
                     Text(
-                      '${profile?.religion ?? ''}${profile?.religion != null && profile?.caste != null ? ', ' : ''}${profile?.caste ?? ''}'
+                      '${profile?.caste ?? ''}${profile?.caste != null && maritalStatus.isNotEmpty ? ', ' : ''}$maritalStatus'
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
