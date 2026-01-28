@@ -324,7 +324,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                    _buildActionButtons(),
                    _buildPhotoGallery(),
                    _buildProfileDetails(),
-                   const SizedBox(height: 50),
+                   _buildFooter(),
+                   const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -451,6 +452,18 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       const Icon(Icons.verified, color: Color(0xFF4CD9A6), size: 24),
                     ],
                   ),
+                  if ((_user?.userProfile?.caste ?? '').isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      _user!.userProfile!.caste!.toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -814,11 +827,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             SizedBox(height: 16),
           ],
           _buildInfoSection('Personal Details', Icons.person_outline, [
-            if (_user?.userProfile?.dateOfBirth != null)
-              _buildDetailRow(
-                'Date of Birth',
-                DateFormatter.formatDate(_user?.userProfile?.dateOfBirth),
-              ),
+
             if ((_user?.userProfile?.gender ?? '').isNotEmpty)
               _buildDetailRow('Gender', _user!.userProfile!.gender!),
             if (_user?.userProfile?.height != null)
@@ -864,10 +873,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               _buildDetailRow('City', _user!.userProfile!.city!),
             if ((_user?.userProfile?.district ?? '').isNotEmpty)
               _buildDetailRow('District', _user!.userProfile!.district!),
-            if ((_user?.userProfile?.state ?? '').isNotEmpty)
-              _buildDetailRow('State', _user!.userProfile!.state!),
-            if ((_user?.userProfile?.country ?? '').isNotEmpty)
-              _buildDetailRow('Country', _user!.userProfile!.country!),
           ]),
           _buildContactSection(),
         ],
@@ -922,6 +927,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   Widget _buildDetailRow(String label, String value) {
+    // Capitalize the value: replace underscores with spaces and capitalize words
+    String formattedValue = value.replaceAll('_', ' ').split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -941,7 +952,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           Expanded(
             flex: 3,
             child: Text(
-              value,
+              formattedValue,
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.black87,
@@ -1167,6 +1178,99 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildFooter() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      color: Colors.grey.shade50,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF5CB3FF).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.favorite_rounded,
+              color: Color(0xFF5CB3FF),
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Vivah4Ever',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: 1,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Trusted Kerala Matrimony Services',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildFooterSocialIcon(Icons.facebook),
+              const SizedBox(width: 20),
+              _buildFooterSocialIcon(Icons.camera_alt_outlined),
+              const SizedBox(width: 20),
+              _buildFooterSocialIcon(Icons.language),
+            ],
+          ),
+          const SizedBox(height: 30),
+          Divider(color: Colors.grey.shade300),
+          const SizedBox(height: 20),
+          Text(
+            '© 2026 Vivah4Ever. All Rights Reserved.',
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade500,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Made with ❤️ in Kerala',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.grey.shade400,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooterSocialIcon(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Icon(icon, color: Colors.grey.shade700, size: 20),
     );
   }
 

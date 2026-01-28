@@ -202,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildQuickStats(),
                     _buildSection('Personal Information', [
                       _buildGrid([
-                        _buildCompactInfo(Icons.cake_outlined, 'DOB', DateFormatter.formatDate(_user?.userProfile?.dateOfBirth)),
+
                         _buildCompactInfo(Icons.wc_outlined, 'Gender', _user?.userProfile?.gender),
                         _buildCompactInfo(Icons.height, 'Height', '${_user?.userProfile?.height ?? '-'} cm'),
                         _buildCompactInfo(Icons.monitor_weight_outlined, 'Weight', '${_user?.userProfile?.weight ?? '-'} kg'),
@@ -458,6 +458,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildCompactInfo(IconData icon, String label, String? value, {bool isFullWidth = false}) {
     if (value == null || value.isEmpty || value == 'null') return const SizedBox.shrink();
+
+    // Capitalize the value
+    String formattedValue = value.replaceAll('_', ' ').split(' ').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -494,7 +501,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF757575), fontWeight: FontWeight.w600)),
                     const SizedBox(height: 2),
-                    Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(formattedValue, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A)), maxLines: 1, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),

@@ -683,7 +683,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
 
     String loc = [
       profile?.city,
-      profile?.state,
+      profile?.district,
     ].where((e) => e != null).join(', ');
 
     return Container(
