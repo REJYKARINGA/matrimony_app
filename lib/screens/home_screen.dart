@@ -1285,7 +1285,7 @@ class _SwipeCardState extends State<SwipeCard> {
                             ],
                           ),
                           child: Icon(
-                            _offset.dx > 0 ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
+                            _offset.dx > 0 ? Icons.favorite_rounded : Icons.close_rounded,
                             color: Colors.white,
                             size: 50,
                           ),
