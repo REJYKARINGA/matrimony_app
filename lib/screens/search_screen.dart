@@ -757,6 +757,18 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 4),
+                  if (profile?.religion != null || profile?.caste != null)
+                    Text(
+                      '${profile?.religion ?? ''}${profile?.religion != null && profile?.caste != null ? ', ' : ''}${profile?.caste ?? ''}'
+                          .toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
                   const SizedBox(height: 6),
                   Row(
                     children: [

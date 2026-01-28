@@ -227,9 +227,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ]),
                     _buildSection('Family Details', [
                       _buildGrid([
-                        _buildCompactInfo(Icons.person_outline, 'Father', _user?.familyDetails?.fatherName),
+                        _buildCompactInfo(Icons.person_outline, 'Father', _maskName(_user?.familyDetails?.fatherName)),
                         _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.fatherOccupation),
-                        _buildCompactInfo(Icons.person_outline, 'Mother', _user?.familyDetails?.motherName),
+                        _buildCompactInfo(Icons.person_outline, 'Mother', _maskName(_user?.familyDetails?.motherName)),
                         _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.motherOccupation),
                       ]),
                       const SizedBox(height: 12),
@@ -697,6 +697,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  String _maskName(String? name) {
+    if (name == null || name.isEmpty) return '-';
+    if (name.length <= 1) return '*';
+    return '${name[0]}${'*' * (name.length - 1)}';
   }
 
   Widget _buildBackgroundBlobs() {

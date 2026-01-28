@@ -441,10 +441,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   Row(
                     children: [
                       Text(
-                        '${_user?.matrimonyId ?? 'User'}',
+                        '${_user?.matrimonyId ?? 'User'}${_user?.userProfile?.age != null ? ', ${_user!.userProfile!.age}' : ''}',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 32,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -452,28 +452,29 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       const Icon(Icons.verified, color: Color(0xFF4CD9A6), size: 24),
                     ],
                   ),
-                  if ((_user?.userProfile?.caste ?? '').isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                  const SizedBox(height: 4),
+                  if ((_user?.userProfile?.religion ?? '').isNotEmpty || (_user?.userProfile?.caste ?? '').isNotEmpty)
                     Text(
-                      _user!.userProfile!.caste!.toUpperCase(),
+                      '${_user?.userProfile?.religion ?? ''}${(_user?.userProfile?.religion != null && _user?.userProfile?.caste != null) ? ', ' : ''}${_user?.userProfile?.caste ?? ''}'
+                          .toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
+                        letterSpacing: 1.2,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
-                      if (_user?.userProfile?.age != null)
-                        _buildBadge(Icons.cake, '${_user!.userProfile!.age} Years'),
-                      const SizedBox(width: 12),
                       if (_user?.userProfile?.city != null)
                         _buildBadge(Icons.location_on, _user!.userProfile!.city!),
+                      const SizedBox(width: 12),
+                      if (_user?.userProfile?.district != null)
+                        _buildBadge(Icons.map, _user!.userProfile!.district!),
                     ],
                   ),
+
                 ],
               ),
             ),
@@ -827,7 +828,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             SizedBox(height: 16),
           ],
           _buildInfoSection('Personal Details', Icons.person_outline, [
-
             if ((_user?.userProfile?.gender ?? '').isNotEmpty)
               _buildDetailRow('Gender', _user!.userProfile!.gender!),
             if (_user?.userProfile?.height != null)
@@ -840,6 +840,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 _user!.userProfile!.maritalStatus!,
               ),
           ]),
+          _buildContactSection(),
           _buildInfoSection(
             'Religion & Community',
             Icons.temple_hindu_outlined,
@@ -868,13 +869,44 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 '₹${_user!.userProfile!.annualIncome}',
               ),
           ]),
+          _buildInfoSection('Family Details', Icons.family_restroom_outlined, [
+            if (_user?.familyDetails?.fatherName != null)
+              _buildDetailRow('Father\'s Name', _maskName(_user!.familyDetails!.fatherName)),
+            if (_user?.familyDetails?.fatherOccupation != null)
+              _buildDetailRow('Father\'s Occupation', _user!.familyDetails!.fatherOccupation!),
+            if (_user?.familyDetails?.motherName != null)
+              _buildDetailRow('Mother\'s Name', _maskName(_user!.familyDetails!.motherName)),
+            if (_user?.familyDetails?.motherOccupation != null)
+              _buildDetailRow('Mother\'s Occupation', _user!.familyDetails!.motherOccupation!),
+            if (_user?.familyDetails?.familyType != null)
+              _buildDetailRow('Family Type', _user!.familyDetails!.familyType!),
+            if (_user?.familyDetails?.familyStatus != null)
+              _buildDetailRow('Family Status', _user!.familyDetails!.familyStatus!),
+            if (_user?.familyDetails?.siblings != null)
+              _buildDetailRow('Siblings', _user!.familyDetails!.siblings!.toString()),
+          ]),
           _buildInfoSection('Location', Icons.location_on_outlined, [
             if ((_user?.userProfile?.city ?? '').isNotEmpty)
               _buildDetailRow('City', _user!.userProfile!.city!),
             if ((_user?.userProfile?.district ?? '').isNotEmpty)
               _buildDetailRow('District', _user!.userProfile!.district!),
           ]),
-          _buildContactSection(),
+          _buildInfoSection('Partner Preferences', Icons.favorite_outline_rounded, [
+            if (_user?.preferences?.minAge != null || _user?.preferences?.maxAge != null)
+              _buildDetailRow('Age Range', '${_user?.preferences?.minAge ?? '-'}-${_user?.preferences?.maxAge ?? '-'} Years'),
+            if (_user?.preferences?.minHeight != null || _user?.preferences?.maxHeight != null)
+              _buildDetailRow('Height Range', '${_user?.preferences?.minHeight ?? '-'}-${_user?.preferences?.maxHeight ?? '-'} cm'),
+            if ((_user?.preferences?.maritalStatus ?? '').isNotEmpty)
+              _buildDetailRow('Marital Status', _user!.preferences!.maritalStatus!),
+            if ((_user?.preferences?.religion ?? '').isNotEmpty)
+              _buildDetailRow('Preferred Religion', _user!.preferences!.religion!),
+            if (_user?.preferences?.caste != null && _user!.preferences!.caste!.isNotEmpty)
+              _buildDetailRow('Preferred Caste', _user!.preferences!.caste!.join(', ')),
+            if (_user?.preferences?.education != null)
+              _buildDetailRow('Preferred Education', _user!.preferences!.education!.toString()),
+            if (_user?.preferences?.preferredLocations != null && _user!.preferences!.preferredLocations!.isNotEmpty)
+              _buildDetailRow('Preferred Locations', _user!.preferences!.preferredLocations!.join(', ')),
+          ]),
         ],
       ),
     );
@@ -1179,6 +1211,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         ],
       ),
     );
+  }
+
+  String _maskName(String? name) {
+    if (name == null || name.isEmpty) return '-';
+    if (name.length <= 1) return '*';
+    return '${name[0]}${'*' * (name.length - 1)}';
   }
 
   Widget _buildFooter() {
