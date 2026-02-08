@@ -35,14 +35,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
               colors: [
-                Color(0xFFB47FFF), // Purple
-                Color(0xFF5CB3FF), // Blue
-                Color(0xFF4CD9A6), // Green
+                Color(0xFF00BCD4), // Turquoise
+                Color(0xFF0D47A1), // Deep blue
               ],
-              stops: [0.0, 0.5, 1.0],
             ),
           ),
         ),
@@ -133,7 +131,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           labelText: 'Email',
                           prefixIcon: const Icon(
                             Icons.email_outlined,
-                            color: Color(0xFF5CB3FF),
+                            color: Color(0xFF00BCD4),
                           ),
                           filled: true,
                           fillColor: Colors.grey[50],
@@ -148,7 +146,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF5CB3FF),
+                              color: Color(0xFF00BCD4),
                               width: 2,
                             ),
                           ),
@@ -164,7 +162,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           labelText: 'Phone',
                           prefixIcon: const Icon(
                             Icons.phone_outlined,
-                            color: Color(0xFF5CB3FF),
+                            color: Color(0xFF00BCD4),
                           ),
                           filled: true,
                           fillColor: Colors.grey[50],
@@ -179,7 +177,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF5CB3FF),
+                              color: Color(0xFF00BCD4),
                               width: 2,
                             ),
                           ),
@@ -195,7 +193,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -264,12 +262,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.blue[50],
+                            color: const Color(0xFF00BCD4).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.verified,
-                            color: Colors.blue[700],
+                            color: Color(0xFF00BCD4),
                             size: 24,
                           ),
                         ),
@@ -332,9 +330,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           );
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.blue[700],
-                          side: BorderSide(
-                            color: Colors.blue[300]!,
+                          foregroundColor: const Color(0xFF00BCD4),
+                          side: const BorderSide(
+                            color: Color(0xFF00BCD4),
                             width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(
@@ -406,7 +404,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF5CB3FF),
+                              color: Color(0xFF00BCD4),
                               width: 2,
                             ),
                           ),
@@ -453,7 +451,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF5CB3FF),
+                              color: Color(0xFF00BCD4),
                               width: 2,
                             ),
                           ),
@@ -486,7 +484,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),

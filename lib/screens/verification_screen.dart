@@ -170,7 +170,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         text = 'Account Verified';
         break;
       case 'pending':
-        color = Colors.blue;
+        color = const Color(0xFF00BCD4); // Turquoise from main theme
         icon = Icons.hourglass_empty_rounded;
         text = 'Verification Pending';
         break;
@@ -264,7 +264,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
             child: ElevatedButton(
               onPressed: _isLoading ? null : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF2D78),
+                backgroundColor: const Color(0xFF00BCD4), // Turquoise from main theme
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: _isLoading
@@ -320,7 +320,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          Icon(Icons.access_time_filled_rounded, color: Colors.blue.shade100, size: 100),
+          Icon(Icons.access_time_filled_rounded, color: const Color(0xFF00BCD4).withOpacity(0.3), size: 100), // Turquoise from main theme
           const SizedBox(height: 24),
           const Text('Checking Documents', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),

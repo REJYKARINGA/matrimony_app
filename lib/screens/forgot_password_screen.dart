@@ -2,46 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 
-// Custom painter for curved bottom edges (same as in login screen)
-class CurvedBottomPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-
-    final path = Path();
-
-    // Start from bottom left
-    path.moveTo(0, size.height);
-
-    // Draw curve on the left side
-    path.quadraticBezierTo(
-      size.width * 0.25, // Control point x
-      0, // Control point y
-      size.width * 0.5, // End point x
-      0, // End point y
-    );
-
-    // Draw curve on the right side
-    path.quadraticBezierTo(
-      size.width * 0.75, // Control point x
-      0, // Control point y
-      size.width, // End point x
-      size.height, // End point y
-    );
-
-    // Close the path
-    path.lineTo(0, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
 
@@ -69,215 +29,100 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: Color(0xFF0D47A1),
+          ),
+          onPressed: () {
+            if (_currentStep > 0) {
+              setState(() {
+                _currentStep--;
+              });
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Container(
-            height: size.height - MediaQuery.of(context).padding.top,
-            child: Column(
-              children: [
-                // Top decorative section with gradient colors - Full width
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              const Text(
+                'Reset Password',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0D47A1),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getSubtitle(),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // Step indicator
+              Row(
+                children: [
+                  _buildStepIndicator(0, 'Email'),
+                  _buildStepLine(),
+                  _buildStepIndicator(1, 'OTP'),
+                  _buildStepLine(),
+                  _buildStepIndicator(2, 'Password'),
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              // Error message
+              if (_errorMessage != null)
                 Container(
-                  width: double.infinity,
-                  height: size.height * 0.38,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFFB47FFF), // Purple
-                        Color(0xFF5CB3FF), // Blue
-                        Color(0xFF4CD9A6), // Green
-                      ],
-                      stops: [0.0, 0.5, 1.0],
-                    ),
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.shade200),
                   ),
-                  child: Stack(
+                  child: Row(
                     children: [
-                      // Curved bottom edges
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: CustomPaint(
-                          size: Size(size.width, 50),
-                          painter: CurvedBottomPainter(),
-                        ),
+                      Icon(
+                        Icons.error_outline,
+                        color: Colors.red.shade700,
+                        size: 20,
                       ),
-                      // Content
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const SizedBox(height: 20),
-                            // Back button
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.arrow_back_ios_new,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    if (_currentStep > 0) {
-                                      setState(() {
-                                        _currentStep--;
-                                      });
-                                    } else {
-                                      Navigator.pop(context);
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Icon container with elegant design
-                            Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.3),
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Container(
-                                margin: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.95),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.lock_reset_rounded,
-                                  size: 45,
-                                  color: Color(0xFFB47FFF),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 28),
-                            // Welcome text with refined typography
-                            const Text(
-                              'Reset Password',
-                              style: TextStyle(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                                letterSpacing: -0.5,
-                                height: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            // Subtitle
-                            Text(
-                              '',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white.withOpacity(0.95),
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                          ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(
+                            color: Colors.red.shade700,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // Form section with step content
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Password Recovery',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _getSubtitle(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Step indicator
-                        Row(
-                          children: [
-                            _buildStepIndicator(0, 'Email'),
-                            _buildStepLine(),
-                            _buildStepIndicator(1, 'OTP'),
-                            _buildStepLine(),
-                            _buildStepIndicator(2, 'New Password'),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Error message
-                        if (_errorMessage != null)
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.only(bottom: 15),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.red.shade200),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red.shade700,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    _errorMessage!,
-                                    style: TextStyle(
-                                      color: Colors.red.shade700,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                        // Content based on current step
-                        Expanded(child: _buildStepContent(authProvider)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              // Content based on current step
+              _buildStepContent(authProvider),
+            ],
           ),
         ),
       ),
@@ -309,9 +154,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isActive ? Color(0xFFB47FFF) : Colors.grey.shade300,
+              color: isActive ? Color(0xFF00BCD4) : Colors.grey.shade300,
               border: Border.all(
-                color: isActive ? Color(0xFFB47FFF) : Colors.grey.shade400,
+                color: isActive ? Color(0xFF00BCD4) : Colors.grey.shade400,
                 width: 2,
               ),
             ),
@@ -345,7 +190,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Expanded(
       child: Container(
         height: 2,
-        color: _currentStep > 0 ? Color(0xFFB47FFF) : Colors.grey.shade300,
+        margin: const EdgeInsets.only(bottom: 30),
+        color: _currentStep > 0 ? Color(0xFF00BCD4) : Colors.grey.shade300,
       ),
     );
   }
@@ -375,18 +221,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             decoration: InputDecoration(
               labelText: 'Email Address',
               hintText: 'Enter your registered email',
-              prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF5CB3FF)),
+              labelStyle: TextStyle(color: Colors.grey[600]),
+              prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF00BCD4)),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
               ),
               filled: true,
               fillColor: Colors.grey.shade50,
@@ -395,9 +242,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               if (value == null || value.isEmpty) {
                 return 'Please enter your email';
               }
-              if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              ).hasMatch(value)) {
+              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                 return 'Please enter a valid email';
               }
               return null;
@@ -408,12 +253,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
               ),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF5CB3FF).withOpacity(0.3),
+                  color: Color(0xFF00BCD4).withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -442,15 +287,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           } else {
                             setState(() {
                               _errorMessage =
-                                  authProvider.errorMessage ??
-                                  'Failed to send OTP';
+                                  authProvider.errorMessage ?? 'Failed to send OTP';
                               _isLoading = false;
                             });
                           }
                         } catch (e) {
                           setState(() {
-                            _errorMessage =
-                                'An error occurred: ${e.toString()}';
+                            _errorMessage = 'An error occurred: ${e.toString()}';
                             _isLoading = false;
                           });
                         }
@@ -462,16 +305,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: _isLoading
-                  ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: SizedBox(
+                        height: 4,
+                        child: LinearProgressIndicator(
+                          backgroundColor: Colors.white.withOpacity(0.3),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
                       ),
                     )
                   : const Text(
@@ -501,18 +346,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             decoration: InputDecoration(
               labelText: 'Verification Code',
               hintText: 'Enter 6-digit OTP',
-              prefixIcon: Icon(Icons.lock_outlined, color: Color(0xFF5CB3FF)),
+              labelStyle: TextStyle(color: Colors.grey[600]),
+              prefixIcon: Icon(Icons.lock_outlined, color: Color(0xFF00BCD4)),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
               ),
               filled: true,
               fillColor: Colors.grey.shade50,
@@ -527,22 +373,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           Text(
             'OTP sent to ${_emailController.text}',
             style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           Container(
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
               ),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF5CB3FF).withOpacity(0.3),
+                  color: Color(0xFF00BCD4).withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -578,8 +424,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           }
                         } catch (e) {
                           setState(() {
-                            _errorMessage =
-                                'An error occurred: ${e.toString()}';
+                            _errorMessage = 'An error occurred: ${e.toString()}';
                             _isLoading = false;
                           });
                         }
@@ -591,16 +436,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: _isLoading
-                  ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: SizedBox(
+                        height: 4,
+                        child: LinearProgressIndicator(
+                          backgroundColor: Colors.white.withOpacity(0.3),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
                       ),
                     )
                   : const Text(
@@ -613,45 +460,51 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          TextButton(
-            onPressed: _isLoading
-                ? null
-                : () async {
-                    setState(() {
-                      _isLoading = true;
-                      _errorMessage = null;
-                    });
+          Center(
+            child: TextButton(
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        _isLoading = true;
+                        _errorMessage = null;
+                      });
 
-                    try {
-                      bool success = await authProvider.sendOtp(
-                        email: _emailController.text.trim(),
-                      );
+                      try {
+                        bool success = await authProvider.sendOtp(
+                          email: _emailController.text.trim(),
+                        );
 
-                      if (success) {
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('New OTP sent successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        } else {
+                          setState(() {
+                            _errorMessage =
+                                authProvider.errorMessage ?? 'Failed to resend OTP';
+                            _isLoading = false;
+                          });
+                        }
+                      } catch (e) {
                         setState(() {
-                          _errorMessage = 'New OTP sent successfully';
-                          _isLoading = false;
-                        });
-                      } else {
-                        setState(() {
-                          _errorMessage =
-                              authProvider.errorMessage ??
-                              'Failed to resend OTP';
+                          _errorMessage = 'An error occurred: ${e.toString()}';
                           _isLoading = false;
                         });
                       }
-                    } catch (e) {
-                      setState(() {
-                        _errorMessage = 'An error occurred: ${e.toString()}';
-                        _isLoading = false;
-                      });
-                    }
-                  },
-            child: Text(
-              'Resend OTP',
-              style: TextStyle(
-                color: Color(0xFFB47FFF),
-                fontWeight: FontWeight.w600,
+                    },
+              child: Text(
+                'Resend OTP',
+                style: TextStyle(
+                  color: Color(0xFF00BCD4),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -672,7 +525,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             decoration: InputDecoration(
               labelText: 'New Password',
               hintText: 'Enter your new password',
-              prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF5CB3FF)),
+              labelStyle: TextStyle(color: Colors.grey[600]),
+              prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF00BCD4)),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureNewPassword
@@ -687,16 +541,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 },
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
               ),
               filled: true,
               fillColor: Colors.grey.shade50,
@@ -718,7 +572,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             decoration: InputDecoration(
               labelText: 'Confirm Password',
               hintText: 'Confirm your new password',
-              prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF5CB3FF)),
+              labelStyle: TextStyle(color: Colors.grey[600]),
+              prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF00BCD4)),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureConfirmPassword
@@ -733,16 +588,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 },
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-                borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
               ),
               filled: true,
               fillColor: Colors.grey.shade50,
@@ -762,12 +617,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
               ),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF5CB3FF).withOpacity(0.3),
+                  color: Color(0xFF00BCD4).withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -790,7 +645,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           );
 
                           if (success) {
-                            // Show success message and navigate back to login
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Password reset successful!'),
@@ -798,10 +652,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               ),
                             );
 
-                            // Add a small delay to allow the user to see the success message
                             await Future.delayed(const Duration(milliseconds: 1500));
 
-                            // Navigate to login screen
                             Navigator.pushNamedAndRemoveUntil(
                               context,
                               '/login',
@@ -817,8 +669,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           }
                         } catch (e) {
                           setState(() {
-                            _errorMessage =
-                                'An error occurred: ${e.toString()}';
+                            _errorMessage = 'An error occurred: ${e.toString()}';
                             _isLoading = false;
                           });
                         }
@@ -830,16 +681,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               child: _isLoading
-                  ? const SizedBox(
-                      height: 24,
-                      width: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: Colors.white,
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: SizedBox(
+                        height: 4,
+                        child: LinearProgressIndicator(
+                          backgroundColor: Colors.white.withOpacity(0.3),
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
                       ),
                     )
                   : const Text(

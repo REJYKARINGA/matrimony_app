@@ -18,6 +18,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
 
+  // Updated colors to match the cyan header from the image
+  static const Color primaryCyan = Color(0xFF00D9E1);
+  static const Color accentGreen = Color(0xFF4CD9A6);
+
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _dateOfBirthController;
@@ -209,7 +213,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Profile created successfully!'),
-            backgroundColor: Colors.green,
+            backgroundColor: accentGreen,
           ),
         );
 
@@ -302,7 +306,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               height: 4,
               decoration: BoxDecoration(
                 color: index <= _currentStep
-                    ? Theme.of(context).colorScheme.primary
+                    ? primaryCyan
                     : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
@@ -331,8 +335,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           controller: _firstNameController,
           decoration: InputDecoration(
             labelText: 'First Name',
-            prefixIcon: const Icon(Icons.person_outline),
+            prefixIcon: const Icon(Icons.person_outline, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -343,8 +351,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           controller: _lastNameController,
           decoration: InputDecoration(
             labelText: 'Last Name',
-            prefixIcon: const Icon(Icons.person_outline),
+            prefixIcon: const Icon(Icons.person_outline, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -355,8 +367,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           controller: _dateOfBirthController,
           decoration: InputDecoration(
             labelText: 'Date of Birth',
-            prefixIcon: const Icon(Icons.calendar_today),
+            prefixIcon: const Icon(Icons.calendar_today, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -369,6 +385,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               ),
               firstDate: DateTime(1950),
               lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+              builder: (context, child) {
+                return Theme(
+                  data: Theme.of(context).copyWith(
+                    colorScheme: const ColorScheme.light(
+                      primary: primaryCyan,
+                      onPrimary: Colors.white,
+                      onSurface: Colors.black,
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
             );
             if (pickedDate != null) {
               setState(() {
@@ -385,8 +413,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedGender,
           decoration: InputDecoration(
             labelText: 'Gender',
-            prefixIcon: const Icon(Icons.wc),
+            prefixIcon: const Icon(Icons.wc, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -402,8 +434,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedHeight,
           decoration: InputDecoration(
             labelText: 'Height',
-            prefixIcon: const Icon(Icons.height),
+            prefixIcon: const Icon(Icons.height, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -421,8 +457,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedWeight,
           decoration: InputDecoration(
             labelText: 'Weight',
-            prefixIcon: const Icon(Icons.monitor_weight_outlined),
+            prefixIcon: const Icon(Icons.monitor_weight_outlined, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -437,8 +477,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedMaritalStatus,
           decoration: InputDecoration(
             labelText: 'Marital Status',
-            prefixIcon: const Icon(Icons.favorite_outline),
+            prefixIcon: const Icon(Icons.favorite_outline, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -475,8 +519,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedReligion,
           decoration: InputDecoration(
             labelText: 'Religion',
-            prefixIcon: const Icon(Icons.church),
+            prefixIcon: const Icon(Icons.church, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -490,8 +538,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           controller: _casteController,
           decoration: InputDecoration(
             labelText: 'Caste',
-            prefixIcon: const Icon(Icons.people_outline),
+            prefixIcon: const Icon(Icons.people_outline, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -501,8 +553,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           controller: _subCasteController,
           decoration: InputDecoration(
             labelText: 'Sub-Caste',
-            prefixIcon: const Icon(Icons.people),
+            prefixIcon: const Icon(Icons.people, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -512,8 +568,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedMotherTongue,
           decoration: InputDecoration(
             labelText: 'Mother Tongue',
-            prefixIcon: const Icon(Icons.language),
+            prefixIcon: const Icon(Icons.language, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -544,8 +604,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedEducation,
           decoration: InputDecoration(
             labelText: 'Education',
-            prefixIcon: const Icon(Icons.school),
+            prefixIcon: const Icon(Icons.school, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -560,9 +624,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             controller: _customEducationController,
             decoration: InputDecoration(
               labelText: 'Enter Your Education',
-              prefixIcon: const Icon(Icons.edit),
+              prefixIcon: const Icon(Icons.edit, color: primaryCyan),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: primaryCyan, width: 2),
               ),
               filled: true,
               fillColor: Colors.grey.shade50,
@@ -575,8 +643,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedOccupation,
           decoration: InputDecoration(
             labelText: 'Occupation',
-            prefixIcon: const Icon(Icons.work_outline),
+            prefixIcon: const Icon(Icons.work_outline, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -592,9 +664,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             controller: _customOccupationController,
             decoration: InputDecoration(
               labelText: 'Enter Your Occupation',
-              prefixIcon: const Icon(Icons.edit),
+              prefixIcon: const Icon(Icons.edit, color: primaryCyan),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: primaryCyan, width: 2),
               ),
               filled: true,
               fillColor: Colors.grey.shade50,
@@ -607,8 +683,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedAnnualIncome,
           decoration: InputDecoration(
             labelText: 'Annual Income',
-            prefixIcon: const Icon(Icons.currency_rupee),
+            prefixIcon: const Icon(Icons.currency_rupee, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -639,8 +719,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           controller: _cityController,
           decoration: InputDecoration(
             labelText: 'City',
-            prefixIcon: const Icon(Icons.location_city),
+            prefixIcon: const Icon(Icons.location_city, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -650,8 +734,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           value: _selectedDistrict,
           decoration: InputDecoration(
             labelText: 'District',
-            prefixIcon: const Icon(Icons.map),
+            prefixIcon: const Icon(Icons.map, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -666,7 +754,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           enabled: false,
           decoration: InputDecoration(
             labelText: 'State',
-            prefixIcon: const Icon(Icons.location_on_outlined),
+            prefixIcon: const Icon(Icons.location_on_outlined, color: Colors.grey),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
             fillColor: Colors.grey.shade200,
@@ -678,7 +766,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           enabled: false,
           decoration: InputDecoration(
             labelText: 'Country',
-            prefixIcon: const Icon(Icons.public),
+            prefixIcon: const Icon(Icons.public, color: Colors.grey),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
             fillColor: Colors.grey.shade200,
@@ -693,9 +781,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             hintText: 'Tell us something about yourself...',
             prefixIcon: const Padding(
               padding: EdgeInsets.only(bottom: 60),
-              child: Icon(Icons.edit_note),
+              child: Icon(Icons.edit_note, color: primaryCyan),
             ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
             filled: true,
             fillColor: Colors.grey.shade50,
           ),
@@ -721,14 +813,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: theme.colorScheme.primary,
+        foregroundColor: primaryCyan,
         title: const Text('Create Profile'),
         centerTitle: true,
       ),
@@ -766,6 +856,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         onPressed: _previousStep,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: const BorderSide(color: primaryCyan),
+                          foregroundColor: primaryCyan,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -779,12 +871,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _nextStep,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.colorScheme.primary,
+                        backgroundColor: primaryCyan,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        disabledBackgroundColor: primaryCyan.withOpacity(0.5),
                       ),
                       child: _isLoading
                           ? const SizedBox(

@@ -183,12 +183,12 @@ class _CommonFooterState extends State<CommonFooter> {
     Color activeColor;
     
     switch (selectedIndex) {
-      case 0: activeIcon = Icons.home; activeColor = const Color(0xFF6A5AE0); break;
-      case 4: activeIcon = Icons.search_rounded; activeColor = const Color(0xFF6A5AE0); break;
+      case 0: activeIcon = Icons.home; activeColor = const Color(0xFF00BCD4); break;
+      case 4: activeIcon = Icons.search_rounded; activeColor = const Color(0xFF00BCD4); break;
       case 1: activeIcon = Icons.favorite; activeColor = const Color(0xFFFF2D55); break;
-      case 2: activeIcon = Icons.chat_bubble; activeColor = const Color(0xFF6A5AE0); break;
-      case 3: activeIcon = Icons.person; activeColor = const Color(0xFF6A5AE0); break;
-      default: activeIcon = Icons.home; activeColor = const Color(0xFF6A5AE0);
+      case 2: activeIcon = Icons.chat_bubble; activeColor = const Color(0xFF00BCD4); break;
+      case 3: activeIcon = Icons.person; activeColor = const Color(0xFF00BCD4); break;
+      default: activeIcon = Icons.home; activeColor = const Color(0xFF00BCD4);
     }
 
     return Transform.translate(

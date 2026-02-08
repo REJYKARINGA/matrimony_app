@@ -22,10 +22,10 @@ class _MatchingScreenState extends State<MatchingScreen>
   bool _isLoading = true;
   String? _errorMessage;
 
-  // Gradient colors from login page
-  static const Color gradientPurple = Color(0xFFB47FFF);
-  static const Color gradientBlue = Color(0xFF5CB3FF);
-  static const Color gradientGreen = Color(0xFF4CD9A6);
+  // Updated gradient colors to match the cyan header in the image
+  static const Color gradientCyan = Color(0xFF00D9E1); // Bright cyan from image
+  static const Color gradientLightBlue = Color(0xFF64C3E8); // Light blue gradient
+  static const Color accentGreen = Color(0xFF4CD9A6);
 
   int? _currentUserId;
 
@@ -114,8 +114,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [gradientPurple, gradientBlue, gradientGreen],
-              stops: [0.0, 0.5, 1.0],
+              colors: [gradientCyan, gradientLightBlue],
             ),
           ),
         ),
@@ -161,7 +160,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientBlue),
+          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
         ),
       );
     }
@@ -193,7 +192,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     return RefreshIndicator(
-      color: gradientBlue,
+      color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.all(8.0),
@@ -222,7 +221,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientBlue),
+          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
         ),
       );
     }
@@ -235,7 +234,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             Icon(
               Icons.favorite_outline,
               size: 64,
-              color: gradientPurple.withOpacity(0.5),
+              color: gradientCyan.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -264,7 +263,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     return RefreshIndicator(
-      color: gradientBlue,
+      color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.all(8.0),
@@ -289,7 +288,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientBlue),
+          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
         ),
       );
     }
@@ -302,7 +301,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             Icon(
               Icons.send_outlined,
               size: 64,
-              color: gradientBlue.withOpacity(0.5),
+              color: gradientCyan.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -321,7 +320,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     return RefreshIndicator(
-      color: gradientBlue,
+      color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.all(8.0),
@@ -346,7 +345,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientBlue),
+          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
         ),
       );
     }
@@ -359,7 +358,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             Icon(
               Icons.notifications_outlined,
               size: 64,
-              color: gradientGreen.withOpacity(0.5),
+              color: accentGreen.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -378,7 +377,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     return RefreshIndicator(
-      color: gradientBlue,
+      color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
         padding: const EdgeInsets.all(8.0),
@@ -485,10 +484,10 @@ class _MatchingScreenState extends State<MatchingScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     color: (status == 'accepted' 
-                            ? const Color(0xFF4CD9A6) 
+                            ? accentGreen 
                             : status == 'rejected' 
                                 ? Colors.redAccent 
-                                : const Color(0xFF5CB3FF)).withOpacity(0.9),
+                                : gradientCyan).withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -531,7 +530,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.verified_rounded,
-                        color: Color(0xFF5CB3FF),
+                        color: gradientCyan,
                         size: 20,
                       ),
                     ],
@@ -584,7 +583,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                         // Messaging logic
                       },
                       icon: Icons.chat_bubble_rounded,
-                      color: const Color(0xFF5CB3FF),
+                      color: gradientCyan,
                     )
                   else if (isInterest && status == 'pending' && user.id != _currentUserId)
                     Row(
@@ -598,7 +597,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                         _buildFloatingButton(
                           onTap: () => _handleInterestAction(user.id!, true),
                           icon: Icons.favorite_rounded,
-                          color: const Color(0xFF4CD9A6),
+                          color: accentGreen,
                         ),
                       ],
                     )
@@ -687,7 +686,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(accept ? 'Interest accepted!' : 'Interest declined'),
-                backgroundColor: accept ? gradientGreen : Colors.redAccent,
+                backgroundColor: accept ? accentGreen : Colors.redAccent,
               ),
             );
             _loadData();
@@ -707,7 +706,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Interest sent successfully!'),
-            backgroundColor: gradientGreen,
+            backgroundColor: accentGreen,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),

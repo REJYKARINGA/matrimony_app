@@ -194,24 +194,61 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   Widget build(BuildContext context) {
     if (_isDataLoading) {
       return Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
-              stops: [0.0, 0.5, 1.0],
-            ),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text('Family Details'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(color: Color(0xFF00BCD4)),
+              SizedBox(height: 16),
+              Text(
+                'Loading family details...',
+                style: TextStyle(color: Colors.black87, fontSize: 16),
+              ),
+            ],
           ),
-          child: const Center(
+        ),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text('Family Details'),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(color: Colors.white),
-                SizedBox(height: 16),
-                Text(
-                  'Loading family details...',
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                Icon(Icons.error, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _loadFamilyDetails,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF00BCD4),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
@@ -220,154 +257,44 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       );
     }
 
-    if (_errorMessage != null) {
-      return Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
-              stops: [0.0, 0.5, 1.0],
-            ),
-          ),
-          child: SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.error, size: 64, color: Colors.white),
-                  const SizedBox(height: 16),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Text(
-                      _errorMessage!,
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _loadFamilyDetails,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Color(0xFFB47FFF),
-                    ),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Family Details'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          TextButton(
+            onPressed: _isLoading ? null : _saveFamilyDetails,
+            child: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Color(0xFF00BCD4),
+                    ),
+                  )
+                : const Text(
+                    'Save',
+                    style: TextStyle(
+                      color: Color(0xFF00BCD4),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Gradient header
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFFB47FFF),
-                    Color(0xFF5CB3FF),
-                    Color(0xFF4CD9A6),
-                  ],
-                  stops: [0.0, 0.5, 1.0],
-                ),
-              ),
-              child: Column(
-                children: [
-                  // App bar
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 12.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        const Text(
-                          'Family Details',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: _isLoading ? null : _saveFamilyDetails,
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  'Save',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Header icon
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 24.0, top: 8.0),
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.95),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.family_restroom,
-                          size: 40,
-                          color: Color(0xFFB47FFF),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             // Form content
             Expanded(
               child: SingleChildScrollView(
@@ -636,12 +563,12 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
                             ),
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
-                                color: Color(0xFFB47FFF).withOpacity(0.3),
+                                color: Color(0xFF00BCD4).withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -695,10 +622,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Color(0xFFB47FFF).withOpacity(0.1),
+            color: Color(0xFF00BCD4).withOpacity(0.1), // Turquoise
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 20, color: Color(0xFFB47FFF)),
+          child: Icon(icon, size: 20, color: Color(0xFF00BCD4)), // Turquoise
         ),
         const SizedBox(width: 10),
         Text(
@@ -725,7 +652,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF5CB3FF)),
+        prefixIcon: Icon(icon, color: Color(0xFF00BCD4)), // Turquoise
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -736,7 +663,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+          borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2), // Turquoise
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -756,7 +683,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF5CB3FF)),
+        prefixIcon: Icon(icon, color: Color(0xFF00BCD4)), // Turquoise
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -767,7 +694,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+          borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2), // Turquoise
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -795,7 +722,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+          borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2), // Turquoise
         ),
         filled: true,
         fillColor: Colors.grey.shade50,

@@ -241,10 +241,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(color: Color(0xFFB47FFF)),
-                      const SizedBox(height: 16),
-                      const Text('Loading preferences...'),
+                    children: const [
+                      CircularProgressIndicator(color: Color(0xFF00BCD4)),
+                      SizedBox(height: 16),
+                      Text('Loading preferences...'),
                     ],
                   ),
                 ),
@@ -269,7 +269,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline, size: 64, color: Colors.red),
+                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
                         const SizedBox(height: 16),
                         Text(
                           _errorMessage!,
@@ -282,8 +282,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                         const SizedBox(height: 24),
                         Container(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -449,8 +449,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           width: double.infinity,
                           height: 56,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                             ),
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -520,16 +520,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           },
         ),
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
           colors: [
-            const Color(0xFFB47FFF).withOpacity(0.8),
-            const Color(0xFF5CB3FF).withOpacity(0.8),
+            const Color(0xFF00BCD4).withOpacity(0.8),
+            const Color(0xFF0D47A1).withOpacity(0.8),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB47FFF).withOpacity(0.3),
+            color: const Color(0xFF00BCD4).withOpacity(0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -569,7 +569,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       color: Colors.white.withOpacity(0.95),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.tune, size: 35, color: Color(0xFFB47FFF)),
+                    child: const Icon(Icons.tune, size: 35, color: Color(0xFF00BCD4)),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -615,9 +615,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           decoration: InputDecoration(
             labelText: label,
             hintText: hint,
-            prefixIcon: Icon(icon, color: const Color(0xFF5CB3FF)),
+            prefixIcon: Icon(icon, color: const Color(0xFF00BCD4)),
             suffixIcon: IconButton(
-              icon: const Icon(Icons.add_circle_rounded, color: Color(0xFFB47FFF)),
+              icon: const Icon(Icons.add_circle_rounded, color: Color(0xFF00BCD4)),
               onPressed: () => onAdd(controller.text.trim()),
             ),
             border: OutlineInputBorder(
@@ -630,7 +630,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: const Color(0xFF5CB3FF), width: 2),
+              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
             ),
             filled: true,
             fillColor: Colors.grey.shade50,
@@ -648,7 +648,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   item,
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                 ),
-                backgroundColor: const Color(0xFFB47FFF),
+                backgroundColor: const Color(0xFF00BCD4),
                 deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
                 onDeleted: () {
                   setState(() {
@@ -705,7 +705,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.payments_rounded, size: 20, color: Color(0xFF5CB3FF)),
+                  const Icon(Icons.payments_rounded, size: 20, color: Color(0xFF00BCD4)),
                   const SizedBox(width: 10),
                   Text(
                     'Monthly: ₹${_formatSalary(_incomeRange.start)} - ₹${_formatSalary(_incomeRange.end)}',
@@ -720,7 +720,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4CD9A6).withOpacity(0.15),
+                  color: const Color(0xFF00BCD4).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -728,7 +728,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E8B57),
+                    color: Color(0xFF0D47A1),
                   ),
                 ),
               ),
@@ -737,11 +737,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           const SizedBox(height: 12),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: const Color(0xFFB47FFF),
-              inactiveTrackColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              activeTrackColor: const Color(0xFF00BCD4),
+              inactiveTrackColor: const Color(0xFF00BCD4).withOpacity(0.1),
               thumbColor: Colors.white,
-              overlayColor: const Color(0xFFB47FFF).withOpacity(0.1),
-              valueIndicatorColor: const Color(0xFFB47FFF),
+              overlayColor: const Color(0xFF00BCD4).withOpacity(0.1),
+              valueIndicatorColor: const Color(0xFF00BCD4),
               rangeThumbShape: const RoundRangeSliderThumbShape(
                 enabledThumbRadius: 10,
                 elevation: 4,
@@ -802,7 +802,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF5CB3FF)),
+              Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
               const SizedBox(width: 10),
               Text(
                 label,
@@ -817,13 +817,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           const SizedBox(height: 8),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: const Color(0xFFB47FFF),
-              inactiveTrackColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              activeTrackColor: const Color(0xFF00BCD4),
+              inactiveTrackColor: const Color(0xFF00BCD4).withOpacity(0.1),
               thumbColor: Colors.white,
-              overlayColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              overlayColor: const Color(0xFF00BCD4).withOpacity(0.1),
               activeTickMarkColor: Colors.transparent,
               inactiveTickMarkColor: Colors.transparent,
-              valueIndicatorColor: const Color(0xFFB47FFF),
+              valueIndicatorColor: const Color(0xFF00BCD4),
               rangeThumbShape: const RoundRangeSliderThumbShape(
                 enabledThumbRadius: 10,
                 elevation: 4,
@@ -876,7 +876,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF5CB3FF)),
+              Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
               const SizedBox(width: 10),
               Text(
                 label,
@@ -891,11 +891,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           const SizedBox(height: 8),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: const Color(0xFFB47FFF),
-              inactiveTrackColor: const Color(0xFFB47FFF).withOpacity(0.1),
+              activeTrackColor: const Color(0xFF00BCD4),
+              inactiveTrackColor: const Color(0xFF00BCD4).withOpacity(0.1),
               thumbColor: Colors.white,
-              overlayColor: const Color(0xFFB47FFF).withOpacity(0.1),
-              valueIndicatorColor: const Color(0xFFB47FFF),
+              overlayColor: const Color(0xFF00BCD4).withOpacity(0.1),
+              valueIndicatorColor: const Color(0xFF00BCD4),
               activeTickMarkColor: Colors.transparent,
               inactiveTickMarkColor: Colors.transparent,
             ),
@@ -933,7 +933,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           Icons.location_city_rounded,
           hint: 'Type a place and tap search icon',
           suffixIcon: IconButton(
-            icon: const Icon(Icons.person_search_rounded, color: Color(0xFFB47FFF)),
+            icon: const Icon(Icons.person_search_rounded, color: Color(0xFF00BCD4)),
             onPressed: () async {
               final query = _locationSearchController.text.trim();
               if (query.isEmpty) return;
@@ -978,7 +978,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   location,
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                 ),
-                backgroundColor: const Color(0xFFB47FFF),
+                backgroundColor: const Color(0xFF00BCD4),
                 deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
                 onDeleted: () {
                   setState(() {
@@ -1014,7 +1014,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        prefixIcon: Icon(icon, color: Color(0xFF5CB3FF)),
+        prefixIcon: Icon(icon, color: const Color(0xFF00BCD4)),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
@@ -1026,7 +1026,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -1047,7 +1047,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF5CB3FF)),
+        prefixIcon: Icon(icon, color: const Color(0xFF00BCD4)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -1058,7 +1058,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Color(0xFF5CB3FF), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,
@@ -1156,7 +1156,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF5CB3FF)),
+              Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
               const SizedBox(width: 10),
               Text(
                 label,
@@ -1192,7 +1192,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       Text(option['name']),
                       if (isTrending) ...[
                         const SizedBox(width: 4),
-                        const Icon(Icons.trending_up, size: 14, color: Color(0xFFB47FFF)),
+                        const Icon(Icons.trending_up, size: 14, color: Color(0xFF00BCD4)),
                       ],
                     ],
                   ),
@@ -1200,20 +1200,20 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   onSelected: (selected) {
                     onChanged(option['id'], selected);
                   },
-                  selectedColor: const Color(0xFFB47FFF).withOpacity(0.3),
-                  checkmarkColor: const Color(0xFFB47FFF),
+                  selectedColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                  checkmarkColor: const Color(0xFF00BCD4),
                   backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(
                       color: isSelected
-                          ? const Color(0xFFB47FFF)
+                          ? const Color(0xFF00BCD4)
                           : Colors.grey.shade300,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
                   labelStyle: TextStyle(
-                    color: isSelected ? const Color(0xFFB47FFF) : Colors.black87,
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),
                 );

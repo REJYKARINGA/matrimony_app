@@ -21,6 +21,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
   bool _isLoading = true;
   String? _error;
 
+  // Updated colors to match the cyan header from the image
+  static const Color primaryCyan = Color(0xFF00D9E1);
+  static const Color accentGreen = Color(0xFF4CD9A6);
+
   @override
   void initState() {
     super.initState();
@@ -126,7 +130,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF5CB3FF)))
+          ? const Center(child: CircularProgressIndicator(color: primaryCyan))
           : _error != null
               ? Center(child: Text(_error!))
               : _notifications.isEmpty
@@ -141,7 +145,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     )
                   : RefreshIndicator(
-                      color: const Color(0xFF5CB3FF),
+                      color: primaryCyan,
                       onRefresh: _loadNotifications,
                       child: CustomScrollView(
                         slivers: [
@@ -157,7 +161,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             ),
                             actions: [
                               IconButton(
-                                icon: const Icon(Icons.done_all_rounded, color: Color(0xFF5CB3FF)),
+                                icon: const Icon(Icons.done_all_rounded, color: primaryCyan),
                                 onPressed: () async {
                                   await NotificationService.markAllAsRead();
                                   _loadNotifications();
@@ -188,7 +192,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       const TextSpan(text: 'You have '),
                                       TextSpan(
                                         text: '$unreadCount Notifications',
-                                        style: const TextStyle(color: Color(0xFF5CB3FF), fontWeight: FontWeight.bold),
+                                        style: const TextStyle(color: primaryCyan, fontWeight: FontWeight.bold),
                                       ),
                                       const TextSpan(text: ' today.'),
                                     ],
@@ -263,11 +267,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
         break;
       case 'message':
         badgeIcon = Icons.chat_bubble_rounded;
-        badgeColor = const Color(0xFF5CB3FF);
+        badgeColor = primaryCyan;
         break;
       case 'match':
         badgeIcon = Icons.check_circle_rounded;
-        badgeColor = const Color(0xFF4CD9A6);
+        badgeColor = accentGreen;
         break;
       default:
         badgeIcon = Icons.person_rounded;
@@ -368,7 +372,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       children: [
                         TextSpan(
                           text: senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone ',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF5CB3FF)),
+                          style: const TextStyle(fontWeight: FontWeight.bold, color: primaryCyan),
                         ),
                         TextSpan(text: notification['message'] ?? 'sent you a notification'),
                       ],

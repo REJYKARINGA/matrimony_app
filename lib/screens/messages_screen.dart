@@ -135,10 +135,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
             ),
 
             if (_isLoading && _conversations.isEmpty)
-              const Expanded(child: Center(child: CircularProgressIndicator()))
+              const Expanded(child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))))
             else
               Expanded(
                 child: RefreshIndicator(
+                  color: Color(0xFF00BCD4),
                   onRefresh: _loadAllData,
                   child: CustomScrollView(
                     slivers: [
@@ -164,7 +165,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFFFB2C9),
+                                      color: const Color(0xFF00BCD4),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -335,11 +336,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         if (isUnread)
                                           Container(
                                             padding: const EdgeInsets.all(6),
-                                            decoration: const BoxDecoration(color: Color(0xFFFF2D55), shape: BoxShape.circle),
+                                            decoration: const BoxDecoration(color: Color(0xFF00BCD4), shape: BoxShape.circle),
                                             child: const Text('1', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                                           )
                                         else if (isMe)
-                                           Icon(Icons.done_all_rounded, size: 18, color: chat['is_read'] ? const Color(0xFF5CB3FF) : Colors.grey.shade300),
+                                           Icon(Icons.done_all_rounded, size: 18, color: chat['is_read'] ? const Color(0xFF00BCD4) : Colors.grey.shade300),
                                       ],
                                     ),
                                   ),
@@ -483,7 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
         children: [
           Expanded(
             child: _isLoading 
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4)))
               : ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -498,7 +499,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          color: isMe ? const Color(0xFF5CB3FF) : Colors.grey.shade100,
+                          color: isMe ? const Color(0xFF00BCD4) : Colors.grey.shade100,
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(20),
                             topRight: const Radius.circular(20),
@@ -541,7 +542,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: _sendMessage,
                   child: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(color: Color(0xFF5CB3FF), shape: BoxShape.circle),
+                    decoration: const BoxDecoration(color: Color(0xFF00BCD4), shape: BoxShape.circle),
                     child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
                   ),
                 ),

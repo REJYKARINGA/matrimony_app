@@ -29,10 +29,10 @@ class _EngagementPosterInfoScreenState
 
   final ImagePicker _picker = ImagePicker();
 
-  // Gradient colors from login page
-  static const Color gradientPurple = Color(0xFFB47FFF);
-  static const Color gradientBlue = Color(0xFF5CB3FF);
-  static const Color gradientGreen = Color(0xFF4CD9A6);
+  // Updated colors to match the cyan header from the image
+  static const Color primaryCyan = Color(0xFF00D9E1);
+  static const Color lightCyan = Color(0xFF64C3E8);
+  static const Color accentGreen = Color(0xFF4CD9A6);
 
   @override
   void dispose() {
@@ -48,7 +48,7 @@ class _EngagementPosterInfoScreenState
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library),
+              leading: const Icon(Icons.photo_library, color: primaryCyan),
               title: const Text('Choose from Gallery'),
               onTap: () async {
                 Navigator.pop(context);
@@ -66,7 +66,7 @@ class _EngagementPosterInfoScreenState
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt),
+              leading: const Icon(Icons.camera_alt, color: primaryCyan),
               title: const Text('Take a Photo'),
               onTap: () async {
                 Navigator.pop(context);
@@ -97,9 +97,13 @@ class _EngagementPosterInfoScreenState
       lastDate: DateTime(2100),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(
-            context,
-          ).copyWith(colorScheme: ColorScheme.light(primary: gradientBlue)),
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: primaryCyan,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
           child: child!,
         );
       },
@@ -146,7 +150,7 @@ class _EngagementPosterInfoScreenState
             return const AlertDialog(
               content: Row(
                 children: [
-                  CircularProgressIndicator(),
+                  CircularProgressIndicator(color: primaryCyan),
                   SizedBox(width: 20),
                   Text("Uploading engagement poster..."),
                 ],
@@ -177,7 +181,7 @@ class _EngagementPosterInfoScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Engagement poster uploaded successfully!'),
-              backgroundColor: Colors.green,
+              backgroundColor: accentGreen,
             ),
           );
 
@@ -242,10 +246,10 @@ class _EngagementPosterInfoScreenState
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: gradientPurple.withOpacity(0.1),
+              color: primaryCyan.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: gradientPurple, size: 24),
+            child: Icon(icon, color: primaryCyan, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -364,7 +368,7 @@ class _EngagementPosterInfoScreenState
                                           top: 8,
                                           right: 8,
                                           child: CircleAvatar(
-                                            backgroundColor: Colors.black54,
+                                            backgroundColor: primaryCyan,
                                             child: IconButton(
                                               icon: const Icon(
                                                 Icons.edit,
@@ -433,7 +437,7 @@ class _EngagementPosterInfoScreenState
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.calendar_today, color: gradientBlue),
+                                const Icon(Icons.calendar_today, color: primaryCyan),
                                 const SizedBox(width: 12),
                                 Text(
                                   _engagementDate != null
@@ -471,12 +475,12 @@ class _EngagementPosterInfoScreenState
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: gradientBlue,
+                              borderSide: const BorderSide(
+                                color: primaryCyan,
                                 width: 2,
                               ),
                             ),
-                            prefixIcon: Icon(Icons.title, color: gradientBlue),
+                            prefixIcon: const Icon(Icons.title, color: primaryCyan),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -506,14 +510,14 @@ class _EngagementPosterInfoScreenState
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: gradientBlue,
+                              borderSide: const BorderSide(
+                                color: primaryCyan,
                                 width: 2,
                               ),
                             ),
-                            prefixIcon: Icon(
+                            prefixIcon: const Icon(
                               Icons.message,
-                              color: gradientBlue,
+                              color: primaryCyan,
                             ),
                           ),
                           maxLines: 4,
@@ -550,7 +554,7 @@ class _EngagementPosterInfoScreenState
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.event_busy, color: gradientBlue),
+                                const Icon(Icons.event_busy, color: primaryCyan),
                                 const SizedBox(width: 12),
                                 Text(
                                   _displayExpireAt != null
@@ -589,7 +593,7 @@ class _EngagementPosterInfoScreenState
                                   style: TextStyle(fontSize: 13),
                                 ),
                                 value: _isActive,
-                                activeColor: gradientBlue,
+                                activeColor: primaryCyan,
                                 onChanged: (value) {
                                   setModalState(() {
                                     _isActive = value;
@@ -607,7 +611,7 @@ class _EngagementPosterInfoScreenState
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [gradientPurple, gradientBlue],
+                              colors: [primaryCyan, lightCyan],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -647,11 +651,11 @@ class _EngagementPosterInfoScreenState
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Hero Header with login gradient
+          // Hero Header with cyan gradient
           SliverAppBar(
             expandedHeight: 280,
             pinned: true,
-            backgroundColor: gradientPurple,
+            backgroundColor: primaryCyan,
             foregroundColor: Colors.white,
             flexibleSpace: FlexibleSpaceBar(
               title: const Text(
@@ -671,13 +675,13 @@ class _EngagementPosterInfoScreenState
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Gradient background matching login
+                  // Gradient background with cyan colors
                   Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [gradientPurple, gradientBlue, gradientGreen],
+                        colors: [primaryCyan, lightCyan, accentGreen],
                         stops: [0.0, 0.5, 1.0],
                       ),
                     ),
@@ -730,13 +734,13 @@ class _EngagementPosterInfoScreenState
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          gradientPurple.withOpacity(0.15),
-                          gradientBlue.withOpacity(0.1),
+                          primaryCyan.withOpacity(0.15),
+                          lightCyan.withOpacity(0.1),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: gradientPurple.withOpacity(0.3),
+                        color: primaryCyan.withOpacity(0.3),
                       ),
                     ),
                     child: Column(
@@ -893,12 +897,12 @@ class _EngagementPosterInfoScreenState
                     height: 56,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [gradientPurple, gradientBlue],
+                        colors: [primaryCyan, lightCyan],
                       ),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: gradientPurple.withOpacity(0.3),
+                          color: primaryCyan.withOpacity(0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -954,9 +958,9 @@ class _EngagementPosterInfoScreenState
             Container(
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [gradientPurple, gradientBlue],
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [primaryCyan, lightCyan],
                 ),
                 shape: BoxShape.circle,
               ),
@@ -1010,21 +1014,21 @@ class _EngagementPosterInfoScreenState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: gradientPurple.withOpacity(0.1),
+        color: primaryCyan.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: gradientPurple.withOpacity(0.3)),
+        border: Border.all(color: primaryCyan.withOpacity(0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: gradientPurple),
+          Icon(icon, size: 18, color: primaryCyan),
           const SizedBox(width: 8),
           Text(
             label,
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: gradientPurple,
+              color: primaryCyan,
             ),
           ),
         ],

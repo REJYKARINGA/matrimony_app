@@ -228,7 +228,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(color: Color(0xFFB47FFF)),
+                      CircularProgressIndicator(color: Color(0xFF00BCD4)),
                       const SizedBox(height: 16),
                       const Text('Loading profile photos...'),
                     ],
@@ -269,7 +269,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                         Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -311,7 +311,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadProfilePhotos,
-                color: Color(0xFFB47FFF),
+                color: Color(0xFF00BCD4),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -329,7 +329,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                         height: 56,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                            colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                           ),
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -379,9 +379,14 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                               final isPrimary = photo['is_primary'] == true;
 
                               return Card(
-                                elevation: 3,
+                                elevation: 2,
+                                color: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
+                                  side: BorderSide(
+                                    color: Colors.grey.shade200,
+                                    width: 1,
+                                  ),
                                 ),
                                 child: Stack(
                                   fit: StackFit.expand,
@@ -414,8 +419,8 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: [
-                                                Color(0xFF4CD9A6),
-                                                Color(0xFF5CB3FF),
+                                                Color(0xFF00BCD4),
+                                                Color(0xFF0D47A1),
                                               ],
                                             ),
                                             borderRadius: BorderRadius.circular(
@@ -481,7 +486,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 Container(
                                                   decoration: BoxDecoration(
                                                     color: Color(
-                                                      0xFFB47FFF,
+                                                      0xFF00BCD4,
                                                     ).withOpacity(0.9),
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -555,8 +560,8 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Color(0xFFB47FFF).withOpacity(0.2),
-                                        Color(0xFF5CB3FF).withOpacity(0.2),
+                                        Color(0xFF00BCD4).withOpacity(0.2),
+                                        Color(0xFF0D47A1).withOpacity(0.2),
                                       ],
                                     ),
                                     shape: BoxShape.circle,
@@ -564,7 +569,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   child: Icon(
                                     Icons.photo_library,
                                     size: 50,
-                                    color: Color(0xFFB47FFF),
+                                    color: Color(0xFF00BCD4),
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -608,11 +613,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFB47FFF), // Purple
-            Color(0xFF5CB3FF), // Blue
-            Color(0xFF4CD9A6), // Green
+            Color(0xFF00BCD4), // Turquoise
+            Color(0xFF0D47A1), // Deep blue
           ],
-          stops: [0.0, 0.5, 1.0],
+          stops: [0.0, 1.0],
         ),
       ),
       child: Stack(
@@ -652,7 +656,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                     child: Icon(
                       Icons.photo_library,
                       size: 35,
-                      color: Color(0xFFB47FFF),
+                      color: Color(0xFF00BCD4),
                     ),
                   ),
                 ),

@@ -11,44 +11,15 @@ class LandingScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFFB47FFF), // Purple
-              const Color(0xFF5CB3FF), // Blue
-              const Color(0xFF4CD9A6), // Green
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background to match logo
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-              // Logo and Title
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Image.asset(
-                  'assets/images/app_logo_1.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 40),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              // Title with logo colors
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
@@ -56,16 +27,16 @@ class LandingScreen extends StatelessWidget {
                     Text(
                       "Find Your",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
+                        color: Color(0xFF00BCD4), // Turquoise from logo
+                        fontSize: 28,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
                     Text(
                       "Perfect Match!",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 42,
+                        color: Color(0xFF0D47A1), // Deep blue from logo
+                        fontSize: 36,
                         fontWeight: FontWeight.bold,
                         letterSpacing: -1.0,
                       ),
@@ -74,11 +45,11 @@ class LandingScreen extends StatelessWidget {
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 30),
 
-              // Decorative Circular Profile Pattern (Simulating Image 1)
+              // Decorative Circular Profile Pattern
               SizedBox(
-                height: size.height * 0.4,
+                height: size.height * 0.35,
                 width: size.width,
                 child: Stack(
                   alignment: Alignment.center,
@@ -90,10 +61,9 @@ class LandingScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
+                          color: const Color(0xFF00BCD4).withOpacity(0.3),
                           width: 1.5,
-                          style: BorderStyle
-                              .solid, // Flutter doesn't native dash, but solid thin looks good
+                          style: BorderStyle.solid,
                         ),
                       ),
                     ),
@@ -104,7 +74,7 @@ class LandingScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
+                          color: const Color(0xFF00BCD4).withOpacity(0.2),
                           width: 1.5,
                         ),
                       ),
@@ -137,58 +107,71 @@ class LandingScreen extends StatelessWidget {
                       'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
                     ),
 
-                    // Center Avatar (Focus)
+                    // Center Logo (Focus)
                     Container(
-                      width: 80,
-                      height: 80,
+                      width: 100,
+                      height: 100,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 3),
+                        color: Colors.white,
+                        border: Border.all(
+                          color: const Color(0xFF00BCD4), // Turquoise border
+                          width: 3,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: const Color(0xFF00BCD4).withOpacity(0.3),
                             blurRadius: 15,
                           ),
                         ],
                       ),
-                      child: const CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-                        ),
+                      padding: const EdgeInsets.all(12),
+                      child: Image.asset(
+                        'assets/images/vivah_logo.png',
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 30),
 
+              // Description text
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
                   "Let's find you a partner either casual, serious or a marriage relationship.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.grey[600],
                     fontSize: 16,
                     height: 1.5,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
 
-              // Action Button
+              // Action Button with gradient matching logo
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Container(
                   width: double.infinity,
-                  height: 65,
+                  height: 56,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(32.5),
+                    gradient: const LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Color(0xFF00BCD4), // Turquoise
+                        Color(0xFF0D47A1), // Deep blue
+                      ],
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: const Color(0xFF00BCD4).withOpacity(0.4),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
@@ -197,9 +180,10 @@ class LandingScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pushNamed(context, '/login'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF6A5AE0),
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
                       elevation: 0,
+                      shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(32.5),
                       ),
@@ -214,8 +198,8 @@ class LandingScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
             ],
+          ),
           ),
         ),
       ),
@@ -230,7 +214,10 @@ class LandingScreen extends StatelessWidget {
         height: 55,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
+          border: Border.all(
+            color: const Color(0xFF00BCD4).withOpacity(0.6),
+            width: 2,
+          ),
         ),
         child: CircleAvatar(backgroundImage: NetworkImage(url)),
       ),

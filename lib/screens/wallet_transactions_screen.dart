@@ -60,7 +60,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
             ),
           ),
         ),
@@ -94,12 +94,12 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF5CB3FF), Color(0xFF4CD9A6)],
+          colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF5CB3FF).withOpacity(0.3),
+            color: const Color(0xFF00BCD4).withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -158,12 +158,12 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF5CB3FF).withOpacity(0.3)),
+          border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.3)), // Turquoise border
         ),
         child: Text(
           '₹$amount',
           style: const TextStyle(
-            color: Color(0xFF5CB3FF),
+            color: Color(0xFF00BCD4), // Turquoise text
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -202,10 +202,10 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: isCredit ? Colors.green.withOpacity(0.1) : Colors.blue.withOpacity(0.1),
+                      backgroundColor: isCredit ? Colors.green.withOpacity(0.1) : const Color(0xFF0D47A1).withOpacity(0.1), // Deep blue for debit
                       child: Icon(
                         isCredit ? Icons.add : Icons.remove,
-                        color: isCredit ? Colors.green : Colors.blue,
+                        color: isCredit ? Colors.green : const Color(0xFF0D47A1), // Deep blue for debit
                       ),
                     ),
                     title: Text(tx['description'] ?? (isCredit ? 'Wallet Recharge' : 'Contact Unlock')),
@@ -289,7 +289,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
             );
           })
         },
-        'theme': {'color': '#B47FFF'}
+        'theme': {'color': '#00BCD4'} // Turquoise theme for Razorpay
       });
 
       final razorpay = js.JsObject(js.context['Razorpay'], [options]);

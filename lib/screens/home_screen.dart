@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(
                     isSelected ? activeIcon : icon,
                     color: isSelected
-                        ? const Color(0xFF6A5AE0)
+                        ? const Color(0xFF00BCD4) // Turquoise
                         : Colors.grey.shade600,
                     size: 24,
                   ),
@@ -151,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     duration: const Duration(milliseconds: 300),
                     style: TextStyle(
                       color: isSelected
-                          ? const Color(0xFF6A5AE0)
+                          ? const Color(0xFF00BCD4) // Turquoise
                           : Colors.grey.shade600,
                       fontSize: 10,
                       fontWeight: isSelected
@@ -190,24 +190,25 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Transform.translate(
         offset: const Offset(0, -20),
         child: Container(
-          width: 56,
-          height: 56,
+          width: 64,
+          height: 64,
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFF2D55).withOpacity(0.3),
-                blurRadius: 15,
+                color: const Color(0xFFFF2D55).withOpacity(0.25),
+                blurRadius: 20,
+                spreadRadius: 2,
                 offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Center(
             child: Icon(
-              isSelected ? Icons.favorite : Icons.favorite_border,
+              Icons.favorite,
               color: const Color(0xFFFF2D55),
-              size: 28,
+              size: 32,
             ),
           ),
         ),
@@ -573,10 +574,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFBFF),
+      backgroundColor: const Color(0xFFF5FCFD), // Slight turquoise tint instead of pure white
       body: Stack(
         children: [
-          // Background Blobs
+          // Background Blobs - Updated colors
           Positioned(
             top: -100,
             right: -100,
@@ -585,7 +586,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF6A5AE0).withOpacity(0.05),
+                color: const Color(0xFF00BCD4).withOpacity(0.05), // Turquoise
               ),
             ),
           ),
@@ -597,15 +598,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFFF2D55).withOpacity(0.03),
+                color: const Color(0xFF0D47A1).withOpacity(0.03), // Deep blue
               ),
             ),
           ),
           CustomScrollView(
         slivers: [
-          // Personal Greeting Header
-          SliverToBoxAdapter(
-            child: Container(
+          // Personal Greeting Header - Now Sticky
+          SliverAppBar(
+            pinned: true,
+            elevation: 0,
+            backgroundColor: Colors.white,
+            expandedHeight: 0,
+            toolbarHeight: 68,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
@@ -623,7 +630,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey.shade200, width: 2),
+                        border: Border.all(
+                          color: const Color(0xFF00BCD4), // Turquoise border
+                          width: 2,
+                        ),
                       ),
                       child: CircleAvatar(
                         radius: 24,
@@ -633,13 +643,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               )
                             : null,
                         child: user?.displayImage == null
-                            ? const Icon(Icons.person, color: Color(0xFF5CB3FF))
+                            ? const Icon(Icons.person, color: Color(0xFF00BCD4))
                             : null,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Hey, ${profile?.firstName ?? 'User'}!',
@@ -665,7 +676,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           const Icon(
                             Icons.notifications_none_rounded,
-                            color: Color(0xFF1A1A1A),
+                            color: Color(0xFF0D47A1), // Deep blue
                             size: 28,
                           ),
                           if (_unreadNotificationCount > 0)
@@ -736,7 +747,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             margin: const EdgeInsets.symmetric(horizontal: 8),
                             child: CustomPaint(
                               painter: DashedCirclePainter(
-                                color: const Color(0xFFFF2D55),
+                                color: const Color(0xFF00BCD4), // Turquoise
                                 dashWidth: 14,
                                 dashSpace: 8,
                                 strokeWidth: 3,
@@ -796,7 +807,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(32),
                       child: CircularProgressIndicator(
-                        color: Color(0xFF5CB3FF),
+                        color: Color(0xFF00BCD4), // Turquoise
                       ),
                     ),
                   ),
@@ -876,7 +887,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: const Color(0xFF00BCD4).withOpacity(0.15), // Turquoise shadow
               blurRadius: 25,
               offset: const Offset(0, 12),
             ),
@@ -934,7 +945,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.verified_rounded,
-                        color: Color(0xFF5CB3FF),
+                        color: Color(0xFF00BCD4), // Turquoise
                         size: 20,
                       ),
                     ],
@@ -1013,24 +1024,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     },
                     child: _buildFloatingButton(
                       icon: Icons.chat_bubble_rounded,
-                      color: const Color(0xFF5CB3FF),
+                      color: const Color(0xFF00BCD4), // Turquoise
                       iconColor: Colors.white,
                       size: 50,
-                      shadowColor: const Color(0xFF5CB3FF).withOpacity(0.3),
+                      shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
                     ),
                   ),
 
                   // Star (Save)
                   GestureDetector(
                     onTap: () async {
-                      if (_shortlistedUserIds.contains(user.id!)) {
-                        if ((await ShortlistService.removeFromShortlist(user.id!)).statusCode == 200) {
-                          setState(() => _shortlistedUserIds.remove(user.id!));
+                      try {
+                        if (_shortlistedUserIds.contains(user.id!)) {
+                          final response = await ShortlistService.removeFromShortlist(user.id!);
+                          print('Remove shortlist response: ${response.statusCode}');
+                          if (response.statusCode == 200) {
+                            setState(() {
+                              _shortlistedUserIds.remove(user.id!);
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Removed from shortlist'),
+                                backgroundColor: Colors.orange,
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          }
+                        } else {
+                          final response = await ShortlistService.addToShortlist(user.id!);
+                          print('Add shortlist response: ${response.statusCode}');
+                          print('Add shortlist body: ${response.body}');
+                          if (response.statusCode == 200 || response.statusCode == 201) {
+                            setState(() {
+                              _shortlistedUserIds.add(user.id!);
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Added to shortlist'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          }
                         }
-                      } else {
-                        if ((await ShortlistService.addToShortlist(user.id!)).statusCode == 200) {
-                          setState(() => _shortlistedUserIds.add(user.id!));
-                        }
+                      } catch (e) {
+                        print('Error toggling shortlist: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
                       }
                     },
                     child: _buildFloatingButton(
@@ -1090,7 +1134,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           end: Alignment.bottomRight,
           colors: isFemale
               ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+              : [
+                  const Color(0xFFE0F7FA), // Light turquoise
+                  const Color(0xFFB2EBF2)  // Lighter turquoise
+                ],
         ),
       ),
       child: Center(
@@ -1098,8 +1145,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
           size: 80,
           color: isFemale
-              ? const Color(0xFFFF2D55).withOpacity(0.3)
-              : const Color(0xFF5CB3FF).withOpacity(0.3),
+              ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
+              : const Color(0xFF00BCD4).withOpacity(0.3), // Turquoise
         ),
       ),
     );
@@ -1301,6 +1348,7 @@ class _SwipeCardState extends State<SwipeCard> {
     );
   }
 }
+
 class MatchCelebrationDialog extends StatelessWidget {
   final User otherUser;
 
@@ -1319,7 +1367,7 @@ class MatchCelebrationDialog extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Background Glow
+          // Background Glow - Updated to turquoise
           Container(
             width: double.infinity,
             height: 500,
@@ -1327,7 +1375,7 @@ class MatchCelebrationDialog extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF2D55).withOpacity(0.2),
+                  color: const Color(0xFF00BCD4).withOpacity(0.2), // Turquoise
                   blurRadius: 100,
                   spreadRadius: 20,
                 ),
@@ -1384,12 +1432,15 @@ class MatchCelebrationDialog extends StatelessWidget {
                       height: 56,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFFFF2D55), Color(0xFFFF5277)],
+                          colors: [
+                            Color(0xFF00BCD4), // Turquoise
+                            Color(0xFF0D47A1), // Deep blue
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFF2D55).withOpacity(0.4),
+                            color: const Color(0xFF00BCD4).withOpacity(0.4),
                             blurRadius: 15,
                             offset: const Offset(0, 8),
                           ),
@@ -1446,10 +1497,10 @@ class MatchCelebrationDialog extends StatelessWidget {
           ),
           
           // Confetti-like bits (Static representation)
-          Positioned(top: 100, left: 40, child: _buildConfetti(Colors.blueAccent, 10)),
-          Positioned(top: 150, right: 60, child: _buildConfetti(Colors.pinkAccent, 12)),
+          Positioned(top: 100, left: 40, child: _buildConfetti(const Color(0xFF00BCD4), 10)),
+          Positioned(top: 150, right: 60, child: _buildConfetti(const Color(0xFF0D47A1), 12)),
           Positioned(bottom: 120, left: 80, child: _buildConfetti(Colors.yellowAccent, 8)),
-          Positioned(bottom: 180, right: 30, child: _buildConfetti(Colors.greenAccent, 10)),
+          Positioned(bottom: 180, right: 30, child: _buildConfetti(const Color(0xFF00BCD4), 10)),
         ],
       ),
     );

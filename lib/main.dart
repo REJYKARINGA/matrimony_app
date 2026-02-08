@@ -59,11 +59,30 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
   @override
   void initState() {
     super.initState();
+    
+    // Initialize animation controller for the loading bar
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    
+    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
+    _animationController.forward();
+    
     _navigateToHome();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   _navigateToHome() async {
@@ -133,23 +152,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFB47FFF), // Purple
-              Color(0xFF5CB3FF), // Blue
-              Color(0xFF4CD9A6), // Green
-            ],
-            stops: [0.0, 0.5, 1.0],
-          ),
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background to match logo
         ),
         child: Center(
           child: Column(
@@ -157,50 +165,64 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               // Logo container with elegant design
               Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 25,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
-                ),
-                child: Container(
-                  margin: const EdgeInsets.all(15),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/app_logo_1.png',
-                      fit: BoxFit.contain,
-                      width: 80,
-                      height: 80,
-                    ),
-                  ),
+                width: 200,
+                height: 200,
+                child: Image.asset(
+                  'assets/images/vivah_logo.png',
+                  fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               Text(
-                'Matrimony App',
+                'Vivah4Ever',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF00BCD4), // Turquoise from logo
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 20),
-              CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              const SizedBox(height: 8),
+              Text(
+                'Kerala Matrimony',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF0D47A1), // Deep blue from logo
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Linear Progress Indicator
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 80),
+                child: AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) {
+                    return Container(
+                      width: double.infinity,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: _animation.value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF00BCD4), // Turquoise
+                                Color(0xFF0D47A1), // Deep blue
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

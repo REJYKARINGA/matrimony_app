@@ -78,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color? textColor,
     bool showDivider = true,
   }) {
-    final gradientColor = iconColor ?? const Color(0xFF5CB3FF);
+    final gradientColor = iconColor ?? const Color(0xFF00BCD4); // Turquoise
 
     return Column(
       children: [
@@ -135,11 +135,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFFB47FFF), // Purple
-                Color(0xFF5CB3FF), // Blue
-                Color(0xFF4CD9A6), // Green
+                Color(0xFF00BCD4), // Turquoise
+                Color(0xFF0D47A1), // Deep Blue
               ],
-              stops: [0.0, 0.5, 1.0],
             ),
           ),
         ),
@@ -206,16 +204,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFFB47FFF), // Purple
-                    Color(0xFF5CB3FF), // Blue
-                    Color(0xFF4CD9A6), // Green
+                    Color(0xFF00BCD4), // Turquoise
+                    Color(0xFF0D47A1), // Deep Blue
                   ],
-                  stops: [0.0, 0.5, 1.0],
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF5CB3FF).withOpacity(0.3),
+                    color: const Color(0xFF00BCD4).withOpacity(0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -253,8 +249,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFFB47FFF),
-                                    Color(0xFF5CB3FF),
+                                    Color(0xFF00BCD4), // Turquoise
+                                    Color(0xFF0D47A1), // Deep Blue
                                   ],
                                 ),
                               ),

@@ -155,7 +155,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Interest sent!'),
-            backgroundColor: Color(0xFF5CB3FF),
+            backgroundColor: Color(0xFF00BCD4),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -189,7 +189,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
             ),
           ),
           child: SafeArea(
@@ -218,7 +218,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
             ),
           ),
           child: SafeArea(
@@ -278,7 +278,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           ElevatedButton(
                             onPressed: _loadUserProfile,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFB47FFF),
+                              backgroundColor: const Color(0xFF00BCD4),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 40,
@@ -374,7 +374,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       expandedHeight: 420.0,
       floating: false,
       pinned: true,
-      backgroundColor: const Color(0xFF5CB3FF),
+      backgroundColor: const Color(0xFF00BCD4),
       elevation: 0,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -442,7 +442,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+                    colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                   ),
                 ),
               ),
@@ -557,7 +557,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFF5CB3FF).withOpacity(0.1),
+                        color: Color(0xFF00BCD4).withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -681,12 +681,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         gradient: LinearGradient(
           colors: isMatched
               ? [Color(0xFF4CD9A6), Color(0xFF4CD9A6)]
-              : [Color(0xFFB47FFF), Color(0xFF5CB3FF)],
+              : [Color(0xFF00BCD4), Color(0xFF0D47A1)],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: (isMatched ? Color(0xFF4CD9A6) : Color(0xFFB47FFF))
+            color: (isMatched ? Color(0xFF4CD9A6) : Color(0xFF00BCD4))
                 .withOpacity(0.4),
             blurRadius: 12,
             offset: Offset(0, 6),
@@ -747,7 +747,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFFB47FFF), width: 2),
+        border: Border.all(color: Color(0xFF00BCD4), width: 2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -791,7 +791,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             );
           }
         },
-        child: Icon(Icons.message_rounded, color: Color(0xFFB47FFF)),
+        child: Icon(Icons.message_rounded, color: Color(0xFF00BCD4)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -819,7 +819,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     children: [
                       Icon(
                         Icons.info_outline,
-                        color: Color(0xFFB47FFF),
+                        color: Color(0xFF00BCD4),
                         size: 20,
                       ),
                       SizedBox(width: 8),
@@ -949,13 +949,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Color(0xFFB47FFF).withOpacity(0.2),
-                          Color(0xFF5CB3FF).withOpacity(0.2),
+                          Color(0xFF00BCD4).withOpacity(0.2),
+                          Color(0xFF0D47A1).withOpacity(0.2),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(icon, color: Color(0xFFB47FFF), size: 20),
+                    child: Icon(icon, color: Color(0xFF00BCD4), size: 20),
                   ),
                   SizedBox(width: 12),
                   Text(
@@ -1031,13 +1031,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Color(0xFF5CB3FF).withOpacity(0.2),
+                      Color(0xFF00BCD4).withOpacity(0.2),
                       Color(0xFF4CD9A6).withOpacity(0.2),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.phone, color: Color(0xFF5CB3FF), size: 20),
+                child: Icon(Icons.phone, color: Color(0xFF00BCD4), size: 20),
               ),
               SizedBox(width: 12),
               Text(
@@ -1141,12 +1141,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     height: 48,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF5CB3FF), Color(0xFFB47FFF)],
+                        colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
                       ),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF5CB3FF).withOpacity(0.3),
+                          color: Color(0xFF00BCD4).withOpacity(0.3),
                           blurRadius: 8,
                           offset: Offset(0, 4),
                         ),
@@ -1197,12 +1197,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF5CB3FF).withOpacity(0.1),
+              color: const Color(0xFF00BCD4).withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.favorite_rounded,
-              color: Color(0xFF5CB3FF),
+              color: Color(0xFF00BCD4),
               size: 30,
             ),
           ),
@@ -1376,7 +1376,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFB47FFF),
+              backgroundColor: Color(0xFF00BCD4),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -1420,7 +1420,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 _rechargeWallet();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFB47FFF),
+                backgroundColor: Color(0xFF00BCD4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -1532,15 +1532,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Color(0xFFB47FFF).withOpacity(0.1),
-            Color(0xFF5CB3FF).withOpacity(0.1),
+            Color(0xFF00BCD4).withOpacity(0.1),
+            Color(0xFF0D47A1).withOpacity(0.1),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Color(0xFFB47FFF).withOpacity(0.3)),
+        border: Border.all(color: Color(0xFF00BCD4).withOpacity(0.3)),
       ),
       child: ListTile(
-        leading: Icon(Icons.account_balance_wallet, color: Color(0xFFB47FFF)),
+        leading: Icon(Icons.account_balance_wallet, color: Color(0xFF00BCD4)),
         title: Text(
           '₹${amount.toStringAsFixed(0)}',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -1548,7 +1548,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         trailing: Icon(
           Icons.arrow_forward_ios,
           size: 16,
-          color: Color(0xFFB47FFF),
+          color: Color(0xFF00BCD4),
         ),
         onTap: () => Navigator.pop(context, amount),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -1592,7 +1592,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           }),
         },
         'prefill': {'contact': _user?.phone ?? '', 'email': _user?.email ?? ''},
-        'theme': {'color': '#5CB3FF'},
+        'theme': {'color': '#00BCD4'},
       });
 
       final razorpay = js.JsObject(js.context['Razorpay'], [options]);

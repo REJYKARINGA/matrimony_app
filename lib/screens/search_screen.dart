@@ -98,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      const Color(0xFF6A5AE0).withOpacity(0.05),
+                      const Color(0xFF00BCD4).withOpacity(0.05),
                       Colors.white,
                     ],
                   ),
@@ -113,7 +113,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         height: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF6A5AE0).withOpacity(0.05),
+                          color: const Color(0xFF00BCD4).withOpacity(0.05),
                         ),
                       ),
                     ),
@@ -151,7 +151,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           if (_isLoading)
             const SliverFillRemaining(
-              child: Center(child: CircularProgressIndicator(color: Color(0xFF6A5AE0))),
+              child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
             )
           else if (_error != null)
             SliverFillRemaining(
@@ -639,7 +639,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune_rounded, color: Color(0xFF6A5AE0)),
+            icon: const Icon(Icons.tune_rounded, color: Color(0xFF00BCD4)),
             onPressed: () {
                Navigator.of(context).pushReplacementNamed('/preferences');
             },
