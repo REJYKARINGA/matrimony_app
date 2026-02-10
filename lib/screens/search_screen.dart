@@ -21,6 +21,8 @@ class _SearchScreenState extends State<SearchScreen> {
   List<dynamic> _categories = [];
   bool _isLoading = true;
   String? _error;
+  bool _isIdSearchExpanded = false;
+  final TextEditingController _idSearchController = TextEditingController();
 
   @override
   void initState() {
@@ -83,15 +85,60 @@ class _SearchScreenState extends State<SearchScreen> {
               icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
-              'Discover Matches',
-              style: TextStyle(
-                color: Color(0xFF1A1A1A),
-                fontWeight: FontWeight.w800,
-                fontSize: 18,
-              ),
-            ),
+            title: _isIdSearchExpanded 
+              ? Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: TextField(
+                    controller: _idSearchController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'Search Matrimony ID...',
+                      hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                      prefixIcon: const Icon(Icons.search, size: 18),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.close, size: 18),
+                        onPressed: () {
+                          setState(() {
+                            _idSearchController.clear();
+                            _isIdSearchExpanded = false;
+                          });
+                        },
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    onSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        _navigateToResults({
+                          'field': 'matrimony_id',
+                          'title': 'ID Search: $value',
+                          'value': value.trim(),
+                        });
+                      }
+                    },
+                  ),
+                )
+              : const Text(
+                  'Discover Matches',
+                  style: TextStyle(
+                    color: Color(0xFF1A1A1A),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                  ),
+                ),
             centerTitle: true,
+            actions: [
+              if (!_isIdSearchExpanded)
+                IconButton(
+                  icon: const Icon(Icons.search_rounded, color: Color(0xFF1A1A1A)),
+                  onPressed: () => setState(() => _isIdSearchExpanded = true),
+                ),
+              const SizedBox(width: 8),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -203,6 +250,12 @@ class _SearchScreenState extends State<SearchScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _idSearchController.dispose();
+    super.dispose();
   }
 
   Widget _buildPreferenceCard(dynamic category, int index) {
@@ -554,8 +607,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           occupation,
           education,
           maritalStatus,
-          location;
+          location,
+          matrimonyId;
       int? minAge, maxAge;
+
+      if (field == 'matrimony_id') matrimonyId = value;
 
       if (field == 'religion') religion = value;
       if (field == 'caste') caste = value;
@@ -601,6 +657,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         minAge: minAge,
         maxAge: maxAge,
         field: field,
+        matrimonyId: matrimonyId,
         page: _currentPage,
       );
 

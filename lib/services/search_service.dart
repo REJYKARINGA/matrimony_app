@@ -16,9 +16,11 @@ class SearchService {
     int? maxAge,
     String? location,
     String? field,
+    String? matrimonyId,
     int page = 1,
   }) async {
     Map<String, String> queryParams = {'page': page.toString()};
+    if (matrimonyId != null) queryParams['matrimony_id'] = matrimonyId;
     if (religion != null) queryParams['religion'] = religion;
     if (caste != null) queryParams['caste'] = caste;
     if (occupation != null) queryParams['occupation'] = occupation;
