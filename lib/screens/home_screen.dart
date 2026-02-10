@@ -31,7 +31,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   bool _isRefreshing = false;
   int _unreadMessageCount = 0;
@@ -48,12 +48,24 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ReverbService.initialize(context);
     });
+
+    // Add observer for app lifecycle
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _pollingTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Refresh user data (and last_login) when app returns to foreground
+      _refreshUserData();
+    }
   }
 
   void _startPolling() {
