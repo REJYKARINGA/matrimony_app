@@ -9,6 +9,7 @@ import '../services/shortlist_service.dart';
 import 'view_profile_screen.dart';
 import 'messages_screen.dart';
 import '../widgets/common_footer.dart';
+import 'preferences_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -85,60 +86,15 @@ class _SearchScreenState extends State<SearchScreen> {
               icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: _isIdSearchExpanded 
-              ? Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: TextField(
-                    controller: _idSearchController,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: 'Search Matrimony ID...',
-                      hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                      prefixIcon: const Icon(Icons.search, size: 18),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.close, size: 18),
-                        onPressed: () {
-                          setState(() {
-                            _idSearchController.clear();
-                            _isIdSearchExpanded = false;
-                          });
-                        },
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                    onSubmitted: (value) {
-                      if (value.trim().isNotEmpty) {
-                        _navigateToResults({
-                          'field': 'matrimony_id',
-                          'title': 'ID Search: $value',
-                          'value': value.trim(),
-                        });
-                      }
-                    },
-                  ),
-                )
-              : const Text(
-                  'Discover Matches',
-                  style: TextStyle(
-                    color: Color(0xFF1A1A1A),
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18,
-                  ),
-                ),
+            title: const Text(
+              'Discover Matches',
+              style: TextStyle(
+                color: Color(0xFF1A1A1A),
+                fontWeight: FontWeight.w800,
+                fontSize: 18,
+              ),
+            ),
             centerTitle: true,
-            actions: [
-              if (!_isIdSearchExpanded)
-                IconButton(
-                  icon: const Icon(Icons.search_rounded, color: Color(0xFF1A1A1A)),
-                  onPressed: () => setState(() => _isIdSearchExpanded = true),
-                ),
-              const SizedBox(width: 8),
-            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -194,6 +150,93 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ),
+          
+          // ID Search Bar (Consistent with Home Page)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        controller: _idSearchController,
+                        onChanged: (val) => setState(() {}),
+                        decoration: InputDecoration(
+                          hintText: 'Search by Matrimony ID',
+                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00BCD4), size: 20),
+                          suffixIcon: _idSearchController.text.trim().isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.send_rounded, color: Color(0xFF00BCD4), size: 18),
+                                onPressed: () {
+                                  if (_idSearchController.text.trim().isNotEmpty) {
+                                    _navigateToResults({
+                                      'field': 'matrimony_id',
+                                      'title': 'ID Search: ${_idSearchController.text}',
+                                      'value': _idSearchController.text.trim(),
+                                    });
+                                  }
+                                },
+                              )
+                            : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                        onSubmitted: (value) {
+                          if (value.trim().isNotEmpty) {
+                            _navigateToResults({
+                              'field': 'matrimony_id',
+                              'title': 'ID Search: $value',
+                              'value': value.trim(),
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Filter Button
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (c) => const PreferencesScreen(),
+                      ),
+                    ),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00BCD4),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF00BCD4).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(Icons.tune_rounded, color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
