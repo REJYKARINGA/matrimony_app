@@ -4,6 +4,10 @@ import '../models/user_model.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
 import 'view_profile_screen.dart';
+import 'messages_screen.dart';
+import '../services/shortlist_service.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_provider.dart';
 
 class MatchingScreen extends StatefulWidget {
   const MatchingScreen({Key? key}) : super(key: key);
@@ -19,6 +23,7 @@ class _MatchingScreenState extends State<MatchingScreen>
   List<dynamic> _sentInterests = [];
   List<dynamic> _receivedInterests = [];
   List<dynamic> _declinedInterests = [];
+  Set<int> _shortlistedUserIds = {};
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -56,11 +61,12 @@ class _MatchingScreenState extends State<MatchingScreen>
     });
 
     try {
-      // Load all relevant data concurrently (Suggestions removed)
+      // Load all relevant data concurrently
       final results = await Future.wait([
         MatchingService.getMatches(),
         MatchingService.getSentInterests(),
         MatchingService.getReceivedInterests(),
+        ShortlistService.getShortlistedProfiles(),
       ]);
 
       // Process matches
@@ -88,6 +94,13 @@ class _MatchingScreenState extends State<MatchingScreen>
         // Collect declined received interests & combine
         final declinedReceived = received.where((i) => i['status'] == 'rejected').toList();
         _declinedInterests.addAll(declinedReceived);
+      }
+
+      // Process shortlist
+      if (results[3].statusCode == 200) {
+        final data = json.decode(results[3].body);
+        final List<dynamic> items = data['shortlist']['data'] ?? [];
+        _shortlistedUserIds = items.map((i) => i['shortlisted_user_id'] as int).toSet();
       }
 
       setState(() {
@@ -403,7 +416,6 @@ class _MatchingScreenState extends State<MatchingScreen>
     String? status,
   }) {
     final profile = user.userProfile;
-    final theme = Theme.of(context);
     
     String ageText = '';
     if (profile?.dateOfBirth != null) {
@@ -436,7 +448,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: const Color(0xFF00BCD4).withOpacity(0.15),
             blurRadius: 25,
             offset: const Offset(0, 12),
           ),
@@ -475,6 +487,42 @@ class _MatchingScreenState extends State<MatchingScreen>
                 ),
               ),
             ),
+            // Distance Badge
+            if (user.distance != null)
+              Positioned(
+                top: 24,
+                left: 24,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.2),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.near_me_rounded,
+                        color: Colors.white,
+                        size: 12,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${user.distance!.toStringAsFixed(1)} KM',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             // Status Badge
             if (isInterest && status != null)
               Positioned(
@@ -501,8 +549,8 @@ class _MatchingScreenState extends State<MatchingScreen>
                     status.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -512,7 +560,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             Positioned(
               left: 24,
               right: 24,
-              bottom: 100,
+              bottom: 110,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -530,12 +578,11 @@ class _MatchingScreenState extends State<MatchingScreen>
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.verified_rounded,
-                        color: gradientCyan,
+                        color: Color(0xFF00BCD4),
                         size: 20,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
                   const SizedBox(height: 4),
                   if (profile?.caste != null || maritalStatus.isNotEmpty)
                     Text(
@@ -543,8 +590,8 @@ class _MatchingScreenState extends State<MatchingScreen>
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -557,11 +604,14 @@ class _MatchingScreenState extends State<MatchingScreen>
                         size: 16,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        loc.isNotEmpty ? loc : 'Unknown Location',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 14,
+                      Expanded(
+                        child: Text(
+                          loc.isNotEmpty ? loc : 'Unknown Location',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -577,36 +627,100 @@ class _MatchingScreenState extends State<MatchingScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  if (isMatch)
-                    _buildFloatingButton(
-                      onTap: () {
-                        // Messaging logic
-                      },
+                   // Close / Reject
+                  GestureDetector(
+                    onTap: () {
+                      if (isInterest && status == 'pending') {
+                         _handleInterestAction(user.id!, false);
+                      }
+                    },
+                    child: _buildFloatingButton(
+                      icon: Icons.close_rounded,
+                      color: Colors.white,
+                      iconColor: Colors.grey.shade600,
+                      size: 50,
+                    ),
+                  ),
+
+                  // Chat
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => ChatScreen(
+                            otherUserId: user.id!,
+                            otherUserName: '${user.matrimonyId ?? 'User'}',
+                            otherUserImage: user.displayImage != null
+                                ? ApiService.getImageUrl(user.displayImage!)
+                                : null,
+                            isMatched: isMatch || status == 'accepted',
+                          ),
+                        ),
+                      );
+                    },
+                    child: _buildFloatingButton(
                       icon: Icons.chat_bubble_rounded,
-                      color: gradientCyan,
-                    )
-                  else if (isInterest && status == 'pending' && user.id != _currentUserId)
-                    Row(
-                      children: [
-                        _buildFloatingButton(
-                          onTap: () => _handleInterestAction(user.id!, false),
-                          icon: Icons.close_rounded,
-                          color: Colors.redAccent,
-                        ),
-                        const SizedBox(width: 20),
-                        _buildFloatingButton(
-                          onTap: () => _handleInterestAction(user.id!, true),
-                          icon: Icons.favorite_rounded,
-                          color: accentGreen,
-                        ),
-                      ],
-                    )
-                  else
-                    const SizedBox.shrink(),
+                      color: const Color(0xFF00BCD4),
+                      iconColor: Colors.white,
+                      size: 50,
+                      shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                    ),
+                  ),
+
+                  // Shortlist (Star)
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        if (_shortlistedUserIds.contains(user.id!)) {
+                          final response = await ShortlistService.removeFromShortlist(user.id!);
+                          if (response.statusCode == 200) {
+                            setState(() {
+                              _shortlistedUserIds.remove(user.id!);
+                            });
+                          }
+                        } else {
+                          final response = await ShortlistService.addToShortlist(user.id!);
+                          if (response.statusCode == 200 || response.statusCode == 201) {
+                            setState(() {
+                              _shortlistedUserIds.add(user.id!);
+                            });
+                          }
+                        }
+                      } catch (e) {
+                         print('Error toggling shortlist: $e');
+                      }
+                    },
+                    child: _buildFloatingButton(
+                      icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
+                      color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
+                      iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
+                      size: 50,
+                      shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+                    ),
+                  ),
+
+                  // Accept / Match (Heart)
+                  GestureDetector(
+                    onTap: () {
+                      if (isInterest && status == 'pending') {
+                         _handleInterestAction(user.id!, true);
+                      } else if (!isMatch && status != 'accepted') {
+                         _sendInterest(user.id!);
+                      }
+                    },
+                    child: _buildFloatingButton(
+                      icon: (isMatch || status == 'accepted') ? Icons.done_all_rounded : Icons.favorite,
+                      color: (isMatch || status == 'accepted') ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
+                      iconColor: Colors.white,
+                      size: 60,
+                      shadowColor: ((isMatch || status == 'accepted') ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                    ),
+                  ),
                 ],
               ),
             ),
-            // InkWell for full card tap
+            // Clickable area
             Positioned.fill(
               child: Material(
                 color: Colors.transparent,
@@ -629,38 +743,54 @@ class _MatchingScreenState extends State<MatchingScreen>
   }
 
   Widget _buildFloatingButton({
-    required VoidCallback onTap,
     required IconData icon,
     required Color color,
+    required Color iconColor,
+    required double size,
+    Color? shadowColor,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: Colors.white, size: 28),
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor ?? Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Icon(icon, color: iconColor, size: size * 0.5),
       ),
     );
   }
 
   Widget _buildPlaceholderBackground(String? gender) {
+    bool isFemale = gender?.toLowerCase() == 'female';
     return Container(
-      color: Colors.grey[200],
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isFemale
+              ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+              : [
+                  const Color(0xFFE0F7FA),
+                  const Color(0xFFB2EBF2)
+                ],
+        ),
+      ),
       child: Center(
         child: Icon(
-          gender == 'female' ? Icons.woman : Icons.man,
-          size: 100,
-          color: Colors.grey[400],
+          isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
+          size: 80,
+          color: isFemale
+              ? const Color(0xFF0D47A1).withOpacity(0.3)
+              : const Color(0xFF00BCD4).withOpacity(0.3),
         ),
       ),
     );
