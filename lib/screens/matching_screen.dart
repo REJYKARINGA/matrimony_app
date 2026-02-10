@@ -4,7 +4,7 @@ import '../models/user_model.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
 import 'view_profile_screen.dart';
-import 'messages_screen.dart';
+import 'messages_screen.dart' as msg;
 import '../services/shortlist_service.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
@@ -212,10 +212,14 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _declinedInterests.length,
         itemBuilder: (context, index) {
           final interest = _declinedInterests[index];
+          if (interest == null) return const SizedBox.shrink();
+          
           // Check who the target profile is
           final bool isSentByMe = interest['sender_id'] == _currentUserId;
           
           final userJson = isSentByMe ? interest['receiver'] : interest['sender'];
+          if (userJson == null) return const SizedBox.shrink();
+          
           final user = User.fromJson(userJson);
 
           return _buildProfileCard(
@@ -245,7 +249,7 @@ class _MatchingScreenState extends State<MatchingScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.favorite_outline,
+              Icons.favorite_border,
               size: 64,
               color: gradientCyan.withOpacity(0.5),
             ),
@@ -283,10 +287,16 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _matches.length,
         itemBuilder: (context, index) {
           final match = _matches[index];
+          if (match == null || match['user1'] == null || match['user2'] == null) {
+            return const SizedBox.shrink();
+          }
+          
           final currentUser = _currentUserId; 
           final otherUserJson = match['user1']['id'].toString() != currentUser.toString()
               ? match['user1']
               : match['user2'];
+              
+          if (otherUserJson == null) return const SizedBox.shrink();
           final user = User.fromJson(otherUserJson);
 
           return _buildProfileCard(user, isMatch: true);
@@ -340,6 +350,9 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _sentInterests.length,
         itemBuilder: (context, index) {
           final interest = _sentInterests[index];
+          if (interest == null || interest['receiver'] == null) {
+            return const SizedBox.shrink();
+          }
           final user = User.fromJson(interest['receiver']);
 
           return _buildProfileCard(
@@ -397,6 +410,9 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _receivedInterests.length,
         itemBuilder: (context, index) {
           final interest = _receivedInterests[index];
+          if (interest == null || interest['sender'] == null) {
+            return const SizedBox.shrink();
+          }
           final user = User.fromJson(interest['sender']);
 
           return _buildProfileCard(
@@ -487,42 +503,6 @@ class _MatchingScreenState extends State<MatchingScreen>
                 ),
               ),
             ),
-            // Distance Badge
-            if (user.distance != null)
-              Positioned(
-                top: 24,
-                left: 24,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.2),
-                      width: 0.5,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.near_me_rounded,
-                        color: Colors.white,
-                        size: 12,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${user.distance!.toStringAsFixed(1)} KM',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             // Status Badge
             if (isInterest && status != null)
               Positioned(
@@ -590,8 +570,8 @@ class _MatchingScreenState extends State<MatchingScreen>
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -614,6 +594,38 @@ class _MatchingScreenState extends State<MatchingScreen>
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (user.distance != null)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00BCD4).withOpacity(0.35),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.near_me_rounded,
+                                color: Colors.white,
+                                size: 10,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${user.distance!.toStringAsFixed(1)} KM',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ],
@@ -627,18 +639,25 @@ class _MatchingScreenState extends State<MatchingScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                   // Close / Reject
+                   // Close / Dismiss
                   GestureDetector(
                     onTap: () {
                       if (isInterest && status == 'pending') {
                          _handleInterestAction(user.id!, false);
+                      } else {
+                         // For matches or other states, just show a snackbar for now
+                         // or implement "Hide this profile" logic if available
+                         ScaffoldMessenger.of(context).showSnackBar(
+                           const SnackBar(content: Text('Profile dismissed')),
+                         );
                       }
                     },
                     child: _buildFloatingButton(
                       icon: Icons.close_rounded,
                       color: Colors.white,
-                      iconColor: Colors.grey.shade600,
+                      iconColor: Colors.black54,
                       size: 50,
+                      shadowColor: Colors.black.withOpacity(0.1),
                     ),
                   ),
 
@@ -648,7 +667,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (c) => ChatScreen(
+                          builder: (c) => msg.ChatScreen(
                             otherUserId: user.id!,
                             otherUserName: '${user.matrimonyId ?? 'User'}',
                             otherUserImage: user.displayImage != null
@@ -720,8 +739,12 @@ class _MatchingScreenState extends State<MatchingScreen>
                 ],
               ),
             ),
-            // Clickable area
-            Positioned.fill(
+            // Clickable area for profile view (top part only to avoid blocking buttons)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 120, 
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -786,7 +809,7 @@ class _MatchingScreenState extends State<MatchingScreen>
       ),
       child: Center(
         child: Icon(
-          isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
+          Icons.face,
           size: 80,
           color: isFemale
               ? const Color(0xFF0D47A1).withOpacity(0.3)

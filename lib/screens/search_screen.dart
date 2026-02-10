@@ -764,7 +764,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.verified_rounded,
-                        color: Color(0xFF5CB3FF),
+                        color: Color(0xFF00BCD4),
                         size: 20,
                       ),
                     ],
@@ -791,13 +791,48 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         size: 16,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        loc.isNotEmpty ? loc : 'Unknown Location',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 14,
+                      Expanded(
+                        child: Text(
+                          loc.isNotEmpty ? loc : 'Unknown Location',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (user.distance != null)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00BCD4).withOpacity(0.35),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.3),
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.near_me_rounded,
+                                color: Colors.white,
+                                size: 10,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${user.distance!.toStringAsFixed(1)} KM',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                 ],
@@ -810,6 +845,21 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                   // Close / Dismiss
+                  GestureDetector(
+                    onTap: () {
+                       ScaffoldMessenger.of(context).showSnackBar(
+                         const SnackBar(content: Text('Profile dismissed')),
+                       );
+                    },
+                    child: _buildFloatingButton(
+                      icon: Icons.close_rounded,
+                      color: Colors.white,
+                      iconColor: Colors.black54,
+                      size: 50,
+                      shadowColor: Colors.black.withOpacity(0.1),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -829,10 +879,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     },
                     child: _buildFloatingButton(
                       icon: Icons.chat_bubble_rounded,
-                      color: const Color(0xFF5CB3FF),
+                      color: const Color(0xFF00BCD4),
                       iconColor: Colors.white,
                       size: 50,
-                      shadowColor: const Color(0xFF5CB3FF).withOpacity(0.3),
+                      shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
                     ),
                   ),
                   GestureDetector(
@@ -868,7 +918,12 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                 ],
               ),
             ),
-            Positioned.fill(
+            // Clickable area for profile view (top part only to avoid blocking buttons)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 120, 
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
