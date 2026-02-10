@@ -337,7 +337,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSection('Age Preference', [
+                        _buildSection('Age', [
                           _buildRangeSlider(
                             'Age: ${_ageRange.start.round()} - ${_ageRange.end.round()} Years',
                             _ageRange,
@@ -348,7 +348,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                         ]),
 
-                        _buildSection('Height Preference', [
+                        _buildSection('Height', [
                           _buildRangeSlider(
                             'Height: ${_heightRange.start.round()} - ${_heightRange.end.round()} cm',
                             _heightRange,
@@ -359,9 +359,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                         ]),
 
-                        _buildSection('Basic Preferences', [
+                        _buildSection('Basic Details', [
                           _buildDropdown(
-                            'Preferred Marital Status',
+                            'Marital Status',
                             _maritalStatus,
                             _maritalStatusOptions,
                             Icons.favorite_outline,
@@ -374,7 +374,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           // Preferred Religion is now forced to match user's religion and hidden
                           const SizedBox(height: 10),
                           _buildMultiSelectField(
-                            'Preferred Caste',
+                            'Caste',
                             _casteController,
                             _selectedCastes,
                             Icons.people_outline,
@@ -390,7 +390,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                           const SizedBox(height: 10),
                            _buildCheckboxSelector(
-                            'Preferred Education',
+                            'Education',
                             _educationOptions,
                             _selectedEducationIds,
                             Icons.school,
@@ -410,7 +410,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                           const SizedBox(height: 10),
                            _buildCheckboxSelector(
-                            'Preferred Occupation',
+                            'Occupation',
                             _occupationOptions,
                             _selectedOccupationIds,
                             Icons.work_outline,
@@ -430,7 +430,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                         ]),
 
-                        _buildSection('Distance Preference', [
+                        _buildSection('Distance', [
                           _buildSingleSlider(
                             'Search Radius: ${_maxDistance.round()} km',
                             _maxDistance,
@@ -441,11 +441,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                         ]),
 
-                        _buildSection('Income Preference', [
+                        _buildSection('Income', [
                           _buildIncomeRangeSlider(),
                         ]),
 
-                        _buildSection('Location Preferences', [
+                        _buildSection('Locations', [
                           _buildLocationSelector(),
                         ]),
 
