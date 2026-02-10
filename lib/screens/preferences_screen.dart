@@ -44,6 +44,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   bool _isDataLoading = true;
   String? _errorMessage;
 
+  // Sorting states
+  bool _isEducationAscending = false;
+  bool _isOccupationAscending = false;
+
   final List<String> _maritalStatusOptions = [
     'never_married',
     'divorced',
@@ -385,7 +389,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             },
                           ),
                           const SizedBox(height: 10),
-                          _buildCheckboxSelector(
+                           _buildCheckboxSelector(
                             'Preferred Education',
                             _educationOptions,
                             _selectedEducationIds,
@@ -399,9 +403,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                 }
                               });
                             },
+                            isAscending: _isEducationAscending,
+                            onSortToggled: () {
+                              setState(() => _isEducationAscending = !_isEducationAscending);
+                            },
                           ),
                           const SizedBox(height: 10),
-                          _buildCheckboxSelector(
+                           _buildCheckboxSelector(
                             'Preferred Occupation',
                             _occupationOptions,
                             _selectedOccupationIds,
@@ -414,6 +422,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                   _selectedOccupationIds.remove(id);
                                 }
                               });
+                            },
+                            isAscending: _isOccupationAscending,
+                            onSortToggled: () {
+                              setState(() => _isOccupationAscending = !_isOccupationAscending);
                             },
                           ),
                         ]),
@@ -1136,8 +1148,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     List<Map<String, dynamic>> options,
     List<int> selectedIds,
     IconData icon,
-    Function(int, bool) onChanged,
-  ) {
+    Function(int, bool) onChanged, {
+    required bool isAscending,
+    required VoidCallback onSortToggled,
+  }) {
+    // Sort options based on current sorting mode
+    final sortedOptions = List<Map<String, dynamic>>.from(options);
+    if (isAscending) {
+      sortedOptions.sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+    } else {
+      // Sort by popularity (Trending) - descending
+      sortedOptions.sort((a, b) => (b['popularity_count'] as int).compareTo(a['popularity_count'] as int));
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1149,21 +1172,128 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+              const SizedBox(width: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                   const Text(
+                    'Sort:',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  GestureDetector(
+                    onTap: onSortToggled,
+                    child: Container(
+                      height: 30,
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Trending Option
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: !isAscending ? Colors.white : Colors.transparent,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: !isAscending ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1),
+                                )
+                              ] : [],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.trending_up_rounded,
+                                  size: 13,
+                                  color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Trending',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // A-Z Option
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: isAscending ? Colors.white : Colors.transparent,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: isAscending ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1),
+                                )
+                              ] : [],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.sort_by_alpha_rounded,
+                                  size: 13,
+                                  color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'A-Z',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                    color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           const SizedBox(height: 12),
-          if (options.isEmpty)
+          if (sortedOptions.isEmpty)
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
@@ -1175,7 +1305,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: options.map((option) {
+              children: sortedOptions.map((option) {
                 final isSelected = selectedIds.contains(option['id']);
                 final isTrending = (option['popularity_count'] ?? 0) > 10; // Threshold for trending
                 
