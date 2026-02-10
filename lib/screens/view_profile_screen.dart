@@ -12,6 +12,7 @@ import 'dart:html' as html;
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import 'verification_screen.dart';
+import 'wallet_transactions_screen.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final int userId;
@@ -389,25 +390,37 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.account_balance_wallet, color: Colors.white, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  '₹${_walletBalance.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+          child: InkWell(
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WalletTransactionsScreen(),
                 ),
-              ],
+              );
+              _loadWalletBalance(); // Refresh balance after returning
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.account_balance_wallet, color: Colors.white, size: 16),
+                  const SizedBox(width: 4),
+                  Text(
+                    '₹${_walletBalance.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
