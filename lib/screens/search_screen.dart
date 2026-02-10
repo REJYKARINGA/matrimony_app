@@ -48,8 +48,9 @@ class _SearchScreenState extends State<SearchScreen> {
       final response = await SearchService.getPreferenceMatches();
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final rawCategories = data['categories'] as List? ?? [];
         setState(() {
-          _categories = data['categories'] ?? [];
+          _categories = rawCategories.where((c) => c['field'] != 'religion').toList();
           _isLoading = false;
         });
       } else {
