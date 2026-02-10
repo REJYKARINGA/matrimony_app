@@ -78,15 +78,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        final profile = data['user']['user_profile'];
         final preferences = data['user']['preferences'];
+        final userReligion = profile?['religion'];
 
         if (preferences != null) {
-          _initializeControllersWithData(preferences);
+          _initializeControllersWithData(preferences, userReligion);
         } else {
-          _initializeEmptyControllers();
+          _initializeEmptyControllers(userReligion);
         }
       } else if (response.statusCode == 404) {
-        _initializeEmptyControllers();
+        _initializeEmptyControllers(null);
       } else {
         setState(() {
           _errorMessage = 'Failed to load preferences';
@@ -103,11 +105,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     }
   }
 
-  void _initializeEmptyControllers() {
+  void _initializeEmptyControllers(String? userReligion) {
     _ageRange = const RangeValues(18, 50);
     _heightRange = const RangeValues(140, 180);
     _maritalStatus = null;
-    _religion = null;
+    _religion = userReligion;
     _selectedCastes = [];
     _casteController.text = '';
     _selectedEducationIds = [];
@@ -118,7 +120,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _locationSearchController.text = '';
   }
 
-  void _initializeControllersWithData(Map<String, dynamic> preferences) {
+  void _initializeControllersWithData(Map<String, dynamic> preferences, String? userReligion) {
     double ageStart = double.tryParse(preferences['min_age']?.toString() ?? '18') ?? 18;
     double ageEnd = double.tryParse(preferences['max_age']?.toString() ?? '50') ?? 50;
     _ageRange = RangeValues(
@@ -133,7 +135,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       heightEnd.clamp(100, 220)
     );
     _maritalStatus = preferences['marital_status'];
-    _religion = preferences['religion'];
+    _religion = userReligion ?? preferences['religion'];
     
     if (preferences['caste'] != null) {
       if (preferences['caste'] is List) {
@@ -365,15 +367,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             formatLabel: true,
                           ),
                           const SizedBox(height: 10),
-                          _buildDropdown(
-                            'Preferred Religion',
-                            _religion,
-                            _religions,
-                            Icons.church,
-                            (value) {
-                              setState(() => _religion = value);
-                            },
-                          ),
+                          // Preferred Religion is now forced to match user's religion and hidden
                           const SizedBox(height: 10),
                           _buildMultiSelectField(
                             'Preferred Caste',
