@@ -578,8 +578,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5FCFD), // Slight turquoise tint instead of pure white
-      body: Stack(
-        children: [
+      body: RefreshIndicator(
+        onRefresh: _loadRecommendedUsers,
+        color: const Color(0xFF00BCD4),
+        child: Stack(
+          children: [
           // Background Blobs - Updated colors
           Positioned(
             top: -100,
@@ -935,6 +938,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     ],
   ),
+),
 );
   }
 
