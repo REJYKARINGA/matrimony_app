@@ -13,6 +13,7 @@ class User {
   final Preference? preferences;
   final List<ProfilePhoto>? profilePhotos;
   final UserVerification? verification;
+  final double? distance;
 
   User({
     this.id,
@@ -29,6 +30,7 @@ class User {
     this.preferences,
     this.profilePhotos,
     this.verification,
+    this.distance,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class User {
           ? (json['profile_photos'] as List).map((i) => ProfilePhoto.fromJson(i)).toList()
           : null,
       verification: json['verification'] != null ? UserVerification.fromJson(json['verification']) : null,
+      distance: json['distance'] != null ? double.tryParse(json['distance'].toString()) : null,
     );
   }
 
@@ -133,6 +136,8 @@ class UserProfile {
   final String? state;
   final String? country;
   final String? postalCode;
+  final double? latitude;
+  final double? longitude;
 
   UserProfile({
     this.id,
@@ -159,6 +164,8 @@ class UserProfile {
     this.state,
     this.country,
     this.postalCode,
+    this.latitude,
+    this.longitude,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -187,6 +194,8 @@ class UserProfile {
       state: json['state'],
       country: json['country'],
       postalCode: json['postal_code'],
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
   }
 
@@ -216,6 +225,8 @@ class UserProfile {
       'state': state,
       'country': country,
       'postal_code': postalCode,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
