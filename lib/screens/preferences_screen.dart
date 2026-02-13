@@ -1209,8 +1209,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   GestureDetector(
                     onTap: onSortToggled,
                     child: Container(
-                      height: 30,
-                      padding: const EdgeInsets.all(3),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: Colors.grey.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
@@ -1220,7 +1219,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                         children: [
                           // Trending Option
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: !isAscending ? Colors.white : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
@@ -1236,14 +1235,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               children: [
                                 Icon(
                                   Icons.trending_up_rounded,
-                                  size: 13,
+                                  size: 14,
                                   color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: 6),
                                 Text(
                                   'Trending',
                                   style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w800,
                                     color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
                                   ),
@@ -1253,7 +1252,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                           // A-Z Option
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: isAscending ? Colors.white : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
@@ -1269,14 +1268,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               children: [
                                 Icon(
                                   Icons.sort_by_alpha_rounded,
-                                  size: 13,
+                                  size: 14,
                                   color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
                                 ),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: 6),
                                 Text(
                                   'A-Z',
                                   style: TextStyle(
-                                    fontSize: 9,
+                                    fontSize: 11,
                                     fontWeight: FontWeight.w800,
                                     color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
                                   ),

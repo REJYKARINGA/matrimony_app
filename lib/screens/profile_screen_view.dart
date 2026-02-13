@@ -227,17 +227,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ]),
                     ]),
                     _buildSection('Family Details', [
-                      _buildGrid([
-                        _buildCompactInfo(Icons.person_outline, 'Father', _maskName(_user?.familyDetails?.fatherName)),
-                        _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.fatherOccupation),
-                        _buildCompactInfo(Icons.person_outline, 'Mother', _maskName(_user?.familyDetails?.motherName)),
-                        _buildCompactInfo(Icons.work_outline, 'Occupation', _user?.familyDetails?.motherOccupation),
-                      ]),
+                      _buildCompactInfo(Icons.person_outline, 'Father', _maskName(_user?.familyDetails?.fatherName)),
                       const SizedBox(height: 12),
-                      _buildGrid([
-                        _buildCompactInfo(Icons.people_alt_outlined, 'Siblings', _user?.familyDetails?.siblings?.toString()),
-                        _buildCompactInfo(Icons.home_outlined, 'Family Type', _user?.familyDetails?.familyType),
-                      ]),
+                      _buildCompactInfo(Icons.work_outline, 'Father\'s Occupation', _user?.familyDetails?.fatherOccupation),
+                      const SizedBox(height: 12),
+                      _buildCompactInfo(Icons.person_outline, 'Mother', _maskName(_user?.familyDetails?.motherName)),
+                      const SizedBox(height: 12),
+                      _buildCompactInfo(Icons.work_outline, 'Mother\'s Occupation', _user?.familyDetails?.motherOccupation),
+                      const SizedBox(height: 12),
+                      _buildCompactInfo(Icons.people_alt_outlined, 'Siblings', _user?.familyDetails?.siblings?.toString()),
+                      const SizedBox(height: 12),
+                      _buildCompactInfo(Icons.home_outlined, 'Family Type', _user?.familyDetails?.familyType),
+                      
                       if (_user?.familyDetails?.elderBrother != null || _user?.familyDetails?.youngerBrother != null) ...[
                         const SizedBox(height: 12),
                         _buildCompactInfo(Icons.person_pin_outlined, 'Brothers', '${_user?.familyDetails?.elderBrother ?? 0} Elder, ${_user?.familyDetails?.youngerBrother ?? 0} Younger', isFullWidth: true),
@@ -249,8 +250,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ]),
                     _buildSection('Partner Preferences', [
                       _buildGrid([
-                        _buildCompactInfo(Icons.calendar_today_outlined, 'Age', '${_user?.preferences?.minAge ?? '-'}-${_user?.preferences?.maxAge ?? '-'} yrs'),
-                        _buildCompactInfo(Icons.height, 'Height', '${_user?.preferences?.minHeight ?? '-'}-${_user?.preferences?.maxHeight ?? '-'} cm'),
+                        _buildCompactInfo(
+                          Icons.calendar_today_outlined,
+                          'Age',
+                          (_user?.preferences?.minAge == null && _user?.preferences?.maxAge == null)
+                              ? 'Not Specified'
+                              : '${_user?.preferences?.minAge ?? 18} - ${_user?.preferences?.maxAge ?? 70} Years',
+                        ),
+                        _buildCompactInfo(
+                          Icons.height,
+                          'Height',
+                          (_user?.preferences?.minHeight == null && _user?.preferences?.maxHeight == null)
+                              ? 'Not Specified'
+                              : '${_user?.preferences?.minHeight ?? 140} - ${_user?.preferences?.maxHeight ?? 220} cm',
+                        ),
                       ]),
                       const SizedBox(height: 12),
                       _buildCompactInfo(Icons.favorite_border, 'Marital Status', _user?.preferences?.maritalStatus, isFullWidth: true),
@@ -294,129 +307,152 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
-      expandedHeight: 340,
+      expandedHeight: 280,
       pinned: true,
       elevation: 0,
       stretch: true,
-      backgroundColor: const Color(0xFFF8F7FF),
+      backgroundColor: const Color(0xFF00BCD4),
+      iconTheme: const IconThemeData(color: Colors.white),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.edit_outlined, color: Colors.white, size: 24),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: _user))),
+        ),
+      ],
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground],
         background: Stack(
           fit: StackFit.expand,
           children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF00BCD4), Color(0xFF00838F)],
+                ),
+              ),
+            ),
             if (_user?.displayImage != null)
               Image.network(
                 ApiService.getImageUrl(_user!.displayImage!),
                 fit: BoxFit.cover,
+                color: Colors.black.withOpacity(0.3),
+                colorBlendMode: BlendMode.darken,
               ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    if (_user?.displayImage != null)...[
-                      const Color(0xFFF8F7FF).withOpacity(0.2),
-                      const Color(0xFFFDF2F8).withOpacity(0.7),
-                    ] else...[
-                      const Color(0xFFF8F7FF),
-                      const Color(0xFFFDF2F8),
-                    ]
-                  ],
+            Positioned(
+              bottom: -1,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 30,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF8F7FF),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
                 ),
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 40),
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 4),
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, offset: const Offset(0, 10)),
-                        ],
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20),
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white,
+                          backgroundImage: _user?.displayImage != null
+                              ? NetworkImage(ApiService.getImageUrl(_user!.displayImage!))
+                              : null,
+                          child: _user?.displayImage == null
+                              ? const Icon(Icons.person, size: 55, color: Color(0xFF00BCD4))
+                              : null,
+                        ),
                       ),
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundColor: Colors.white,
-                        backgroundImage: _user?.displayImage != null
-                            ? NetworkImage(ApiService.getImageUrl(_user!.displayImage!))
-                            : null,
-                        child: _user?.displayImage == null
-                            ? const Icon(Icons.person, size: 70, color: Color(0xFF00BCD4))
-                            : null,
+                      GestureDetector(
+                        onTap: _pickAndUploadImage,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                            ],
+                          ),
+                          child: const Icon(Icons.camera_alt, size: 16, color: Color(0xFF00BCD4)),
+                        ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: _pickAndUploadImage,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                        child: const Icon(Icons.camera_alt, size: 20, color: Color(0xFF00BCD4)),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF00BCD4), letterSpacing: 0.5),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_user?.verification?.status == 'verified') ...[
-                      Icon(Icons.verified_user, color: const Color(0xFF00BCD4).withOpacity(0.6), size: 16),
-                      const SizedBox(width: 4),
                     ],
-                    Text(
-                      _user?.email ?? '',
-                      style: TextStyle(color: const Color(0xFF00BCD4).withOpacity(0.8), fontSize: 14),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (_user?.verification?.status == 'verified') ...[
+                        const Icon(Icons.verified, color: Colors.white, size: 16),
+                        const SizedBox(width: 4),
+                      ],
+                      Text(
+                        _user?.email ?? '',
+                        style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Color(0xFF00BCD4)),
-        onPressed: () => Navigator.pop(context),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.edit_note, color: Color(0xFF00BCD4), size: 28),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: _user))),
-        ),
-      ],
     );
   }
 
   Widget _buildQuickStats() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: const Color(0xFF00BCD4).withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 10))],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem(Icons.location_on_outlined, _user?.userProfile?.city ?? 'City'),
-          _buildStatDivider(),
-          _buildStatItem(Icons.cake_outlined, '${_user?.userProfile?.age ?? '-'} Years'),
-          _buildStatDivider(),
-          _buildStatItem(Icons.height, '${_user?.userProfile?.height ?? '-'} cm'),
-        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Transform.translate(
+        offset: const Offset(0, -20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildStatItem(Icons.location_on_outlined, _user?.userProfile?.city ?? 'City'),
+              _buildStatDivider(),
+              _buildStatItem(Icons.cake_outlined, '${_user?.userProfile?.age ?? '-'} Years'),
+              _buildStatDivider(),
+              _buildStatItem(Icons.height, '${_user?.userProfile?.height ?? '-'} cm'),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -424,9 +460,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildStatItem(IconData icon, String label) {
     return Column(
       children: [
-        Icon(icon, color: const Color(0xFF00BCD4), size: 22),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A))),
+        Icon(icon, color: const Color(0xFF00BCD4), size: 24),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A)),
+        ),
       ],
     );
   }
@@ -437,13 +476,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildSection(String title, List<Widget> children) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 32, 16, 0),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A), letterSpacing: 0.3)),
-          const SizedBox(height: 16),
-          ...children,
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 12),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1A1A1A),
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            ),
+          ),
         ],
       ),
     );
@@ -451,32 +518,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildGrid(List<Widget> children) {
     return LayoutBuilder(builder: (context, constraints) {
-      final itemWidth = (constraints.maxWidth - 12) / 2;
-      List<Widget> rows = [];
-      for (var i = 0; i < children.length; i += 2) {
-        rows.add(
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: itemWidth, child: children[i]),
-                const SizedBox(width: 12),
-                if (i + 1 < children.length)
-                  SizedBox(width: itemWidth, child: children[i + 1]),
-              ],
-            ),
-          ),
-        );
-      }
-      return Column(children: rows);
+      final itemWidth = (constraints.maxWidth - 16) / 2;
+      return Wrap(
+        spacing: 16,
+        runSpacing: 20,
+        children: children.map((child) {
+          return SizedBox(
+            width: itemWidth,
+            child: child,
+          );
+        }).toList(),
+      );
     });
   }
 
   Widget _buildCompactInfo(IconData icon, String label, String? value, {bool isFullWidth = false}) {
     if (value == null || value.isEmpty || value == 'null') return const SizedBox.shrink();
 
-    // Capitalize the value
     String formattedValue = value.toLowerCase() == 'never_married'
         ? 'Single'
         : value.replaceAll('_', ' ').split(' ').map((word) {
@@ -484,50 +542,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return word[0].toUpperCase() + word.substring(1).toLowerCase();
           }).join(' ');
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(12),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.7),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.5)),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF00BCD4).withOpacity(0.05),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
-              ),
-            ],
+            color: const Color(0xFF00BCD4).withOpacity(0.08),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
-            mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
+          child: Icon(icon, size: 18, color: const Color(0xFF00BCD4)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF00BCD4).withOpacity(0.1),
-                  shape: BoxShape.circle,
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Colors.grey[500],
+                  fontWeight: FontWeight.w600,
                 ),
-                child: Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF757575), fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 2),
-                    Text(formattedValue, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A)), maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ],
+              const SizedBox(height: 2),
+              Text(
+                formattedValue,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A1A),
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -725,58 +778,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildBackgroundBlobs() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 100,
-          left: -100,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF00BCD4).withOpacity(0.2),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 100, sigmaY: 100),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 400,
-          right: -150,
-          child: Container(
-            width: 400,
-            height: 400,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF0D47A1).withOpacity(0.15),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 100,
-          left: -50,
-          child: Container(
-            width: 250,
-            height: 250,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF00BCD4).withOpacity(0.1),
-            ),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-        ),
-      ],
-    );
+    return Container(color: const Color(0xFFF8F7FF));
   }
 
 }
