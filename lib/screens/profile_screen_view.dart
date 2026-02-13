@@ -1007,473 +1007,548 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        backgroundColor: Color(0xFF00BCD4),
-        foregroundColor: Colors.white,
-        actions: [
-          TextButton(
-            onPressed: _isLoading ? null : _saveProfile,
-            child: _isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text(
-                    'Save',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+  InputDecoration _buildModernInputDecoration({
+    required String label,
+    required IconData icon,
+    String? hint,
+    Widget? suffixIcon,
+    String? helperText,
+  }) {
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      helperText: helperText,
+      prefixIcon: Icon(icon, color: const Color(0xFF00BCD4), size: 22),
+      suffixIcon: suffixIcon,
+      labelStyle: TextStyle(
+        color: Colors.grey.shade700,
+        fontWeight: FontWeight.w500,
+        fontSize: 14,
+      ),
+      floatingLabelStyle: const TextStyle(
+        color: Color(0xFF00BCD4),
+        fontWeight: FontWeight.w600,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 1.5),
+      ),
+      filled: true,
+      fillColor: Colors.grey.shade50,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16, top: 8),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00BCD4).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 20, color: const Color(0xFF0D47A1)),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: -0.5,
+            ),
+          ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          // Custom Gradient Header (Similar to Landing/Preferences)
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top,
+              bottom: 20,
+            ),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00BCD4).withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Personal Information',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
                 Row(
                   children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _firstNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'First Name',
-                          border: OutlineInputBorder(),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'Edit Profile',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your first name';
-                          }
-                          return null;
-                        },
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _lastNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Last Name',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your last name';
-                          }
-                          return null;
-                        },
-                      ),
+                    TextButton(
+                      onPressed: _isLoading ? null : _saveProfile,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
+                    const SizedBox(width: 8),
                   ],
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _dateOfBirthController,
-                  decoration: const InputDecoration(
-                    labelText: 'Date of Birth',
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
-                  readOnly: true,
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: _dateOfBirthController.text.isNotEmpty
-                          ? DateFormatter.parseDate(
-                                  _dateOfBirthController.text,
-                                ) ??
-                                DateTime.now()
-                          : DateTime.now(),
-                      firstDate: DateTime(1950),
-                      lastDate: DateTime.now(),
-                    );
-                    if (pickedDate != null) {
-                      setState(() {
-                        _dateOfBirthController.text = DateFormatter.formatDate(
-                          pickedDate,
-                        );
-                      });
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: _selectedGender,
-                  decoration: const InputDecoration(
-                    labelText: 'Gender',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'male', child: Text('Male')),
-                    DropdownMenuItem(value: 'female', child: Text('Female')),
-                    DropdownMenuItem(value: 'other', child: Text('Other')),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _heightController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Height (cm)',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _weightController,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Weight (kg)',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: _selectedMaritalStatus,
-                  decoration: const InputDecoration(
-                    labelText: 'Marital Status',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'never_married',
-                      child: Text('Never Married'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'divorced',
-                      child: Text('Divorced'),
-                    ),
-                    DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedMaritalStatus = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Religion & Community',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _religionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Religion',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _casteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Caste',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _subCasteController,
-                  decoration: const InputDecoration(
-                    labelText: 'Sub-Caste',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _motherTongueController,
-                  decoration: const InputDecoration(
-                    labelText: 'Mother Tongue',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Education & Career',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _educationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Education',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _occupationController,
-                  decoration: const InputDecoration(
-                    labelText: 'Occupation',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _annualIncomeController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Annual Income',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Location',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton.icon(
-                      onPressed: () async {
-                        setState(() => _isLoading = true);
-                        try {
-                          final position = await LocationService.getCurrentLocation();
-                          if (position != null) {
-                            await LocationService.updateLocationToServer(position);
-                            
-                            // Get address from coordinates
-                            final address = await LocationService.getAddressFromCoordinates(
-                              position.latitude, 
-                              position.longitude
-                            );
-
-                            if (address != null && mounted) {
-                              setState(() {
-                                _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
-                                _stateController.text = (address['state'] ?? '').toString();
-                                _countryController.text = (address['country'] ?? '').toString();
-                                _countyController.text = (address['county'] ?? '').toString();
-                                _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
-                                
-                                // Handle district mapping
-                                String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
-                                if (detDistrict != null) {
-                                  detDistrict = detDistrict.replaceAll(' District', '').trim();
-                                  try {
-                                    _selectedDistrict = _keralaDistricts.firstWhere(
-                                      (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
-                                      orElse: () => _selectedDistrict ?? _keralaDistricts.first,
-                                    );
-                                  } catch (_) {}
-                                }
-                              });
-                            }
-
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Location detected and fields updated!')),
-                              );
-                            }
-                          }
-                        } finally {
-                          if (mounted) {
-                            setState(() => _isLoading = false);
-                          }
-                        }
-                      },
-                      icon: const Icon(Icons.my_location, size: 18),
-                      label: const Text('Detect GPS'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _cityController,
-                  textInputAction: TextInputAction.search,
-                  onFieldSubmitted: (_) => _triggerCityLookup(),
-                  decoration: InputDecoration(
-                    labelText: 'City',
-                    border: const OutlineInputBorder(),
-                    helperText: 'Enter city and tap icon or enter to auto-fill',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.travel_explore, color: Color(0xFF00BCD4)),
-                      onPressed: _triggerCityLookup,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  value: _selectedDistrict,
-                  decoration: const InputDecoration(
-                    labelText: 'District',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _keralaDistricts.map((district) {
-                    return DropdownMenuItem(
-                      value: district,
-                      child: Text(district),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDistrict = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _countyController,
-                  decoration: const InputDecoration(
-                    labelText: 'County / Taluk',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _stateController,
-                  decoration: const InputDecoration(
-                    labelText: 'State',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: _countryController,
-                        decoration: const InputDecoration(
-                          labelText: 'Country',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextFormField(
-                        controller: _postalCodeController,
-                        keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          labelText: 'Postal Code',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'About Me',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: _bioController,
-                  maxLines: 4,
-                  decoration: const InputDecoration(
-                    labelText: 'Bio',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Family Details',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FamilyDetailsScreen(),
-                        ),
-                      );
-                      if (result == true) {
-                        // Profile updated
-                      }
-                    },
-                    icon: const Icon(Icons.family_restroom),
-                    label: const Text('Add/Edit Family Details'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF00BCD4),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/preferences');
-                    },
-                    icon: const Icon(Icons.settings),
-                    label: const Text('Edit Preferences'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0D47A1),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile-photos');
-                    },
-                    icon: const Icon(Icons.photo_camera),
-                    label: const Text('Manage Photos'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF4CD9A6),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
           ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader('Personal Information', Icons.person_outline),
+                    
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _firstNameController,
+                            decoration: _buildModernInputDecoration(
+                              label: 'First Name',
+                              icon: Icons.person_rounded,
+                            ),
+                            validator: (value) => value?.isEmpty == true ? 'Required' : null,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _lastNameController,
+                            decoration: _buildModernInputDecoration(
+                              label: 'Last Name',
+                              icon: Icons.person_rounded,
+                            ),
+                            validator: (value) => value?.isEmpty == true ? 'Required' : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _dateOfBirthController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Date of Birth',
+                        icon: Icons.calendar_today_rounded,
+                      ),
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _dateOfBirthController.text.isNotEmpty
+                              ? DateFormatter.parseDate(_dateOfBirthController.text) ?? DateTime.now()
+                              : DateTime.now(),
+                          firstDate: DateTime(1950),
+                          lastDate: DateTime.now(),
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _dateOfBirthController.text = DateFormatter.formatDate(pickedDate);
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    DropdownButtonFormField<String>(
+                      value: _selectedGender,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Gender',
+                        icon: Icons.transgender_rounded,
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'male', child: Text('Male')),
+                        DropdownMenuItem(value: 'female', child: Text('Female')),
+                        DropdownMenuItem(value: 'other', child: Text('Other')),
+                      ],
+                      onChanged: (value) => setState(() => _selectedGender = value),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _heightController,
+                            keyboardType: TextInputType.number,
+                            decoration: _buildModernInputDecoration(
+                              label: 'Height (cm)',
+                              icon: Icons.height_rounded,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _weightController,
+                            keyboardType: TextInputType.number,
+                            decoration: _buildModernInputDecoration(
+                              label: 'Weight (kg)',
+                              icon: Icons.scale_rounded,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    DropdownButtonFormField<String>(
+                      value: _selectedMaritalStatus,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Marital Status',
+                        icon: Icons.favorite_border_rounded,
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'never_married', child: Text('Never Married')),
+                        DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
+                        DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
+                      ],
+                      onChanged: (value) => setState(() => _selectedMaritalStatus = value),
+                    ),
+
+                    const SizedBox(height: 32),
+                    _buildSectionHeader('Religion & Community', Icons.church_outlined),
+                    
+                    TextFormField(
+                      controller: _religionController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Religion',
+                        icon: Icons.auto_awesome_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _casteController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Caste',
+                        icon: Icons.groups_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _subCasteController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Sub-Caste',
+                        icon: Icons.group_work_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _motherTongueController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Mother Tongue',
+                        icon: Icons.translate_rounded,
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                    _buildSectionHeader('Education & Career', Icons.work_outline),
+                    
+                    TextFormField(
+                      controller: _educationController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Education',
+                        icon: Icons.school_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _occupationController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Occupation',
+                        icon: Icons.business_center_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _annualIncomeController,
+                      keyboardType: TextInputType.number,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Annual Income',
+                        icon: Icons.payments_rounded,
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildSectionHeader('Location', Icons.location_on_outlined),
+                        TextButton.icon(
+                          onPressed: () async {
+                            setState(() => _isLoading = true);
+                            try {
+                              final position = await LocationService.getCurrentLocation();
+                              if (position != null) {
+                                await LocationService.updateLocationToServer(position);
+                                final address = await LocationService.getAddressFromCoordinates(
+                                  position.latitude, 
+                                  position.longitude
+                                );
+
+                                if (address != null && mounted) {
+                                  setState(() {
+                                    _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
+                                    _stateController.text = (address['state'] ?? '').toString();
+                                    _countryController.text = (address['country'] ?? '').toString();
+                                    _countyController.text = (address['county'] ?? '').toString();
+                                    _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
+                                    
+                                    String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
+                                    if (detDistrict != null) {
+                                      detDistrict = detDistrict.replaceAll(' District', '').trim();
+                                      try {
+                                        _selectedDistrict = _keralaDistricts.firstWhere(
+                                          (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
+                                          orElse: () => _selectedDistrict ?? _keralaDistricts.first,
+                                        );
+                                      } catch (_) {}
+                                    }
+                                  });
+                                }
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Location detected!')),
+                                  );
+                                }
+                              }
+                            } finally {
+                              if (mounted) setState(() => _isLoading = false);
+                            }
+                          },
+                          icon: const Icon(Icons.my_location_rounded, size: 18, color: Color(0xFF0D47A1)),
+                          label: const Text(
+                            'Detect GPS',
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D47A1)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    TextFormField(
+                      controller: _cityController,
+                      textInputAction: TextInputAction.search,
+                      onFieldSubmitted: (_) => _triggerCityLookup(),
+                      decoration: _buildModernInputDecoration(
+                        label: 'City',
+                        icon: Icons.location_city_rounded,
+                        helperText: 'Tap icon to auto-fill location details',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.travel_explore, color: Color(0xFF00BCD4)),
+                          onPressed: _triggerCityLookup,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    DropdownButtonFormField<String>(
+                      value: _selectedDistrict,
+                      decoration: _buildModernInputDecoration(
+                        label: 'District',
+                        icon: Icons.map_rounded,
+                      ),
+                      items: _keralaDistricts.map((district) {
+                        return DropdownMenuItem(value: district, child: Text(district));
+                      }).toList(),
+                      onChanged: (value) => setState(() => _selectedDistrict = value),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _countyController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'County / Taluk',
+                        icon: Icons.landscape_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _stateController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'State',
+                        icon: Icons.flag_rounded,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _countryController,
+                            decoration: _buildModernInputDecoration(
+                              label: 'Country',
+                              icon: Icons.public_rounded,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _postalCodeController,
+                            decoration: _buildModernInputDecoration(
+                              label: 'Postal Code',
+                              icon: Icons.pin_drop_rounded,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+                    _buildSectionHeader('About Me', Icons.description_outlined),
+                    
+                    TextFormField(
+                      controller: _bioController,
+                      maxLines: 4,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Bio',
+                        icon: Icons.auto_awesome_outlined,
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+                    _buildSectionHeader('Profile Links', Icons.link_rounded),
+                    
+                    _buildActionButton(
+                      label: 'Family Details',
+                      icon: Icons.family_restroom_rounded,
+                      gradient: const [Color(0xFF00BCD4), Color(0xFF0097A7)],
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const FamilyDetailsScreen())),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildActionButton(
+                      label: 'Edit Preferences',
+                      icon: Icons.settings_rounded,
+                      gradient: const [Color(0xFF0D47A1), Color(0xFF1565C0)],
+                      onPressed: () => Navigator.pushNamed(context, '/preferences'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildActionButton(
+                      label: 'Manage Photos',
+                      icon: Icons.photo_library_rounded,
+                      gradient: const [Color(0xFF4CD9A6), Color(0xFF388E3C)],
+                      onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required List<Color> gradient,
+    required VoidCallback onPressed,
+  }) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: gradient,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: gradient[0].withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white, size: 20),
+        label: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
       ),
     );
