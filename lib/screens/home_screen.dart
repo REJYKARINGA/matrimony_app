@@ -979,6 +979,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return word[0].toUpperCase() + word.substring(1).toLowerCase();
           }).join(' ');
 
+    String subtitle = [
+      profile?.occupation,
+      maritalStatus,
+    ].where((s) => s != null && s.isNotEmpty).join(', ');
+
     return SwipeCard(
       onSwipeRight: () {
         _handleQuickInterest(user.id!);
@@ -1064,10 +1069,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: 4),
                   const SizedBox(height: 4),
-                  if (profile?.caste != null || maritalStatus.isNotEmpty)
+                  if (subtitle.isNotEmpty)
                     Text(
-                      '${profile?.caste ?? ''}${profile?.caste != null && maritalStatus.isNotEmpty ? ', ' : ''}$maritalStatus'
-                          .toUpperCase(),
+                      subtitle,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                         fontSize: 14,
