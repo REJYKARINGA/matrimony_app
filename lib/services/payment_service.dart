@@ -57,4 +57,8 @@ class PaymentService {
   static Future<http.Response> getTransactionHistory() async {
     return await ApiService.makeRequest('${ApiService.baseUrl}/payment/transactions');
   }
+
+  static Future<http.Response> getTodayUnlockCount() async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/today-unlock-count');
+  }
 }

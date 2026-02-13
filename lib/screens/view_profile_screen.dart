@@ -34,6 +34,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   bool _contactUnlocked = false;
   double _walletBalance = 0.0;
   int? _currentTransactionId;
+  int _todayUnlockCount = 0;
+  static const int _dailyUnlockLimit = 50; // Can be changed to 20 or any value
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -56,6 +58,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     _loadUserProfile();
     _checkContactUnlock();
     _loadWalletBalance();
+    _loadTodayUnlockCount();
   }
 
   Future<void> _loadUserProfile() async {
@@ -1340,6 +1343,20 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     }
   }
 
+  Future<void> _loadTodayUnlockCount() async {
+    try {
+      final response = await PaymentService.getTodayUnlockCount();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _todayUnlockCount = data['count'] ?? 0;
+        });
+      }
+    } catch (e) {
+      print('Error loading today unlock count: $e');
+    }
+  }
+
   String _maskPhone(String? phone) {
     if (phone == null || phone.isEmpty) return '••••••••••';
     if (phone.length < 4) return phone;
@@ -1352,10 +1369,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isVerified = authProvider.user?.verification?.status == 'verified';
 
-    if (isVerified) {
-      onSuccess();
+    // Check if user has exceeded daily limit
+    if (_todayUnlockCount >= _dailyUnlockLimit) {
+      // User has exceeded daily limit, check verification
+      if (isVerified) {
+        onSuccess();
+      } else {
+        _showVerificationDialog();
+      }
     } else {
-      _showVerificationDialog();
+      // User is within daily limit, allow without verification
+      onSuccess();
     }
   }
 
@@ -1372,7 +1396,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ],
         ),
         content: Text(
-          'You need a verified account to unlock contact details. Please verify your ID to proceed.',
+          'You have exceeded your daily limit of $_dailyUnlockLimit contact unlock${_dailyUnlockLimit > 1 ? 's' : ''}. Please verify your account to unlock more contacts.',
           style: TextStyle(fontSize: 15),
         ),
         actions: [
@@ -1456,6 +1480,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           _contactUnlocked = true;
         });
         _loadWalletBalance();
+        _loadTodayUnlockCount(); // Refresh count after unlock
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
