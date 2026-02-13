@@ -117,51 +117,141 @@ class _MatchingScreenState extends State<MatchingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Matches & Interests',
-          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.3),
-        ),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [gradientCyan, gradientLightBlue],
+      body: Stack(
+        children: [
+          // Global Background with Design
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF00BCD4).withOpacity(0.08),
+                    const Color(0xFF00BCD4).withOpacity(0.02),
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: -50,
+                    right: -50,
+                    child: Container(
+                      width: 200,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF00BCD4).withOpacity(0.1),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 150,
+                    left: -50,
+                    child: Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(0xFF00BCD4).withOpacity(0.05),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Matches'),
-            Tab(text: 'Sent'),
-            Tab(text: 'Received'),
-            Tab(text: 'Declined'),
-          ],
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
+          NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                SliverAppBar(
+                  expandedHeight: 110.0,
+                  pinned: true,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  backgroundColor: Colors.transparent,
+                  title: const Text(
+                    'Matches & Interests',
+                    style: TextStyle(
+                      color: Color(0xFF1A1A1A),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18,
+                    ),
+                  ),
+                  centerTitle: true,
+                  iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+                  flexibleSpace: FlexibleSpaceBar(
+                    collapseMode: CollapseMode.pin,
+                    background: Container(),
+                  ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(70),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Container(
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.65),
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(color: Colors.white.withOpacity(0.8), width: 1.5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.03),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: TabBar(
+                          controller: _tabController,
+                          indicator: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          labelColor: const Color(0xFF00BCD4),
+                          unselectedLabelColor: Colors.grey.shade600,
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                          unselectedLabelStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                          dividerColor: Colors.transparent,
+                          indicatorPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                          tabs: const [
+                            Tab(text: 'Matches'),
+                            Tab(text: 'Sent'),
+                            Tab(text: 'Received'),
+                            Tab(text: 'Declined'),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ];
+            },
+            body: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildMatchesTab(),
+                _buildSentInterestsTab(),
+                _buildReceivedInterestsTab(),
+                _buildDeclinedInterestsTab(),
+              ],
+            ),
           ),
-          unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildMatchesTab(),
-          _buildSentInterestsTab(),
-          _buildReceivedInterestsTab(),
-          _buildDeclinedInterestsTab(),
         ],
       ),
     );
