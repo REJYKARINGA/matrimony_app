@@ -44,17 +44,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final user = User.fromJson(data['user']);
+        if (!mounted) return;
         setState(() {
           _user = user;
           _isLoading = false;
         });
       } else {
+        if (!mounted) return;
         setState(() {
           _errorMessage = 'Failed to load profile';
           _isLoading = false;
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -124,7 +127,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SnackBar(content: Text('Error updating profile picture: $e')),
         );
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
       }
     }
   }
@@ -951,12 +956,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
-  }
 
   Future<void> _triggerCityLookup() async {
     if (_cityController.text.trim().isEmpty) return;
@@ -993,10 +1000,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     } catch (e) {
       print('Lookup error: $e');
-    } finally {
-      setState(() => _isLoading = false);
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1264,7 +1273,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               position.longitude
                             );
 
-                            if (address != null) {
+                            if (address != null && mounted) {
                               setState(() {
                                 _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
                                 _stateController.text = (address['state'] ?? '').toString();
@@ -1286,12 +1295,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               });
                             }
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Location detected and fields updated!')),
-                            );
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Location detected and fields updated!')),
+                              );
+                            }
                           }
                         } finally {
-                          setState(() => _isLoading = false);
+                          if (mounted) {
+                            setState(() => _isLoading = false);
+                          }
                         }
                       },
                       icon: const Icon(Icons.my_location, size: 18),

@@ -107,9 +107,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('Error triggering test broadcast: $e');
       }
 
-      setState(() {
-        _isRefreshing = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isRefreshing = false;
+        });
+      }
     }
   }
 
@@ -481,6 +483,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     try {
       final response = await MatchingService.sendInterest(userId);
       if (response.statusCode == 200 || response.statusCode == 201) {
+        if (!mounted) return;
         setState(() {
           _sentInterests.add(userId);
         });
@@ -560,11 +563,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           filteredUsers = allUsers;
         }
 
+        if (!mounted) return;
         setState(() {
           _recommendedUsers = filteredUsers;
           _isLoadingRecommended = false;
         });
       } else {
+        if (!mounted) return;
         setState(() {
           _recommendedError =
               'Failed to load recommendations. Status: ${response.statusCode}';
@@ -572,6 +577,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _recommendedError = 'Error loading recommendations: $e';
         _isLoadingRecommended = false;

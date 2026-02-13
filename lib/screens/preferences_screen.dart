@@ -99,13 +99,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = 'Error loading preferences: $e';
       });
     } finally {
-      setState(() {
-        _isDataLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isDataLoading = false;
+        });
+      }
     }
   }
 
@@ -138,12 +141,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       heightStart.clamp(100, 220),
       heightEnd.clamp(100, 220)
     );
-    _maritalStatus = preferences['marital_status'];
-    _religion = userReligion ?? preferences['religion'];
+    _maritalStatus = preferences['marital_status']?.toString();
+    _religion = userReligion ?? preferences['religion']?.toString();
     
     if (preferences['caste'] != null) {
       if (preferences['caste'] is List) {
-        _selectedCastes = List<String>.from(preferences['caste']);
+        _selectedCastes = (preferences['caste'] as List).map((e) => e.toString()).toList();
       } else {
         _selectedCastes = [preferences['caste'].toString()];
       }
@@ -155,7 +158,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     // Handle education and occupation as arrays of IDs
     if (preferences['education'] != null) {
       if (preferences['education'] is List) {
-        _selectedEducationIds = List<int>.from(preferences['education'].map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0));
+        _selectedEducationIds = (preferences['education'] as List).map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0).toList();
       }
     } else {
       _selectedEducationIds = [];
@@ -163,7 +166,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     
     if (preferences['occupation'] != null) {
       if (preferences['occupation'] is List) {
-        _selectedOccupationIds = List<int>.from(preferences['occupation'].map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0));
+        _selectedOccupationIds = (preferences['occupation'] as List).map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0).toList();
       }
     } else {
       _selectedOccupationIds = [];
@@ -175,8 +178,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       (incomeStartAnnual * 100 / 12).clamp(0, 800),
       (incomeEndAnnual * 100 / 12).clamp(0, 800)
     );
-    _preferredLocations = preferences['preferred_locations'] != null
-        ? List<String>.from(preferences['preferred_locations'])
+    _preferredLocations = preferences['preferred_locations'] != null && preferences['preferred_locations'] is List
+        ? (preferences['preferred_locations'] as List).map((e) => e.toString()).toList()
         : [];
     _maxDistance = double.tryParse(preferences['max_distance']?.toString() ?? '50') ?? 50.0;
     _locationSearchController.text = '';
@@ -226,9 +229,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -947,7 +952,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               setState(() => _isLoading = true);
               try {
                 final data = await LocationService.searchAddressByCity(query);
-                if (data != null) {
+                if (data != null && mounted) {
                   String? district = data['district'];
                   if (district != null) {
                     district = district.replaceAll(' District', '').trim();
@@ -962,13 +967,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       );
                     }
                   }
-                } else {
+                } else if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Could not find location')),
                   );
                 }
               } finally {
-                setState(() => _isLoading = false);
+                if (mounted) {
+                  setState(() => _isLoading = false);
+                }
               }
             },
           ),
@@ -1118,6 +1125,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success'] == true) {
+          if (!mounted) return;
           setState(() {
             _educationOptions = List<Map<String, dynamic>>.from(
               data['data']['educations'].map((e) => {

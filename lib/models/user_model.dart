@@ -36,13 +36,13 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      matrimonyId: json['matrimony_id'],
-      email: json['email'],
-      phone: json['phone'],
-      role: json['role'],
-      status: json['status'],
-      emailVerified: json['email_verified'],
-      phoneVerified: json['phone_verified'],
+      matrimonyId: json['matrimony_id']?.toString(),
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString(),
+      role: json['role']?.toString(),
+      status: json['status']?.toString(),
+      emailVerified: json['email_verified'] == 1 || json['email_verified'] == true,
+      phoneVerified: json['phone_verified'] == 1 || json['phone_verified'] == true,
       lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
       userProfile: json['user_profile'] != null ? UserProfile.fromJson(json['user_profile']) : null,
       familyDetails: json['family_details'] != null ? FamilyDetail.fromJson(json['family_details']) : null,
@@ -104,8 +104,8 @@ class UserVerification {
     return UserVerification(
       id: json['id'],
       userId: json['user_id'],
-      status: json['status'],
-      rejectionReason: json['rejection_reason'],
+      status: json['status']?.toString(),
+      rejectionReason: json['rejection_reason']?.toString(),
       verifiedAt: json['verified_at'] != null ? DateTime.parse(json['verified_at']) : null,
     );
   }
@@ -172,28 +172,28 @@ class UserProfile {
     return UserProfile(
       id: json['id'],
       userId: json['user_id'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
+      firstName: json['first_name']?.toString() ?? '',
+      lastName: json['last_name']?.toString() ?? '',
       dateOfBirth: json['date_of_birth'] != null ? DateTime.parse(json['date_of_birth']) : null,
-      gender: json['gender'],
+      gender: json['gender']?.toString(),
       height: json['height'],
       weight: json['weight'],
-      maritalStatus: json['marital_status'],
-      religion: json['religion'],
-      caste: json['caste'],
-      subCaste: json['sub_caste'],
-      motherTongue: json['mother_tongue'],
-      profilePicture: json['profile_picture'],
-      bio: json['bio'],
-      education: json['education'],
-      occupation: json['occupation'],
+      maritalStatus: json['marital_status']?.toString(),
+      religion: json['religion']?.toString(),
+      caste: json['caste']?.toString(),
+      subCaste: json['sub_caste']?.toString(),
+      motherTongue: json['mother_tongue']?.toString(),
+      profilePicture: json['profile_picture']?.toString(),
+      bio: json['bio']?.toString(),
+      education: json['education']?.toString(),
+      occupation: json['occupation']?.toString(),
       annualIncome: json['annual_income'] != null ? double.tryParse(json['annual_income'].toString()) : null,
-      city: json['city'],
-      district: json['district'],
-      county: json['county'],
-      state: json['state'],
-      country: json['country'],
-      postalCode: json['postal_code'],
+      city: json['city']?.toString(),
+      district: json['district']?.toString(),
+      county: json['county']?.toString(),
+      state: json['state']?.toString(),
+      country: json['country']?.toString(),
+      postalCode: json['postal_code']?.toString(),
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
     );
@@ -289,14 +289,14 @@ class FamilyDetail {
     return FamilyDetail(
       id: json['id'],
       userId: json['user_id'],
-      fatherName: json['father_name'],
-      fatherOccupation: json['father_occupation'],
-      motherName: json['mother_name'],
-      motherOccupation: json['mother_occupation'],
+      fatherName: json['father_name']?.toString(),
+      fatherOccupation: json['father_occupation']?.toString(),
+      motherName: json['mother_name']?.toString(),
+      motherOccupation: json['mother_occupation']?.toString(),
       siblings: json['siblings'],
-      familyType: json['family_type'],
-      familyStatus: json['family_status'],
-      familyLocation: json['family_location'],
+      familyType: json['family_type']?.toString(),
+      familyStatus: json['family_status']?.toString(),
+      familyLocation: json['family_location']?.toString(),
       elderSister: json['elder_sister'],
       elderBrother: json['elder_brother'],
       youngerSister: json['younger_sister'],
@@ -304,7 +304,7 @@ class FamilyDetail {
       fatherAlive: json['father_alive'] == 1 || json['father_alive'] == true,
       motherAlive: json['mother_alive'] == 1 || json['mother_alive'] == true,
       isDisabled: json['is_disabled'] == 1 || json['is_disabled'] == true,
-      guardian: json['guardian'],
+      guardian: json['guardian']?.toString(),
     );
   }
 
@@ -371,7 +371,7 @@ class Preference {
     List<String>? casteList;
     if (json['caste'] != null) {
       if (json['caste'] is List) {
-        casteList = List<String>.from(json['caste']);
+        casteList = List<String>.from(json['caste'].map((e) => e.toString()));
       } else {
         casteList = [json['caste'].toString()];
       }
@@ -384,8 +384,8 @@ class Preference {
       maxAge: json['max_age'],
       minHeight: json['min_height'],
       maxHeight: json['max_height'],
-      maritalStatus: json['marital_status'],
-      religion: json['religion'],
+      maritalStatus: json['marital_status']?.toString(),
+      religion: json['religion']?.toString(),
       caste: casteList,
       education: json['education'],
       occupation: json['occupation'],
@@ -393,7 +393,7 @@ class Preference {
       maxIncome: json['max_income'] != null ? double.tryParse(json['max_income'].toString()) : null,
       maxDistance: json['max_distance'],
       preferredLocations: json['preferred_locations'] != null 
-          ? List<String>.from(json['preferred_locations']) 
+          ? List<String>.from(json['preferred_locations'].map((e) => e.toString())) 
           : null,
     );
   }
@@ -438,8 +438,8 @@ class ProfilePhoto {
     return ProfilePhoto(
       id: json['id'],
       userId: json['user_id'],
-      photoUrl: json['photo_url'],
-      fullPhotoUrl: json['full_photo_url'],
+      photoUrl: json['photo_url']?.toString(),
+      fullPhotoUrl: json['full_photo_url']?.toString(),
       isPrimary: json['is_primary'] == 1 || json['is_primary'] == true,
     );
   }

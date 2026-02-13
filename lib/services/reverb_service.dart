@@ -1,6 +1,7 @@
 import 'package:laravel_echo/laravel_echo.dart';
 import 'package:pusher_client/pusher_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class ReverbService {
   static Echo? _echo;
@@ -8,6 +9,11 @@ class ReverbService {
 
   static void initialize(BuildContext context) {
     if (_echo != null) return;
+
+    if (kIsWeb) {
+      print('Reverb Service skipped on Web: pusher_client does not support Web platform.');
+      return;
+    }
 
     // Configuration for Reverb
     PusherOptions options = PusherOptions(

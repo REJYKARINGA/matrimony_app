@@ -75,6 +75,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final user = User.fromJson(data['user']);
+        if (!mounted) return;
         setState(() {
           _user = user;
           _interestSent = data['interest_sent'];
@@ -83,12 +84,14 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         });
         _animationController.forward();
       } else {
+        if (!mounted) return;
         setState(() {
           _errorMessage = 'Failed to load profile';
           _isLoading = false;
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -109,6 +112,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       );
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        if (!mounted) return;
         setState(() {
           _interestReceived = data['interest'];
           _isActionLoading = false;
@@ -124,6 +128,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ),
         );
       } else {
+        if (!mounted) return;
         setState(() {
           _isActionLoading = false;
         });
@@ -132,6 +137,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         );
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isActionLoading = false;
       });
@@ -152,6 +158,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       final response = await MatchingService.sendInterest(_user!.id!);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
+        if (!mounted) return;
         setState(() {
           _interestSent = data['interest'];
           _isActionLoading = false;
@@ -167,6 +174,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ),
         );
       } else {
+        if (!mounted) return;
         setState(() {
           _isActionLoading = false;
         });
@@ -175,6 +183,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         );
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isActionLoading = false;
       });
@@ -1320,9 +1329,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       final response = await PaymentService.checkContactUnlock(widget.userId);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        setState(() {
-          _contactUnlocked = data['unlocked'] ?? false;
-        });
+        if (mounted) {
+          setState(() {
+            _contactUnlocked = data['unlocked'] ?? false;
+          });
+        }
       }
     } catch (e) {
       print('Error checking contact unlock: $e');
@@ -1334,9 +1345,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       final response = await PaymentService.getWalletBalance();
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        setState(() {
-          _walletBalance = double.tryParse(data['balance'].toString()) ?? 0.0;
-        });
+        if (mounted) {
+          setState(() {
+            _walletBalance = double.tryParse(data['balance'].toString()) ?? 0.0;
+          });
+        }
       }
     } catch (e) {
       print('Error loading wallet: $e');
@@ -1348,9 +1361,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       final response = await PaymentService.getTodayUnlockCount();
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        setState(() {
-          _todayUnlockCount = data['count'] ?? 0;
-        });
+        if (mounted) {
+          setState(() {
+            _todayUnlockCount = data['count'] ?? 0;
+          });
+        }
       }
     } catch (e) {
       print('Error loading today unlock count: $e');
@@ -1476,9 +1491,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         widget.userId,
       );
       if (response.statusCode == 200) {
-        setState(() {
-          _contactUnlocked = true;
-        });
+        if (mounted) {
+          setState(() {
+            _contactUnlocked = true;
+          });
+        }
         _loadWalletBalance();
         _loadTodayUnlockCount(); // Refresh count after unlock
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1663,9 +1680,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         final String type = data['type'] ?? '';
 
         if (type == 'contact_unlock') {
-          setState(() {
-            _contactUnlocked = true;
-          });
+          if (mounted) {
+            setState(() {
+              _contactUnlocked = true;
+            });
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(
