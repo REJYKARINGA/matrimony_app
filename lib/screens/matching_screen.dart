@@ -269,28 +269,10 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     if (_declinedInterests.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.block_outlined,
-              size: 64,
-              color: Colors.grey.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No declined interests',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black87,
-              ),
-            ),
-          ],
-        ),
+      return _buildEmptyState(
+        icon: Icons.block_rounded,
+        title: 'No Declined Interactions',
+        description: 'Profiles you or others have declined will appear here. No activity yet!',
       );
     }
 
@@ -334,38 +316,12 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     if (_matches.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.favorite_border,
-              size: 64,
-              color: gradientCyan.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No matches yet',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Send interests to increase your matches',
-              style: TextStyle(
-                fontSize: 14,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
+      return _buildEmptyState(
+        icon: Icons.favorite_rounded,
+        title: 'No Matches Yet',
+        description: "Your perfect match might be just a swipe away! Keep exploring profiles to find someone special.",
+        actionLabel: 'Browse Profiles',
+        onAction: () => Navigator.of(context).pop(), // Go back to Home/Search
       );
     }
 
@@ -407,28 +363,10 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     if (_sentInterests.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.send_outlined,
-              size: 64,
-              color: gradientCyan.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No interests sent',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black87,
-              ),
-            ),
-          ],
-        ),
+      return _buildEmptyState(
+        icon: Icons.send_rounded,
+        title: 'Nothing Sent Yet',
+        description: "Be proactive! When you find an interesting profile, send them an interest to start your journey.",
       );
     }
 
@@ -467,28 +405,10 @@ class _MatchingScreenState extends State<MatchingScreen>
     }
 
     if (_receivedInterests.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.notifications_outlined,
-              size: 64,
-              color: accentGreen.withOpacity(0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No interests received',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black87,
-              ),
-            ),
-          ],
-        ),
+      return _buildEmptyState(
+        icon: Icons.notifications_active_rounded,
+        title: 'Waiting for Responses',
+        description: "No interests received so far. Enhance your profile with better photos to attract more attention.",
       );
     }
 
@@ -983,6 +903,93 @@ class _MatchingScreenState extends State<MatchingScreen>
         ),
       );
     }
+  }
+
+  Widget _buildEmptyState({
+    required IconData icon,
+    required String title,
+    required String description,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00BCD4).withOpacity(0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 64,
+              color: const Color(0xFF00BCD4).withOpacity(0.8),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              height: 1.5,
+            ),
+          ),
+          if (actionLabel != null && onAction != null) ...[
+            const SizedBox(height: 32),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00BCD4).withOpacity(0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: onAction,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                ),
+                child: Text(
+                  actionLabel,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   @override

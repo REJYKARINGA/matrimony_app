@@ -937,11 +937,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 )
               : _recommendedUsers.isEmpty
-              ? const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text('No recommendations available'),
-                  ),
+              ? SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyRecommendationsState(),
                 )
               : SliverList(
                   delegate: SliverChildBuilderDelegate((context, index) {
@@ -1282,6 +1280,122 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ),
   );
 }
+
+  Widget _buildEmptyRecommendationsState() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Visual Illustration (Pulse Icon)
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00BCD4).withOpacity(0.05),
+              shape: BoxShape.circle,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                const Icon(
+                  Icons.person_search_rounded,
+                  size: 64,
+                  color: Color(0xFF00BCD4),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0D47A1),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          
+          // Professional Message
+          const Text(
+            'Refining Matches For You',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            "Fresh profiles are added regularly—please check back in a day or a week for new recommendations.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey.shade600,
+              height: 1.6,
+            ),
+          ),
+          const SizedBox(height: 48),
+          
+          // Action Buttons
+          Container(
+            width: double.infinity,
+            height: 54,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00BCD4).withOpacity(0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: _loadRecommendedUsers,
+              icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
+              label: const Text(
+                'Refresh Suggestions',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextButton.icon(
+            onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadRecommendedUsers()),
+            icon: const Icon(Icons.tune_rounded, size: 18, color: Color(0xFF0D47A1)),
+            label: const Text(
+              'Refine Preferences',
+              style: TextStyle(
+                color: Color(0xFF0D47A1),
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPlaceholderBackground(String? gender) {
     bool isFemale = gender?.toLowerCase() == 'female';
