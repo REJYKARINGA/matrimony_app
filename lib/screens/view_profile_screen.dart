@@ -1130,7 +1130,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       ],
                     ),
                     child: ElevatedButton.icon(
-                      onPressed: () => _checkVerificationAndProceed(() => _showPaymentOptions()),
+                      onPressed: _showPaymentOptions,
                       icon: Icon(Icons.account_balance_wallet, size: 18),
                       label: Text(
                         'Wallet',
