@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../widgets/ripple_animation.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/matching_service.dart';
@@ -913,13 +914,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           // Cards List - Full Width Responsive
           _isLoadingRecommended
-              ? const SliverToBoxAdapter(
+              ? SliverFillRemaining(
                   child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: CircularProgressIndicator(
-                        color: Color(0xFF00BCD4), // Turquoise
-                      ),
+                    child: RipplesAnimation(
+                      profileImageUrl: authProvider.user?.displayImage,
+                      child: const SizedBox(), 
+                      loadingText: 'Finding people near you...',
                     ),
                   ),
                 )
