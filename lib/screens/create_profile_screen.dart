@@ -277,6 +277,31 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
         ),
         const SizedBox(height: 16),
+        DropdownButtonFormField<String>(
+          value: _selectedGender,
+          decoration: InputDecoration(
+            labelText: 'Gender',
+            prefixIcon: const Icon(Icons.wc, color: Color(0xFF00BCD4)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+          ),
+          items: const [
+            DropdownMenuItem(value: 'male', child: Text('Male')),
+            DropdownMenuItem(value: 'female', child: Text('Female')),
+          ],
+          onChanged: (value) => setState(() => _selectedGender = value),
+          validator: (value) => value == null ? 'Required' : null,
+        ),
+        const SizedBox(height: 16),
         TextFormField(
           controller: _dateOfBirthController,
           decoration: InputDecoration(
@@ -305,7 +330,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 const Duration(days: 365 * 25),
               ),
               firstDate: DateTime(1950),
-              lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+              lastDate: _getMaxDateForAgeValidation(),
             );
             if (pickedDate != null) {
               setState(() {
@@ -315,32 +340,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               });
             }
           },
-          validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-        ),
-        const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
-          value: _selectedGender,
-          decoration: InputDecoration(
-            labelText: 'Gender',
-            prefixIcon: const Icon(Icons.wc, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          items: const [
-            DropdownMenuItem(value: 'male', child: Text('Male')),
-            DropdownMenuItem(value: 'female', child: Text('Female')),
-          ],
-          onChanged: (value) => setState(() => _selectedGender = value),
-          validator: (value) => value == null ? 'Required' : null,
+          validator: (value) => value?.isEmpty ?? true ? 'Required' : _validateAgeBasedOnGender(value),
         ),
         const SizedBox(height: 16),
         Row(
@@ -885,6 +885,38 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         ),
       ),
     );
+  }
+
+  String? _validateAgeBasedOnGender(String? value) {
+    if (value == null || value.isEmpty) return null;
+    
+    DateTime? dob = DateFormatter.parseDate(value);
+    if (dob == null) return 'Invalid date';
+    
+    int age = DateTime.now().year - dob.year;
+    if (DateTime.now().month < dob.month ||
+        (DateTime.now().month == dob.month && DateTime.now().day < dob.day)) {
+      age--;
+    }
+    
+    if (_selectedGender == 'female' && age < 18) {
+      return 'Minimum age for female is 18 years';
+    } else if (_selectedGender == 'male' && age < 21) {
+      return 'Minimum age for male is 21 years';
+    }
+    
+    return null;
+  }
+
+  DateTime _getMaxDateForAgeValidation() {
+    if (_selectedGender == 'female') {
+      return DateTime.now().subtract(const Duration(days: 365 * 18)); // Minimum age 18 for female
+    } else if (_selectedGender == 'male') {
+      return DateTime.now().subtract(const Duration(days: 365 * 21)); // Minimum age 21 for male
+    } else {
+      // Default to 18 if gender not selected
+      return DateTime.now().subtract(const Duration(days: 365 * 18));
+    }
   }
 
   @override
