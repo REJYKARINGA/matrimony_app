@@ -101,12 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       await authProvider.loadCurrentUserWithProfile();
 
-      // Trigger Reverb test broadcast
-      try {
-        await ApiService.triggerTestBroadcast();
-      } catch (e) {
-        print('Error triggering test broadcast: $e');
-      }
+
 
       if (mounted) {
         setState(() {
