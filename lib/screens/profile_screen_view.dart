@@ -842,6 +842,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _occupationController;
   late TextEditingController _annualIncomeController;
   late TextEditingController _cityController;
+  late TextEditingController _districtController;
   String? _selectedDistrict;
   late TextEditingController _stateController;
   late TextEditingController _countryController;
@@ -997,6 +998,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       text: widget.user?.userProfile?.city ?? '',
     );
     _selectedDistrict = widget.user?.userProfile?.district;
+    _districtController = TextEditingController(text: _selectedDistrict ?? '');
     _stateController = TextEditingController(
       text: (widget.user?.userProfile?.state == null || widget.user!.userProfile!.state!.isEmpty) ? 'Kerala' : widget.user!.userProfile!.state!,
     );
@@ -1041,7 +1043,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         occupationId: _selectedOccupationId,
         annualIncome: double.tryParse(_annualIncomeController.text),
         city: _cityController.text,
-        district: _selectedDistrict,
+        district: _districtController.text,
         county: _countyController.text,
         state: _stateController.text,
         country: _countryController.text,
@@ -1757,16 +1759,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     const SizedBox(height: 16),
                     
-                    DropdownButtonFormField<String>(
-                      value: _selectedDistrict,
+                    TextFormField(
+                      controller: _districtController,
+                      readOnly: true,
+                      onTap: () => _openSearchablePicker(
+                        title: 'District',
+                        items: _keralaDistricts,
+                        controller: _districtController,
+                        onSelected: (item) {
+                          setState(() {
+                            _selectedDistrict = item.toString();
+                          });
+                        },
+                      ),
                       decoration: _buildModernInputDecoration(
                         label: 'District',
                         icon: Icons.map_rounded,
+                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF00BCD4)),
                       ),
-                      items: _keralaDistricts.map((district) {
-                        return DropdownMenuItem(value: district, child: Text(district));
-                      }).toList(),
-                      onChanged: (value) => setState(() => _selectedDistrict = value),
                     ),
                     const SizedBox(height: 16),
                     
