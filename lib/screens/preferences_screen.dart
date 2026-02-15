@@ -61,6 +61,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   bool _isCasteAscending = false;
   bool _isSubCasteAscending = false;
 
+  // Search queries and controllers
+  String _casteSearchQuery = '';
+  final TextEditingController _casteSearchController = TextEditingController();
+  
+  String _subCasteSearchQuery = '';
+  final TextEditingController _subCasteSearchController = TextEditingController();
+  
+  String _educationSearchQuery = '';
+  final TextEditingController _educationSearchController = TextEditingController();
+  
+  String _occupationSearchQuery = '';
+  final TextEditingController _occupationSearchController = TextEditingController();
+
   final List<String> _maritalStatusOptions = [
     'never_married',
     'nikkah_divorced',
@@ -281,27 +294,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     if (_isDataLoading) {
       return Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(
+        appBar: _buildAppBar(),
+        body: Center(
           child: Column(
-            children: [
-              _buildGradientHeader(size, context),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      CircularProgressIndicator(color: Color(0xFF00BCD4)),
-                      SizedBox(height: 16),
-                      Text('Loading preferences...'),
-                    ],
-                  ),
-                ),
-              ),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(color: Color(0xFF00BCD4)),
+              SizedBox(height: 16),
+              Text('Loading preferences...', style: TextStyle(color: Colors.grey)),
             ],
           ),
         ),
@@ -311,59 +314,33 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     if (_errorMessage != null) {
       return Scaffold(
         backgroundColor: Colors.white,
-        body: SafeArea(
-          child: Column(
-            children: [
-              _buildGradientHeader(size, context),
-              Expanded(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text(
-                          _errorMessage!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _loadPreferences,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shadowColor: Colors.transparent,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text('Retry'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+        appBar: _buildAppBar(),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(
+                  _errorMessage!,
+                  style: const TextStyle(fontSize: 16, color: Colors.black87),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _loadPreferences,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00BCD4),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -371,372 +348,301 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildGradientHeader(size, context),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSection('Age', [
-                          _buildRangeSlider(
-                            'Age: ${_ageRange.start.round()} - ${_ageRange.end.round()} Years',
-                            _ageRange,
-                            18,
-                            70,
-                            (values) => setState(() => _ageRange = values),
-                            Icons.calendar_month_rounded,
-                          ),
-                        ]),
-
-                        _buildSection('Height', [
-                          _buildRangeSlider(
-                            'Height: ${_heightRange.start.round()} - ${_heightRange.end.round()} cm',
-                            _heightRange,
-                            100,
-                            220,
-                            (values) => setState(() => _heightRange = values),
-                            Icons.height_rounded,
-                          ),
-                        ]),
-
-                        _buildSection('Basic Details', [
-                          _buildDropdown(
-                            'Marital Status',
-                            _maritalStatus,
-                            _maritalStatusOptions,
-                            Icons.favorite_outline,
-                            (value) {
-                              setState(() => _maritalStatus = value);
-                            },
-                            formatLabel: true,
-                          ),
-                          const SizedBox(height: 10),
-                          // Preferred Religion is now forced to match user's religion and hidden
-                          const SizedBox(height: 10),
-                          _buildCheckboxSelector(
-                            'Caste',
-                            _availableCastesData,
-                            _selectedCasteIds,
-                            Icons.people_outline,
-                            (id, selected) {
-                              setState(() {
-                                if (selected) {
-                                  _selectedCasteIds.add(id);
-                                } else {
-                                  _selectedCasteIds.remove(id);
-                                }
-                                _updateAvailableSubCastes();
-                              });
-                            },
-                            isAscending: _isCasteAscending,
-                            onSortToggled: () {
-                              setState(() => _isCasteAscending = !_isCasteAscending);
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          _buildCheckboxSelector(
-                            'Sub-Caste',
-                            _availableSubCastesData,
-                            _selectedSubCasteIds,
-                            Icons.group_work_rounded,
-                            (id, selected) {
-                              setState(() {
-                                if (selected) {
-                                  _selectedSubCasteIds.add(id);
-                                } else {
-                                  _selectedSubCasteIds.remove(id);
-                                }
-                              });
-                            },
-                            isAscending: _isSubCasteAscending,
-                            onSortToggled: () {
-                              setState(() => _isSubCasteAscending = !_isSubCasteAscending);
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                           _buildCheckboxSelector(
-                            'Education',
-                            _educationOptions,
-                            _selectedEducationIds,
-                            Icons.school,
-                            (id, selected) {
-                              setState(() {
-                                if (selected) {
-                                  _selectedEducationIds.add(id);
-                                } else {
-                                  _selectedEducationIds.remove(id);
-                                }
-                              });
-                            },
-                            isAscending: _isEducationAscending,
-                            onSortToggled: () {
-                              setState(() => _isEducationAscending = !_isEducationAscending);
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                           _buildCheckboxSelector(
-                            'Occupation',
-                            _occupationOptions,
-                            _selectedOccupationIds,
-                            Icons.work_outline,
-                            (id, selected) {
-                              setState(() {
-                                if (selected) {
-                                  _selectedOccupationIds.add(id);
-                                } else {
-                                  _selectedOccupationIds.remove(id);
-                                }
-                              });
-                            },
-                            isAscending: _isOccupationAscending,
-                            onSortToggled: () {
-                              setState(() => _isOccupationAscending = !_isOccupationAscending);
-                            },
-                          ),
-                        ]),
-
-                        _buildSection('Distance', [
-                          _buildSingleSlider(
-                            'Search Radius: ${_maxDistance.round()} km',
-                            _maxDistance,
-                            1,
-                            200,
-                            (value) => setState(() => _maxDistance = value),
-                            Icons.near_me_outlined,
-                          ),
-                        ]),
-
-                        _buildSection('Income', [
-                          _buildIncomeRangeSlider(),
-                        ]),
-
-                        _buildSection('Locations', [
-                          _buildLocationSelector(),
-                        ]),
-
-                        _buildSection('Habits & Lifestyle', [
-                          _buildDropdown(
-                            'Drug Addiction Preference',
-                            _selectedDrugAddiction,
-                            ['any', 'yes', 'no'],
-                            Icons.medical_services_outlined,
-                            (value) => setState(() => _selectedDrugAddiction = value!),
-                            formatLabel: true,
-                          ),
-                          if (_selectedDrugAddiction != 'no') ...[
-                            const SizedBox(height: 16),
-                            _buildHabitMultiSelect(
-                              'Drinking Habit',
-                              _selectedAlcohol,
-                              Icons.local_bar,
-                              (val, selected) {
-                                setState(() {
-                                  if (selected) {
-                                    if (val == 'never') {
-                                      _selectedAlcohol = ['never'];
-                                    } else {
-                                      _selectedAlcohol.remove('never');
-                                      if (!_selectedAlcohol.contains(val)) {
-                                        _selectedAlcohol.add(val);
-                                      }
-                                    }
-                                  } else {
-                                    if (_selectedAlcohol.length > 1) {
-                                      _selectedAlcohol.remove(val);
-                                    }
-                                  }
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _buildHabitMultiSelect(
-                              'Smoking Habit',
-                              _selectedSmoke,
-                              Icons.smoke_free,
-                              (val, selected) {
-                                setState(() {
-                                  if (selected) {
-                                    if (val == 'never') {
-                                      _selectedSmoke = ['never'];
-                                    } else {
-                                      _selectedSmoke.remove('never');
-                                      if (!_selectedSmoke.contains(val)) {
-                                        _selectedSmoke.add(val);
-                                      }
-                                    }
-                                  } else {
-                                    if (_selectedSmoke.length > 1) {
-                                      _selectedSmoke.remove(val);
-                                    }
-                                  }
-                                });
-                              },
-                            ),
-                          ],
-                        ]),
-
-                        const SizedBox(height: 24),
-
-                        Container(
-                          width: double.infinity,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _savePreferences,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shadowColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    'Update Preferences',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                        const SizedBox(height: 100),
-                      ],
-                    ),
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSection('Age', [
+                  _buildRangeSlider(
+                    'Age: ${_ageRange.start.round()} - ${_ageRange.end.round()} Years',
+                    _ageRange,
+                    18,
+                    70,
+                    (values) => setState(() => _ageRange = values),
+                    Icons.calendar_month_rounded,
                   ),
-                ),
-              ),
+                ]),
+
+                _buildSection('Height', [
+                  _buildRangeSlider(
+                    'Height: ${_heightRange.start.round()} - ${_heightRange.end.round()} cm',
+                    _heightRange,
+                    100,
+                    220,
+                    (values) => setState(() => _heightRange = values),
+                    Icons.height_rounded,
+                  ),
+                ]),
+
+                _buildSection('Basic Details', [
+                  _buildDropdown(
+                    'Marital Status',
+                    _maritalStatus,
+                    _maritalStatusOptions,
+                    Icons.favorite_outline,
+                    (value) {
+                      setState(() => _maritalStatus = value);
+                    },
+                    formatLabel: true,
+                  ),
+                  const SizedBox(height: 10),
+                  // Preferred Religion is now forced to match user's religion and hidden
+                  const SizedBox(height: 10),
+                  _buildCheckboxSelector(
+                    'Caste',
+                    _availableCastesData,
+                    _selectedCasteIds,
+                    Icons.people_outline,
+                    (id, selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedCasteIds.add(id);
+                        } else {
+                          _selectedCasteIds.remove(id);
+                        }
+                        _updateAvailableSubCastes();
+                      });
+                    },
+                    isAscending: _isCasteAscending,
+                    onSortToggled: () {
+                      setState(() => _isCasteAscending = !_isCasteAscending);
+                    },
+                    searchQuery: _casteSearchQuery,
+                    controller: _casteSearchController,
+                    onSearchChanged: (val) => setState(() => _casteSearchQuery = val),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildCheckboxSelector(
+                    'Sub-Caste',
+                    _availableSubCastesData,
+                    _selectedSubCasteIds,
+                    Icons.group_work_rounded,
+                    (id, selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedSubCasteIds.add(id);
+                        } else {
+                          _selectedSubCasteIds.remove(id);
+                        }
+                      });
+                    },
+                    isAscending: _isSubCasteAscending,
+                    onSortToggled: () {
+                      setState(() => _isSubCasteAscending = !_isSubCasteAscending);
+                    },
+                    searchQuery: _subCasteSearchQuery,
+                    controller: _subCasteSearchController,
+                    onSearchChanged: (val) => setState(() => _subCasteSearchQuery = val),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildCheckboxSelector(
+                    'Education',
+                    _educationOptions,
+                    _selectedEducationIds,
+                    Icons.school,
+                    (id, selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedEducationIds.add(id);
+                        } else {
+                          _selectedEducationIds.remove(id);
+                        }
+                      });
+                    },
+                    isAscending: _isEducationAscending,
+                    onSortToggled: () {
+                      setState(() => _isEducationAscending = !_isEducationAscending);
+                    },
+                    searchQuery: _educationSearchQuery,
+                    controller: _educationSearchController,
+                    onSearchChanged: (val) => setState(() => _educationSearchQuery = val),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildCheckboxSelector(
+                    'Occupation',
+                    _occupationOptions,
+                    _selectedOccupationIds,
+                    Icons.work_outline,
+                    (id, selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedOccupationIds.add(id);
+                        } else {
+                          _selectedOccupationIds.remove(id);
+                        }
+                      });
+                    },
+                    isAscending: _isOccupationAscending,
+                    onSortToggled: () {
+                      setState(() => _isOccupationAscending = !_isOccupationAscending);
+                    },
+                    searchQuery: _occupationSearchQuery,
+                    controller: _occupationSearchController,
+                    onSearchChanged: (val) => setState(() => _occupationSearchQuery = val),
+                  ),
+                ]),
+
+                _buildSection('Distance', [
+                  _buildSingleSlider(
+                    'Search Radius: ${_maxDistance.round()} km',
+                    _maxDistance,
+                    1,
+                    200,
+                    (value) => setState(() => _maxDistance = value),
+                    Icons.near_me_outlined,
+                  ),
+                ]),
+
+                _buildSection('Income', [
+                  _buildIncomeRangeSlider(),
+                ]),
+
+                _buildSection('Locations', [
+                  _buildLocationSelector(),
+                ]),
+
+                _buildSection('Habits & Lifestyle', [
+                  _buildDropdown(
+                    'Drug Addiction Preference',
+                    _selectedDrugAddiction,
+                    ['any', 'yes', 'no'],
+                    Icons.medical_services_outlined,
+                    (value) => setState(() => _selectedDrugAddiction = value!),
+                    formatLabel: true,
+                  ),
+                  if (_selectedDrugAddiction != 'no') ...[
+                    const SizedBox(height: 16),
+                    _buildHabitMultiSelect(
+                      'Drinking Habit',
+                      _selectedAlcohol,
+                      Icons.local_bar,
+                      (val, selected) {
+                        setState(() {
+                          if (selected) {
+                            if (val == 'never') {
+                              _selectedAlcohol = ['never'];
+                            } else {
+                              _selectedAlcohol.remove('never');
+                              if (!_selectedAlcohol.contains(val)) {
+                                _selectedAlcohol.add(val);
+                              }
+                            }
+                          } else {
+                            if (_selectedAlcohol.length > 1) {
+                              _selectedAlcohol.remove(val);
+                            }
+                          }
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildHabitMultiSelect(
+                      'Smoking Habit',
+                      _selectedSmoke,
+                      Icons.smoke_free,
+                      (val, selected) {
+                        setState(() {
+                          if (selected) {
+                            if (val == 'never') {
+                              _selectedSmoke = ['never'];
+                            } else {
+                              _selectedSmoke.remove('never');
+                              if (!_selectedSmoke.contains(val)) {
+                                _selectedSmoke.add(val);
+                              }
+                            }
+                          } else {
+                            if (_selectedSmoke.length > 1) {
+                              _selectedSmoke.remove(val);
+                            }
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ]),
+
+                const SizedBox(height: 100),
+              ],
             ),
-          ],
+          ),
         ),
       ),
       bottomNavigationBar: const CommonFooter(),
     );
   }
 
-  Widget _buildGradientHeader(Size size, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: size.height * 0.22,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(40),
-          bottomRight: Radius.circular(40),
-        ),
-        image: DecorationImage(
-          image: const NetworkImage(
-            'https://i.pinimg.com/originals/58/36/4b/58364b97bba4c044562b44d6df4010ae.jpg',
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      title: Column(
+        children: const [
+          Text(
+            'Preferences',
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
           ),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.3),
-            BlendMode.darken,
-          ),
-          onError: (exception, stackTrace) {
-            // Graceful fallback is handled by the container color
-          },
-        ),
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            const Color(0xFF00BCD4).withOpacity(0.8),
-            const Color(0xFF0D47A1).withOpacity(0.8),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF00BCD4).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+          Text(
+            'Find your perfect match',
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: 8,
-            left: 8,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+      centerTitle: true,
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : _savePreferences,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF00BCD4),
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.tune, size: 35, color: Color(0xFF00BCD4)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Preferences',
+                )
+              : const Text(
+                  'Update',
                   style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
+                    color: Color(0xFF00BCD4),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Find your perfect match',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white.withOpacity(0.95),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
+        const SizedBox(width: 8),
+      ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(
+          color: Colors.grey.withOpacity(0.1),
+          height: 1,
+        ),
       ),
     );
   }
+
+  // Remove the old _buildGradientHeader method if needed, but let's keep it clean
+  // and focus on the new professionally built one below if we want more flair.
+  
+
 
   Widget _buildMultiSelectField(
     String label,
@@ -1332,20 +1238,34 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     Function(int, bool) onChanged, {
     required bool isAscending,
     required VoidCallback onSortToggled,
+    required String searchQuery,
+    required TextEditingController controller,
+    required Function(String) onSearchChanged,
   }) {
-    // Sort options based on current sorting mode
-    final sortedOptions = List<Map<String, dynamic>>.from(options);
+    // 1. Filter based on search query
+    final filteredBySearch = options.where((option) {
+      if (searchQuery.isEmpty) return true;
+      final name = (option['name']?.toString() ?? '').toLowerCase();
+      return name.contains(searchQuery.toLowerCase());
+    }).toList();
+
+    // 2. Sort the filtered options
+    final sortedOptions = List<Map<String, dynamic>>.from(filteredBySearch);
     if (isAscending) {
       sortedOptions.sort((a, b) => (a['name']?.toString() ?? '').compareTo(b['name']?.toString() ?? ''));
     } else {
-      // Sort by popularity (Trending) - descending
       sortedOptions.sort((a, b) {
         final popA = a['popularity_count'] ?? 0;
         final popB = b['popularity_count'] ?? 0;
-        // Handle potential double from JSON decoding if any
         final valA = popA is num ? popA.toInt() : 0;
         final valB = popB is num ? popB.toInt() : 0;
-        return valB.compareTo(valA);
+        // Primary sort: popularity (descending)
+        int cmp = valB.compareTo(valA);
+        if (cmp == 0) {
+          // Secondary sort: name (ascending)
+          return (a['name']?.toString() ?? '').compareTo(b['name']?.toString() ?? '');
+        }
+        return cmp;
       });
     }
 
@@ -1359,6 +1279,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header Row: Icon, Label, and Sort Toggle
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -1385,7 +1306,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                   const Text(
+                  const Text(
                     'Sort:',
                     style: TextStyle(
                       fontSize: 11,
@@ -1411,13 +1332,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             decoration: BoxDecoration(
                               color: !isAscending ? Colors.white : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
-                              boxShadow: !isAscending ? [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1),
-                                )
-                              ] : [],
+                              boxShadow: !isAscending
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      )
+                                    ]
+                                  : [],
                             ),
                             child: Row(
                               children: [
@@ -1444,13 +1367,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             decoration: BoxDecoration(
                               color: isAscending ? Colors.white : Colors.transparent,
                               borderRadius: BorderRadius.circular(15),
-                              boxShadow: isAscending ? [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1),
-                                )
-                              ] : [],
+                              boxShadow: isAscending
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      )
+                                    ]
+                                  : [],
                             ),
                             child: Row(
                               children: [
@@ -1480,12 +1405,53 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             ],
           ),
           const SizedBox(height: 12),
+          
+          // Search Field
+          Container(
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: TextField(
+              controller: controller,
+              onChanged: onSearchChanged,
+              decoration: InputDecoration(
+                hintText: 'Search $label...',
+                hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+                prefixIcon: Icon(Icons.search, size: 18, color: Colors.grey.shade400),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () {
+                          controller.clear();
+                          onSearchChanged('');
+                        },
+                      )
+                    : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 12),
+          
           if (sortedOptions.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                'Loading options...',
-                style: TextStyle(color: Colors.grey),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.search_off, size: 30, color: Colors.grey.shade300),
+                    const SizedBox(height: 8),
+                    Text(
+                      searchQuery.isEmpty ? 'Loading options...' : 'No results matching "$searchQuery"',
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                    ),
+                  ],
+                ),
               ),
             )
           else
@@ -1494,13 +1460,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               runSpacing: 8,
               children: sortedOptions.map((option) {
                 final isSelected = selectedIds.contains(option['id']);
-                final isTrending = (option['popularity_count'] ?? 0) > 10; // Threshold for trending
+                final isTrending = (option['popularity_count'] ?? 0) > 10;
                 
                 return FilterChip(
                   label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(option['name']),
+                      Text(option['name'] ?? ''),
                       if (isTrending) ...[
                         const SizedBox(width: 4),
                         const Icon(Icons.trending_up, size: 14, color: Color(0xFF00BCD4)),
@@ -1517,9 +1483,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFF00BCD4)
-                          : Colors.grey.shade300,
+                      color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -1530,6 +1494,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 );
               }).toList(),
             ),
+          
           if (selectedIds.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
@@ -1616,6 +1581,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   void dispose() {
     _casteController.dispose();
     _locationSearchController.dispose();
+    _casteSearchController.dispose();
+    _subCasteSearchController.dispose();
+    _educationSearchController.dispose();
+    _occupationSearchController.dispose();
     super.dispose();
   }
 }
