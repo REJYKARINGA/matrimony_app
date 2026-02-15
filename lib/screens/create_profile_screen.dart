@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
-import 'package:intl/intl.dart';
-import '../models/user_model.dart';
 import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
 import '../utils/date_formatter.dart';
+import '../widgets/profile_creation_widgets.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({Key? key}) : super(key: key);
@@ -16,14 +15,16 @@ class CreateProfileScreen extends StatefulWidget {
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  final PageController _pageController = PageController();
   int _currentStep = 0;
+  final int _totalSteps = 12; // Increased for Preview step
 
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _dateOfBirthController;
   String? _selectedGender;
-  late TextEditingController _heightController;
-  late TextEditingController _weightController;
+  double _height = 170;
+  double _weight = 70;
   String? _selectedMaritalStatus;
   late TextEditingController _religionController;
   late TextEditingController _casteController;
@@ -37,23 +38,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   late TextEditingController _stateController;
   late TextEditingController _countryController;
   late TextEditingController _bioController;
+  bool _drugAddiction = false;
+  String _smoke = 'never';
+  String _alcohol = 'never';
   bool _isLoading = false;
 
   final List<String> _keralaDistricts = [
-    'Thiruvananthapuram',
-    'Kollam',
-    'Pathanamthitta',
-    'Alappuzha',
-    'Kottayam',
-    'Idukki',
-    'Ernakulam',
-    'Thrissur',
-    'Palakkad',
-    'Malappuram',
-    'Kozhikode',
-    'Wayanad',
-    'Kannur',
-    'Kasaragod',
+    'Thiruvananthapuram', 'Kollam', 'Pathanamthitta', 'Alappuzha', 'Kottayam',
+    'Idukki', 'Ernakulam', 'Thrissur', 'Palakkad', 'Malappuram', 'Kozhikode',
+    'Wayanad', 'Kannur', 'Kasaragod',
   ];
 
   @override
@@ -66,10 +59,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _dateOfBirthController = TextEditingController();
-    _selectedGender = null;
-    _heightController = TextEditingController();
-    _weightController = TextEditingController();
-    _selectedMaritalStatus = null;
     _religionController = TextEditingController();
     _casteController = TextEditingController();
     _subCasteController = TextEditingController();
@@ -78,27 +67,41 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _occupationController = TextEditingController();
     _annualIncomeController = TextEditingController();
     _cityController = TextEditingController();
-    _selectedDistrict = null;
     _stateController = TextEditingController(text: 'Kerala');
     _countryController = TextEditingController(text: 'India');
     _bioController = TextEditingController();
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _dateOfBirthController.dispose();
+    _religionController.dispose();
+    _casteController.dispose();
+    _subCasteController.dispose();
+    _motherTongueController.dispose();
+    _educationController.dispose();
+    _occupationController.dispose();
+    _annualIncomeController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _countryController.dispose();
+    _bioController.dispose();
+    super.dispose();
+  }
+
   Future<void> _createProfile() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
+    setState(() => _isLoading = true);
     try {
       final response = await ProfileService.updateMyProfile(
         firstName: _firstNameController.text,
         lastName: _lastNameController.text,
         dateOfBirth: DateFormatter.parseDate(_dateOfBirthController.text),
         gender: _selectedGender,
-        height: int.tryParse(_heightController.text),
-        weight: int.tryParse(_weightController.text),
+        height: _height.round(),
+        weight: _weight.round(),
         maritalStatus: _selectedMaritalStatus,
         religion: _religionController.text,
         caste: _casteController.text,
@@ -112,774 +115,98 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         state: _stateController.text,
         country: _countryController.text,
         bio: _bioController.text,
+        drugAddiction: _drugAddiction,
+        smoke: _smoke,
+        alcohol: _alcohol,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         await authProvider.loadCurrentUserWithProfile();
         Navigator.of(context).pushReplacementNamed('/home');
       } else {
         final data = json.decode(response.body);
-        String message = data['error'] ?? 'Failed to create profile';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.red),
+          SnackBar(content: Text(data['error'] ?? 'Failed to create profile'), backgroundColor: Colors.red),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  bool _validateCurrentStep() {
-    switch (_currentStep) {
-      case 0:
-        return _firstNameController.text.isNotEmpty &&
-            _lastNameController.text.isNotEmpty &&
-            _dateOfBirthController.text.isNotEmpty &&
-            _selectedGender != null &&
-            _selectedMaritalStatus != null;
-      case 1:
-        return true; // Optional fields
-      case 2:
-        return true; // Optional fields
-      case 3:
-        return true; // Optional fields
-      default:
-        return true;
+      setState(() => _isLoading = false);
     }
   }
 
   void _nextStep() {
-    if (_validateCurrentStep()) {
-      if (_currentStep < 3) {
-        setState(() {
-          _currentStep++;
-        });
-      } else {
-        _createProfile();
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill all required fields'),
-          backgroundColor: Colors.orange,
-        ),
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_currentStep < _totalSteps - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
+    } else {
+      _createProfile();
     }
   }
 
   void _previousStep() {
     if (_currentStep > 0) {
-      setState(() {
-        _currentStep--;
-      });
-    }
-  }
-
-  Widget _buildStepIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Row(
-        children: List.generate(4, (index) {
-          return Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              height: 4,
-              decoration: BoxDecoration(
-                gradient: index <= _currentStep
-                    ? const LinearGradient(
-                        colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-                      )
-                    : null,
-                color: index <= _currentStep ? null : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildPersonalInfoStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Personal Information',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Let\'s start with your basic details',
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-        ),
-        const SizedBox(height: 30),
-        TextFormField(
-          controller: _firstNameController,
-          decoration: InputDecoration(
-            labelText: 'First Name',
-            prefixIcon: const Icon(
-              Icons.person_outline,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _lastNameController,
-          decoration: InputDecoration(
-            labelText: 'Last Name',
-            prefixIcon: const Icon(
-              Icons.person_outline,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
-        ),
-        const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
-          value: _selectedGender,
-          decoration: InputDecoration(
-            labelText: 'Gender',
-            prefixIcon: const Icon(Icons.wc, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          items: const [
-            DropdownMenuItem(value: 'male', child: Text('Male')),
-            DropdownMenuItem(value: 'female', child: Text('Female')),
-          ],
-          onChanged: (value) => setState(() => _selectedGender = value),
-          validator: (value) => value == null ? 'Required' : null,
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _dateOfBirthController,
-          decoration: InputDecoration(
-            labelText: 'Date of Birth',
-            prefixIcon: const Icon(
-              Icons.calendar_today,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          readOnly: true,
-          onTap: () async {
-            DateTime? pickedDate = await showDatePicker(
-              context: context,
-              initialDate: DateTime.now().subtract(
-                const Duration(days: 365 * 25),
-              ),
-              firstDate: DateTime(1950),
-              lastDate: _getMaxDateForAgeValidation(),
-            );
-            if (pickedDate != null) {
-              setState(() {
-                _dateOfBirthController.text = DateFormatter.formatDate(
-                  pickedDate,
-                );
-              });
-            }
-          },
-          validator: (value) => value?.isEmpty ?? true ? 'Required' : _validateAgeBasedOnGender(value),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _heightController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Height (cm)',
-                  prefixIcon: const Icon(
-                    Icons.height,
-                    color: Color(0xFF00BCD4),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF00BCD4),
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextFormField(
-                controller: _weightController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Weight (kg)',
-                  prefixIcon: const Icon(
-                    Icons.monitor_weight_outlined,
-                    color: Color(0xFF00BCD4),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFF00BCD4),
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey.shade50,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
-          value: _selectedMaritalStatus,
-          decoration: InputDecoration(
-            labelText: 'Marital Status',
-            prefixIcon: const Icon(
-              Icons.favorite_outline,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          items: const [
-            DropdownMenuItem(
-              value: 'never_married',
-              child: Text('Never Married'),
-            ),
-            DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
-            DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
-          ],
-          onChanged: (value) => setState(() => _selectedMaritalStatus = value),
-          validator: (value) => value == null ? 'Required' : null,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildReligionStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Religion & Community',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Share your cultural background',
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-        ),
-        const SizedBox(height: 30),
-        TextFormField(
-          controller: _religionController,
-          decoration: InputDecoration(
-            labelText: 'Religion',
-            prefixIcon: const Icon(Icons.church, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _casteController,
-          decoration: InputDecoration(
-            labelText: 'Caste',
-            prefixIcon: const Icon(
-              Icons.people_outline,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _subCasteController,
-          decoration: InputDecoration(
-            labelText: 'Sub-Caste',
-            prefixIcon: const Icon(Icons.people, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _motherTongueController,
-          decoration: InputDecoration(
-            labelText: 'Mother Tongue',
-            prefixIcon: const Icon(Icons.language, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEducationStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Education & Career',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Tell us about your professional background',
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-        ),
-        const SizedBox(height: 30),
-        TextFormField(
-          controller: _educationController,
-          decoration: InputDecoration(
-            labelText: 'Education',
-            prefixIcon: const Icon(Icons.school, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _occupationController,
-          decoration: InputDecoration(
-            labelText: 'Occupation',
-            prefixIcon: const Icon(
-              Icons.work_outline,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _annualIncomeController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: 'Annual Income',
-            prefixIcon: const Icon(
-              Icons.currency_rupee,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLocationStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Location & About',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Final details to complete your profile',
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-        ),
-        const SizedBox(height: 30),
-        TextFormField(
-          controller: _cityController,
-          decoration: InputDecoration(
-            labelText: 'City',
-            prefixIcon: const Icon(
-              Icons.location_city,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        DropdownButtonFormField<String>(
-          value: _selectedDistrict,
-          decoration: InputDecoration(
-            labelText: 'District',
-            prefixIcon: const Icon(Icons.map, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-          items: _keralaDistricts.map((district) {
-            return DropdownMenuItem(value: district, child: Text(district));
-          }).toList(),
-          onChanged: (value) => setState(() => _selectedDistrict = value),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _stateController,
-          decoration: InputDecoration(
-            labelText: 'State',
-            prefixIcon: const Icon(
-              Icons.location_on_outlined,
-              color: Color(0xFF00BCD4),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _countryController,
-          decoration: InputDecoration(
-            labelText: 'Country',
-            prefixIcon: const Icon(Icons.public, color: Color(0xFF00BCD4)),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _bioController,
-          maxLines: 4,
-          decoration: InputDecoration(
-            labelText: 'About Me',
-            hintText: 'Tell us something about yourself...',
-            prefixIcon: const Padding(
-              padding: EdgeInsets.only(bottom: 60),
-              child: Icon(Icons.edit_note, color: Color(0xFF00BCD4)),
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF00BCD4), width: 2),
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade50,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCurrentStep() {
-    switch (_currentStep) {
-      case 0:
-        return _buildPersonalInfoStep();
-      case 1:
-        return _buildReligionStep();
-      case 2:
-        return _buildEducationStep();
-      case 3:
-        return _buildLocationStep();
-      default:
-        return _buildPersonalInfoStep();
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.of(context).pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFF00BCD4), // Turquoise
-                Color(0xFF0D47A1), // Deep blue
-              ],
-            ),
-          ),
-        ),
-        foregroundColor: Colors.white,
-        title: const Text('Create Profile'),
-        centerTitle: true,
-      ),
-      body: Form(
-        key: _formKey,
+      backgroundColor: const Color(0xFFF2F9F9), // Light mint/neutral background
+      body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildStepIndicator(),
+            ProgressIndicatorRow(
+              currentStep: _currentStep,
+              totalSteps: _totalSteps,
+              onBackPressed: _previousStep,
             ),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: _buildCurrentStep(),
+              child: Form(
+                key: _formKey,
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  onPageChanged: (int page) {
+                    setState(() => _currentStep = page);
+                  },
+                  children: [
+                    _buildNameStep(),
+                    _buildGenderStep(),
+                    _buildDOBStep(),
+                    _buildWeightStep(),
+                    _buildHeightStep(),
+                    _buildMaritalStatusStep(),
+                    _buildHabitsStep(),
+                    _buildReligionStep(),
+                    _buildEducationStep(),
+                    _buildLocationStep(),
+                    _buildBioStep(),
+                    _buildPreviewStep(),
+                  ],
+                ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.shade200,
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  if (_currentStep > 0)
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _previousStep,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          side: const BorderSide(color: Color(0xFF00BCD4)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Back',
-                          style: TextStyle(color: Color(0xFF00BCD4)),
-                        ),
-                      ),
-                    ),
-                  if (_currentStep > 0) const SizedBox(width: 12),
-                  Expanded(
-                    flex: _currentStep == 0 ? 1 : 1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF00BCD4).withOpacity(0.3),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _nextStep,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: _isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                _currentStep == 3
-                                    ? 'Complete Profile'
-                                    : 'Continue',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            StepNavigationButtons(
+              currentStep: _currentStep,
+              onNext: _nextStep,
+              onBack: _previousStep,
+              isLoading: _isLoading,
+              nextText: _currentStep == _totalSteps - 1 ? 'Complete' : 'Next',
             ),
           ],
         ),
@@ -887,56 +214,367 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
-  String? _validateAgeBasedOnGender(String? value) {
-    if (value == null || value.isEmpty) return null;
-    
-    DateTime? dob = DateFormatter.parseDate(value);
-    if (dob == null) return 'Invalid date';
-    
-    int age = DateTime.now().year - dob.year;
-    if (DateTime.now().month < dob.month ||
-        (DateTime.now().month == dob.month && DateTime.now().day < dob.day)) {
-      age--;
-    }
-    
-    if (_selectedGender == 'female' && age < 18) {
-      return 'Minimum age for female is 18 years';
-    } else if (_selectedGender == 'male' && age < 21) {
-      return 'Minimum age for male is 21 years';
-    }
-    
-    return null;
+  Widget _buildStepContainer({required String title, required String subtitle, required Widget child}) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            StepHeader(title: title, subtitle: subtitle),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: child,
+            ),
+            const SizedBox(height: 40), // Bottom padding for better visual balance
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNameStep() {
+    return _buildStepContainer(
+      title: 'Introduce Yourself',
+      subtitle: 'To give you a better experience and results we need to know your name.',
+      child: Column(
+        children: [
+          _buildTextField(controller: _firstNameController, label: 'First Name', icon: Icons.person_outline),
+          const SizedBox(height: 16),
+          _buildTextField(controller: _lastNameController, label: 'Last Name', icon: Icons.person_outline),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGenderStep() {
+    return _buildStepContainer(
+      title: 'Gender',
+      subtitle: 'To give you a better experience and results we need to know your gender.',
+      child: FormField<String>(
+        initialValue: _selectedGender,
+        validator: (value) => value == null ? 'Please select your gender' : null,
+        builder: (state) {
+          return Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GenderCard(
+                    title: 'Male',
+                    icon: Icons.face,
+                    isSelected: state.value == 'male',
+                    onTap: () {
+                      state.didChange('male');
+                      setState(() => _selectedGender = 'male');
+                    },
+                  ),
+                  GenderCard(
+                    title: 'Female',
+                    icon: Icons.face_retouching_natural,
+                    isSelected: state.value == 'female',
+                    onTap: () {
+                      state.didChange('female');
+                      setState(() => _selectedGender = 'female');
+                    },
+                  ),
+                ],
+              ),
+              if (state.hasError) ...[
+                const SizedBox(height: 12),
+                Text(
+                  state.errorText!,
+                  style: const TextStyle(color: Color(0xFF003840), fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildWeightStep() {
+    return _buildStepContainer(
+      title: 'Weight',
+      subtitle: 'Weight in kg is flexible, so feel free to adjust it later.',
+      child: CustomRulerPicker(
+        minValue: 30,
+        maxValue: 150,
+        initialValue: _weight,
+        unit: 'Kg',
+        onChanged: (val) => _weight = val,
+      ),
+    );
+  }
+
+  Widget _buildHeightStep() {
+    return _buildStepContainer(
+      title: 'Height',
+      subtitle: 'Height in cm don\'t worry you can always change it later.',
+      child: CustomRulerPicker(
+        minValue: 100,
+        maxValue: 220,
+        initialValue: _height,
+        unit: 'Cm',
+        onChanged: (val) => _height = val,
+      ),
+    );
+  }
+
+  Widget _buildDOBStep() {
+    return _buildStepContainer(
+      title: 'Date of Birth',
+      subtitle: 'Your date of birth helps us find better matches.',
+      child: FormField<String>(
+        initialValue: _dateOfBirthController.text,
+        validator: (value) => _dateOfBirthController.text.isEmpty ? 'Please select your date of birth' : null,
+        builder: (state) {
+          return Column(
+            children: [
+              CustomDatePickerField(
+                label: 'Date of Birth',
+                controller: _dateOfBirthController,
+                onTap: () {
+                  DateTime maxDate = _getMaxDateForAgeValidation();
+                  DateTime initialDate = DateFormatter.parseDate(_dateOfBirthController.text) ?? maxDate;
+                  
+                  if (initialDate.isAfter(maxDate)) initialDate = maxDate;
+
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => CustomDatePickerModal(
+                      initialDate: initialDate,
+                      lastDate: maxDate,
+                      onDateSelected: (date) {
+                        setState(() {
+                          _dateOfBirthController.text = DateFormatter.formatDate(date);
+                          state.didChange(_dateOfBirthController.text);
+                        });
+                      },
+                    ),
+                  );
+                },
+              ),
+              if (state.hasError) ...[
+                const SizedBox(height: 12),
+                Text(
+                  state.errorText!,
+                  style: const TextStyle(
+                    color: Color(0xFF003840), 
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildMaritalStatusStep() {
+    return _buildStepContainer(
+      title: 'Marital Status',
+      subtitle: 'This helps us filter profiles based on your requirements.',
+      child: DropdownButtonFormField<String>(
+        value: _selectedMaritalStatus,
+        decoration: _inputDecoration(label: 'Marital Status', icon: Icons.favorite_outline),
+        items: const [
+          DropdownMenuItem(value: 'never_married', child: Text('Never Married')),
+          DropdownMenuItem(value: 'nikkah_divorced', child: Text('Nikkah Divorced')),
+          DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
+          DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
+        ],
+        validator: (val) => val == null ? 'Required' : null,
+        onChanged: (val) => setState(() => _selectedMaritalStatus = val),
+      ),
+    );
+  }
+
+  Widget _buildHabitsStep() {
+    return _buildStepContainer(
+      title: 'Lifestyle & Habits',
+      subtitle: 'Tell us about your lifestyle preferences.',
+      child: Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Drug Addiction'),
+            subtitle: const Text('Includes any substance abuse beyond tobacco/alcohol'),
+            value: _drugAddiction,
+            activeColor: const Color(0xFF003840),
+            onChanged: (val) => setState(() => _drugAddiction = val),
+          ),
+          const SizedBox(height: 16),
+          _buildHabitDropdown('Smoking', _smoke, (val) => setState(() => _smoke = val!)),
+          const SizedBox(height: 16),
+          _buildHabitDropdown('Alcohol', _alcohol, (val) => setState(() => _alcohol = val!)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReligionStep() {
+    return _buildStepContainer(
+      title: 'Religion & Community',
+      subtitle: 'Share your cultural background.',
+      child: Column(
+        children: [
+          _buildTextField(controller: _religionController, label: 'Religion', icon: Icons.church),
+          const SizedBox(height: 16),
+          _buildTextField(controller: _casteController, label: 'Caste', icon: Icons.people_outline),
+          const SizedBox(height: 16),
+          _buildTextField(controller: _motherTongueController, label: 'Mother Tongue', icon: Icons.language),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEducationStep() {
+    return _buildStepContainer(
+      title: 'Education & career',
+      subtitle: 'Tell us about your professional background.',
+      child: Column(
+        children: [
+          _buildTextField(controller: _educationController, label: 'Education', icon: Icons.school),
+          const SizedBox(height: 16),
+          _buildTextField(controller: _occupationController, label: 'Occupation', icon: Icons.work_outline),
+          const SizedBox(height: 16),
+          _buildTextField(controller: _annualIncomeController, label: 'Annual Income', icon: Icons.currency_rupee, keyboardType: TextInputType.number),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationStep() {
+    return _buildStepContainer(
+      title: 'Location',
+      subtitle: 'Where are you currently located?',
+      child: Column(
+        children: [
+          _buildTextField(controller: _cityController, label: 'City', icon: Icons.location_city),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<String>(
+            value: _selectedDistrict,
+            decoration: _inputDecoration(label: 'District', icon: Icons.map),
+            items: _keralaDistricts.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
+            validator: (val) => val == null ? 'Required' : null,
+            onChanged: (val) => setState(() => _selectedDistrict = val),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBioStep() {
+    return _buildStepContainer(
+      title: 'About You',
+      subtitle: 'Write a short bio to let others know you better (min 20 chars).',
+      child: _buildTextField(controller: _bioController, label: 'Bio', icon: Icons.edit_note, maxLines: 4),
+    );
+  }
+
+  Widget _buildPreviewStep() {
+    return _buildStepContainer(
+      title: 'Review Profile',
+      subtitle: 'Make sure everything looks correct before submitting.',
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildPreviewItem('Name', '${_firstNameController.text} ${_lastNameController.text}'),
+            _buildPreviewItem('Gender', _selectedGender?.toUpperCase() ?? ''),
+            _buildPreviewItem('Birthday', _dateOfBirthController.text),
+            _buildPreviewItem('Marital Status', _selectedMaritalStatus?.replaceAll('_', ' ').toUpperCase() ?? ''),
+            _buildPreviewItem('Height/Weight', '${_height.round()} cm / ${_weight.round()} kg'),
+            _buildPreviewItem('Religion', '${_religionController.text} (${_casteController.text})'),
+            _buildPreviewItem('Education', _educationController.text),
+            _buildPreviewItem('Location', '${_cityController.text}, ${_selectedDistrict ?? ''}'),
+            const Divider(),
+            const Text('Bio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            Text(_bioController.text, style: const TextStyle(color: Colors.black87)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF003840))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, TextInputType? keyboardType, int maxLines = 1}) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      maxLines: maxLines,
+      decoration: _inputDecoration(label: label, icon: icon),
+      validator: (val) {
+        if (val == null || val.isEmpty) return 'Required';
+        if (label == 'Bio' && val.length < 20) return 'Minimum 20 characters required';
+        return null;
+      },
+    );
+  }
+
+  Widget _buildHabitDropdown(String label, String value, ValueChanged<String?> onChanged) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: _inputDecoration(label: label, icon: label == 'Smoking' ? Icons.smoke_free : Icons.local_bar),
+      items: const [
+        DropdownMenuItem(value: 'never', child: Text('Never')),
+        DropdownMenuItem(value: 'occasionally', child: Text('Occasionally')),
+        DropdownMenuItem(value: 'regularly', child: Text('Regularly')),
+      ],
+      onChanged: onChanged,
+    );
   }
 
   DateTime _getMaxDateForAgeValidation() {
+    DateTime now = DateTime.now();
     if (_selectedGender == 'female') {
-      return DateTime.now().subtract(const Duration(days: 365 * 18)); // Minimum age 18 for female
-    } else if (_selectedGender == 'male') {
-      return DateTime.now().subtract(const Duration(days: 365 * 21)); // Minimum age 21 for male
+      return DateTime(now.year - 18, now.month, now.day);
     } else {
-      // Default to 18 if gender not selected
-      return DateTime.now().subtract(const Duration(days: 365 * 18));
+      // Default to 21 for male or if gender not yet selected
+      return DateTime(now.year - 21, now.month, now.day);
     }
   }
 
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _dateOfBirthController.dispose();
-    _heightController.dispose();
-    _weightController.dispose();
-    _religionController.dispose();
-    _casteController.dispose();
-    _subCasteController.dispose();
-    _motherTongueController.dispose();
-    _educationController.dispose();
-    _occupationController.dispose();
-    _annualIncomeController.dispose();
-    _cityController.dispose();
-    _stateController.dispose();
-    _countryController.dispose();
-    _bioController.dispose();
-    super.dispose();
+  InputDecoration _inputDecoration({required String label, required IconData icon}) {
+    return InputDecoration(
+      labelText: label,
+      prefixIcon: Icon(icon, color: const Color(0xFF003840)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Colors.grey.shade300)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Colors.grey.shade300)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF003840), width: 2)),
+      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF003840), width: 1)),
+      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF003840), width: 2)),
+      errorStyle: const TextStyle(color: Color(0xFF003840), fontWeight: FontWeight.bold),
+      filled: true,
+      fillColor: Colors.white,
+    );
   }
 }

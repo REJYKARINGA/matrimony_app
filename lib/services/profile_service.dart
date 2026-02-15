@@ -33,6 +33,9 @@ class ProfileService {
     String? state,
     String? country,
     String? postalCode,
+    bool? drugAddiction,
+    String? smoke,
+    String? alcohol,
   }) async {
     final body = {
       if (firstName != null) 'first_name': firstName,
@@ -41,6 +44,9 @@ class ProfileService {
       if (gender != null) 'gender': gender,
       if (height != null) 'height': height,
       if (weight != null) 'weight': weight,
+      if (drugAddiction != null) 'drug_addiction': drugAddiction,
+      if (smoke != null) 'smoke': smoke,
+      if (alcohol != null) 'alcohol': alcohol,
       if (maritalStatus != null) 'marital_status': maritalStatus,
       if (religion != null) 'religion': religion,
       if (caste != null) 'caste': caste,
@@ -153,6 +159,9 @@ class ProfileService {
     double? maxIncome,
     int? maxDistance,
     List<String>? preferredLocations,
+    String? drugAddiction,
+    List<String>? smoke,
+    List<String>? alcohol,
   }) async {
     final body = {
       if (minAge != null) 'min_age': minAge,
@@ -168,6 +177,9 @@ class ProfileService {
       if (maxIncome != null) 'max_income': maxIncome,
       if (maxDistance != null) 'max_distance': maxDistance,
       if (preferredLocations != null) 'preferred_locations': preferredLocations,
+      if (drugAddiction != null) 'drug_addiction': drugAddiction,
+      if (smoke != null) 'smoke': smoke,
+      if (alcohol != null) 'alcohol': alcohol,
     };
 
     return await ApiService.makeRequest(

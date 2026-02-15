@@ -885,6 +885,19 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 _user!.userProfile!.maritalStatus!,
               ),
           ]),
+          _buildInfoSection('Lifestyle & Habits', Icons.nightlife_outlined, [
+            if (_user?.userProfile?.drugAddiction != null)
+              _buildDetailRow(
+                'Any Drug Addiction',
+                _user!.userProfile!.drugAddiction! ? 'Yes' : 'None',
+              ),
+            if (_user?.userProfile?.drugAddiction == true) ...[
+              if ((_user?.userProfile?.smoke ?? '').isNotEmpty)
+                _buildDetailRow('Smoking', _user!.userProfile!.smoke!),
+              if ((_user?.userProfile?.alcohol ?? '').isNotEmpty)
+                _buildDetailRow('Alcohol', _user!.userProfile!.alcohol!),
+            ],
+          ]),
           _buildContactSection(),
           _buildInfoSection(
             'Religion & Community',

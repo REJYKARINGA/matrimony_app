@@ -44,12 +44,18 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   bool _isDataLoading = true;
   String? _errorMessage;
 
+  // Habits preferences
+  String _selectedDrugAddiction = 'any';
+  List<String> _selectedSmoke = ['never', 'occasionally', 'regularly'];
+  List<String> _selectedAlcohol = ['never', 'occasionally', 'regularly'];
+
   // Sorting states
   bool _isEducationAscending = false;
   bool _isOccupationAscending = false;
 
   final List<String> _maritalStatusOptions = [
     'never_married',
+    'nikkah_divorced',
     'divorced',
     'widowed',
   ];
@@ -125,6 +131,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _preferredLocations = [];
     _maxDistance = 50.0;
     _locationSearchController.text = '';
+    _selectedDrugAddiction = 'any';
+    _selectedSmoke = ['never', 'occasionally', 'regularly'];
+    _selectedAlcohol = ['never', 'occasionally', 'regularly'];
   }
 
   void _initializeControllersWithData(Map<String, dynamic> preferences, String? userReligion) {
@@ -183,6 +192,18 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         : [];
     _maxDistance = double.tryParse(preferences['max_distance']?.toString() ?? '50') ?? 50.0;
     _locationSearchController.text = '';
+
+    _selectedDrugAddiction = preferences['drug_addiction']?.toString() ?? 'any';
+    if (preferences['smoke'] != null && preferences['smoke'] is List) {
+      _selectedSmoke = (preferences['smoke'] as List).map((e) => e.toString()).toList();
+    } else {
+      _selectedSmoke = ['never', 'occasionally', 'regularly'];
+    }
+    if (preferences['alcohol'] != null && preferences['alcohol'] is List) {
+      _selectedAlcohol = (preferences['alcohol'] as List).map((e) => e.toString()).toList();
+    } else {
+      _selectedAlcohol = ['never', 'occasionally', 'regularly'];
+    }
   }
 
   Future<void> _savePreferences() async {
@@ -207,6 +228,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         maxIncome: (_incomeRange.end * 12 / 100),
         maxDistance: _maxDistance.round(),
         preferredLocations: _preferredLocations,
+        drugAddiction: _selectedDrugAddiction,
+        smoke: _selectedSmoke,
+        alcohol: _selectedAlcohol,
       );
 
       if (response.statusCode == 200) {
@@ -452,6 +476,67 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
                         _buildSection('Locations', [
                           _buildLocationSelector(),
+                        ]),
+
+                        _buildSection('Habits & Lifestyle', [
+                          _buildDropdown(
+                            'Drug Addiction Preference',
+                            _selectedDrugAddiction,
+                            ['any', 'yes', 'no'],
+                            Icons.medical_services_outlined,
+                            (value) => setState(() => _selectedDrugAddiction = value!),
+                            formatLabel: true,
+                          ),
+                          if (_selectedDrugAddiction != 'no') ...[
+                            const SizedBox(height: 16),
+                            _buildHabitMultiSelect(
+                              'Drinking Habit',
+                              _selectedAlcohol,
+                              Icons.local_bar,
+                              (val, selected) {
+                                setState(() {
+                                  if (selected) {
+                                    if (val == 'never') {
+                                      _selectedAlcohol = ['never'];
+                                    } else {
+                                      _selectedAlcohol.remove('never');
+                                      if (!_selectedAlcohol.contains(val)) {
+                                        _selectedAlcohol.add(val);
+                                      }
+                                    }
+                                  } else {
+                                    if (_selectedAlcohol.length > 1) {
+                                      _selectedAlcohol.remove(val);
+                                    }
+                                  }
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _buildHabitMultiSelect(
+                              'Smoking Habit',
+                              _selectedSmoke,
+                              Icons.smoke_free,
+                              (val, selected) {
+                                setState(() {
+                                  if (selected) {
+                                    if (val == 'never') {
+                                      _selectedSmoke = ['never'];
+                                    } else {
+                                      _selectedSmoke.remove('never');
+                                      if (!_selectedSmoke.contains(val)) {
+                                        _selectedSmoke.add(val);
+                                      }
+                                    }
+                                  } else {
+                                    if (_selectedSmoke.length > 1) {
+                                      _selectedSmoke.remove(val);
+                                    }
+                                  }
+                                });
+                              },
+                            ),
+                          ],
                         ]),
 
                         const SizedBox(height: 24),
@@ -1361,6 +1446,72 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHabitMultiSelect(
+    String label,
+    List<String> selectedItems,
+    IconData icon,
+    Function(String, bool) onSelected,
+  ) {
+    final List<String> habitOptions = ['never', 'occasionally', 'regularly'];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: habitOptions.map((option) {
+              final isSelected = selectedItems.contains(option);
+              return FilterChip(
+                label: Text(
+                  option[0].toUpperCase() + option.substring(1),
+                  style: TextStyle(
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+                selected: isSelected,
+                onSelected: (selected) => onSelected(option, selected),
+                selectedColor: const Color(0xFF00BCD4).withOpacity(0.1),
+                checkmarkColor: const Color(0xFF00BCD4),
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         ],
       ),
     );

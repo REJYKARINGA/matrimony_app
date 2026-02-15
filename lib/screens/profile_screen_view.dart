@@ -276,13 +276,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildCompactInfo(Icons.map_outlined, 'Locations', _user?.preferences?.preferredLocations?.join(', '), isFullWidth: true),
                     ]),
                     _buildPhotosSection(),
-                    if ((_user?.userProfile?.bio ?? '').isNotEmpty)
-                      _buildSection('About Me', [
+                    _buildSection('About Me', [
+                      if ((_user?.userProfile?.bio ?? '').isNotEmpty) ...[
                         Text(
                           _user!.userProfile!.bio!,
                           style: const TextStyle(fontSize: 15, color: Color(0xFF757575), height: 1.6, fontWeight: FontWeight.w500),
                         ),
+                        const SizedBox(height: 16),
+                        const Divider(),
+                        const SizedBox(height: 12),
+                      ],
+                      _buildGrid([
+                        _buildCompactInfo(
+                          Icons.medical_services_outlined, 
+                          'Drug Addiction', 
+                          _user?.userProfile?.drugAddiction == true ? 'Yes' : 'No'
+                        ),
+                        _buildCompactInfo(
+                          Icons.smoke_free_rounded, 
+                          'Smoking', 
+                          _user?.userProfile?.smoke
+                        ),
+                        _buildCompactInfo(
+                          Icons.local_bar_rounded, 
+                          'Drinking', 
+                          _user?.userProfile?.alcohol
+                        ),
                       ]),
+                    ]),
                     _buildSection('Trust & Safety', [
                       ListTile(
                         contentPadding: EdgeInsets.zero,
@@ -821,6 +842,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _countyController;
   late TextEditingController _postalCodeController;
   late TextEditingController _bioController;
+  bool _drugAddiction = false;
+  String? _selectedSmoke;
+  String? _selectedAlcohol;
   bool _isLoading = false;
 
   final List<String> _keralaDistricts = [
@@ -906,6 +930,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bioController = TextEditingController(
       text: widget.user?.userProfile?.bio ?? '',
     );
+    _drugAddiction = widget.user?.userProfile?.drugAddiction ?? false;
+    _selectedSmoke = widget.user?.userProfile?.smoke;
+    _selectedAlcohol = widget.user?.userProfile?.alcohol;
   }
 
   Future<void> _saveProfile() async {
@@ -938,6 +965,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         country: _countryController.text,
         postalCode: _postalCodeController.text,
         bio: _bioController.text,
+        drugAddiction: _drugAddiction,
+        smoke: _selectedSmoke,
+        alcohol: _selectedAlcohol,
       );
 
       if (response.statusCode == 200) {
@@ -1473,6 +1503,56 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         label: 'Bio',
                         icon: Icons.auto_awesome_outlined,
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: SwitchListTile(
+                        title: const Text(
+                          'Drug Addiction',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        subtitle: const Text(
+                          'Includes any substance abuse beyond tobacco/alcohol',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        value: _drugAddiction,
+                        activeColor: const Color(0xFF00BCD4),
+                        onChanged: (val) => setState(() => _drugAddiction = val),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedSmoke,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Smoking Habit',
+                        icon: Icons.smoke_free_rounded,
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'never', child: Text('Never')),
+                        DropdownMenuItem(value: 'occasionally', child: Text('Occasionally')),
+                        DropdownMenuItem(value: 'regularly', child: Text('Regularly')),
+                      ],
+                      onChanged: (val) => setState(() => _selectedSmoke = val),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedAlcohol,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Drinking Habit',
+                        icon: Icons.local_bar_rounded,
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'never', child: Text('Never')),
+                        DropdownMenuItem(value: 'occasionally', child: Text('Occasionally')),
+                        DropdownMenuItem(value: 'regularly', child: Text('Regularly')),
+                      ],
+                      onChanged: (val) => setState(() => _selectedAlcohol = val),
                     ),
 
                     const SizedBox(height: 40),

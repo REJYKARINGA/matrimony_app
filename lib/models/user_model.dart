@@ -138,6 +138,9 @@ class UserProfile {
   final String? postalCode;
   final double? latitude;
   final double? longitude;
+  final bool? drugAddiction;
+  final String? smoke;
+  final String? alcohol;
 
   UserProfile({
     this.id,
@@ -166,6 +169,9 @@ class UserProfile {
     this.postalCode,
     this.latitude,
     this.longitude,
+    this.drugAddiction,
+    this.smoke,
+    this.alcohol,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -196,6 +202,9 @@ class UserProfile {
       postalCode: json['postal_code']?.toString(),
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+      drugAddiction: json['drug_addiction'] == 1 || json['drug_addiction'] == true,
+      smoke: json['smoke']?.toString(),
+      alcohol: json['alcohol']?.toString(),
     );
   }
 
@@ -227,6 +236,9 @@ class UserProfile {
       'postal_code': postalCode,
       'latitude': latitude,
       'longitude': longitude,
+      'drug_addiction': drugAddiction,
+      'smoke': smoke,
+      'alcohol': alcohol,
     };
   }
 
