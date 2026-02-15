@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../utils/app_config.dart';
+
 
 class ApiService {
   // static String get baseUrl {
@@ -19,17 +21,7 @@ class ApiService {
   //   // return 'http://localhost:8000/api';
   // }
 
-  static String get baseUrl {
-    if (kIsWeb) {
-      // return 'https://matrimonybackend-production.up.railway.app/api';
-      return 'http://localhost:8000/api';
-    }
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      // Use your actual IP address when running on Android emulator/device
-      return 'http://192.168.220.3:8000/api';
-    }
-    return 'http://localhost:8000/api';
-  }
+  static String get baseUrl => AppConfig.baseUrl;
 
   static String get authUrl => '$baseUrl/auth';
 
