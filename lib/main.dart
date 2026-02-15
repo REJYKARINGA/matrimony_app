@@ -178,7 +178,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF00BCD4), // Turquoise from logo
+                  color: Color(0xFF2DC1D7), // Turquoise from logo
                   letterSpacing: -0.5,
                 ),
               ),
@@ -188,7 +188,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF0D47A1), // Deep blue from logo
+                  color: Color(0xFF0E70B3), // Deep blue from logo
                 ),
               ),
               const SizedBox(height: 40),
@@ -212,8 +212,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
-                                Color(0xFF00BCD4), // Turquoise
-                                Color(0xFF0D47A1), // Deep blue
+                                Color(0xFF2DC1D7), // Turquoise
+                                Color(0xFF0E70B3), // Deep blue
                               ],
                             ),
                             borderRadius: BorderRadius.circular(10),

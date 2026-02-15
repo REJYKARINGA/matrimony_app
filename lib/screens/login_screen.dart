@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
+import '../utils/app_colors.dart';
 import 'signup_screen.dart';
 import 'home_screen.dart';
 import 'forgot_password_screen.dart';
@@ -24,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D47A1),
+                    color: AppColors.primaryBlue,
                   ),
                 ),
                 
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFF00BCD4).withOpacity(0.1),
+                        color: AppColors.primaryCyan.withOpacity(0.1),
                         blurRadius: 30,
                         offset: const Offset(0, 10),
                       ),
@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             labelStyle: TextStyle(color: Colors.grey[600]),
                             prefixIcon: Icon(
                               Icons.email_outlined,
-                              color: Color(0xFF00BCD4),
+                              color: AppColors.primaryCyan,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: Color(0xFF00BCD4),
+                                color: AppColors.primaryCyan,
                                 width: 2,
                               ),
                             ),
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             labelStyle: TextStyle(color: Colors.grey[600]),
                             prefixIcon: Icon(
                               Icons.lock_outline,
-                              color: Color(0xFF00BCD4),
+                              color: AppColors.primaryCyan,
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -166,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide(
-                                color: Color(0xFF00BCD4),
+                                color: AppColors.primaryCyan,
                                 width: 2,
                               ),
                             ),
@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text(
                               'Forgot Password?',
                               style: TextStyle(
-                                color: Color(0xFF00BCD4),
+                                color: AppColors.primaryCyan,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
@@ -249,14 +249,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Color(0xFF00BCD4),
-                                Color(0xFF0D47A1),
+                                AppColors.primaryCyan,
+                                AppColors.primaryBlue,
                               ],
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: Color(0xFF00BCD4).withOpacity(0.3),
+                                color: AppColors.primaryCyan.withOpacity(0.3),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
@@ -345,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         'Sign Up',
                         style: TextStyle(
-                          color: Color(0xFF00BCD4),
+                          color: AppColors.primaryCyan,
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),

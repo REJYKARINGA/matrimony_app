@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({Key? key}) : super(key: key);
@@ -11,9 +12,6 @@ class LandingScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          color: Colors.white, // White background to match logo
-        ),
         child: SafeArea(
           child: Center(
             child: Column(
@@ -27,7 +25,7 @@ class LandingScreen extends StatelessWidget {
                     Text(
                       "Find Your",
                       style: TextStyle(
-                        color: Color(0xFF00BCD4), // Turquoise from logo
+                        color: AppColors.primaryCyan, // Turquoise from logo
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
                       ),
@@ -35,7 +33,7 @@ class LandingScreen extends StatelessWidget {
                     Text(
                       "Perfect Match!",
                       style: TextStyle(
-                        color: Color(0xFF0D47A1), // Deep blue from logo
+                        color: AppColors.primaryBlue, // Deep blue from logo
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
                         letterSpacing: -1.0,
@@ -61,7 +59,7 @@ class LandingScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF00BCD4).withOpacity(0.3),
+                          color: AppColors.primaryCyan.withOpacity(0.3),
                           width: 1.5,
                           style: BorderStyle.solid,
                         ),
@@ -74,7 +72,7 @@ class LandingScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF00BCD4).withOpacity(0.2),
+                          color: AppColors.primaryCyan.withOpacity(0.2),
                           width: 1.5,
                         ),
                       ),
@@ -115,12 +113,12 @@ class LandingScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: Colors.white,
                         border: Border.all(
-                          color: const Color(0xFF00BCD4), // Turquoise border
+                          color: AppColors.primaryCyan, // Turquoise border
                           width: 3,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF00BCD4).withOpacity(0.3),
+                            color: AppColors.primaryCyan.withOpacity(0.3),
                             blurRadius: 15,
                           ),
                         ],
@@ -165,13 +163,13 @@ class LandingScreen extends StatelessWidget {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [
-                        Color(0xFF00BCD4), // Turquoise
-                        Color(0xFF0D47A1), // Deep blue
+                        AppColors.primaryCyan, // Turquoise
+                        AppColors.primaryBlue, // Deep blue
                       ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF00BCD4).withOpacity(0.4),
+                        color: AppColors.primaryCyan.withOpacity(0.4),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),
@@ -215,7 +213,7 @@ class LandingScreen extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: const Color(0xFF00BCD4).withOpacity(0.6),
+            color: AppColors.primaryCyan.withOpacity(0.6),
             width: 2,
           ),
         ),

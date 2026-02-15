@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
+import '../utils/app_colors.dart';
 import 'create_profile_screen.dart';
 import 'home_screen.dart';
 
@@ -51,7 +52,6 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Stack(
         children: [
           // Decorative circles in background
@@ -63,7 +63,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF00BCD4).withOpacity(0.08),
+                color: AppColors.primaryCyan.withOpacity(0.08),
               ),
             ),
           ),
@@ -75,7 +75,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF0D47A1).withOpacity(0.05),
+                color: AppColors.primaryBlue.withOpacity(0.05),
               ),
             ),
           ),
@@ -107,7 +107,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             'Create Your',
                             style: TextStyle(
                               fontSize: 26,
-                              color: const Color(0xFF00BCD4),
+                              color: AppColors.primaryCyan,
                               fontWeight: FontWeight.w400,
                             ),
                           ),
@@ -115,7 +115,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             'Account',
                             style: TextStyle(
                               fontSize: 34,
-                              color: Color(0xFF0D47A1),
+                              color: AppColors.primaryBlue,
                               fontWeight: FontWeight.bold,
                               letterSpacing: -1.0,
                             ),
@@ -302,13 +302,13 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
                                     colors: [
-                                      Color(0xFF00BCD4), // Turquoise
-                                      Color(0xFF0D47A1), // Deep blue
+                                      AppColors.primaryCyan, // Turquoise
+                                      AppColors.primaryBlue, // Deep blue
                                     ],
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF00BCD4).withOpacity(0.4),
+                                      color: AppColors.primaryCyan.withOpacity(0.4),
                                       blurRadius: 20,
                                       offset: const Offset(0, 10),
                                     ),
@@ -330,7 +330,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
                                                   content: Text('Account created successfully!'),
-                                                  backgroundColor: Color(0xFF00BCD4),
+                                                   backgroundColor: AppColors.primaryCyan,
                                                   behavior: SnackBarBehavior.floating,
                                                 ),
                                               );
@@ -409,7 +409,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             child: const Text(
                               'Sign In',
                               style: TextStyle(
-                                color: Color(0xFF00BCD4),
+                                color: AppColors.primaryCyan,
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.underline,
@@ -474,7 +474,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             prefixIcon: Icon(
               icon,
-              color: const Color(0xFF00BCD4),
+              color: AppColors.primaryCyan,
               size: 22,
             ),
             suffixIcon: suffixIcon,
@@ -492,7 +492,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
               borderSide: const BorderSide(
-                color: Color(0xFF00BCD4),
+                color: AppColors.primaryCyan,
                 width: 2,
               ),
             ),

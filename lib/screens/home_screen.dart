@@ -24,6 +24,7 @@ import '../services/profile_view_service.dart';
 import '../widgets/common_footer.dart';
 import 'search_screen.dart';
 import 'preferences_screen.dart';
+import '../utils/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Icon(
                     isSelected ? activeIcon : icon,
                     color: isSelected
-                        ? const Color(0xFF00BCD4) // Turquoise
+                        ? AppColors.primaryCyan // Turquoise
                         : Colors.grey.shade600,
                     size: 24,
                   ),
@@ -167,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     duration: const Duration(milliseconds: 300),
                     style: TextStyle(
                       color: isSelected
-                          ? const Color(0xFF00BCD4) // Turquoise
+                          ? AppColors.primaryCyan // Turquoise
                           : Colors.grey.shade600,
                       fontSize: 10,
                       fontWeight: isSelected
@@ -245,7 +246,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: _widgetOptions.elementAt(navProvider.selectedIndex),
       bottomNavigationBar: const CommonFooter(),
     );
@@ -596,10 +596,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FCFD), // Slight turquoise tint instead of pure white
+      backgroundColor: AppColors.background, // Slight turquoise tint instead of pure white
       body: RefreshIndicator(
         onRefresh: _loadRecommendedUsers,
-        color: const Color(0xFF00BCD4),
+        color: AppColors.primaryCyan,
         child: Stack(
           children: [
           // Background Blobs - Updated colors
@@ -611,7 +611,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF00BCD4).withOpacity(0.05), // Turquoise
+                color: AppColors.primaryCyan.withOpacity(0.05), // Turquoise
               ),
             ),
           ),
@@ -623,7 +623,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF0D47A1).withOpacity(0.03), // Deep blue
+                color: AppColors.primaryBlue.withOpacity(0.03), // Deep blue
               ),
             ),
           ),
@@ -656,7 +656,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF00BCD4), // Turquoise border
+                          color: AppColors.primaryCyan, // Turquoise border
                           width: 2,
                         ),
                       ),
@@ -668,7 +668,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               )
                             : null,
                         child: user?.displayImage == null
-                            ? const Icon(Icons.person, color: Color(0xFF00BCD4))
+                            ? const Icon(Icons.person, color: AppColors.primaryCyan)
                             : null,
                       ),
                     ),
@@ -701,7 +701,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           const Icon(
                             Icons.notifications_none_rounded,
-                            color: Color(0xFF0D47A1), // Deep blue
+                            color: AppColors.primaryBlue, // Deep blue
                             size: 28,
                           ),
                           if (_unreadNotificationCount > 0)
@@ -758,10 +758,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         decoration: InputDecoration(
                           hintText: 'Search by Matrimony ID',
                           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00BCD4)),
+                          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryCyan),
                           suffixIcon: _idSearchController.text.trim().isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.send_rounded, color: Color(0xFF00BCD4), size: 20),
+                                icon: const Icon(Icons.send_rounded, color: AppColors.primaryCyan, size: 20),
                                 onPressed: () {
                                   Navigator.push(
                                     context,

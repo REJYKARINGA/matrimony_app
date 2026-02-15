@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
 
 class ProgressIndicatorRow extends StatelessWidget {
   final int currentStep;
@@ -51,9 +52,7 @@ class ProgressIndicatorRow extends StatelessWidget {
                 child: Container(
                   height: 4,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF2DC1D7), Color(0xFF0E70B3)],
-                    ),
+                    gradient: AppColors.primaryGradient,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -132,7 +131,7 @@ class GenderCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF0E70B3) : Colors.transparent,
+            color: isSelected ? AppColors.primaryBlue : Colors.transparent,
             width: 2,
           ),
           boxShadow: [
@@ -153,12 +152,12 @@ class GenderCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF0E70B3) : Colors.grey.shade300,
+                    color: isSelected ? AppColors.primaryBlue : Colors.grey.shade300,
                     width: 2,
                   ),
                 ),
                 child: isSelected
-                    ? const Icon(Icons.circle, size: 12, color: Color(0xFF0E70B3))
+                    ? const Icon(Icons.circle, size: 12, color: AppColors.primaryBlue)
                     : const SizedBox(width: 12, height: 12),
               ),
             ),
@@ -175,7 +174,7 @@ class GenderCard extends StatelessWidget {
                     child: Icon(
                       icon,
                       size: 60,
-                      color: isSelected ? const Color(0xFF0E70B3) : Colors.grey.shade400,
+                      color: isSelected ? AppColors.primaryBlue : Colors.grey.shade400,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -184,7 +183,7 @@ class GenderCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? const Color(0xFF0E70B3) : Colors.grey.shade600,
+                      color: isSelected ? AppColors.primaryBlue : Colors.grey.shade600,
                     ),
                   ),
                 ],
@@ -241,7 +240,7 @@ class _CustomRulerPickerState extends State<CustomRulerPicker> {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: const Color(0xFFE0FAFF), // Light cyan glow from logo
+        color: AppColors.background, // Light cyan glow from logo
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -322,7 +321,7 @@ class _CustomRulerPickerState extends State<CustomRulerPicker> {
                       Container(
                         width: 2,
                         height: 40,
-                        color: const Color(0xFF0E70B3),
+                        color: AppColors.primaryBlue,
                       ),
                     ],
                   ),
@@ -369,7 +368,7 @@ class StepNavigationButtons extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: onBack,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF0E70B3)),
+                    side: const BorderSide(color: AppColors.primaryBlue),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
@@ -377,7 +376,7 @@ class StepNavigationButtons extends StatelessWidget {
                   child: const Text(
                     'Back',
                     style: TextStyle(
-                      color: Color(0xFF0E70B3),
+                      color: AppColors.primaryBlue,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -392,11 +391,7 @@ class StepNavigationButtons extends StatelessWidget {
               child: Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2DC1D7), Color(0xFF0E70B3)],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
+                  gradient: AppColors.primaryGradient,
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: ElevatedButton(
@@ -469,13 +464,13 @@ class CustomDatePickerField extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE0FAFF), // Light cyan from logo
+              decoration: const BoxDecoration(
+                color: AppColors.background, // Light cyan from logo
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.calendar_today,
-                color: Color(0xFF0E70B3), // Deep blue from logo
+                color: AppColors.primaryBlue, // Deep blue from logo
                 size: 40,
               ),
             ),
@@ -548,7 +543,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
-                  color: Color(0xFF0E70B3),
+                  color: AppColors.primaryBlue,
                 ),
               ),
               IconButton(
@@ -629,11 +624,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
               width: double.infinity,
               height: 56,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF2DC1D7), Color(0xFF0E70B3)],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
+                gradient: AppColors.primaryGradient,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ElevatedButton(
