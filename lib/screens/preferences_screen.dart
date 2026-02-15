@@ -26,11 +26,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   int? _religionId;
   List<String> _selectedCastes = [];
   List<int> _selectedCasteIds = [];
+  List<int> _selectedSubCasteIds = [];
   final TextEditingController _casteController = TextEditingController();
   
   // Master data from API
   List<Map<String, dynamic>> _religionsData = [];
   List<Map<String, dynamic>> _availableCastesData = [];
+  List<Map<String, dynamic>> _availableSubCastesData = [];
   List<Map<String, dynamic>> _educationOptions = [];
   List<Map<String, dynamic>> _occupationOptions = [];
   List<int> _selectedEducationIds = [];
@@ -57,6 +59,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   bool _isEducationAscending = false;
   bool _isOccupationAscending = false;
   bool _isCasteAscending = false;
+  bool _isSubCasteAscending = false;
 
   final List<String> _maritalStatusOptions = [
     'never_married',
@@ -103,6 +106,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         } else {
           _initializeEmptyControllers(userReligion, userReligionId);
         }
+        _updateAvailableCastes();
       } else if (response.statusCode == 404) {
         _initializeEmptyControllers(null, null);
       } else {
@@ -132,6 +136,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _religionId = userReligionId;
     _selectedCastes = [];
     _selectedCasteIds = [];
+    _selectedSubCasteIds = [];
     _casteController.text = '';
     _selectedEducationIds = [];
     _selectedOccupationIds = [];
@@ -166,6 +171,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       _selectedCasteIds = (preferences['caste_ids'] as List).map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0).toList();
     } else {
       _selectedCasteIds = [];
+    }
+
+    if (preferences['sub_caste_ids'] != null && preferences['sub_caste_ids'] is List) {
+      _selectedSubCasteIds = (preferences['sub_caste_ids'] as List).map((e) => e is int ? e : int.tryParse(e.toString()) ?? 0).toList();
+    } else {
+      _selectedSubCasteIds = [];
     }
     _selectedCastes = []; // We can populate this later if needed for UI chips
     _casteController.text = '';
@@ -228,6 +239,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         maritalStatus: _maritalStatus,
         religionId: _religionId,
         casteIds: _selectedCasteIds,
+        subCasteIds: _selectedSubCasteIds,
         educationIds: _selectedEducationIds,
         occupationIds: _selectedOccupationIds,
         minIncome: (_incomeRange.start * 12 / 100),
@@ -420,11 +432,32 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                 } else {
                                   _selectedCasteIds.remove(id);
                                 }
+                                _updateAvailableSubCastes();
                               });
                             },
                             isAscending: _isCasteAscending,
                             onSortToggled: () {
                               setState(() => _isCasteAscending = !_isCasteAscending);
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          _buildCheckboxSelector(
+                            'Sub-Caste',
+                            _availableSubCastesData,
+                            _selectedSubCasteIds,
+                            Icons.group_work_rounded,
+                            (id, selected) {
+                              setState(() {
+                                if (selected) {
+                                  _selectedSubCasteIds.add(id);
+                                } else {
+                                  _selectedSubCasteIds.remove(id);
+                                }
+                              });
+                            },
+                            isAscending: _isSubCasteAscending,
+                            onSortToggled: () {
+                              setState(() => _isSubCasteAscending = !_isSubCasteAscending);
                             },
                           ),
                           const SizedBox(height: 10),
@@ -1214,6 +1247,47 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return null;
   }
 
+  void _updateAvailableCastes() {
+    if (_religionId == null || _religionsData.isEmpty) return;
+
+    final currentReligion = _religionsData.cast<Map<String, dynamic>?>().firstWhere(
+      (r) => r?['id'] == _religionId,
+      orElse: () => null,
+    );
+
+    if (currentReligion != null) {
+      if (!mounted) return;
+      setState(() {
+        _availableCastesData = List<Map<String, dynamic>>.from(currentReligion['castes'] ?? []);
+        _updateAvailableSubCastes();
+      });
+    }
+  }
+
+  void _updateAvailableSubCastes() {
+    if (_selectedCasteIds.isEmpty) {
+      setState(() {
+        _availableSubCastesData = [];
+      });
+      return;
+    }
+
+    List<Map<String, dynamic>> subCastes = [];
+    for (var casteId in _selectedCasteIds) {
+      final caste = _availableCastesData.firstWhere(
+        (c) => c['id'] == casteId,
+        orElse: () => {},
+      );
+      if (caste.containsKey('sub_castes') && caste['sub_castes'] is List) {
+        subCastes.addAll(List<Map<String, dynamic>>.from(caste['sub_castes']));
+      }
+    }
+
+    setState(() {
+      _availableSubCastesData = subCastes;
+    });
+  }
+
   Future<void> _loadPreferenceOptions() async {
     try {
       final response = await ProfileService.getPreferenceOptions();
@@ -1224,16 +1298,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           setState(() {
             _religionsData = List<Map<String, dynamic>>.from(data['data']['religions'] ?? []);
             
-            // Filter castes for current religion
-            if (_religionId != null) {
-              final currentReligion = _religionsData.cast<Map<String, dynamic>?>().firstWhere(
-                (r) => r?['id'] == _religionId,
-                orElse: () => null,
-              );
-              if (currentReligion != null) {
-                _availableCastesData = List<Map<String, dynamic>>.from(currentReligion['castes'] ?? []);
-              }
-            }
+            _updateAvailableCastes();
 
             _educationOptions = List<Map<String, dynamic>>.from(
               data['data']['educations'].map((e) => {
@@ -1271,10 +1336,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     // Sort options based on current sorting mode
     final sortedOptions = List<Map<String, dynamic>>.from(options);
     if (isAscending) {
-      sortedOptions.sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+      sortedOptions.sort((a, b) => (a['name']?.toString() ?? '').compareTo(b['name']?.toString() ?? ''));
     } else {
       // Sort by popularity (Trending) - descending
-      sortedOptions.sort((a, b) => (b['popularity_count'] as int).compareTo(a['popularity_count'] as int));
+      sortedOptions.sort((a, b) {
+        final popA = a['popularity_count'] ?? 0;
+        final popB = b['popularity_count'] ?? 0;
+        // Handle potential double from JSON decoding if any
+        final valA = popA is num ? popA.toInt() : 0;
+        final valB = popB is num ? popB.toInt() : 0;
+        return valB.compareTo(valA);
+      });
     }
 
     return Container(
