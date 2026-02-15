@@ -166,7 +166,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F9F9), // Light mint/neutral background
+      backgroundColor: const Color(0xFFF0FBFF), // Light cyan/blue background from logo
       body: SafeArea(
         child: Column(
           children: [
@@ -283,7 +283,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 const SizedBox(height: 12),
                 Text(
                   state.errorText!,
-                  style: const TextStyle(color: Color(0xFF003840), fontWeight: FontWeight.bold, fontSize: 13),
+                  style: const TextStyle(color: Color(0xFF0E70B3), fontWeight: FontWeight.bold, fontSize: 13),
                 ),
               ],
             ],
@@ -361,7 +361,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 Text(
                   state.errorText!,
                   style: const TextStyle(
-                    color: Color(0xFF003840), 
+                    color: Color(0xFF0E70B3), 
                     fontWeight: FontWeight.bold, 
                     fontSize: 13,
                   ),
@@ -403,7 +403,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             title: const Text('Drug Addiction'),
             subtitle: const Text('Includes any substance abuse beyond tobacco/alcohol'),
             value: _drugAddiction,
-            activeColor: const Color(0xFF003840),
+            activeColor: const Color(0xFF0E70B3),
             onChanged: (val) => setState(() => _drugAddiction = val),
           ),
           const SizedBox(height: 16),
@@ -520,7 +520,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF003840))),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0E70B3))),
         ],
       ),
     );
@@ -566,13 +566,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   InputDecoration _inputDecoration({required String label, required IconData icon}) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: const Color(0xFF003840)),
+      prefixIcon: Icon(icon, color: const Color(0xFF0E70B3)),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Colors.grey.shade300)),
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide(color: Colors.grey.shade300)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF003840), width: 2)),
-      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF003840), width: 1)),
-      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF003840), width: 2)),
-      errorStyle: const TextStyle(color: Color(0xFF003840), fontWeight: FontWeight.bold),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF0E70B3), width: 2)),
+      errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF0E70B3), width: 1)),
+      focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: const BorderSide(color: Color(0xFF0E70B3), width: 2)),
+      errorStyle: const TextStyle(color: Color(0xFF0E70B3), fontWeight: FontWeight.bold),
       filled: true,
       fillColor: Colors.white,
     );

@@ -51,7 +51,9 @@ class ProgressIndicatorRow extends StatelessWidget {
                 child: Container(
                   height: 4,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF003840), // Dark Teal from image
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF2DC1D7), Color(0xFF0E70B3)],
+                    ),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -130,7 +132,7 @@ class GenderCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF003840) : Colors.transparent,
+            color: isSelected ? const Color(0xFF0E70B3) : Colors.transparent,
             width: 2,
           ),
           boxShadow: [
@@ -151,12 +153,12 @@ class GenderCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF003840) : Colors.grey.shade300,
+                    color: isSelected ? const Color(0xFF0E70B3) : Colors.grey.shade300,
                     width: 2,
                   ),
                 ),
                 child: isSelected
-                    ? const Icon(Icons.circle, size: 12, color: Color(0xFF003840))
+                    ? const Icon(Icons.circle, size: 12, color: Color(0xFF0E70B3))
                     : const SizedBox(width: 12, height: 12),
               ),
             ),
@@ -173,7 +175,7 @@ class GenderCard extends StatelessWidget {
                     child: Icon(
                       icon,
                       size: 60,
-                      color: isSelected ? const Color(0xFF003840) : Colors.grey.shade400,
+                      color: isSelected ? const Color(0xFF0E70B3) : Colors.grey.shade400,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -182,7 +184,7 @@ class GenderCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? const Color(0xFF003840) : Colors.grey.shade600,
+                      color: isSelected ? const Color(0xFF0E70B3) : Colors.grey.shade600,
                     ),
                   ),
                 ],
@@ -239,7 +241,7 @@ class _CustomRulerPickerState extends State<CustomRulerPicker> {
     return Container(
       height: 200,
       decoration: BoxDecoration(
-        color: const Color(0xFFD6E9E9).withOpacity(0.5), // Light green background from image
+        color: const Color(0xFFE0FAFF), // Light cyan glow from logo
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -320,7 +322,7 @@ class _CustomRulerPickerState extends State<CustomRulerPicker> {
                       Container(
                         width: 2,
                         height: 40,
-                        color: const Color(0xFF003840),
+                        color: const Color(0xFF0E70B3),
                       ),
                     ],
                   ),
@@ -367,7 +369,7 @@ class StepNavigationButtons extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: onBack,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF003840)),
+                    side: const BorderSide(color: Color(0xFF0E70B3)),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
@@ -375,7 +377,7 @@ class StepNavigationButtons extends StatelessWidget {
                   child: const Text(
                     'Back',
                     style: TextStyle(
-                      color: Color(0xFF003840),
+                      color: Color(0xFF0E70B3),
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -387,37 +389,46 @@ class StepNavigationButtons extends StatelessWidget {
           ],
           Expanded(
             flex: 2,
-            child: SizedBox(
-              height: 56,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : onNext,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF003840),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF2DC1D7), Color(0xFF0E70B3)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
-                  elevation: 0,
+                  borderRadius: BorderRadius.circular(28),
                 ),
-                child: isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : onNext,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          nextText,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      )
-                    : Text(
-                        nextText,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -459,12 +470,12 @@ class CustomDatePickerField extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: const Color(0xFFFDEEF1),
+                color: const Color(0xFFE0FAFF), // Light cyan from logo
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.calendar_today,
-                color: Color(0xFFE91E63),
+                color: Color(0xFF0E70B3), // Deep blue from logo
                 size: 40,
               ),
             ),
@@ -537,6 +548,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
+                  color: Color(0xFF0E70B3),
                 ),
               ),
               IconButton(
@@ -613,31 +625,40 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
             ),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: () {
-                DateTime finalDate = _selectedDate;
-                if (widget.lastDate != null && finalDate.isAfter(widget.lastDate!)) {
-                  finalDate = widget.lastDate!;
-                }
-                widget.onDateSelected(finalDate);
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+          Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2DC1D7), Color(0xFF0E70B3)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  DateTime finalDate = _selectedDate;
+                  if (widget.lastDate != null && finalDate.isAfter(widget.lastDate!)) {
+                    finalDate = widget.lastDate!;
+                  }
+                  widget.onDateSelected(finalDate);
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: const Text(
+                  'SUBMIT',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
-              child: const Text(
-                'SUBMIT',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
             ),
-          ),
         ],
       ),
     );
