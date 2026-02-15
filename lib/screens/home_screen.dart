@@ -802,12 +802,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(width: 12),
                   // Filter Button
                   GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (c) => const PreferencesScreen(),
-                      ),
-                    ),
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => const PreferencesScreen(),
+                        ),
+                      );
+                      if (result == true) {
+                        _loadRecommendedUsers();
+                      }
+                    },
                     child: Container(
                       width: 50,
                       height: 50,

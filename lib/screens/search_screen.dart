@@ -213,12 +213,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(width: 12),
                   // Filter Button
                   GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (c) => const PreferencesScreen(),
-                      ),
-                    ),
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => const PreferencesScreen(),
+                        ),
+                      );
+                      if (result == true) {
+                        _loadPreferenceMatches();
+                      }
+                    },
                     child: Container(
                       width: 48,
                       height: 48,
