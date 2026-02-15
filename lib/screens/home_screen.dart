@@ -241,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     return Scaffold(
+      extendBody: true,
       body: _widgetOptions.elementAt(navProvider.selectedIndex),
       bottomNavigationBar: const CommonFooter(),
     );

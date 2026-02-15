@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/navigation_provider.dart';
 import '../services/message_service.dart';
 import 'dart:convert';
+import 'dart:ui';
 
 class CommonFooter extends StatefulWidget {
   const CommonFooter({Key? key}) : super(key: key);
@@ -56,68 +57,83 @@ class _CommonFooterState extends State<CommonFooter> {
     // Calculate alignment: -1.0 (left) to 1.0 (right)
     final double alignmentX = (itemPosition * 2 / 4) - 1;
 
-    return Container(
-      height: 75,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(35),
-          topRight: Radius.circular(35),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // 1. Blurred Background Layer
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(35),
+            topRight: Radius.circular(35),
           ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Stack(
-          children: [
-            // Background Layer: Unselected Icons & Labels
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStaticNavItem(Icons.home_outlined, 'Home', 0, selectedIndex, navProvider),
-                    _buildStaticNavItem(Icons.search_rounded, 'Search', 4, selectedIndex, navProvider),
-                    _buildStaticNavItem(Icons.favorite_border, 'Match', 1, selectedIndex, navProvider),
-                    _buildStaticNavItem(
-                      Icons.chat_bubble_outline,
-                      'Chat',
-                      2,
-                      selectedIndex,
-                      navProvider,
-                      showBadge: _unreadMessageCount > 0,
-                    ),
-                    _buildStaticNavItem(Icons.person_outline, 'Profile', 3, selectedIndex, navProvider),
-                  ],
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              height: 75,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.75),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(35),
+                  topRight: Radius.circular(35),
                 ),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
               ),
-            ),
-
-            // Top Layer: Animated Sliding Bubble
-            Positioned.fill(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: AnimatedAlign(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeOutBack,
-                  alignment: Alignment(alignmentX, 0),
-                  child: FractionallySizedBox(
-                    widthFactor: 0.2, // One fifth of the width
-                    child: _buildFloatingIndicator(selectedIndex),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStaticNavItem(Icons.home_outlined, 'Home', 0, selectedIndex, navProvider),
+                      _buildStaticNavItem(Icons.search_rounded, 'Search', 4, selectedIndex, navProvider),
+                      _buildStaticNavItem(Icons.favorite_border, 'Match', 1, selectedIndex, navProvider),
+                      _buildStaticNavItem(
+                        Icons.chat_bubble_outline,
+                        'Chat',
+                        2,
+                        selectedIndex,
+                        navProvider,
+                        showBadge: _unreadMessageCount > 0,
+                      ),
+                      _buildStaticNavItem(Icons.person_outline, 'Profile', 3, selectedIndex, navProvider),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
-      ),
+
+        // 2. Floating Indicator (Moved outside ClipRRect to avoid clipping)
+        Positioned.fill(
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 350),
+                curve: Curves.easeOutBack,
+                alignment: Alignment(alignmentX, 0),
+                child: FractionallySizedBox(
+                  widthFactor: 0.2, // One fifth of the width
+                  child: _buildFloatingIndicator(selectedIndex),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
