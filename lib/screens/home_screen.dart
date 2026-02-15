@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    _refreshUserData();
+    // _refreshUserData(); // Handled by SplashScreen/Login
     _loadUnreadMessageCount();
     _startPolling();
 
@@ -275,6 +275,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _isIdSearchExpanded = false;
   final TextEditingController _idSearchController = TextEditingController();
 
+  bool _hasInitialized = false;
+  
   @override
   void initState() {
     super.initState();
@@ -282,9 +284,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _interestTimers = {};
     _interestCountdown = {};
     _shortlistedUserIds = {};
+    
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (_hasInitialized) return;
+      _hasInitialized = true;
+      
       // Hit suggestions API first then any of them
       await _loadRecommendedUsers();
+
+      if (!mounted) return;
 
       try {
         await Future.wait([
@@ -1304,19 +1312,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   size: 64,
                   color: Color(0xFF00BCD4),
                 ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    width: 14,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0D47A1),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                  ),
-                ),
+
               ],
             ),
           ),
