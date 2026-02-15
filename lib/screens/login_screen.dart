@@ -272,13 +272,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                         password: _passwordController.text,
                                       );
                                       if (success) {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const HomeScreen(),
-                                          ),
-                                        );
+                                        if (authProvider.user?.role == 'admin' || authProvider.hasProfile) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => const HomeScreen(),
+                                            ),
+                                          );
+                                        } else {
+                                          Navigator.pushReplacementNamed(context, '/create-profile');
+                                        }
                                       }
                                     }
                                   },

@@ -489,8 +489,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           items: const [
             DropdownMenuItem(
               value: 'never_married',
-              child: Text('Never Married'),
+              child: Text('Single'),
             ),
+            DropdownMenuItem(value: 'nikkah_divorced', child: Text('Nikkah Divorced')),
             DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
             DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
           ],

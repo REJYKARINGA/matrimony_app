@@ -239,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final navProvider = Provider.of<NavigationProvider>(context);
 
     // Check if user has completed their profile
-    if (authProvider.user != null && authProvider.user!.userProfile == null) {
+    if (authProvider.user != null && !authProvider.hasProfile && authProvider.user!.role != 'admin') {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacementNamed('/create-profile');
       });
@@ -591,7 +591,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final user = authProvider.user;
     final profile = user?.userProfile;
 
-    if (authProvider.user != null && authProvider.user!.userProfile == null) {
+    if (authProvider.user != null && !authProvider.hasProfile && authProvider.user!.role != 'admin') {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 

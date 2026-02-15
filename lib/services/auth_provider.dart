@@ -7,11 +7,13 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _hasProfile = false;
 
   User? get user => _user;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _user != null;
+  bool get hasProfile => _hasProfile;
 
   AuthProvider() {
     _initializeAuthState();
@@ -46,6 +48,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         _user = User.fromJson(data['user']);
+        _hasProfile = data['has_profile'] ?? false;
         
         // Store the token
         if (data['token'] != null) {
@@ -86,6 +89,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _user = User.fromJson(data['user']);
+        _hasProfile = data['has_profile'] ?? (_user?.userProfile != null);
         
         // Store the token
         if (data['token'] != null) {
@@ -127,6 +131,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _user = User.fromJson(data['user']);
+        _hasProfile = data['has_profile'] ?? (_user?.userProfile != null);
         notifyListeners();
       }
     } catch (e) {
@@ -142,6 +147,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _user = User.fromJson(data['user']);
+        _hasProfile = data['has_profile'] ?? (_user?.userProfile != null);
         notifyListeners();
         return true;
       } else {
@@ -165,6 +171,7 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _user = User.fromJson(data['user']);
+        _hasProfile = data['has_profile'] ?? (_user?.userProfile != null);
         notifyListeners();
         return true;
       } else {

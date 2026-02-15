@@ -97,22 +97,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       final user = authProvider.user;
       if (user != null) {
         // Check if user is admin - admins skip profile creation
-        if (user.role == 'admin') {
-          // Admin users go directly to home
+        if (user.role == 'admin' || authProvider.hasProfile) {
+          // Admin users or users with profiles go directly to home
           Navigator.of(context).pushReplacementNamed('/home');
-        } else if (user.userProfile == null) {
+        } else {
           // Regular user hasn't created a profile at all, redirect to create profile screen
           Navigator.of(context).pushReplacementNamed('/create-profile');
-        } else {
-          // Check if profile is complete (has essential information)
-          final profile = user.userProfile!;
-          if (_isProfileComplete(profile)) {
-            // Profile is complete, go to home
-            Navigator.of(context).pushReplacementNamed('/home');
-          } else {
-            // Profile exists but is incomplete, redirect to create profile screen to complete it
-            Navigator.of(context).pushReplacementNamed('/create-profile');
-          }
         }
       } else {
         // User is logged in but somehow user object is null

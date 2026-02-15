@@ -2,8 +2,8 @@ enum AppEnvironment { local, dev, test, prod }
 
 class AppConfig {
   // Current environment - CHANGE THIS TO SWITCH URLS
-  // static AppEnvironment _environment = AppEnvironment.local;
-  static AppEnvironment _environment = AppEnvironment.prod;
+  static AppEnvironment _environment = AppEnvironment.local;
+//   static AppEnvironment _environment = AppEnvironment.prod;
 
   static void setEnvironment(AppEnvironment env) {
     _environment = env;

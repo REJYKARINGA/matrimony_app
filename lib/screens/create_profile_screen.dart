@@ -54,6 +54,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   void initState() {
     super.initState();
     _initializeControllers();
+    
+    // Redirect if profile already exists
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      if (authProvider.hasProfile) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    });
   }
 
   void _initializeControllers() {
@@ -385,7 +393,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           prefixIcon: const Icon(Icons.favorite_outline),
         ),
         items: const [
-          DropdownMenuItem(value: 'never_married', child: Text('Never Married')),
+          DropdownMenuItem(value: 'never_married', child: Text('Single')),
           DropdownMenuItem(value: 'nikkah_divorced', child: Text('Nikkah Divorced')),
           DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
           DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
@@ -427,6 +435,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           _buildTextField(controller: _religionController, label: 'Religion', icon: Icons.church),
           const SizedBox(height: 16),
           _buildTextField(controller: _casteController, label: 'Caste', icon: Icons.people_outline),
+          const SizedBox(height: 16),
+          _buildTextField(controller: _subCasteController, label: 'Sub-caste', icon: Icons.people_alt_outlined),
           const SizedBox(height: 16),
           _buildTextField(controller: _motherTongueController, label: 'Mother Tongue', icon: Icons.language),
         ],
@@ -485,48 +495,146 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return _buildStepContainer(
       title: 'Review Profile',
       subtitle: 'Make sure everything looks correct before submitting.',
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+      child: Column(
+        children: [
+          _buildPreviewSection(
+            title: 'Personal Information',
+            icon: Icons.person_outline,
+            items: [
+              _buildPreviewItem('Name', '${_firstNameController.text} ${_lastNameController.text}'),
+              _buildPreviewItem('Gender', _selectedGender?.toUpperCase() ?? ''),
+              _buildPreviewItem('Birthday', _dateOfBirthController.text),
+              _buildPreviewItem('Marital Status', _selectedMaritalStatus?.replaceAll('_', ' ').toUpperCase() ?? ''),
+              _buildPreviewItem('Height/Weight', '${_height.round()} cm / ${_weight.round()} kg'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildPreviewSection(
+            title: 'Religion & Community',
+            icon: Icons.church_outlined,
+            items: [
+              _buildPreviewItem('Religion', _religionController.text),
+              _buildPreviewItem('Caste', _casteController.text),
+              if (_subCasteController.text.isNotEmpty)
+                _buildPreviewItem('Sub-caste', _subCasteController.text),
+              _buildPreviewItem('Mother Tongue', _motherTongueController.text),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildPreviewSection(
+            title: 'Professional Details',
+            icon: Icons.work_outline,
+            items: [
+              _buildPreviewItem('Education', _educationController.text),
+              _buildPreviewItem('Occupation', _occupationController.text),
+              _buildPreviewItem('Annual Income', '₹${_annualIncomeController.text}'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildPreviewSection(
+            title: 'Location',
+            icon: Icons.location_on_outlined,
+            items: [
+              _buildPreviewItem('City', _cityController.text),
+              _buildPreviewItem('District', _selectedDistrict ?? ''),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildPreviewSection(
+            title: 'Lifestyle Habits',
+            icon: Icons.nightlife_outlined,
+            items: [
+              _buildPreviewItem('Smoking', _smoke.toUpperCase()),
+              _buildPreviewItem('Alcohol', _alcohol.toUpperCase()),
+              _buildPreviewItem('Drug Addiction', _drugAddiction ? 'YES' : 'NO'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildPreviewSection(
+            title: 'Bio',
+            icon: Icons.edit_note,
+            child: Text(
+              _bioController.text,
+              style: const TextStyle(color: Colors.black87, height: 1.5),
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildPreviewItem('Name', '${_firstNameController.text} ${_lastNameController.text}'),
-            _buildPreviewItem('Gender', _selectedGender?.toUpperCase() ?? ''),
-            _buildPreviewItem('Birthday', _dateOfBirthController.text),
-            _buildPreviewItem('Marital Status', _selectedMaritalStatus?.replaceAll('_', ' ').toUpperCase() ?? ''),
-            _buildPreviewItem('Height/Weight', '${_height.round()} cm / ${_weight.round()} kg'),
-            _buildPreviewItem('Religion', '${_religionController.text} (${_casteController.text})'),
-            _buildPreviewItem('Education', _educationController.text),
-            _buildPreviewItem('Location', '${_cityController.text}, ${_selectedDistrict ?? ''}'),
-            const Divider(),
-            const Text('Bio', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 8),
-            Text(_bioController.text, style: const TextStyle(color: Colors.black87)),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewSection({required String title, required IconData icon, List<Widget>? items, Widget? child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.primaryCyan.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primaryCyan.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: AppColors.primaryCyan),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryBlue,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (items != null) ...items,
+          if (child != null) child,
+        ],
       ),
     );
   }
 
   Widget _buildPreviewItem(String label, String value) {
+    if (value.isEmpty || value == 'NULL' || value == '0') return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryBlue)),
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1A1A1A),
+                fontSize: 14,
+              ),
+            ),
+          ),
         ],
       ),
     );
