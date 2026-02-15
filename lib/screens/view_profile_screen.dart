@@ -957,13 +957,19 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             if ((_user?.preferences?.maritalStatus ?? '').isNotEmpty)
               _buildDetailRow('Marital Status', _user!.preferences!.maritalStatus!),
             if ((_user?.preferences?.religion ?? '').isNotEmpty)
-              _buildDetailRow('Preferred Religion', _user!.preferences!.religion!),
+              _buildDetailRow('Religion', _user!.preferences!.religion!),
             if (_user?.preferences?.caste != null && _user!.preferences!.caste!.isNotEmpty)
-              _buildDetailRow('Preferred Caste', _user!.preferences!.caste!.join(', ')),
+              _buildDetailRow('Caste', _user!.preferences!.caste!.join(', ')),
             if (_user?.preferences?.education != null)
-              _buildDetailRow('Preferred Education', _user!.preferences!.education!.toString()),
+              _buildDetailRow('Education', _user!.preferences!.education!.toString()),
             if (_user?.preferences?.preferredLocations != null && _user!.preferences!.preferredLocations!.isNotEmpty)
-              _buildDetailRow('Preferred Locations', _user!.preferences!.preferredLocations!.join(', ')),
+              _buildDetailRow('Locations', _user!.preferences!.preferredLocations!.join(', ')),
+            if ((_user?.preferences?.drugAddiction ?? '').isNotEmpty)
+              _buildDetailRow('Drug Habits', _user!.preferences!.drugAddiction!),
+            if (_user?.preferences?.smoke != null && _user!.preferences!.smoke!.isNotEmpty)
+              _buildDetailRow('Smoking', _user!.preferences!.smoke!.join(', ')),
+            if (_user?.preferences?.alcohol != null && _user!.preferences!.alcohol!.isNotEmpty)
+              _buildDetailRow('Alcohol', _user!.preferences!.alcohol!.join(', ')),
           ]),
         ],
       ),

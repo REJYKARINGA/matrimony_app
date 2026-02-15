@@ -274,6 +274,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _buildCompactInfo(Icons.favorite_border, 'Marital Status', _user?.preferences?.maritalStatus, isFullWidth: true),
                       const SizedBox(height: 12),
                       _buildCompactInfo(Icons.map_outlined, 'Locations', _user?.preferences?.preferredLocations?.join(', '), isFullWidth: true),
+                      const SizedBox(height: 12),
+                      _buildGrid([
+                        _buildCompactInfo(Icons.medical_services_outlined, 'Drug Habits', _user?.preferences?.drugAddiction),
+                        _buildCompactInfo(Icons.smoke_free_rounded, 'Smoking', _user?.preferences?.smoke?.join(', ')),
+                        _buildCompactInfo(Icons.local_bar_rounded, 'Alcohol', _user?.preferences?.alcohol?.join(', ')),
+                      ]),
                     ]),
                     _buildPhotosSection(),
                     _buildSection('About Me', [
@@ -1291,7 +1297,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         icon: Icons.favorite_border_rounded,
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'never_married', child: Text('Never Married')),
+                        DropdownMenuItem(value: 'never_married', child: Text('Single')),
+                        DropdownMenuItem(value: 'nikkah_divorced', child: Text('Nikkah Divorced')),
                         DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
                         DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
                       ],

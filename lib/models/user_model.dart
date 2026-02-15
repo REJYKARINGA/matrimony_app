@@ -360,6 +360,9 @@ class Preference {
   final double? maxIncome;
   final int? maxDistance;
   final List<String>? preferredLocations;
+  final String? drugAddiction;
+  final List<String>? smoke;
+  final List<String>? alcohol;
 
   Preference({
     this.id,
@@ -377,6 +380,9 @@ class Preference {
     this.maxIncome,
     this.maxDistance,
     this.preferredLocations,
+    this.drugAddiction,
+    this.smoke,
+    this.alcohol,
   });
 
   factory Preference.fromJson(Map<String, dynamic> json) {
@@ -407,6 +413,17 @@ class Preference {
       preferredLocations: json['preferred_locations'] != null 
           ? List<String>.from(json['preferred_locations'].map((e) => e.toString())) 
           : null,
+      drugAddiction: json['drug_addiction']?.toString(),
+      smoke: json['smoke'] != null 
+          ? (json['smoke'] is List 
+              ? List<String>.from(json['smoke'].map((e) => e.toString())) 
+              : [json['smoke'].toString()]) 
+          : null,
+      alcohol: json['alcohol'] != null 
+          ? (json['alcohol'] is List 
+              ? List<String>.from(json['alcohol'].map((e) => e.toString())) 
+              : [json['alcohol'].toString()]) 
+          : null,
     );
   }
 
@@ -427,6 +444,9 @@ class Preference {
       'max_income': maxIncome,
       'max_distance': maxDistance,
       'preferred_locations': preferredLocations,
+      'drug_addiction': drugAddiction,
+      'smoke': smoke,
+      'alcohol': alcohol,
     };
   }
 }
