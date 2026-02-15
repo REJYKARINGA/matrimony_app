@@ -122,13 +122,18 @@ class UserProfile {
   final int? weight;
   final String? maritalStatus;
   final String? religion;
+  final int? religionId;
   final String? caste;
+  final int? casteId;
   final String? subCaste;
+  final int? subCasteId;
   final String? motherTongue;
   final String? profilePicture;
   final String? bio;
   final String? education;
+  final int? educationId;
   final String? occupation;
+  final int? occupationId;
   final double? annualIncome;
   final String? city;
   final String? district;
@@ -153,13 +158,18 @@ class UserProfile {
     this.weight,
     this.maritalStatus,
     this.religion,
+    this.religionId,
     this.caste,
+    this.casteId,
     this.subCaste,
+    this.subCasteId,
     this.motherTongue,
     this.profilePicture,
     this.bio,
     this.education,
+    this.educationId,
     this.occupation,
+    this.occupationId,
     this.annualIncome,
     this.city,
     this.district,
@@ -185,14 +195,19 @@ class UserProfile {
       height: json['height'],
       weight: json['weight'],
       maritalStatus: json['marital_status']?.toString(),
-      religion: json['religion']?.toString(),
-      caste: json['caste']?.toString(),
-      subCaste: json['sub_caste']?.toString(),
+      religion: json['religion']?.toString() ?? json['religion_model']?['name']?.toString(),
+      religionId: json['religion_id'],
+      caste: json['caste']?.toString() ?? json['caste_model']?['name']?.toString(),
+      casteId: json['caste_id'],
+      subCaste: json['sub_caste']?.toString() ?? json['sub_caste_model']?['name']?.toString(),
+      subCasteId: json['sub_caste_id'],
       motherTongue: json['mother_tongue']?.toString(),
       profilePicture: json['profile_picture']?.toString(),
       bio: json['bio']?.toString(),
-      education: json['education']?.toString(),
-      occupation: json['occupation']?.toString(),
+      education: json['education']?.toString() ?? json['education_model']?['name']?.toString(),
+      educationId: json['education_id'],
+      occupation: json['occupation']?.toString() ?? json['occupation_model']?['name']?.toString(),
+      occupationId: json['occupation_id'],
       annualIncome: json['annual_income'] != null ? double.tryParse(json['annual_income'].toString()) : null,
       city: json['city']?.toString(),
       district: json['district']?.toString(),
@@ -219,14 +234,14 @@ class UserProfile {
       'height': height,
       'weight': weight,
       'marital_status': maritalStatus,
-      'religion': religion,
-      'caste': caste,
-      'sub_caste': subCaste,
+      'religion_id': religionId,
+      'caste_id': casteId,
+      'sub_caste_id': subCasteId,
       'mother_tongue': motherTongue,
       'profile_picture': profilePicture,
       'bio': bio,
-      'education': education,
-      'occupation': occupation,
+      'education_id': educationId,
+      'occupation_id': occupationId,
       'annual_income': annualIncome,
       'city': city,
       'district': district,

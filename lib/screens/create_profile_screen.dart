@@ -50,10 +50,25 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     'Wayanad', 'Kannur', 'Kasaragod',
   ];
 
+  // Master data for searchable selects
+  List<dynamic> _religions = [];
+  List<dynamic> _availableCastes = [];
+  List<dynamic> _availableSubCastes = [];
+  List<dynamic> _educations = [];
+  List<dynamic> _occupations = [];
+
+  // Selected IDs
+  int? _selectedReligionId;
+  int? _selectedCasteId;
+  int? _selectedSubCasteId;
+  int? _selectedEducationId;
+  int? _selectedOccupationId;
+
   @override
   void initState() {
     super.initState();
     _initializeControllers();
+    _loadOptions();
     
     // Redirect if profile already exists
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,6 +76,59 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       if (authProvider.hasProfile) {
         Navigator.of(context).pushReplacementNamed('/home');
       }
+    });
+  }
+
+  Future<void> _loadOptions() async {
+    try {
+      final response = await ProfileService.getPreferenceOptions();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          setState(() {
+            _religions = data['data']['religions'] ?? [];
+            _educations = data['data']['educations'] ?? [];
+            _occupations = data['data']['occupations'] ?? [];
+          });
+          
+          _updateAvailableCastes(_religionController.text);
+          _updateAvailableSubCastes(_casteController.text);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading options: $e');
+    }
+  }
+
+  void _updateAvailableCastes(String religionName) {
+    if (religionName.isEmpty) {
+      setState(() => _availableCastes = []);
+      return;
+    }
+    
+    final religion = _religions.firstWhere(
+      (r) => r['name'] == religionName,
+      orElse: () => null,
+    );
+    
+    setState(() {
+      _availableCastes = religion != null ? religion['castes'] : [];
+    });
+  }
+
+  void _updateAvailableSubCastes(String casteName) {
+    if (casteName.isEmpty) {
+      setState(() => _availableSubCastes = []);
+      return;
+    }
+    
+    final caste = _availableCastes.firstWhere(
+      (c) => c['name'] == casteName,
+      orElse: () => null,
+    );
+    
+    setState(() {
+      _availableSubCastes = caste != null ? caste['sub_castes'] : [];
     });
   }
 
@@ -112,12 +180,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         height: _height.round(),
         weight: _weight.round(),
         maritalStatus: _selectedMaritalStatus,
-        religion: _religionController.text,
-        caste: _casteController.text,
-        subCaste: _subCasteController.text,
+        religionId: _selectedReligionId,
+        casteId: _selectedCasteId,
+        subCasteId: _selectedSubCasteId,
         motherTongue: _motherTongueController.text,
-        education: _educationController.text,
-        occupation: _occupationController.text,
+        educationId: _selectedEducationId,
+        occupationId: _selectedOccupationId,
         annualIncome: double.tryParse(_annualIncomeController.text),
         city: _cityController.text,
         district: _selectedDistrict,
@@ -217,6 +285,155 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               nextText: _currentStep == _totalSteps - 1 ? 'Complete' : 'Next',
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPickerList({
+    required ScrollController controller,
+    required List<dynamic> items,
+    required Function(dynamic) onSelected,
+    required String searchText,
+  }) {
+    final filteredItems = items.where((item) {
+      final name = item is String ? item : (item['name'] ?? '').toString();
+      return name.toLowerCase().contains(searchText.toLowerCase());
+    }).toList();
+
+    if (filteredItems.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text(
+              'No results found',
+              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
+      controller: controller,
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      itemCount: filteredItems.length,
+      separatorBuilder: (_, __) => Divider(color: Colors.grey[100]),
+      itemBuilder: (context, index) {
+        final item = filteredItems[index];
+        final name = item is String ? item : (item['name'] ?? '').toString();
+        
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          title: Text(
+            name,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+          onTap: () {
+            onSelected(item);
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  void _openSearchablePicker({
+    required String title,
+    required List<dynamic> items,
+    required TextEditingController controller,
+    Function(dynamic)? onSelected,
+  }) {
+    String searchText = '';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, scrollController) => StatefulBuilder(
+          builder: (context, setModalState) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A1A1A),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search $title...',
+                      prefixIcon: const Icon(Icons.search, color: Color(0xFF00BCD4)),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    ),
+                    onChanged: (value) {
+                      setModalState(() {
+                        searchText = value;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: _buildPickerList(
+                    controller: scrollController,
+                    items: items,
+                    searchText: searchText,
+                    onSelected: (selectedItem) {
+                      final name = selectedItem is String ? selectedItem : (selectedItem['name'] ?? '').toString();
+                      controller.text = name;
+                      if (onSelected != null) onSelected(selectedItem);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -432,11 +649,81 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       subtitle: 'Share your cultural background.',
       child: Column(
         children: [
-          _buildTextField(controller: _religionController, label: 'Religion', icon: Icons.church),
+          _buildTextField(
+            controller: _religionController,
+            label: 'Religion',
+            icon: Icons.church,
+            readOnly: true,
+            onTap: () => _openSearchablePicker(
+              title: 'Religion',
+              items: _religions,
+              controller: _religionController,
+              onSelected: (item) {
+                setState(() {
+                  _selectedReligionId = item['id'];
+                  _casteController.clear();
+                  _selectedCasteId = null;
+                  _subCasteController.clear();
+                  _selectedSubCasteId = null;
+                  _updateAvailableCastes(_religionController.text);
+                  _availableSubCastes = [];
+                });
+              },
+            ),
+          ),
           const SizedBox(height: 16),
-          _buildTextField(controller: _casteController, label: 'Caste', icon: Icons.people_outline),
+          _buildTextField(
+            controller: _casteController,
+            label: 'Caste',
+            icon: Icons.people_outline,
+            readOnly: true,
+            onTap: () {
+              if (_religionController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select religion first')),
+                );
+                return;
+              }
+              _openSearchablePicker(
+                title: 'Caste',
+                items: _availableCastes,
+                controller: _casteController,
+                onSelected: (item) {
+                  setState(() {
+                    _selectedCasteId = item['id'];
+                    _subCasteController.clear();
+                    _selectedSubCasteId = null;
+                    _updateAvailableSubCastes(_casteController.text);
+                  });
+                },
+              );
+            },
+          ),
           const SizedBox(height: 16),
-          _buildTextField(controller: _subCasteController, label: 'Sub-caste', icon: Icons.people_alt_outlined),
+          _buildTextField(
+            controller: _subCasteController,
+            label: 'Sub-caste',
+            icon: Icons.people_alt_outlined,
+            readOnly: true,
+            onTap: () {
+              if (_casteController.text.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select caste first')),
+                );
+                return;
+              }
+              _openSearchablePicker(
+                title: 'Sub-Caste',
+                items: _availableSubCastes,
+                controller: _subCasteController,
+                onSelected: (item) {
+                  setState(() {
+                    _selectedSubCasteId = item['id'];
+                  });
+                },
+              );
+            },
+          ),
           const SizedBox(height: 16),
           _buildTextField(controller: _motherTongueController, label: 'Mother Tongue', icon: Icons.language),
         ],
@@ -450,9 +737,39 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       subtitle: 'Tell us about your professional background.',
       child: Column(
         children: [
-          _buildTextField(controller: _educationController, label: 'Education', icon: Icons.school),
+          _buildTextField(
+            controller: _educationController,
+            label: 'Education',
+            icon: Icons.school,
+            readOnly: true,
+            onTap: () => _openSearchablePicker(
+              title: 'Education',
+              items: _educations,
+              controller: _educationController,
+              onSelected: (item) {
+                setState(() {
+                  _selectedEducationId = item['id'];
+                });
+              },
+            ),
+          ),
           const SizedBox(height: 16),
-          _buildTextField(controller: _occupationController, label: 'Occupation', icon: Icons.work_outline),
+          _buildTextField(
+            controller: _occupationController,
+            label: 'Occupation',
+            icon: Icons.work_outline,
+            readOnly: true,
+            onTap: () => _openSearchablePicker(
+              title: 'Occupation',
+              items: _occupations,
+              controller: _occupationController,
+              onSelected: (item) {
+                setState(() {
+                  _selectedOccupationId = item['id'];
+                });
+              },
+            ),
+          ),
           const SizedBox(height: 16),
           _buildTextField(controller: _annualIncomeController, label: 'Annual Income', icon: Icons.currency_rupee, keyboardType: TextInputType.number),
         ],
@@ -640,14 +957,25 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, TextInputType? keyboardType, int maxLines = 1}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+    bool readOnly = false,
+    VoidCallback? onTap,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       maxLines: maxLines,
+      readOnly: readOnly,
+      onTap: onTap,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
+        suffixIcon: readOnly ? const Icon(Icons.arrow_drop_down_rounded, color: AppColors.primaryCyan) : null,
       ),
       validator: (val) {
         if (val == null || val.isEmpty) return 'Required';
