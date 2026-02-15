@@ -283,6 +283,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _interestCountdown = {};
     _shortlistedUserIds = {};
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Hit suggestions API first then any of them
+      await _loadRecommendedUsers();
+
       try {
         await Future.wait([
           _loadUnreadCount(),
@@ -293,8 +296,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ]);
       } catch (e) {
         print('Error during initial data load: $e');
-      } finally {
-        _loadRecommendedUsers();
       }
     });
   }
