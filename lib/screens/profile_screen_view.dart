@@ -998,10 +998,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     _selectedDistrict = widget.user?.userProfile?.district;
     _stateController = TextEditingController(
-      text: widget.user?.userProfile?.state ?? '',
+      text: (widget.user?.userProfile?.state == null || widget.user!.userProfile!.state!.isEmpty) ? 'Kerala' : widget.user!.userProfile!.state!,
     );
     _countryController = TextEditingController(
-      text: widget.user?.userProfile?.country ?? '',
+      text: (widget.user?.userProfile?.country == null || widget.user!.userProfile!.country!.isEmpty) ? 'India' : widget.user!.userProfile!.country!,
     );
     _countyController = TextEditingController(
       text: widget.user?.userProfile?.county ?? '',
@@ -1781,6 +1781,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     
                     TextFormField(
                       controller: _stateController,
+                      readOnly: true,
                       decoration: _buildModernInputDecoration(
                         label: 'State',
                         icon: Icons.flag_rounded,
@@ -1793,6 +1794,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _countryController,
+                            readOnly: true,
                             decoration: _buildModernInputDecoration(
                               label: 'Country',
                               icon: Icons.public_rounded,
