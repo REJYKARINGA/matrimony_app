@@ -146,6 +146,7 @@ class UserProfile {
   final bool? drugAddiction;
   final String? smoke;
   final String? alcohol;
+  final bool? isActiveVerified;
 
   UserProfile({
     this.id,
@@ -182,6 +183,7 @@ class UserProfile {
     this.drugAddiction,
     this.smoke,
     this.alcohol,
+    this.isActiveVerified,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -220,6 +222,7 @@ class UserProfile {
       drugAddiction: json['drug_addiction'] == 1 || json['drug_addiction'] == true,
       smoke: json['smoke']?.toString(),
       alcohol: json['alcohol']?.toString(),
+      isActiveVerified: json['is_active_verified'] == 1 || json['is_active_verified'] == true,
     );
   }
 
@@ -254,6 +257,7 @@ class UserProfile {
       'drug_addiction': drugAddiction,
       'smoke': smoke,
       'alcohol': alcohol,
+      'is_active_verified': isActiveVerified,
     };
   }
 
