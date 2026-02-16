@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import 'verification_screen.dart';
 import 'wallet_transactions_screen.dart';
+import '../services/shortlist_service.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final int userId;
@@ -36,6 +37,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   int? _currentTransactionId;
   int _todayUnlockCount = 0;
   static const int _dailyUnlockLimit = 50; // Can be changed to 20 or any value
+  Set<int> _shortlistedUserIds = {};
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -59,6 +61,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     _checkContactUnlock();
     _loadWalletBalance();
     _loadTodayUnlockCount();
+    _loadShortlistedProfiles();
   }
 
   Future<void> _loadUserProfile() async {
@@ -96,6 +99,31 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         _errorMessage = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadShortlistedProfiles() async {
+    try {
+      final response = await ShortlistService.getShortlistedProfiles();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<dynamic> shortlistedData;
+        if (data is Map<String, dynamic> && data.containsKey('shortlisted')) {
+          final shortlistedMap = data['shortlisted'] as Map<String, dynamic>;
+          shortlistedData = shortlistedMap['data'] is List ? List.from(shortlistedMap['data']) : [];
+        } else {
+          shortlistedData = [];
+        }
+        Set<int> ids = {};
+        for (var item in shortlistedData) {
+          if (item is Map<String, dynamic> && item.containsKey('shortlisted_user_id')) {
+            ids.add(int.parse(item['shortlisted_user_id'].toString()));
+          }
+        }
+        if (mounted) setState(() => _shortlistedUserIds = ids);
+      }
+    } catch (e) {
+      print('Error loading shortlists: $e');
     }
   }
 
@@ -337,17 +365,18 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   _buildActionButtons(),
-                   _buildPhotoGallery(),
-                   _buildProfileDetails(),
-                   _buildFooter(),
-                   const SizedBox(height: 30),
+                  _buildPhotoGallery(),
+                  _buildProfileDetails(),
+                  _buildFooter(),
+                  const SizedBox(height: 100), // Space for sticky bottom bar
                 ],
               ),
             ),
           ),
         ],
       ),
+      bottomNavigationBar: _buildStickyBottomActions(),
+      extendBody: true,
     );
   }
 
@@ -480,43 +509,64 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Row 1: Matrimony ID & Age
                   Row(
                     children: [
                       Text(
                         '${_user?.matrimonyId ?? 'User'}${_user?.userProfile?.age != null ? ', ${_user!.userProfile!.age}' : ''}',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 28,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.verified, color: Color(0xFF4CD9A6), size: 24),
+                      if (_user?.userProfile?.isActiveVerified == true)
+                        const Icon(
+                          Icons.verified_rounded,
+                          color: Color(0xFF00BCD4), // Turquoise
+                          size: 20,
+                        ),
                     ],
+                  ),
+                  const SizedBox(height: 6),
+                  
+                  // Row 2: Height, Marital Status, Caste
+                  Text(
+                    '${_user?.userProfile?.height != null ? '${_user!.userProfile!.height} cm, ' : ''}${_user?.userProfile?.maritalStatus?.toLowerCase() == 'never_married' ? 'Single' : (_user?.userProfile?.maritalStatus ?? '').replaceAll('_', ' ').split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, ${_user?.userProfile?.caste ?? ''}',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Text(
-                        '${_user?.userProfile?.caste ?? ''}${(_user?.userProfile?.caste != null && _user?.userProfile?.maritalStatus != null) ? ', ' : ''}${(_user?.userProfile?.maritalStatus?.toLowerCase() == 'never_married' ? 'Single' : (_user?.userProfile?.maritalStatus ?? '').replaceAll('_', ' '))}'
-                            .toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
+
+                  // Row 3: Education, Occupation
+                  if ((_user?.userProfile?.education ?? '').isNotEmpty || (_user?.userProfile?.occupation ?? '').isNotEmpty)
+                    Text(
+                      '${_user?.userProfile?.education ?? ''}${(_user?.userProfile?.education != null && (_user?.userProfile?.occupation ?? '').isNotEmpty) ? ', ' : ''}${_user?.userProfile?.occupation ?? ''}',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
+                    ),
                   const SizedBox(height: 12),
-                  Row(
+
+                  // Row 4: Location & Distance Badges
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
                     children: [
                       if (_user?.userProfile?.city != null)
                         _buildBadge(Icons.location_on, _user!.userProfile!.city!),
-                      const SizedBox(width: 12),
                       if (_user?.userProfile?.district != null)
                         _buildBadge(Icons.map, _user!.userProfile!.district!),
+                      if (_user?.distance != null)
+                        _buildBadge(Icons.near_me_rounded, '${_user!.distance!.toStringAsFixed(1)} KM', isDistance: true),
                     ],
                   ),
 
@@ -529,22 +579,31 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildBadge(IconData icon, String text) {
+  Widget _buildBadge(IconData icon, String text, {bool isDistance = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
+        color: isDistance 
+            ? const Color(0xFF00BCD4).withOpacity(0.35) 
+            : Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.3)),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 0.5,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 14),
+          Icon(icon, color: Colors.white, size: 12),
           const SizedBox(width: 4),
           Text(
             text,
-            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              color: Colors.white, 
+              fontSize: 12, 
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -678,20 +737,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: Row(
-        children: [
-          Expanded(flex: 2, child: _buildInterestButton()),
-          const SizedBox(width: 12),
-          Expanded(child: _buildMessageButton()),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInterestButton() {
+  Widget _buildStickyBottomActions() {
+    if (_user == null) return const SizedBox.shrink();
+    
     bool isMatched =
         (_interestReceived != null &&
             _interestReceived['status'] == 'accepted') ||
@@ -701,130 +749,160 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     bool isSent = _interestSent != null && !isMatched;
 
     return Container(
-      height: 56,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isMatched
-              ? [Color(0xFF4CD9A6), Color(0xFF4CD9A6)]
-              : [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: (isMatched ? Color(0xFF4CD9A6) : Color(0xFF00BCD4))
-                .withOpacity(0.4),
-            blurRadius: 12,
-            offset: Offset(0, 6),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // Pass (Close)
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: _buildFloatingButton(
+              icon: Icons.close_rounded,
+              color: Colors.white,
+              iconColor: Colors.grey.shade600,
+              size: 50,
+            ),
+          ),
+
+          // Chat
+          GestureDetector(
+            onTap: () {
+              if (isMatched && _user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      otherUserId: _user!.id!,
+                      otherUserName: '${_user!.matrimonyId ?? 'User'}',
+                      otherUserImage: _user?.displayImage != null
+                        ? ApiService.getImageUrl(_user!.displayImage!)
+                        : null,
+                    ),
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Match first to message!'),
+                    backgroundColor: Colors.orange,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              }
+            },
+            child: _buildFloatingButton(
+              icon: Icons.chat_bubble_rounded,
+              color: const Color(0xFF00BCD4),
+              iconColor: Colors.white,
+              size: 50,
+              shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+            ),
+          ),
+
+          // Star (Save)
+          GestureDetector(
+            onTap: () async {
+              try {
+                if (_shortlistedUserIds.contains(_user!.id!)) {
+                  final response = await ShortlistService.removeFromShortlist(_user!.id!);
+                  if (response.statusCode == 200) {
+                    setState(() {
+                      _shortlistedUserIds.remove(_user!.id!);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Removed from shortlist'),
+                        backgroundColor: Colors.orange,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                } else {
+                  final response = await ShortlistService.addToShortlist(_user!.id!);
+                  if (response.statusCode == 200 || response.statusCode == 201) {
+                    setState(() {
+                      _shortlistedUserIds.add(_user!.id!);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Added to shortlist'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                print('Error toggling shortlist: $e');
+              }
+            },
+            child: _buildFloatingButton(
+              icon: _shortlistedUserIds.contains(_user!.id) ? Icons.star_rounded : Icons.star_outline_rounded,
+              color: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700) : Colors.white,
+              iconColor: _shortlistedUserIds.contains(_user!.id) ? Colors.white : const Color(0xFFFFD700),
+              size: 50,
+              shadowColor: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+            ),
+          ),
+
+          // Like (Heart/Check)
+          GestureDetector(
+            onTap: () {
+              if (_isActionLoading) return;
+              if (isMatched) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('You are already matched!')),
+                );
+              } else if (isPending) {
+                _handleAcceptInterest();
+              } else if (isSent) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Interest already sent!')),
+                );
+              } else {
+                _handleSendInterest();
+              }
+            },
+            child: _buildFloatingButton(
+              icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : Icons.favorite_rounded),
+              color: (isMatched || isSent) ? const Color(0xFF42D368) : (isPending ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
+              iconColor: Colors.white,
+              size: 60,
+              shadowColor: ((isMatched || isSent) ? const Color(0xFF42D368) : (isPending ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
+            ),
           ),
         ],
-      ),
-      child: ElevatedButton.icon(
-        onPressed: _isActionLoading
-            ? null
-            : (isMatched
-                  ? null
-                  : (isPending
-                        ? _handleAcceptInterest
-                        : (isSent ? null : _handleSendInterest))),
-        icon: _isActionLoading
-            ? SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : Icon(
-                isMatched
-                    ? Icons.favorite
-                    : (isPending
-                          ? Icons.check_circle
-                          : (isSent ? Icons.favorite : Icons.favorite_border)),
-                size: 22,
-              ),
-        label: Text(
-          _isActionLoading
-              ? 'Processing...'
-              : (isMatched
-                    ? 'Matched'
-                    : (isPending
-                          ? 'Accept'
-                          : (isSent ? 'Sent' : 'Send Interest'))),
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
       ),
     );
   }
 
-  Widget _buildMessageButton() {
+  Widget _buildFloatingButton({
+    required IconData icon,
+    required Color color,
+    required Color iconColor,
+    required double size,
+    Color? shadowColor,
+  }) {
     return Container(
-      height: 56,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFF00BCD4), width: 2),
+        color: color,
+        shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: shadowColor ?? Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
-      child: ElevatedButton(
-        onPressed: () {
-          bool isMatched =
-              (_interestSent != null &&
-                  _interestSent['status'] == 'accepted') ||
-              (_interestReceived != null &&
-                  _interestReceived['status'] == 'accepted');
-
-          if (isMatched && _user != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                  otherUserId: _user!.id!,
-                  otherUserName:
-                      '${_user!.matrimonyId ?? 'User'}',
-                  otherUserImage: _user?.displayImage != null
-                    ? ApiService.getImageUrl(_user!.displayImage!)
-                    : null,
-                ),
-              ),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Match first to message!'),
-                backgroundColor: Colors.orange,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            );
-          }
-        },
-        child: Icon(Icons.message_rounded, color: Color(0xFF00BCD4)),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
+      child: Center(
+        child: Icon(icon, color: iconColor, size: size * 0.5),
       ),
     );
   }

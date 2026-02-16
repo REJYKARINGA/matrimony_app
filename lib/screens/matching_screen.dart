@@ -298,6 +298,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             user,
             isInterest: true,
             status: interest['status'],
+            isSentByMe: isSentByMe,
           );
         },
       ),
@@ -345,7 +346,7 @@ class _MatchingScreenState extends State<MatchingScreen>
           if (otherUserJson == null) return const SizedBox.shrink();
           final user = User.fromJson(otherUserJson);
 
-          return _buildProfileCard(user, isMatch: true);
+          return _buildProfileCard(user, isMatch: true, isSentByMe: true);
         },
       ),
     );
@@ -387,6 +388,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             user,
             isInterest: true,
             status: interest['status'],
+            isSentByMe: true,
           );
         },
       ),
@@ -429,6 +431,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             user,
             isInterest: true,
             status: interest['status'],
+            isSentByMe: false,
           );
         },
       ),
@@ -440,6 +443,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     bool isMatch = false,
     bool isInterest = false,
     String? status,
+    bool isSentByMe = false,
   }) {
     final profile = user.userProfile;
     
@@ -754,18 +758,18 @@ class _MatchingScreenState extends State<MatchingScreen>
                   // Accept / Match (Heart)
                   GestureDetector(
                     onTap: () {
-                      if (isInterest && status == 'pending') {
+                      if (isInterest && status == 'pending' && !isSentByMe) {
                          _handleInterestAction(user.id!, true);
-                      } else if (!isMatch && status != 'accepted') {
+                      } else if (!isMatch && status != 'accepted' && (status != 'pending' || !isSentByMe)) {
                          _sendInterest(user.id!);
                       }
                     },
                     child: _buildFloatingButton(
-                      icon: (isMatch || status == 'accepted') ? Icons.done_all_rounded : Icons.favorite,
-                      color: (isMatch || status == 'accepted') ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
+                      icon: (isMatch || status == 'accepted' || (status == 'pending' && isSentByMe)) ? Icons.done_all_rounded : (status == 'pending' && !isSentByMe ? Icons.check_circle_rounded : Icons.favorite),
+                      color: (isMatch || status == 'accepted' || (status == 'pending' && isSentByMe)) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
                       iconColor: Colors.white,
                       size: 60,
-                      shadowColor: ((isMatch || status == 'accepted') ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                      shadowColor: ((isMatch || status == 'accepted' || (status == 'pending' && isSentByMe)) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
                     ),
                   ),
                 ],
