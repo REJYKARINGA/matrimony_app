@@ -7,7 +7,10 @@ import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
+import 'package:http/http.dart' as http;
+import '../services/search_service.dart';
 import '../services/shortlist_service.dart';
+import '../services/profile_view_service.dart';
 import '../services/notification_service.dart';
 import '../models/user_model.dart';
 import 'profile_screen_view.dart';
@@ -256,7 +259,9 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> with TickerProviderStateMixin {
-  late TabController _tabController;
+  late TabController _discoveryTabController;
+  late TabController _activityTabController;
+  int _activeGroup = 0; // 0: Discovery, 1: Activity
   List<User> _recommendedUsers = [];
   bool _isLoadingRecommended = true;
   String? _recommendedError;
@@ -281,10 +286,19 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     _interestTimers = {};
     _interestCountdown = {};
     _shortlistedUserIds = {};
-    _tabController = TabController(length: 6, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() {}); // Rebuild to filter content
+    _discoveryTabController = TabController(length: 5, vsync: this);
+    _discoveryTabController.addListener(() {
+      if (!_discoveryTabController.indexIsChanging) {
+        setState(() => _activeGroup = 0);
+        _loadTabUsers(0, _discoveryTabController.index);
+      }
+    });
+
+    _activityTabController = TabController(length: 4, vsync: this);
+    _activityTabController.addListener(() {
+      if (!_activityTabController.indexIsChanging) {
+        setState(() => _activeGroup = 1);
+        _loadTabUsers(1, _activityTabController.index);
       }
     });
     
@@ -293,7 +307,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       _hasInitialized = true;
       
       // Hit suggestions API first then any of them
-      await _loadRecommendedUsers();
+      // Load initial tab
+      // Load initial tab
+    await _loadTabUsers(0, 0);
 
       if (!mounted) return;
 
@@ -313,7 +329,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _discoveryTabController.dispose();
+    _activityTabController.dispose();
     super.dispose();
   }
 
@@ -524,83 +541,175 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     }
   }
 
-  Future<void> _loadRecommendedUsers() async {
+  Future<void> _loadTabUsers(int group, int index) async {
     try {
+      if (!mounted) return;
       setState(() {
         _isLoadingRecommended = true;
         _recommendedError = null;
+        _activeGroup = group;
       });
 
-      final response = await MatchingService.getSuggestions();
+      http.Response response;
+      if (group == 0) { // Discovery
+        switch (index) {
+          case 0: // Search
+            response = await MatchingService.getSuggestions();
+            break;
+          case 1: // My Match
+            response = await SearchService.searchProfiles(); 
+            break;
+          case 2: // New Match
+            response = await SearchService.searchProfiles(field: 'new_members');
+            break;
+          case 3: // Near Me
+            response = await SearchService.getNearbyProfiles();
+            break;
+          case 4: // Online
+            response = await SearchService.searchProfiles();
+            break;
+          default:
+            response = await MatchingService.getSuggestions();
+        }
+      } else { // Activity
+        switch (index) {
+          case 0: // Shortlist
+            response = await ShortlistService.getShortlistedProfiles();
+            break;
+          case 1: // Contact Viewed
+            response = await ProfileViewService.getContactViewedProfiles();
+            break;
+          case 2: // Visited
+            response = await ProfileViewService.getVisitedProfiles();
+            break;
+          case 3: // Visitors
+            response = await ProfileViewService.getVisitors();
+            break;
+          default:
+            response = await ShortlistService.getShortlistedProfiles();
+        }
+      }
 
       if (response.statusCode == 200) {
         final decodedData = json.decode(response.body);
         List<dynamic> usersData = [];
 
+        if (group == 1 && index == 0) { // Shortlist extraction
+          if (decodedData is Map<String, dynamic> && decodedData.containsKey('shortlisted')) {
+            final shortlistedData = decodedData['shortlisted'];
+            final List<dynamic> items = (shortlistedData is Map) ? (shortlistedData['data'] ?? []) : (shortlistedData ?? []);
+            _parseAndSetUsers(items, isShortlist: true);
+            return;
+          }
+        }
+        
+        if (group == 1 && index == 1) { // Contact Viewed
+             if (decodedData is Map<String, dynamic> && decodedData.containsKey('unlocked')) {
+                final unlockedData = decodedData['unlocked'];
+                final List<dynamic> items = (unlockedData is Map) ? (unlockedData['data'] ?? []) : (unlockedData ?? []);
+                _parseAndSetUsers(items, isUnlocked: true);
+                return;
+             }
+        }
+        
+        if (group == 1 && index == 2) { // Visited
+             if (decodedData is Map<String, dynamic> && decodedData.containsKey('visited')) {
+                final visitedData = decodedData['visited'];
+                final List<dynamic> items = (visitedData is Map) ? (visitedData['data'] ?? []) : (visitedData ?? []);
+                _parseAndSetUsers(items, isVisited: true);
+                return;
+             }
+        }
+        
+        if (group == 1 && index == 3) { // Visitors
+             if (decodedData is Map<String, dynamic> && decodedData.containsKey('visitors')) {
+                _parseAndSetUsers(decodedData['visitors'] ?? []);
+                return;
+             }
+        }
+
+        // Generic user data extraction
         if (decodedData is List) {
           usersData = List.from(decodedData);
         } else if (decodedData is Map<String, dynamic>) {
-          if (decodedData.containsKey('suggestions') &&
-              decodedData['suggestions'] is Map<String, dynamic>) {
-            usersData = List.from(decodedData['suggestions']['data'] ?? []);
-          } else if (decodedData.containsKey('users')) {
-            usersData = List.from(decodedData['users'] ?? []);
-          } else if (decodedData.containsKey('data')) {
+          if (decodedData.containsKey('suggestions')) {
+            final suggestions = decodedData['suggestions'];
+            usersData = (suggestions is Map) ? List.from(suggestions['data'] ?? []) : List.from(suggestions);
+          } else if (decodedData.containsKey('profiles')) {
+            final profiles = decodedData['profiles'];
+            usersData = (profiles is Map) ? List.from(profiles['data'] ?? []) : List.from(profiles);
+          } else {
             usersData = List.from(decodedData['data'] ?? []);
           }
         }
 
-        List<User> allUsers = [];
-        for (var userData in usersData) {
-          if (userData is Map<String, dynamic>) {
-            try {
-              allUsers.add(User.fromJson(userData));
-            } catch (e) {
-              print('Error parsing user: $e');
-            }
-          }
-        }
-
-        final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        final currentUserProfile = authProvider.user?.userProfile;
-
-        List<User> filteredUsers;
-        if (authProvider.user?.role == 'admin') {
-          filteredUsers = allUsers;
-        } else if (currentUserProfile?.gender != null) {
-          String gender = currentUserProfile!.gender!.toLowerCase();
-          filteredUsers = allUsers
-              .where(
-                (u) =>
-                    u.userProfile?.gender != null &&
-                    u.userProfile!.gender!.toLowerCase() != gender,
-              )
-              .toList();
-          if (filteredUsers.isEmpty) filteredUsers = allUsers;
-        } else {
-          filteredUsers = allUsers;
-        }
-
-        if (!mounted) return;
-        setState(() {
-          _recommendedUsers = filteredUsers;
-          _isLoadingRecommended = false;
-        });
+        _parseAndSetUsers(usersData, group: group, index: index);
       } else {
         if (!mounted) return;
         setState(() {
-          _recommendedError =
-              'Failed to load recommendations. Status: ${response.statusCode}';
+          _recommendedError = 'Failed to load profiles. Status: ${response.statusCode}';
           _isLoadingRecommended = false;
         });
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _recommendedError = 'Error loading recommendations: $e';
+        _recommendedError = 'Error loading content: $e';
         _isLoadingRecommended = false;
       });
     }
+  }
+
+  void _parseAndSetUsers(List<dynamic> items, {bool isShortlist = false, bool isUnlocked = false, bool isVisited = false, int? group, int? index}) {
+    List<User> allUsers = [];
+    for (var item in items) {
+      if (item is Map<String, dynamic>) {
+        try {
+          if (isShortlist && item['shortlisted_user'] != null) {
+            allUsers.add(User.fromJson(item['shortlisted_user']));
+          } else if (isUnlocked && item['unlocked_user'] != null) {
+            allUsers.add(User.fromJson(item['unlocked_user']));
+          } else if (isVisited && item['viewed_user'] != null) {
+            allUsers.add(User.fromJson(item['viewed_user']));
+          } else if (item.containsKey('user_profile')) { // Visitors structure
+             // This is a bit different, item is the wrapper
+             final u = User.fromJson(item);
+             allUsers.add(u);
+          } else {
+            allUsers.add(User.fromJson(item));
+          }
+        } catch (e) {
+          print('Error parsing user: $e');
+        }
+      }
+    }
+
+    if (group == 0 && index == 1) { // My Match sorting
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final profile = authProvider.user?.userProfile;
+      allUsers = allUsers.where((u) {
+        final isOppositeGender = u.userProfile?.gender?.toLowerCase() != profile?.gender?.toLowerCase();
+        final isSameReligion = u.userProfile?.religion?.toLowerCase() == profile?.religion?.toLowerCase();
+        final isActive = u.status?.toLowerCase() == 'active';
+        return isOppositeGender && isSameReligion && isActive;
+      }).toList();
+      
+      allUsers.sort((a, b) {
+        final dateA = a.userProfile?.createdAt ?? DateTime(2000);
+        final dateB = b.userProfile?.createdAt ?? DateTime(2000);
+        return dateB.compareTo(dateA);
+      });
+    }
+    
+    if (group == 0 && index == 4) { // Online filter
+       allUsers = allUsers.where((u) => u.status?.toLowerCase() == 'active').toList();
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _recommendedUsers = allUsers;
+      _isLoadingRecommended = false;
+    });
   }
 
   @override
@@ -616,7 +725,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     return Scaffold(
       backgroundColor: AppColors.background, // Slight turquoise tint instead of pure white
       body: RefreshIndicator(
-        onRefresh: _loadRecommendedUsers,
+        onRefresh: () => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index),
         color: AppColors.primaryCyan,
         child: Stack(
           children: [
@@ -716,7 +825,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             ),
           );
           if (result == true) {
-            _loadRecommendedUsers();
+            _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index);
           }
         },
       ),
@@ -757,52 +866,109 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     ],
   ),
   bottom: PreferredSize(
-    preferredSize: const Size.fromHeight(60),
+    preferredSize: const Size.fromHeight(102),
     child: Container(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      child: Container(
-        height: 48,
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          indicator: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Tab Bar 1: Discovery
+          SizedBox(
+            height: 48,
+            child: TabBar(
+              controller: _discoveryTabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              onTap: (idx) {
+                if (_activeGroup != 0) {
+                  setState(() => _activeGroup = 0);
+                  _loadTabUsers(0, idx);
+                }
+              },
+              indicator: _activeGroup == 0 ? BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ) : const BoxDecoration(),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade500,
+              unselectedLabelColor: Colors.grey.shade500,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade500,
               ),
-            ],
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: 'Search'),
+                Tab(text: 'My Match'),
+                Tab(text: 'New Match'),
+                Tab(text: 'Near Me'),
+                Tab(text: 'Online'),
+              ],
+            ),
           ),
-          indicatorSize: TabBarIndicatorSize.tab,
-          labelColor: AppColors.primaryCyan,
-          unselectedLabelColor: Colors.grey.shade600,
-          labelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
+          // Tab Bar 2: Activity
+          SizedBox(
+            height: 40,
+            child: TabBar(
+              controller: _activityTabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              onTap: (idx) {
+                if (_activeGroup != 1) {
+                  setState(() => _activeGroup = 1);
+                  _loadTabUsers(1, idx);
+                }
+              },
+              indicator: _activeGroup == 1 ? BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ) : const BoxDecoration(),
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade400,
+              unselectedLabelColor: Colors.grey.shade400,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+                color: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade400,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 11,
+              ),
+              dividerColor: Colors.transparent,
+              tabs: const [
+                Tab(text: 'Shortlist'),
+                Tab(text: 'Contact Viewed'),
+                Tab(text: 'Visited'),
+                Tab(text: 'Visitors'),
+              ],
+            ),
           ),
-          unselectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 13,
-          ),
-          dividerColor: Colors.transparent,
-          tabs: const [
-            Tab(text: 'Search'),
-            Tab(text: 'My Match'),
-            Tab(text: 'New Match'),
-            Tab(text: 'Near Me'),
-            Tab(text: 'Online'),
-            Tab(text: 'Favourited'),
-          ],
-        ),
+        ],
       ),
     ),
   ),
@@ -960,36 +1126,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   }
 
   List<User> _getActiveTabUsers() {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final currentUser = authProvider.user;
-    final profile = currentUser?.userProfile;
-
-    switch (_tabController.index) {
-      case 1: // My Match
-        return _recommendedUsers.where((u) {
-          final isOppositeGender = u.userProfile?.gender?.toLowerCase() != profile?.gender?.toLowerCase();
-          final isSameReligion = u.userProfile?.religion?.toLowerCase() == profile?.religion?.toLowerCase();
-          final isActive = u.status?.toLowerCase() == 'active';
-          return isOppositeGender && isSameReligion && isActive;
-        }).toList()
-          ..sort((a, b) {
-            // Newest first based on created_at
-            final dateA = a.userProfile?.createdAt ?? DateTime(2000);
-            final dateB = b.userProfile?.createdAt ?? DateTime(2000);
-            return dateB.compareTo(dateA);
-          });
-      case 2: // New Match
-        return _recommendedUsers.take(15).toList(); // Show top 15 as "New"
-      case 3: // Near Me
-        return _recommendedUsers.where((u) => (u.distance ?? 1000) < 100).toList();
-      case 4: // Online
-        return _recommendedUsers.where((u) => u.status?.toLowerCase() == 'active').toList();
-      case 5: // Favourited
-        return _recommendedUsers.where((u) => _shortlistedUserIds.contains(u.id)).toList();
-      case 0: // Search (Explore)
-      default:
-        return _recommendedUsers;
-    }
+    return _recommendedUsers;
   }
 
   Widget _buildDynamicProfileCard(BuildContext context, User user) {
@@ -1404,7 +1541,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               ],
             ),
             child: ElevatedButton.icon(
-              onPressed: _loadRecommendedUsers,
+              onPressed: () => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index),
               icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
               label: const Text(
                 'Refresh Suggestions',
@@ -1423,7 +1560,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           ),
           const SizedBox(height: 16),
           TextButton.icon(
-            onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadRecommendedUsers()),
+            onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index)),
             icon: const Icon(Icons.tune_rounded, size: 18, color: Color(0xFF0D47A1)),
             label: const Text(
               'Refine Preferences',
