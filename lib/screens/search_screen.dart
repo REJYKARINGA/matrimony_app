@@ -856,60 +856,81 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Row 1: Matrimony ID & Age
                   Row(
                     children: [
                       Text(
                         '${user.matrimonyId ?? 'User'}, $ageText',
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 26,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          letterSpacing: -0.8,
+                          letterSpacing: -0.5,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(
-                        Icons.verified_rounded,
-                        color: Color(0xFF00BCD4),
-                        size: 20,
-                      ),
+                      if (user.userProfile?.isActiveVerified == true)
+                        const Icon(
+                          Icons.verified_rounded,
+                          color: Color(0xFF00BCD4),
+                          size: 18,
+                        ),
                     ],
                   ),
+                  const SizedBox(height: 6),
+                  
+                  // Row 2: Height, Marital Status, Caste
+                  Text(
+                    '${profile?.height != null ? '${profile!.height} cm, ' : ''}$maritalStatus, ${profile?.caste ?? ''}',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  const SizedBox(height: 4),
-                  if (profile?.caste != null || maritalStatus.isNotEmpty)
+
+                  // Row 3: Education, Occupation
+                  if ((profile?.education ?? '').isNotEmpty || (profile?.occupation ?? '').isNotEmpty)
                     Text(
-                      '${profile?.caste ?? ''}${profile?.caste != null && maritalStatus.isNotEmpty ? ', ' : ''}$maritalStatus'
-                          .toUpperCase(),
+                      '${profile?.education ?? ''}${profile?.education != null && (profile?.occupation ?? '').isNotEmpty ? ', ' : ''}${profile?.occupation ?? ''}',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.0,
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
+
+                  // Row 4: Location & Distance
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(
-                        Icons.location_on_rounded,
-                        color: Colors.white.withOpacity(0.8),
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
                       Expanded(
-                        child: Text(
-                          loc.isNotEmpty ? loc : 'Unknown Location',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 14,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_rounded,
+                              color: Colors.white.withOpacity(0.8),
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                loc.isNotEmpty ? loc : 'Unknown Location',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.8),
+                                  fontSize: 13,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       if (user.distance != null)
                         Container(
-                          margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: const Color(0xFF00BCD4).withOpacity(0.35),
