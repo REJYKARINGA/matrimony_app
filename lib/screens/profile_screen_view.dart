@@ -442,7 +442,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(width: 4),
                       ],
                       Text(
-                        _user?.email ?? '',
+                        _user?.matrimonyId != null ? 'ID: ${_user!.matrimonyId}' : '',
                         style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13),
                       ),
                     ],

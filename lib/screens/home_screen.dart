@@ -700,6 +700,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                     const Spacer(),
+                    // Filter Button moved to header
+                    IconButton(
+                      icon: const Icon(
+                        Icons.tune_rounded,
+                        color: AppColors.primaryBlue,
+                        size: 26,
+                      ),
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (c) => const PreferencesScreen(),
+                          ),
+                        );
+                        if (result == true) {
+                          _loadRecommendedUsers();
+                        }
+                      },
+                    ),
                     IconButton(
                       icon: Stack(
                         clipBehavior: Clip.none,
@@ -736,104 +755,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ),
-          
-          // ID Search & Quick Actions
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: TextField(
-                        controller: _idSearchController,
-                        onChanged: (val) => setState(() {}),
-                        decoration: InputDecoration(
-                          hintText: 'Search by Matrimony ID',
-                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryCyan),
-                          suffixIcon: _idSearchController.text.trim().isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.send_rounded, color: AppColors.primaryCyan, size: 20),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (c) => SearchResultsScreen(
-                                        title: 'ID Search: ${_idSearchController.text}',
-                                        filter: {'field': 'matrimony_id', 'value': _idSearchController.text.trim()},
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : null,
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        ),
-                        onSubmitted: (value) {
-                           if (value.trim().isNotEmpty) {
-                             Navigator.push(
-                               context,
-                               MaterialPageRoute(
-                                 builder: (c) => SearchResultsScreen(
-                                   title: 'ID Search: $value',
-                                   filter: {'field': 'matrimony_id', 'value': value.trim()},
-                                 ),
-                               ),
-                             );
-                           }
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Filter Button
-                  GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) => const PreferencesScreen(),
-                        ),
-                      );
-                      if (result == true) {
-                        _loadRecommendedUsers();
-                      }
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00BCD4),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF00BCD4).withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(Icons.tune_rounded, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+
 
           // Visitors section
           if (_visitors.isNotEmpty)
