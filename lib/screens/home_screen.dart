@@ -281,7 +281,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     _interestTimers = {};
     _interestCountdown = {};
     _shortlistedUserIds = {};
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() {}); // Rebuild to filter content
@@ -769,6 +769,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         ),
         child: TabBar(
           controller: _tabController,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
           indicator: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             color: Colors.white,
@@ -793,10 +795,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           ),
           dividerColor: Colors.transparent,
           tabs: const [
-            Tab(text: 'Explore'),
-            Tab(text: 'New'),
+            Tab(text: 'Search'),
+            Tab(text: 'My Match'),
+            Tab(text: 'New Match'),
             Tab(text: 'Near Me'),
             Tab(text: 'Online'),
+            Tab(text: 'Favourited'),
           ],
         ),
       ),
@@ -956,14 +960,33 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   }
 
   List<User> _getActiveTabUsers() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final currentUser = authProvider.user;
+    final profile = currentUser?.userProfile;
+
     switch (_tabController.index) {
-      case 1: // New
-        return _recommendedUsers.take(10).toList(); // Mock: first 10
-      case 2: // Near Me
+      case 1: // My Match
+        return _recommendedUsers.where((u) {
+          final isOppositeGender = u.userProfile?.gender?.toLowerCase() != profile?.gender?.toLowerCase();
+          final isSameReligion = u.userProfile?.religion?.toLowerCase() == profile?.religion?.toLowerCase();
+          final isActive = u.status?.toLowerCase() == 'active';
+          return isOppositeGender && isSameReligion && isActive;
+        }).toList()
+          ..sort((a, b) {
+            // Newest first based on created_at
+            final dateA = a.userProfile?.createdAt ?? DateTime(2000);
+            final dateB = b.userProfile?.createdAt ?? DateTime(2000);
+            return dateB.compareTo(dateA);
+          });
+      case 2: // New Match
+        return _recommendedUsers.take(15).toList(); // Show top 15 as "New"
+      case 3: // Near Me
         return _recommendedUsers.where((u) => (u.distance ?? 1000) < 100).toList();
-      case 3: // Online
+      case 4: // Online
         return _recommendedUsers.where((u) => u.status?.toLowerCase() == 'active').toList();
-      case 0: // Explore
+      case 5: // Favourited
+        return _recommendedUsers.where((u) => _shortlistedUserIds.contains(u.id)).toList();
+      case 0: // Search (Explore)
       default:
         return _recommendedUsers;
     }

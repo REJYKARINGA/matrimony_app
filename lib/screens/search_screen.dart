@@ -18,7 +18,11 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMixin {
+  late TabController _tabController;
+  List<User> _allMatches = [];
+  bool _isLoadingAllMatches = false;
+  String? _allMatchesError;
   List<dynamic> _categories = [];
   bool _isLoading = true;
   String? _error;
@@ -28,7 +32,21 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging && _tabController.index == 1 && _allMatches.isEmpty) {
+        _loadAllMatches();
+      }
+      setState(() {});
+    });
     _updateLocationAndLoad();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _idSearchController.dispose();
+    super.dispose();
   }
 
   Future<void> _updateLocationAndLoad() async {
@@ -245,6 +263,51 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
           ),
+
+          // Selection Tabs (Under Search Input)
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Container(
+                height: 48,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelColor: const Color(0xFF00BCD4),
+                  unselectedLabelColor: Colors.grey.shade600,
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                  ),
+                  dividerColor: Colors.transparent,
+                  tabs: const [
+                    Tab(text: 'Categories'),
+                    Tab(text: 'Recommendations'),
+                  ],
+                ),
+              ),
+            ),
+          ),
           if (_isLoading)
             const SliverFillRemaining(
               child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
@@ -275,35 +338,71 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             )
+          else if (_tabController.index == 0)
+            // Categories Tab (The preference cards)
+            _categories.isEmpty
+              ? const SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.search_off, size: 80, color: Color(0xFFD1D1D1)),
+                        SizedBox(height: 16),
+                        Text(
+                          'No preference cards available',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
+                      childAspectRatio: 0.82,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final category = _categories[index];
+                        return _buildPreferenceCard(category, index);
+                      },
+                      childCount: _categories.length,
+                    ),
+                  ),
+                )
           else
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 0.82,
+            // Matches Tab (Direct Results)
+            _isLoadingAllMatches
+              ? const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
+                )
+              : _allMatchesError != null
+              ? SliverFillRemaining(
+                  child: Center(child: Text(_allMatchesError!, style: const TextStyle(color: Colors.red))),
+                )
+              : _allMatches.isEmpty
+              ? const SliverFillRemaining(
+                  child: Center(child: Text('No recommendations found')),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return _buildResultCard(_allMatches[index]);
+                      },
+                      childCount: _allMatches.length,
+                    ),
+                  ),
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final category = _categories[index];
-                    return _buildPreferenceCard(category, index);
-                  },
-                  childCount: _categories.length,
-                ),
-              ),
-            ),
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _idSearchController.dispose();
-    super.dispose();
   }
 
   Widget _buildPreferenceCard(dynamic category, int index) {
@@ -494,6 +593,137 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildResultCard(User user) {
+    final profile = user.userProfile;
+    final age = profile?.dateOfBirth != null
+        ? DateTime.now().year - profile!.dateOfBirth!.year
+        : null;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (c) => ViewProfileScreen(userId: user.id!),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: SizedBox(
+                  width: 96,
+                  height: 96,
+                  child: user.displayImage != null
+                      ? Image.network(
+                          ApiService.getImageUrl(user.displayImage!),
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          color: Colors.grey.shade100,
+                          child: const Icon(Icons.person, color: Colors.grey),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          user.matrimonyId ?? 'User',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        if (user.userProfile?.isActiveVerified == true) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.verified, color: Color(0xFF00BCD4), size: 16),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${age ?? ''} yrs • ${profile?.height ?? ''} cm',
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${profile?.city ?? ''}${profile?.city != null ? ', ' : ''}${profile?.state ?? ''}',
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.grey),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _loadAllMatches() async {
+    setState(() {
+      _isLoadingAllMatches = true;
+      _allMatchesError = null;
+    });
+    try {
+      final response = await MatchingService.getSuggestions();
+      if (response.statusCode == 200) {
+        final decodedData = json.decode(response.body);
+        List<dynamic> usersData = [];
+
+        if (decodedData is List) {
+          usersData = List.from(decodedData);
+        } else if (decodedData is Map<String, dynamic>) {
+          if (decodedData.containsKey('suggestions') &&
+              decodedData['suggestions'] is Map<String, dynamic>) {
+            usersData = List.from(decodedData['suggestions']['data'] ?? []);
+          } else if (decodedData.containsKey('users')) {
+            usersData = List.from(decodedData['users'] ?? []);
+          } else if (decodedData.containsKey('data')) {
+            usersData = List.from(decodedData['data'] ?? []);
+          }
+        }
+
+        setState(() {
+          _allMatches = usersData.map((u) => User.fromJson(u)).toList();
+          _isLoadingAllMatches = false;
+        });
+      } else {
+        setState(() {
+          _allMatchesError = 'Failed to load recommendations';
+          _isLoadingAllMatches = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _allMatchesError = 'Error: $e';
+        _isLoadingAllMatches = false;
+      });
+    }
   }
 
   void _navigateToResults(dynamic category) {

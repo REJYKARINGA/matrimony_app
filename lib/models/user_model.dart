@@ -147,6 +147,7 @@ class UserProfile {
   final String? smoke;
   final String? alcohol;
   final bool? isActiveVerified;
+  final DateTime? createdAt;
 
   UserProfile({
     this.id,
@@ -184,6 +185,7 @@ class UserProfile {
     this.smoke,
     this.alcohol,
     this.isActiveVerified,
+    this.createdAt,
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
@@ -223,6 +225,7 @@ class UserProfile {
       smoke: json['smoke']?.toString(),
       alcohol: json['alcohol']?.toString(),
       isActiveVerified: json['is_active_verified'] == 1 || json['is_active_verified'] == true,
+      createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
     );
   }
 
