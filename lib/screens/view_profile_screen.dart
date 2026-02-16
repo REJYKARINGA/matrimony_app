@@ -1034,12 +1034,22 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               _buildDetailRow('Height Range', '${_user?.preferences?.minHeight ?? '-'}-${_user?.preferences?.maxHeight ?? '-'} cm'),
             if ((_user?.preferences?.maritalStatus ?? '').isNotEmpty)
               _buildDetailRow('Marital Status', _user!.preferences!.maritalStatus!),
-            if ((_user?.preferences?.religion ?? '').isNotEmpty)
-              _buildDetailRow('Religion', _user!.preferences!.religion!),
-            if (_user?.preferences?.caste != null && _user!.preferences!.caste!.isNotEmpty)
+            if ((_user?.preferences?.religionName ?? _user?.preferences?.religion ?? '').isNotEmpty)
+              _buildDetailRow('Religion', _user?.preferences?.religionName ?? _user!.preferences!.religion!),
+            if (_user?.preferences?.casteNames != null && _user!.preferences!.casteNames!.isNotEmpty)
+              _buildDetailRow('Caste', _user!.preferences!.casteNames!.join(', '))
+            else if (_user?.preferences?.caste != null && _user!.preferences!.caste!.isNotEmpty)
               _buildDetailRow('Caste', _user!.preferences!.caste!.join(', ')),
-            if (_user?.preferences?.education != null)
+            if (_user?.preferences?.subCasteNames != null && _user!.preferences!.subCasteNames!.isNotEmpty)
+              _buildDetailRow('Sub-Caste', _user!.preferences!.subCasteNames!.join(', ')),
+            if (_user?.preferences?.educationNames != null && _user!.preferences!.educationNames!.isNotEmpty)
+              _buildDetailRow('Education', _user!.preferences!.educationNames!.join(', '))
+            else if (_user?.preferences?.education != null)
               _buildDetailRow('Education', _user!.preferences!.education!.toString()),
+            if (_user?.preferences?.occupationNames != null && _user!.preferences!.occupationNames!.isNotEmpty)
+              _buildDetailRow('Occupation', _user!.preferences!.occupationNames!.join(', '))
+            else if (_user?.preferences?.occupation != null)
+              _buildDetailRow('Occupation', _user!.preferences!.occupation!.toString()),
             if (_user?.preferences?.preferredLocations != null && _user!.preferences!.preferredLocations!.isNotEmpty)
               _buildDetailRow('Locations', _user!.preferences!.preferredLocations!.join(', ')),
             if ((_user?.preferences?.drugAddiction ?? '').isNotEmpty)

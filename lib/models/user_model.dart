@@ -372,9 +372,19 @@ class Preference {
   final int? maxHeight;
   final String? maritalStatus;
   final String? religion;
+  final int? religionId;
+  final String? religionName;
   final List<String>? caste;
+  final List<int>? casteIds;
+  final List<String>? casteNames;
+  final List<int>? subCasteIds;
+  final List<String>? subCasteNames;
   final dynamic education;
+  final List<int>? educationIds;
+  final List<String>? educationNames;
   final dynamic occupation;
+  final List<int>? occupationIds;
+  final List<String>? occupationNames;
   final double? minIncome;
   final double? maxIncome;
   final int? maxDistance;
@@ -392,9 +402,19 @@ class Preference {
     this.maxHeight,
     this.maritalStatus,
     this.religion,
+    this.religionId,
+    this.religionName,
     this.caste,
+    this.casteIds,
+    this.casteNames,
+    this.subCasteIds,
+    this.subCasteNames,
     this.education,
+    this.educationIds,
+    this.educationNames,
     this.occupation,
+    this.occupationIds,
+    this.occupationNames,
     this.minIncome,
     this.maxIncome,
     this.maxDistance,
@@ -423,9 +443,19 @@ class Preference {
       maxHeight: json['max_height'],
       maritalStatus: json['marital_status']?.toString(),
       religion: json['religion']?.toString(),
+      religionId: json['religion_id'],
+      religionName: json['religion_name']?.toString(),
       caste: casteList,
+      casteIds: json['caste_ids'] != null ? List<int>.from(json['caste_ids']) : null,
+      casteNames: json['caste_names'] != null ? List<String>.from(json['caste_names']) : null,
+      subCasteIds: json['sub_caste_ids'] != null ? List<int>.from(json['sub_caste_ids']) : null,
+      subCasteNames: json['sub_caste_names'] != null ? List<String>.from(json['sub_caste_names']) : null,
       education: json['education'],
+      educationIds: json['education_ids'] != null ? List<int>.from(json['education_ids']) : null,
+      educationNames: json['education_names'] != null ? List<String>.from(json['education_names']) : null,
       occupation: json['occupation'],
+      occupationIds: json['occupation_ids'] != null ? List<int>.from(json['occupation_ids']) : null,
+      occupationNames: json['occupation_names'] != null ? List<String>.from(json['occupation_names']) : null,
       minIncome: json['min_income'] != null ? double.tryParse(json['min_income'].toString()) : null,
       maxIncome: json['max_income'] != null ? double.tryParse(json['max_income'].toString()) : null,
       maxDistance: json['max_distance'],
@@ -456,9 +486,11 @@ class Preference {
       'max_height': maxHeight,
       'marital_status': maritalStatus,
       'religion': religion,
-      'caste': caste,
-      'education': education,
-      'occupation': occupation,
+      'religion_id': religionId,
+      'caste_ids': casteIds,
+      'sub_caste_ids': subCasteIds,
+      'education_ids': educationIds,
+      'occupation_ids': occupationIds,
       'min_income': minIncome,
       'max_income': maxIncome,
       'max_distance': maxDistance,
