@@ -255,7 +255,8 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with TickerProviderStateMixin {
+  late TabController _tabController;
   List<User> _recommendedUsers = [];
   bool _isLoadingRecommended = true;
   String? _recommendedError;
@@ -280,6 +281,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _interestTimers = {};
     _interestCountdown = {};
     _shortlistedUserIds = {};
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {}); // Rebuild to filter content
+      }
+    });
     
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_hasInitialized) return;
@@ -302,6 +309,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         print('Error during initial data load: $e');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUnreadCount() async {
@@ -635,126 +648,161 @@ class _DashboardScreenState extends State<DashboardScreen> {
           CustomScrollView(
         slivers: [
           // Personal Greeting Header - Now Sticky
-          SliverAppBar(
-            pinned: true,
-            elevation: 0,
-            backgroundColor: Colors.white,
-            expandedHeight: 0,
-            toolbarHeight: 68,
-            automaticallyImplyLeading: false,
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.primaryCyan, // Turquoise border
-                          width: 2,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundImage: user?.displayImage != null
-                            ? NetworkImage(
-                                ApiService.getImageUrl(user!.displayImage!),
-                              )
-                            : null,
-                        child: user?.displayImage == null
-                            ? const Icon(Icons.person, color: AppColors.primaryCyan)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Hey, ${profile?.firstName ?? 'User'}!',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade500,
-                          ),
-                        ),
-                        const Text(
-                          "Let's Find A Match",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A1A1A),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    // Filter Button moved to header
-                    IconButton(
-                      icon: const Icon(
-                        Icons.tune_rounded,
-                        color: AppColors.primaryBlue,
-                        size: 26,
-                      ),
-                      onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (c) => const PreferencesScreen(),
-                          ),
-                        );
-                        if (result == true) {
-                          _loadRecommendedUsers();
-                        }
-                      },
-                    ),
-                    IconButton(
-                      icon: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          const Icon(
-                            Icons.notifications_none_rounded,
-                            color: AppColors.primaryBlue, // Deep blue
-                            size: 28,
-                          ),
-                          if (_unreadNotificationCount > 0)
-                            Positioned(
-                              right: 2,
-                              top: 2,
-                              child: Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFFF4B4B),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) => const NotificationScreen(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+ SliverAppBar(
+  pinned: true,
+  elevation: 0,
+  backgroundColor: Colors.white,
+  expandedHeight: 0,
+  toolbarHeight: 90, 
+  automaticallyImplyLeading: false,
+  title: Row(
+    children: [
+      Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.primaryCyan,
+            width: 2,
+          ),
+        ),
+        child: CircleAvatar(
+          radius: 22,
+          backgroundImage: user?.displayImage != null
+              ? NetworkImage(
+                  ApiService.getImageUrl(user!.displayImage!),
+                )
+              : null,
+          child: user?.displayImage == null
+              ? const Icon(Icons.person, color: AppColors.primaryCyan, size: 20)
+              : null,
+        ),
+      ),
+      const SizedBox(width: 12),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'Hey, ${profile?.firstName ?? 'User'}!',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade500,
             ),
           ),
+          const Text(
+            "Let's Find A Match",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+        ],
+      ),
+      const Spacer(),
+      IconButton(
+        constraints: const BoxConstraints(),
+        padding: EdgeInsets.zero,
+        icon: const Icon(
+          Icons.tune_rounded,
+          color: AppColors.primaryBlue,
+          size: 24,
+        ),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (c) => const PreferencesScreen(),
+            ),
+          );
+          if (result == true) {
+            _loadRecommendedUsers();
+          }
+        },
+      ),
+      const SizedBox(width: 8),
+      IconButton(
+        constraints: const BoxConstraints(),
+        padding: EdgeInsets.zero,
+        icon: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            const Icon(
+              Icons.notifications_none_rounded,
+              color: AppColors.primaryBlue,
+              size: 26,
+            ),
+            if (_unreadNotificationCount > 0)
+              Positioned(
+                right: 2,
+                top: 2,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFF4B4B),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        ),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (c) => const NotificationScreen(),
+          ),
+        ),
+      ),
+    ],
+  ),
+  bottom: PreferredSize(
+    preferredSize: const Size.fromHeight(60),
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: TabBar(
+          controller: _tabController,
+          indicator: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelColor: AppColors.primaryCyan,
+          unselectedLabelColor: Colors.grey.shade600,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+          dividerColor: Colors.transparent,
+          tabs: const [
+            Tab(text: 'Explore'),
+            Tab(text: 'New'),
+            Tab(text: 'Near Me'),
+            Tab(text: 'Online'),
+          ],
+        ),
+      ),
+    ),
+  ),
+),
 
 
           // Visitors section
@@ -873,14 +921,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   hasScrollBody: false,
                   child: _buildEmptyRecommendationsState(),
                 )
-              : SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return _buildDynamicProfileCard(
-                      context,
-                      _recommendedUsers[index],
+              : () {
+                  final filteredUsers = _getActiveTabUsers();
+                  if (filteredUsers.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Text(
+                            'No profiles found for this category',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ),
                     );
-                  }, childCount: _recommendedUsers.length),
-                ),
+                  }
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return _buildDynamicProfileCard(
+                        context,
+                        filteredUsers[index],
+                      );
+                    }, childCount: filteredUsers.length),
+                  );
+                }(),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
@@ -888,6 +953,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
   ),
 ),
 );
+  }
+
+  List<User> _getActiveTabUsers() {
+    switch (_tabController.index) {
+      case 1: // New
+        return _recommendedUsers.take(10).toList(); // Mock: first 10
+      case 2: // Near Me
+        return _recommendedUsers.where((u) => (u.distance ?? 1000) < 100).toList();
+      case 3: // Online
+        return _recommendedUsers.where((u) => u.status?.toLowerCase() == 'active').toList();
+      case 0: // Explore
+      default:
+        return _recommendedUsers;
+    }
   }
 
   Widget _buildDynamicProfileCard(BuildContext context, User user) {
