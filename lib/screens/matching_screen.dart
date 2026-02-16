@@ -673,16 +673,13 @@ class _MatchingScreenState extends State<MatchingScreen>
               left: 20,
               right: 20,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                   // Close / Dismiss
+                  // Close / Dismiss (Always shown)
                   GestureDetector(
                     onTap: () {
-                      if (isInterest && status == 'pending') {
+                      if (isInterest && status == 'pending' && !isSentByMe) {
                          _handleInterestAction(user.id!, false);
                       } else {
-                         // For matches or other states, just show a snackbar for now
-                         // or implement "Hide this profile" logic if available
                          ScaffoldMessenger.of(context).showSnackBar(
                            const SnackBar(content: Text('Profile dismissed')),
                          );
@@ -696,82 +693,146 @@ class _MatchingScreenState extends State<MatchingScreen>
                       shadowColor: Colors.black.withOpacity(0.1),
                     ),
                   ),
+                  const SizedBox(width: 12),
 
-                  // Chat
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) => msg.ChatScreen(
-                            otherUserId: user.id!,
-                            otherUserName: '${user.matrimonyId ?? 'User'}',
-                            otherUserImage: user.displayImage != null
-                                ? ApiService.getImageUrl(user.displayImage!)
-                                : null,
-                            isMatched: isMatch || status == 'accepted',
+                  // If Matched, show full width contact button
+                  if (status == 'accepted' || isMatch)
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewProfileScreen(userId: user.id!),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 55,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [Color(0xFF42D368), Color(0xFF2E7D32)],
+                            ),
+                            borderRadius: BorderRadius.circular(30),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF42D368).withOpacity(0.35),
+                                blurRadius: 15,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.phone_iphone_rounded, color: Colors.white, size: 20),
+                                SizedBox(width: 10),
+                                Text(
+                                  'VIEW CONTACT DETAILS',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      );
-                    },
-                    child: _buildFloatingButton(
-                      icon: Icons.chat_bubble_rounded,
-                      color: const Color(0xFF00BCD4),
-                      iconColor: Colors.white,
-                      size: 50,
-                      shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
-                    ),
-                  ),
+                      ),
+                    )
+                  else
+                    // Otherwise show standard action buttons
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Chat
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (c) => msg.ChatScreen(
+                                    otherUserId: user.id!,
+                                    otherUserName: '${user.matrimonyId ?? 'User'}',
+                                    otherUserImage: user.displayImage != null
+                                        ? ApiService.getImageUrl(user.displayImage!)
+                                        : null,
+                                    isMatched: isMatch || status == 'accepted',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: _buildFloatingButton(
+                              icon: Icons.chat_bubble_rounded,
+                              color: const Color(0xFF00BCD4),
+                              iconColor: Colors.white,
+                              size: 50,
+                              shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                            ),
+                          ),
 
-                  // Shortlist (Star)
-                  GestureDetector(
-                    onTap: () async {
-                      try {
-                        if (_shortlistedUserIds.contains(user.id!)) {
-                          final response = await ShortlistService.removeFromShortlist(user.id!);
-                          if (response.statusCode == 200) {
-                            setState(() {
-                              _shortlistedUserIds.remove(user.id!);
-                            });
-                          }
-                        } else {
-                          final response = await ShortlistService.addToShortlist(user.id!);
-                          if (response.statusCode == 200 || response.statusCode == 201) {
-                            setState(() {
-                              _shortlistedUserIds.add(user.id!);
-                            });
-                          }
-                        }
-                      } catch (e) {
-                         print('Error toggling shortlist: $e');
-                      }
-                    },
-                    child: _buildFloatingButton(
-                      icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
-                      color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
-                      iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
-                      size: 50,
-                      shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
-                    ),
-                  ),
+                          // Shortlist (Star)
+                          GestureDetector(
+                            onTap: () async {
+                              try {
+                                if (_shortlistedUserIds.contains(user.id!)) {
+                                  final response = await ShortlistService.removeFromShortlist(user.id!);
+                                  if (response.statusCode == 200) {
+                                    setState(() {
+                                      _shortlistedUserIds.remove(user.id!);
+                                    });
+                                  }
+                                } else {
+                                  final response = await ShortlistService.addToShortlist(user.id!);
+                                  if (response.statusCode == 200 || response.statusCode == 201) {
+                                    setState(() {
+                                      _shortlistedUserIds.add(user.id!);
+                                    });
+                                  }
+                                }
+                              } catch (e) {
+                                 print('Error toggling shortlist: $e');
+                              }
+                            },
+                            child: _buildFloatingButton(
+                              icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
+                              color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
+                              iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
+                              size: 50,
+                              shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+                            ),
+                          ),
 
-                  // Accept / Match (Heart)
-                  GestureDetector(
-                    onTap: () {
-                      if (isInterest && status == 'pending' && !isSentByMe) {
-                         _handleInterestAction(user.id!, true);
-                      } else if (!isMatch && status != 'accepted' && (status != 'pending' || !isSentByMe)) {
-                         _sendInterest(user.id!);
-                      }
-                    },
-                    child: _buildFloatingButton(
-                      icon: (isMatch || status == 'accepted' || (status == 'pending' && isSentByMe)) ? Icons.done_all_rounded : (status == 'pending' && !isSentByMe ? Icons.check_circle_rounded : Icons.favorite),
-                      color: (isMatch || status == 'accepted' || (status == 'pending' && isSentByMe)) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
-                      iconColor: Colors.white,
-                      size: 60,
-                      shadowColor: ((isMatch || status == 'accepted' || (status == 'pending' && isSentByMe)) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
+                          // Accept / Match (Heart)
+                          GestureDetector(
+                            onTap: () {
+                              if (isInterest && status == 'pending' && !isSentByMe) {
+                                 _handleInterestAction(user.id!, true);
+                              } else if (!isMatch && status != 'accepted' && (status != 'pending' || !isSentByMe)) {
+                                 _sendInterest(user.id!);
+                              }
+                            },
+                            child: _buildFloatingButton(
+                              icon: (status == 'pending' && isSentByMe) ? Icons.done_all_rounded : (status == 'pending' && !isSentByMe ? Icons.check_circle_rounded : Icons.favorite),
+                              color: (status == 'pending' && isSentByMe) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
+                              iconColor: Colors.white,
+                              size: 60,
+                              shadowColor: ((status == 'pending' && isSentByMe) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
