@@ -84,6 +84,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           _interestSent = data['interest_sent'];
           _interestReceived = data['interest_received'];
           _isLoading = false;
+          // Set unlock status directly from profile response contact_info
+          if (user.contactInfo != null) {
+            _contactUnlocked = user.contactInfo!.isContactUnlocked;
+          }
         });
         _animationController.forward();
       } else {
@@ -993,11 +997,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ]),
           _buildInfoSection('Family Details', Icons.family_restroom_outlined, [
             if (_user?.familyDetails?.fatherName != null)
-              _buildDetailRow('Father\'s Name', _maskName(_user!.familyDetails!.fatherName)),
+              _buildDetailRow('Father\'s Name',
+                  _contactUnlocked ? _user!.familyDetails!.fatherName! : _maskName(_user!.familyDetails!.fatherName)),
             if (_user?.familyDetails?.fatherOccupation != null)
               _buildDetailRow('Father\'s Occupation', _user!.familyDetails!.fatherOccupation!),
             if (_user?.familyDetails?.motherName != null)
-              _buildDetailRow('Mother\'s Name', _maskName(_user!.familyDetails!.motherName)),
+              _buildDetailRow('Mother\'s Name',
+                  _contactUnlocked ? _user!.familyDetails!.motherName! : _maskName(_user!.familyDetails!.motherName)),
             if (_user?.familyDetails?.motherOccupation != null)
               _buildDetailRow('Mother\'s Occupation', _user!.familyDetails!.motherOccupation!),
             if (_user?.familyDetails?.familyType != null)
@@ -1226,52 +1232,104 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   color: Colors.black87,
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: _contactUnlocked
-                  ? Color(0xFF4CD9A6).withOpacity(0.1)
-                  : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: _contactUnlocked
-                    ? Color(0xFF4CD9A6).withOpacity(0.3)
-                    : Colors.grey.shade300,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  _contactUnlocked ? Icons.lock_open : Icons.lock,
-                  color: _contactUnlocked
-                      ? Color(0xFF4CD9A6)
-                      : Colors.grey.shade500,
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    _contactUnlocked
-                        ? (_user?.phone ?? 'Not provided')
-                        : _maskPhone(_user?.phone),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: _contactUnlocked
-                          ? Colors.black87
-                          : Colors.grey.shade600,
-                      letterSpacing: 1,
-                    ),
+              if (_contactUnlocked) ...[
+                SizedBox(width: 8),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF4CD9A6).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.lock_open, color: Color(0xFF4CD9A6), size: 12),
+                      SizedBox(width: 4),
+                      Text(
+                        'Unlocked',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF4CD9A6),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
+            ],
           ),
-          if (!_contactUnlocked) ...[
+          SizedBox(height: 16),
+          if (_contactUnlocked) ...[
+            // Show View Contact Button when unlocked
+            SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              height: 54,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF4CD9A6), Color(0xFF00BCD4)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0xFF4CD9A6).withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: ElevatedButton.icon(
+                onPressed: _showContactDetailsModal,
+                icon: Icon(Icons.visibility_outlined, size: 22),
+                label: Text(
+                  'View Contact Details',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+          ] else ...[
+            // Locked state - show masked phone
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.lock, color: Colors.grey.shade500),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _maskPhone(_user?.phone),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade600,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: 16),
-
             SizedBox(height: 12),
             Row(
               children: [
@@ -1352,9 +1410,146 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ],
             ),
             SizedBox(height: 8),
-
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildUnlockedContactRow(IconData icon, String label, String value) {
+    return Container(
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Color(0xFF4CD9A6).withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFF4CD9A6).withOpacity(0.25)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Color(0xFF4CD9A6).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: Color(0xFF4CD9A6), size: 18),
+          ),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade500,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showContactDetailsModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Contact Details',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  _buildUnlockedContactRow(
+                    Icons.person,
+                    'Father\'s Name',
+                    _user?.familyDetails?.fatherName ?? 'Not provided',
+                  ),
+                  SizedBox(height: 16),
+                  _buildUnlockedContactRow(
+                    Icons.person_outline,
+                    'Mother\'s Name',
+                    _user?.familyDetails?.motherName ?? 'Not provided',
+                  ),
+                  SizedBox(height: 16),
+                  _buildUnlockedContactRow(
+                    Icons.phone_android,
+                    'Contact Number',
+                    _user?.phone ?? 'Not provided',
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Close',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFF5F5F5),
+                    foregroundColor: Colors.black87,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
@@ -1651,6 +1846,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         }
         _loadWalletBalance();
         _loadTodayUnlockCount(); // Refresh count after unlock
+        _loadUserProfile();      // Reload to get fresh contact_info from API
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -1838,6 +2034,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               _contactUnlocked = true;
             });
           }
+          _loadUserProfile(); // Reload to get fresh contact_info from API
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Row(

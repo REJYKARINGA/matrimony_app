@@ -1,3 +1,23 @@
+class ContactInfo {
+  final String? email;
+  final String? phone;
+  final bool isContactUnlocked;
+
+  ContactInfo({
+    this.email,
+    this.phone,
+    this.isContactUnlocked = false,
+  });
+
+  factory ContactInfo.fromJson(Map<String, dynamic> json) {
+    return ContactInfo(
+      email: json['email']?.toString(),
+      phone: json['phone']?.toString(),
+      isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1,
+    );
+  }
+}
+
 class User {
   final int? id;
   final String? matrimonyId;
@@ -15,6 +35,7 @@ class User {
   final UserVerification? verification;
   final double? distance;
   final String? referenceCode;
+  final ContactInfo? contactInfo;
 
   User({
     this.id,
@@ -33,14 +54,20 @@ class User {
     this.verification,
     this.distance,
     this.referenceCode,
+    this.contactInfo,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    // Parse contact_info block if present (returned when viewing other profiles)
+    final contactInfoJson = json['contact_info'] as Map<String, dynamic>?;
+    final contactInfo = contactInfoJson != null ? ContactInfo.fromJson(contactInfoJson) : null;
+
     return User(
       id: json['id'],
       matrimonyId: json['matrimony_id']?.toString(),
-      email: json['email']?.toString() ?? '',
-      phone: json['phone']?.toString(),
+      // Prefer contact_info email/phone, fall back to top-level fields (own profile)
+      email: contactInfoJson?['email']?.toString() ?? json['email']?.toString() ?? '',
+      phone: contactInfoJson?['phone']?.toString() ?? json['phone']?.toString(),
       role: json['role']?.toString(),
       status: json['status']?.toString(),
       emailVerified: json['email_verified'] == 1 || json['email_verified'] == true,
@@ -55,6 +82,7 @@ class User {
       verification: json['verification'] != null ? UserVerification.fromJson(json['verification']) : null,
       distance: json['distance'] != null ? double.tryParse(json['distance'].toString()) : null,
       referenceCode: json['reference_code']?.toString(),
+      contactInfo: contactInfo,
     );
   }
 
