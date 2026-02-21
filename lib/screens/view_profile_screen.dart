@@ -246,19 +246,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
 
     if (_errorMessage != null) {
       return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                _buildAppBar(),
-                Expanded(
+        backgroundColor: Colors.grey.shade100,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(lightBackground: true),
+              Expanded(
                   child: Center(
                     child: Container(
                       margin: const EdgeInsets.all(24),
@@ -338,7 +331,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ],
             ),
           ),
-        ),
       );
     }
 
