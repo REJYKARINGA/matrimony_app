@@ -37,7 +37,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   double _walletBalance = 0.0;
   int? _currentTransactionId;
   int _todayUnlockCount = 0;
-  static const int _dailyUnlockLimit = 50; // Can be changed to 20 or any value
+  static const int _dailyUnlockLimit = 20; // Can be changed to 20 or any value
   Set<int> _shortlistedUserIds = {};
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -1373,7 +1373,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       ],
                     ),
                     child: ElevatedButton.icon(
-                      onPressed: _showPaymentOptions,
+                      onPressed: () => _checkVerificationAndProceed(_showPaymentOptions),
                       icon: Icon(Icons.account_balance_wallet, size: 18),
                       label: Text(
                         'Wallet',
