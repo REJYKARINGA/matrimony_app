@@ -225,28 +225,20 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              children: [
-                _buildAppBar(),
-                const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 3,
-                    ),
+        backgroundColor: Colors.grey.shade100,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(lightBackground: true),
+              const Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF00BCD4),
+                    strokeWidth: 3,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
@@ -380,26 +372,28 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar({bool lightBackground = false}) {
+    final fgColor = lightBackground ? Colors.grey.shade800 : Colors.white;
+    final btnBg = lightBackground ? Colors.grey.shade300 : Colors.white.withOpacity(0.2);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: btnBg,
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: fgColor),
               onPressed: () => Navigator.pop(context),
             ),
           ),
           const SizedBox(width: 12),
-          const Text(
+          Text(
             'Profile',
             style: TextStyle(
-              color: Colors.white,
+              color: fgColor,
               fontSize: 22,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
@@ -1059,6 +1053,66 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             if (_user?.preferences?.alcohol != null && _user!.preferences!.alcohol!.isNotEmpty)
               _buildDetailRow('Alcohol', _user!.preferences!.alcohol!.join(', ')),
           ]),
+          SizedBox(height: 24),
+          _buildDiscoveryNote(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscoveryNote() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFF00BCD4).withOpacity(0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF00BCD4).withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00BCD4).withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.chat_bubble_outline_rounded,
+              color: Color(0xFF00BCD4),
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'A note from us',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade700,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Personal interests and personality traits are intentionally left for you to discover through real conversation. We believe genuine compatibility is felt, not filtered.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.6,
+                    color: Colors.grey.shade800,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

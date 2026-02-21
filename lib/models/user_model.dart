@@ -14,6 +14,7 @@ class User {
   final List<ProfilePhoto>? profilePhotos;
   final UserVerification? verification;
   final double? distance;
+  final String? referenceCode;
 
   User({
     this.id,
@@ -31,6 +32,7 @@ class User {
     this.profilePhotos,
     this.verification,
     this.distance,
+    this.referenceCode,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class User {
           : null,
       verification: json['verification'] != null ? UserVerification.fromJson(json['verification']) : null,
       distance: json['distance'] != null ? double.tryParse(json['distance'].toString()) : null,
+      referenceCode: json['reference_code']?.toString(),
     );
   }
 

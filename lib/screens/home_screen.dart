@@ -866,10 +866,10 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     ],
   ),
   bottom: PreferredSize(
-    preferredSize: const Size.fromHeight(102),
+    preferredSize: const Size.fromHeight(92),
     child: Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(24),
@@ -879,11 +879,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         children: [
           // Tab Bar 1: Discovery
           SizedBox(
-            height: 48,
+            height: 40,
             child: TabBar(
               controller: _discoveryTabController,
               isScrollable: true,
               tabAlignment: TabAlignment.start,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
               onTap: (idx) {
                 if (_activeGroup != 0) {
                   setState(() => _activeGroup = 0);
@@ -891,7 +892,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 }
               },
               indicator: _activeGroup == 0 ? BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(20),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
@@ -901,7 +902,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   ),
                 ],
               ) : const BoxDecoration(),
-              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorSize: TabBarIndicatorSize.label,
               labelColor: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade500,
               unselectedLabelColor: Colors.grey.shade500,
               labelStyle: TextStyle(
@@ -925,11 +926,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           ),
           // Tab Bar 2: Activity
           SizedBox(
-            height: 40,
+            height: 36,
             child: TabBar(
               controller: _activityTabController,
               isScrollable: true,
               tabAlignment: TabAlignment.start,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
               onTap: (idx) {
                 if (_activeGroup != 1) {
                   setState(() => _activeGroup = 1);
@@ -937,7 +939,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 }
               },
               indicator: _activeGroup == 1 ? BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
@@ -947,7 +949,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   ),
                 ],
               ) : const BoxDecoration(),
-              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorSize: TabBarIndicatorSize.label,
               labelColor: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade400,
               unselectedLabelColor: Colors.grey.shade400,
               labelStyle: TextStyle(

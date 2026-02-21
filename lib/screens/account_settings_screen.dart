@@ -88,6 +88,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       'Phone',
                       user?.phone ?? 'Not provided',
                     ),
+                    const Divider(height: 24),
+                    _buildInfoRow(
+                      Icons.tag_outlined,
+                      'Reference Code',
+                      user?.referenceCode ?? 'Not provided',
+                    ),
                   ],
                 ),
               ),
