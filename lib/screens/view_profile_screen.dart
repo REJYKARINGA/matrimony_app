@@ -1866,7 +1866,44 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
 
   void _showPaymentOptions() {
     if (_walletBalance >= 49) {
-      _unlockWithWallet();
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.help_outline_rounded, color: Color(0xFF00BCD4)),
+              SizedBox(width: 8),
+              Text('Confirm Unlock'),
+            ],
+          ),
+          content: Text(
+            'Are you sure you want to unlock this contact? ₹49 will be deducted from your wallet.',
+            style: TextStyle(fontSize: 15),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _unlockWithWallet();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF4CD9A6),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text('Confirm & Unlock'),
+            ),
+          ],
+        ),
+      );
     } else {
       showDialog(
         context: context,
