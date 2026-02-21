@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import '../models/user_model.dart';
@@ -41,6 +42,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
+  // Unlocked contact details (fetched via separate API)
+  String? _unlockedPhone;
+  String? _unlockedFatherName;
+  String? _unlockedMotherName;
+  bool _isLoadingContactDetails = false;
 
   @override
   void initState() {
@@ -88,6 +95,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           if (user.contactInfo != null) {
             _contactUnlocked = user.contactInfo!.isContactUnlocked;
           }
+          // Reset cached unlocked details on refresh
+          _unlockedPhone = null;
+          _unlockedFatherName = null;
+          _unlockedMotherName = null;
         });
         _animationController.forward();
       } else {
@@ -499,24 +510,39 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Row 1: Matrimony ID & Age
                   Row(
                     children: [
-                      Text(
-                        '${_user?.matrimonyId ?? 'User'}${_user?.userProfile?.age != null ? ', ${_user!.userProfile!.age}' : ''}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _contactUnlocked 
+                                ? '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}'.trim()
+                                : '${_maskName(_user?.userProfile?.firstName)} ${_maskName(_user?.userProfile?.lastName)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            Text(
+                              '${_user?.matrimonyId ?? 'User'}${_user?.userProfile?.age != null ? ', ${_user!.userProfile!.age} yrs' : ''}',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
                       if (_user?.userProfile?.isActiveVerified == true)
                         const Icon(
                           Icons.verified_rounded,
                           color: Color(0xFF00BCD4), // Turquoise
-                          size: 20,
+                          size: 24,
                         ),
                     ],
                   ),
@@ -996,14 +1022,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ),
           ]),
           _buildInfoSection('Family Details', Icons.family_restroom_outlined, [
-            if (_user?.familyDetails?.fatherName != null)
-              _buildDetailRow('Father\'s Name',
-                  _contactUnlocked ? _user!.familyDetails!.fatherName! : _maskName(_user!.familyDetails!.fatherName)),
             if (_user?.familyDetails?.fatherOccupation != null)
               _buildDetailRow('Father\'s Occupation', _user!.familyDetails!.fatherOccupation!),
-            if (_user?.familyDetails?.motherName != null)
-              _buildDetailRow('Mother\'s Name',
-                  _contactUnlocked ? _user!.familyDetails!.motherName! : _maskName(_user!.familyDetails!.motherName)),
             if (_user?.familyDetails?.motherOccupation != null)
               _buildDetailRow('Mother\'s Occupation', _user!.familyDetails!.motherOccupation!),
             if (_user?.familyDetails?.familyType != null)
@@ -1416,7 +1436,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildUnlockedContactRow(IconData icon, String label, String value) {
+  Widget _buildUnlockedContactRow(IconData icon, String label, String value, {Widget? trailing}) {
     return Container(
       padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1460,12 +1480,38 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ],
             ),
           ),
+          if (trailing != null) trailing,
         ],
       ),
     );
   }
 
-  void _showContactDetailsModal() {
+  Future<void> _showContactDetailsModal() async {
+    if (_unlockedPhone == null) {
+      setState(() => _isLoadingContactDetails = true);
+      try {
+        final response = await ApiService.makeRequest(
+          '${ApiService.baseUrl}/profiles/${widget.userId}/contact-details',
+        );
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            _unlockedPhone = data['phone']?.toString();
+            _unlockedFatherName = data['father_name']?.toString();
+            _unlockedMotherName = data['mother_name']?.toString();
+          });
+        }
+      } catch (e) {
+        print('Error fetching contact details: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load contact details')),
+        );
+        return;
+      } finally {
+        setState(() => _isLoadingContactDetails = false);
+      }
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1502,27 +1548,57 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                children: [
-                  _buildUnlockedContactRow(
-                    Icons.person,
-                    'Father\'s Name',
-                    _user?.familyDetails?.fatherName ?? 'Not provided',
-                  ),
-                  SizedBox(height: 16),
-                  _buildUnlockedContactRow(
-                    Icons.person_outline,
-                    'Mother\'s Name',
-                    _user?.familyDetails?.motherName ?? 'Not provided',
-                  ),
-                  SizedBox(height: 16),
-                  _buildUnlockedContactRow(
-                    Icons.phone_android,
-                    'Contact Number',
-                    _user?.phone ?? 'Not provided',
-                  ),
-                ],
-              ),
+              child: _isLoadingContactDetails
+                  ? Center(
+                      child: Column(
+                        children: [
+                          CircularProgressIndicator(color: Color(0xFF4CD9A6)),
+                          SizedBox(height: 16),
+                          Text('Fetching secure details...',
+                              style: TextStyle(color: Colors.grey)),
+                        ],
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        _buildUnlockedContactRow(
+                          Icons.person,
+                          'Father\'s Name',
+                          _unlockedFatherName ?? 'Not provided',
+                        ),
+                        SizedBox(height: 16),
+                        _buildUnlockedContactRow(
+                          Icons.person_outline,
+                          'Mother\'s Name',
+                          _unlockedMotherName ?? 'Not provided',
+                        ),
+                        SizedBox(height: 16),
+                        _buildUnlockedContactRow(
+                          Icons.phone_android,
+                          'Contact Number',
+                          _unlockedPhone ?? 'Not provided',
+                          trailing: _unlockedPhone != null
+                              ? IconButton(
+                                  icon: Icon(Icons.copy,
+                                      color: Color(0xFF4CD9A6), size: 20),
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                        ClipboardData(text: _unlockedPhone!));
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Number copied to clipboard'),
+                                        behavior: SnackBarBehavior.floating,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : null,
+                        ),
+                      ],
+                    ),
             ),
             SizedBox(height: 32),
             Padding(
