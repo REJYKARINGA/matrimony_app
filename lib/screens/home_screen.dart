@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../widgets/ripple_animation.dart';
 import 'package:provider/provider.dart';
@@ -301,6 +302,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         _loadTabUsers(1, _activityTabController.index);
       }
     });
+    
+    // Set initial group/index
+    _activeGroup = 0; 
     
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_hasInitialized) return;
@@ -723,350 +727,433 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     }
 
     return Scaffold(
-      backgroundColor: AppColors.background, // Slight turquoise tint instead of pure white
+      backgroundColor: Colors.white,
       body: RefreshIndicator(
         onRefresh: () => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index),
         color: AppColors.primaryCyan,
         child: Stack(
           children: [
-          // Background Blobs - Updated colors
-          Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primaryCyan.withOpacity(0.05), // Turquoise
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 200,
-            left: -150,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primaryBlue.withOpacity(0.03), // Deep blue
-              ),
-            ),
-          ),
-          CustomScrollView(
-        slivers: [
-          // Personal Greeting Header - Now Sticky
- SliverAppBar(
-  pinned: true,
-  elevation: 0,
-  backgroundColor: Colors.white,
-  expandedHeight: 0,
-  toolbarHeight: 90, 
-  automaticallyImplyLeading: false,
-  title: Row(
-    children: [
-      Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: AppColors.primaryCyan,
-            width: 2,
-          ),
-        ),
-        child: CircleAvatar(
-          radius: 22,
-          backgroundImage: user?.displayImage != null
-              ? NetworkImage(
-                  ApiService.getImageUrl(user!.displayImage!),
-                )
-              : null,
-          child: user?.displayImage == null
-              ? const Icon(Icons.person, color: AppColors.primaryCyan, size: 20)
-              : null,
-        ),
-      ),
-      const SizedBox(width: 12),
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Hey, ${profile?.firstName ?? 'User'}!',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey.shade500,
-            ),
-          ),
-          const Text(
-            "Let's Find A Match",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
-        ],
-      ),
-      const Spacer(),
-      IconButton(
-        constraints: const BoxConstraints(),
-        padding: EdgeInsets.zero,
-        icon: const Icon(
-          Icons.tune_rounded,
-          color: AppColors.primaryBlue,
-          size: 24,
-        ),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (c) => const PreferencesScreen(),
-            ),
-          );
-          if (result == true) {
-            _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index);
-          }
-        },
-      ),
-      const SizedBox(width: 8),
-      IconButton(
-        constraints: const BoxConstraints(),
-        padding: EdgeInsets.zero,
-        icon: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            const Icon(
-              Icons.notifications_none_rounded,
-              color: AppColors.primaryBlue,
-              size: 26,
-            ),
-            if (_unreadNotificationCount > 0)
-              Positioned(
-                right: 2,
-                top: 2,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFF4B4B),
-                    shape: BoxShape.circle,
+            // Professional Background Design
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.primaryCyan.withOpacity(0.08),
+                      Colors.white,
+                      AppColors.background,
+                    ],
                   ),
                 ),
               ),
-          ],
-        ),
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (c) => const NotificationScreen(),
-          ),
-        ),
-      ),
-    ],
-  ),
-  bottom: PreferredSize(
-    preferredSize: const Size.fromHeight(92),
-    child: Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Tab Bar 1: Discovery
-          SizedBox(
-            height: 40,
-            child: TabBar(
-              controller: _discoveryTabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              labelPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-              onTap: (idx) {
-                if (_activeGroup != 0) {
-                  setState(() => _activeGroup = 0);
-                  _loadTabUsers(0, idx);
-                }
-              },
-              indicator: _activeGroup == 0 ? BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ) : const BoxDecoration(),
-              indicatorSize: TabBarIndicatorSize.label,
-              labelColor: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade500,
-              unselectedLabelColor: Colors.grey.shade500,
-              labelStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                color: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade500,
-              ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
-              dividerColor: Colors.transparent,
-              tabs: const [
-                Tab(text: 'Search'),
-                Tab(text: 'My Match'),
-                Tab(text: 'New Match'),
-                Tab(text: 'Near Me'),
-                Tab(text: 'Online'),
-              ],
             ),
-          ),
-          // Tab Bar 2: Activity
-          SizedBox(
-            height: 36,
-            child: TabBar(
-              controller: _activityTabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              labelPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-              onTap: (idx) {
-                if (_activeGroup != 1) {
-                  setState(() => _activeGroup = 1);
-                  _loadTabUsers(1, idx);
-                }
-              },
-              indicator: _activeGroup == 1 ? BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
+            // Background Blobs - Better positioned for continuity
+            Positioned(
+              top: -60,
+              right: -60,
+              child: Container(
+                width: 250,
+                height: 250,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.primaryCyan.withOpacity(0.12),
+                      AppColors.primaryCyan.withOpacity(0),
+                    ],
                   ),
-                ],
-              ) : const BoxDecoration(),
-              indicatorSize: TabBarIndicatorSize.label,
-              labelColor: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade400,
-              unselectedLabelColor: Colors.grey.shade400,
-              labelStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-                color: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade400,
+                ),
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 11,
-              ),
-              dividerColor: Colors.transparent,
-              tabs: const [
-                Tab(text: 'Shortlist'),
-                Tab(text: 'Contact Viewed'),
-                Tab(text: 'Visited'),
-                Tab(text: 'Visitors'),
-              ],
             ),
-          ),
-        ],
-      ),
-    ),
-  ),
-),
-
+            Positioned(
+              top: 150,
+              left: -100,
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColors.primaryBlue.withOpacity(0.08),
+                      AppColors.primaryBlue.withOpacity(0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          CustomScrollView(
+        slivers: [
+          // Personal Greeting Header - Now Sticky
+                SliverAppBar(
+                  pinned: true,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  backgroundColor: Colors.transparent,
+                  expandedHeight: 0,
+                  toolbarHeight: 90,
+                  automaticallyImplyLeading: false,
+                  title: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.primaryCyan,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: CircleAvatar(
+                                radius: 20,
+                                backgroundImage: user?.displayImage != null
+                                    ? NetworkImage(
+                                        ApiService.getImageUrl(user!.displayImage!),
+                                      )
+                                    : null,
+                                child: user?.displayImage == null
+                                    ? const Icon(Icons.person, color: AppColors.primaryCyan, size: 18)
+                                    : null,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Hey, ${profile?.firstName ?? 'User'}!',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                                const Text(
+                                  "Let's Find A Match",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1A1A1A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.tune_rounded,
+                                color: AppColors.primaryBlue,
+                                size: 22,
+                              ),
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (c) => const PreferencesScreen(),
+                                  ),
+                                );
+                                if (result == true) {
+                                  _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index);
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  const Icon(
+                                    Icons.notifications_none_rounded,
+                                    color: AppColors.primaryBlue,
+                                    size: 24,
+                                  ),
+                                  if (_unreadNotificationCount > 0)
+                                    Positioned(
+                                      right: 2,
+                                      top: 2,
+                                      child: Container(
+                                        width: 7,
+                                        height: 7,
+                                        decoration: const BoxDecoration(
+                                          color: Color(0xFFFF4B4B),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (c) => const NotificationScreen(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(100),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 0),
+                      child: Column(
+                        children: [
+                          // Group Selector (Discovery | Activity)
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      if (_activeGroup != 0) {
+                                        setState(() => _activeGroup = 0);
+                                        _loadTabUsers(0, _discoveryTabController.index);
+                                      }
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        color: _activeGroup == 0 ? Colors.white : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: _activeGroup == 0 ? [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.05),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          )
+                                        ] : null,
+                                      ),
+                                      child: Text(
+                                        'Discovery',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: _activeGroup == 0 ? FontWeight.bold : FontWeight.w500,
+                                          color: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      if (_activeGroup != 1) {
+                                        setState(() => _activeGroup = 1);
+                                        _loadTabUsers(1, _activityTabController.index);
+                                      }
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      margin: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        color: _activeGroup == 1 ? Colors.white : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: _activeGroup == 1 ? [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.05),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 2),
+                                          )
+                                        ] : null,
+                                      ),
+                                      child: Text(
+                                        'Activity',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: _activeGroup == 1 ? FontWeight.bold : FontWeight.w500,
+                                          color: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Specific Category Tabs
+                          SizedBox(
+                            height: 40,
+                            child: _activeGroup == 0 
+                              ? TabBar(
+                                  controller: _discoveryTabController,
+                                  isScrollable: true,
+                                  tabAlignment: TabAlignment.start,
+                                  dividerColor: Colors.transparent,
+                                  indicatorColor: Colors.transparent,
+                                  labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+                                  tabs: [
+                                    _buildCategoryTab('My Search', 0, 0),
+                                    _buildCategoryTab('My Match', 0, 1),
+                                    _buildCategoryTab('New', 0, 2),
+                                    _buildCategoryTab('Near Me', 0, 3),
+                                    _buildCategoryTab('Online', 0, 4),
+                                  ],
+                                )
+                              : TabBar(
+                                  controller: _activityTabController,
+                                  isScrollable: true,
+                                  tabAlignment: TabAlignment.start,
+                                  dividerColor: Colors.transparent,
+                                  indicatorColor: Colors.transparent,
+                                  labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+                                  tabs: [
+                                    _buildCategoryTab('Shortlist', 1, 0),
+                                    _buildCategoryTab('Contact Viewed', 1, 1),
+                                    _buildCategoryTab('Visited', 1, 2),
+                                    _buildCategoryTab('Visitors', 1, 3),
+                                  ],
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
 
           // Visitors section
           if (_visitors.isNotEmpty)
             SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 20, 16, 12),
-                    child: Text(
-                      'Recent Visitors',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 90,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      itemCount: _visitors.length,
-                      itemBuilder: (context, index) {
-                        final visitor = _visitors[index];
-                        final pic = visitor['user_profile']?['profile_picture'];
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (c) =>
-                                  ViewProfileScreen(userId: visitor['id']),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryCyan,
+                              borderRadius: BorderRadius.circular(2),
                             ),
-                          ).then((_) => _loadVisitors()),
-                          child: Container(
-                            width: 80,
-                            height: 80,
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            child: CustomPaint(
-                              painter: DashedCirclePainter(
-                                color: const Color(0xFF00BCD4), // Turquoise
-                                dashWidth: 14,
-                                dashSpace: 8,
-                                strokeWidth: 3,
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(6.0),
-                                child: CircleAvatar(
-                                  radius: 34,
-                                backgroundColor: Colors.grey.shade100,
-                                backgroundImage: pic != null
-                                    ? NetworkImage(ApiService.getImageUrl(pic))
-                                    : null,
-                                child: pic == null
-                                    ? Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Colors.grey.shade200,
-                                              Colors.grey.shade300,
-                                            ],
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.person,
-                                            color: Colors.grey,
-                                            size: 30,
-                                          ),
-                                        ),
-                                      )
-                                    : null,
+                          ),
+                          const SizedBox(width: 10),
+                          const Text(
+                            'Recent Visitors',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F1F1F),
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryCyan.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${_visitors.length}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryCyan,
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                  ),
-                  const Divider(
-                    height: 24,
-                    indent: 16,
-                    endIndent: 16,
-                    thickness: 0.5,
-                  ),
-                ],
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 100,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: _visitors.length,
+                        itemBuilder: (context, index) {
+                          final visitor = _visitors[index];
+                          final pic = visitor['user_profile']?['profile_picture'];
+                          return GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (c) => ViewProfileScreen(userId: visitor['id']),
+                              ),
+                            ).then((_) => _loadVisitors()),
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 16),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 74,
+                                    height: 74,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.primaryCyan.withOpacity(0.3),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(3),
+                                      child: CircleAvatar(
+                                        radius: 32,
+                                        backgroundColor: Colors.grey.shade100,
+                                        backgroundImage: pic != null
+                                            ? NetworkImage(ApiService.getImageUrl(pic))
+                                            : null,
+                                        child: pic == null
+                                            ? const Icon(Icons.person, color: Colors.grey, size: 30)
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    visitor['matrimony_id']?.toString() ?? 'User',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Divider(
+                        height: 1,
+                        thickness: 0.5,
+                        color: Colors.grey.shade200,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -1129,6 +1216,34 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
   List<User> _getActiveTabUsers() {
     return _recommendedUsers;
+  }
+
+  Widget _buildCategoryTab(String text, int group, int index) {
+    bool isSelected = _activeGroup == group && 
+        (group == 0 ? _discoveryTabController.index : _activityTabController.index) == index;
+    
+    return Tab(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primaryCyan : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primaryCyan : Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color: isSelected ? Colors.white : Colors.grey.shade600,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildDynamicProfileCard(BuildContext context, User user) {
