@@ -885,29 +885,37 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   ),
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(46),
-                    child: Container(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: SizedBox(
-                        height: 38,
-                        child: TabBar(
-                          controller: _tabController,
-                          isScrollable: true,
-                          tabAlignment: TabAlignment.start,
-                          dividerColor: Colors.transparent,
-                          indicatorColor: Colors.transparent,
-                          indicator: const BoxDecoration(),
-                          labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                          tabs: [
-                            _buildCategoryTab('My Search', 0),
-                            _buildCategoryTab('My Match', 1),
-                            _buildCategoryTab('New', 2),
-                            _buildCategoryTab('Near Me', 3),
-                            _buildCategoryTab('Online', 4),
-                            _buildCategoryTab('Shortlist', 5),
-                            _buildCategoryTab('Visited', 6),
-                            _buildCategoryTab('Interviewer', 7),
-                            _buildCategoryTab('Visitors', 8),
-                          ],
+                    child: ClipRRect(
+                      child: BackdropFilter(
+                        filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        child: Container(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                          ),
+                          child: SizedBox(
+                            height: 38,
+                            child: TabBar(
+                              controller: _tabController,
+                              isScrollable: true,
+                              tabAlignment: TabAlignment.start,
+                              dividerColor: Colors.transparent,
+                              indicatorColor: Colors.transparent,
+                              indicator: const BoxDecoration(),
+                              labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+                              tabs: [
+                                _buildCategoryTab('My Search', 0),
+                                _buildCategoryTab('My Match', 1),
+                                _buildCategoryTab('New', 2),
+                                _buildCategoryTab('Near Me', 3),
+                                _buildCategoryTab('Online', 4),
+                                _buildCategoryTab('Shortlist', 5),
+                                _buildCategoryTab('Visited', 6),
+                                _buildCategoryTab('Interviewer', 7),
+                                _buildCategoryTab('Visitors', 8),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -1109,22 +1117,31 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         decoration: BoxDecoration(
           color: isSelected 
               ? AppColors.primaryCyan 
-              : AppColors.primaryBlue.withOpacity(0.05),
+              : Colors.white.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
+          border: isSelected 
+              ? null 
+              : Border.all(color: Colors.grey.shade300, width: 0.5),
           boxShadow: isSelected ? [
             BoxShadow(
               color: AppColors.primaryCyan.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 3),
             )
-          ] : null,
+          ] : [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            )
+          ],
         ),
         child: Text(
           text,
           style: TextStyle(
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? Colors.white : Colors.grey.shade700,
+            color: isSelected ? Colors.white : Colors.grey.shade800,
             letterSpacing: -0.2,
           ),
         ),
