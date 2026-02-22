@@ -14,6 +14,8 @@ class SearchService {
     String? maritalStatus,
     int? minAge,
     int? maxAge,
+    int? minHeight,
+    int? maxHeight,
     String? location,
     String? field,
     String? matrimonyId,
@@ -28,6 +30,8 @@ class SearchService {
     if (maritalStatus != null) queryParams['marital_status'] = maritalStatus;
     if (minAge != null) queryParams['min_age'] = minAge.toString();
     if (maxAge != null) queryParams['max_age'] = maxAge.toString();
+    if (minHeight != null) queryParams['min_height'] = minHeight.toString();
+    if (maxHeight != null) queryParams['max_height'] = maxHeight.toString();
     if (location != null) queryParams['location'] = location;
     if (field != null) queryParams['field'] = field;
 

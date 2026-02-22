@@ -543,7 +543,34 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           response = await MatchingService.getSuggestions();
           break;
         case 1: // My Match
-          response = await SearchService.searchProfiles();
+          final authProvider = Provider.of<AuthProvider>(context, listen: false);
+          final myProfile = authProvider.user?.userProfile;
+          final isMale = myProfile?.gender?.toLowerCase() == 'male';
+          final myAge = myProfile?.age ?? 25;
+          final myHeight = myProfile?.height ?? 160;
+
+          int minAge = 18;
+          int maxAge = 99;
+          int? minHeight;
+          int? maxHeight;
+
+          if (isMale) {
+            // Men usually look for younger and shorter women
+            maxAge = myAge - 1;
+            maxHeight = myHeight - 1;
+            if (maxAge < 18) maxAge = 18; // Safety check
+          } else {
+            // Women usually look for older and taller men
+            minAge = myAge + 1;
+            minHeight = myHeight + 1;
+          }
+
+          response = await SearchService.searchProfiles(
+            minAge: minAge, 
+            maxAge: maxAge,
+            minHeight: minHeight,
+            maxHeight: maxHeight,
+          );
           break;
         case 2: // New Match
           response = await SearchService.searchProfiles(field: 'new_members');
@@ -665,15 +692,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     }
 
     if (index == 1) { // My Match sorting
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final profile = authProvider.user?.userProfile;
-      allUsers = allUsers.where((u) {
-        final isOppositeGender = u.userProfile?.gender?.toLowerCase() != profile?.gender?.toLowerCase();
-        final isSameReligion = u.userProfile?.religion?.toLowerCase() == profile?.religion?.toLowerCase();
-        final isActive = u.status?.toLowerCase() == 'active';
-        return isOppositeGender && isSameReligion && isActive;
-      }).toList();
-      
+      // Trust backend for religion/gender strictly, just sort by date
       allUsers.sort((a, b) {
         final dateA = a.userProfile?.createdAt ?? DateTime(2000);
         final dateB = b.userProfile?.createdAt ?? DateTime(2000);
@@ -910,8 +929,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 _buildCategoryTab('Near Me', 3),
                                 _buildCategoryTab('Online', 4),
                                 _buildCategoryTab('Shortlist', 5),
-                                _buildCategoryTab('Visited', 6),
-                                _buildCategoryTab('Interviewer', 7),
+                                _buildCategoryTab('Contact Viewed', 6),
+                                _buildCategoryTab('Visited', 7),
                                 _buildCategoryTab('Visitors', 8),
                               ],
                             ),
