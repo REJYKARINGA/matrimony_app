@@ -921,6 +921,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   List<dynamic> _educations = [];
   List<dynamic> _occupations = [];
   List<dynamic> _personalities = [];
+  List<dynamic> _interests = [];
 
   // Selected IDs for foreign relationships
   int? _selectedReligionId;
@@ -929,6 +930,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   int? _selectedEducationId;
   int? _selectedOccupationId;
   List<int> _selectedPersonalityIds = [];
+  List<int> _selectedInterestIds = [];
 
   @override
   void initState() {
@@ -948,6 +950,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _educations = data['data']['educations'] ?? [];
             _occupations = data['data']['occupations'] ?? [];
             _personalities = data['data']['personalities'] ?? [];
+            _interests = data['data']['interests'] ?? [];
           });
           
           // Initialize available castes/sub-castes based on current values
@@ -1083,6 +1086,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (widget.user?.personalities != null) {
       _selectedPersonalityIds = widget.user!.personalities!.map<int>((p) => int.parse(p['id'].toString())).toList();
     }
+    if (widget.user?.interests != null) {
+      _selectedInterestIds = widget.user!.interests!.map<int>((i) => int.parse(i['id'].toString())).toList();
+    }
   }
 
   Future<void> _saveProfile() async {
@@ -1119,6 +1125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         smoke: _selectedSmoke,
         alcohol: _selectedAlcohol,
         personalityIds: _selectedPersonalityIds,
+        interestIds: _selectedInterestIds,
       );
 
       if (response.statusCode == 200) {
@@ -1957,6 +1964,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _buildSectionHeader('User Personality', Icons.psychology_rounded),
                       _buildPersonalityMultiSelect(),
                     ],
+                    if (_interests.isNotEmpty) ...[
+                      const SizedBox(height: 32),
+                      _buildSectionHeader('Interests & Hobbies', Icons.sports_tennis_rounded),
+                      _buildInterestMultiSelect(),
+                    ],
 
                     const SizedBox(height: 40),
                     _buildSectionHeader('Profile Links', Icons.link_rounded),
@@ -2145,6 +2157,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _selectedPersonalityIds.add(pId);
                     } else {
                       _selectedPersonalityIds.remove(pId);
+                    }
+                  });
+                },
+                selectedColor: const Color(0xFF00BCD4).withOpacity(0.1),
+                checkmarkColor: const Color(0xFF00BCD4),
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInterestMultiSelect() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.sports_tennis_rounded, size: 20, color: Color(0xFF00BCD4)),
+              SizedBox(width: 10),
+              Text(
+                'Select Interests & Hobbies',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _interests.map((dynamic i) {
+              final int iId = int.parse(i['id'].toString());
+              final isSelected = _selectedInterestIds.contains(iId);
+              return FilterChip(
+                label: Text(
+                  i['interest_name'].toString(),
+                  style: TextStyle(
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+                selected: isSelected,
+                onSelected: (bool selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedInterestIds.add(iId);
+                    } else {
+                      _selectedInterestIds.remove(iId);
                     }
                   });
                 },

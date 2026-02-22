@@ -37,6 +37,7 @@ class User {
   final String? referenceCode;
   final ContactInfo? contactInfo;
   final List<dynamic>? personalities;
+  final List<dynamic>? interests;
 
   User({
     this.id,
@@ -57,6 +58,7 @@ class User {
     this.referenceCode,
     this.contactInfo,
     this.personalities,
+    this.interests,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -86,6 +88,7 @@ class User {
       referenceCode: json['reference_code']?.toString(),
       contactInfo: contactInfo,
       personalities: json['personalities'] != null ? List<dynamic>.from(json['personalities']) : null,
+      interests: json['interests'] != null ? List<dynamic>.from(json['interests']) : null,
     );
   }
 
