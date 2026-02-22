@@ -301,7 +301,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     _interestCountdown = {};
     _shortlistedUserIds = {};
     
-    _tabController = TabController(length: 9, vsync: this);
+    _tabController = TabController(length: 10, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         _loadTabUsers(_tabController.index);
@@ -607,6 +607,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           break;
         case 8: // Visitors
           response = await ProfileViewService.getVisitors();
+          break;
+        case 9: // Matching Me
+          response = await SearchService.searchProfiles(field: 'matching_me');
           break;
         default:
           response = await MatchingService.getSuggestions();
@@ -947,6 +950,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 _buildCategoryTab('Contact Viewed', 6),
                                 _buildCategoryTab('Visited', 7),
                                 _buildCategoryTab('Visitors', 8),
+                                _buildCategoryTab('Matching Me', 9),
                               ],
                             ),
                           ),
