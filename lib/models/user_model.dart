@@ -36,6 +36,7 @@ class User {
   final double? distance;
   final String? referenceCode;
   final ContactInfo? contactInfo;
+  final List<dynamic>? personalities;
 
   User({
     this.id,
@@ -55,6 +56,7 @@ class User {
     this.distance,
     this.referenceCode,
     this.contactInfo,
+    this.personalities,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -83,6 +85,7 @@ class User {
       distance: json['distance'] != null ? double.tryParse(json['distance'].toString()) : null,
       referenceCode: json['reference_code']?.toString(),
       contactInfo: contactInfo,
+      personalities: json['personalities'] != null ? List<dynamic>.from(json['personalities']) : null,
     );
   }
 

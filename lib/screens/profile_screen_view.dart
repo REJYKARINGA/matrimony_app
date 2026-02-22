@@ -920,6 +920,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   List<dynamic> _availableSubCastes = [];
   List<dynamic> _educations = [];
   List<dynamic> _occupations = [];
+  List<dynamic> _personalities = [];
 
   // Selected IDs for foreign relationships
   int? _selectedReligionId;
@@ -927,6 +928,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   int? _selectedSubCasteId;
   int? _selectedEducationId;
   int? _selectedOccupationId;
+  List<int> _selectedPersonalityIds = [];
 
   @override
   void initState() {
@@ -945,6 +947,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _religions = data['data']['religions'] ?? [];
             _educations = data['data']['educations'] ?? [];
             _occupations = data['data']['occupations'] ?? [];
+            _personalities = data['data']['personalities'] ?? [];
           });
           
           // Initialize available castes/sub-castes based on current values
@@ -1077,6 +1080,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _drugAddiction = widget.user?.userProfile?.drugAddiction ?? false;
     _selectedSmoke = widget.user?.userProfile?.smoke;
     _selectedAlcohol = widget.user?.userProfile?.alcohol;
+    if (widget.user?.personalities != null) {
+      _selectedPersonalityIds = widget.user!.personalities!.map<int>((p) => int.parse(p['id'].toString())).toList();
+    }
   }
 
   Future<void> _saveProfile() async {
@@ -1112,6 +1118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         drugAddiction: _drugAddiction,
         smoke: _selectedSmoke,
         alcohol: _selectedAlcohol,
+        personalityIds: _selectedPersonalityIds,
       );
 
       if (response.statusCode == 200) {
@@ -1945,6 +1952,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                       onChanged: (val) => setState(() => _selectedAlcohol = val),
                     ),
+                    if (_personalities.isNotEmpty) ...[
+                      const SizedBox(height: 32),
+                      _buildSectionHeader('User Personality', Icons.psychology_rounded),
+                      _buildPersonalityMultiSelect(),
+                    ],
 
                     const SizedBox(height: 40),
                     _buildSectionHeader('Profile Links', Icons.link_rounded),
@@ -2082,6 +2094,74 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPersonalityMultiSelect() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.psychology_rounded, size: 20, color: Color(0xFF00BCD4)),
+              SizedBox(width: 10),
+              Text(
+                'Select Personality Traits',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _personalities.map((dynamic p) {
+              final int pId = int.parse(p['id'].toString());
+              final isSelected = _selectedPersonalityIds.contains(pId);
+              return FilterChip(
+                label: Text(
+                  p['personality_name'].toString(),
+                  style: TextStyle(
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+                selected: isSelected,
+                onSelected: (bool selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedPersonalityIds.add(pId);
+                    } else {
+                      _selectedPersonalityIds.remove(pId);
+                    }
+                  });
+                },
+                selectedColor: const Color(0xFF00BCD4).withOpacity(0.1),
+                checkmarkColor: const Color(0xFF00BCD4),
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }

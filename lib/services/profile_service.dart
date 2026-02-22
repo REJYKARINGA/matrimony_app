@@ -36,6 +36,7 @@ class ProfileService {
     bool? drugAddiction,
     String? smoke,
     String? alcohol,
+    List<int>? personalityIds,
   }) async {
     final body = {
       if (firstName != null) 'first_name': firstName,
@@ -63,6 +64,7 @@ class ProfileService {
       if (state != null) 'state': state,
       if (country != null) 'country': country,
       if (postalCode != null) 'postal_code': postalCode,
+      if (personalityIds != null) 'personality_ids': personalityIds,
     };
 
     return await ApiService.makeRequest(
