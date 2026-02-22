@@ -6,6 +6,9 @@ import '../services/verification_service.dart';
 import '../services/api_service.dart';
 
 import '../widgets/common_footer.dart';
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import '../services/navigation_provider.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({super.key});
@@ -122,9 +125,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: _isLoading && _verificationStatus == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          final navProvider = Provider.of<NavigationProvider>(context, listen: false);
+          if (notification.direction == ScrollDirection.reverse) {
+            navProvider.setFooterVisible(false);
+          } else if (notification.direction == ScrollDirection.forward) {
+            navProvider.setFooterVisible(true);
+          }
+          return true;
+        },
+        child: _isLoading && _verificationStatus == null
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,9 +162,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
                      _buildVerifiedView(),
                   ],
                 ],
-              ),
             ),
-      bottomNavigationBar: const CommonFooter(),
+        ),
+      ),
+      bottomNavigationBar: Consumer<NavigationProvider>(
+        builder: (context, navProvider, child) => AnimatedSlide(
+          duration: const Duration(milliseconds: 300),
+          offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
+          child: const CommonFooter(),
+        ),
+      ),
     );
   }
 

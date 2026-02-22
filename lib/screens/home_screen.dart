@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import '../widgets/ripple_animation.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
@@ -246,8 +247,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     return Scaffold(
       extendBody: true,
-      body: _widgetOptions.elementAt(navProvider.selectedIndex),
-      bottomNavigationBar: const CommonFooter(),
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          if (notification.direction == ScrollDirection.reverse) {
+            navProvider.setFooterVisible(false);
+          } else if (notification.direction == ScrollDirection.forward) {
+            navProvider.setFooterVisible(true);
+          }
+          return true;
+        },
+        child: _widgetOptions.elementAt(navProvider.selectedIndex),
+      ),
+      bottomNavigationBar: AnimatedSlide(
+        duration: const Duration(milliseconds: 300),
+        offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
+        child: const CommonFooter(),
+      ),
     );
   }
 }

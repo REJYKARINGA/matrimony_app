@@ -3,6 +3,9 @@ import 'dart:convert';
 import '../services/profile_service.dart';
 import '../services/location_service.dart';
 import '../widgets/common_footer.dart';
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
+import '../services/navigation_provider.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({Key? key}) : super(key: key);
@@ -349,14 +352,24 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          final navProvider = Provider.of<NavigationProvider>(context, listen: false);
+          if (notification.direction == ScrollDirection.reverse) {
+            navProvider.setFooterVisible(false);
+          } else if (notification.direction == ScrollDirection.forward) {
+            navProvider.setFooterVisible(true);
+          }
+          return true;
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 _buildSection('Age', [
                   _buildRangeSlider(
                     'Age: ${_ageRange.start.round()} - ${_ageRange.end.round()} Years',
@@ -568,12 +581,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 ]),
 
                 const SizedBox(height: 100),
-              ],
+                ],
+              ),
             ),
           ),
+      ),
+    ),
+      bottomNavigationBar: Consumer<NavigationProvider>(
+        builder: (context, navProvider, child) => AnimatedSlide(
+          duration: const Duration(milliseconds: 300),
+          offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
+          child: const CommonFooter(),
         ),
       ),
-      bottomNavigationBar: const CommonFooter(),
     );
   }
 

@@ -8,6 +8,7 @@ import 'view_profile_screen.dart';
 import 'messages_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/rendering.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -129,10 +130,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: primaryCyan))
-          : _error != null
-              ? Center(child: Text(_error!))
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          final navProvider = Provider.of<NavigationProvider>(context, listen: false);
+          if (notification.direction == ScrollDirection.reverse) {
+            navProvider.setFooterVisible(false);
+          } else if (notification.direction == ScrollDirection.forward) {
+            navProvider.setFooterVisible(true);
+          }
+          return true;
+        },
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: primaryCyan))
+            : _error != null
+                ? Center(child: Text(_error!))
               : _notifications.isEmpty
                   ? Center(
                       child: Column(
@@ -247,7 +258,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ],
                       ),
                     ),
-      bottomNavigationBar: const CommonFooter(),
+                  ),
+      bottomNavigationBar: Consumer<NavigationProvider>(
+        builder: (context, navProvider, child) => AnimatedSlide(
+          duration: const Duration(milliseconds: 300),
+          offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
+          child: const CommonFooter(),
+        ),
+      ),
     );
   }
 
