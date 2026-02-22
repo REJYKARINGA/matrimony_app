@@ -322,7 +322,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ]),
                     const SizedBox(height: 24),
-                    _buildDiscoveryNoteProfile(),
+                    if (_user?.interests != null && _user!.interests!.isNotEmpty)
+                      _buildChipsSectionProfile('Interests & Hobbies', Icons.auto_awesome_outlined, _user!.interests!, 'interest_name'),
+                    if (_user?.personalities != null && _user!.personalities!.isNotEmpty)
+                      _buildChipsSectionProfile('Personality Traits', Icons.psychology_outlined, _user!.personalities!, 'personality_name'),
+                    const SizedBox(height: 24),
                     const SizedBox(height: 16),
                     _buildActionButtons(),
                     const SizedBox(height: 50),
@@ -615,65 +619,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDiscoveryNoteProfile() {
+  Widget _buildChipsSectionProfile(String title, IconData icon, List<dynamic> items, String nameKey) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF00BCD4).withOpacity(0.06),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFF00BCD4).withOpacity(0.2),
-            width: 1,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 12),
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1A1A1A),
+                letterSpacing: 0.3,
+              ),
+            ),
           ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFF00BCD4).withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.chat_bubble_outline_rounded,
-                color: Color(0xFF00BCD4),
-                size: 24,
-              ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'A note from us',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade700,
-                      letterSpacing: 0.3,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: items.map((item) {
+                final name = item[nameKey] ?? '';
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00BCD4).withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF00BCD4).withOpacity(0.2),
+                      width: 1,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Personal interests and personality traits are intentionally left for you to discover through real conversation. We believe genuine compatibility is felt, not filtered.',
-                    style: TextStyle(
+                  child: Text(
+                    name,
+                    style: const TextStyle(
                       fontSize: 14,
-                      height: 1.6,
-                      color: Colors.grey.shade800,
-                      fontStyle: FontStyle.italic,
+                      color: Color(0xFF00838F),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
-              ),
+                );
+              }).toList(),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildDiscoveryNoteProfile() {
+    return const SizedBox.shrink();
   }
 
   Widget _buildActionButtons() {

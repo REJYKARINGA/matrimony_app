@@ -1077,68 +1077,87 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               _buildDetailRow('Alcohol', _user!.preferences!.alcohol!.join(', ')),
           ]),
           SizedBox(height: 24),
-          _buildDiscoveryNote(),
+          if (_user?.interests != null && _user!.interests!.isNotEmpty)
+            _buildChipsSection('Interests & Hobbies', Icons.auto_awesome_outlined, _user!.interests!, 'interest_name'),
+          if (_user?.personalities != null && _user!.personalities!.isNotEmpty)
+            _buildChipsSection('Personality Traits', Icons.psychology_outlined, _user!.personalities!, 'personality_name'),
+          SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildDiscoveryNote() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF00BCD4).withOpacity(0.06),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF00BCD4).withOpacity(0.2),
-          width: 1,
+  Widget _buildChipsSection(String title, IconData icon, List<dynamic> items, String nameKey) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildModernCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF00BCD4).withOpacity(0.2),
+                          const Color(0xFF0D47A1).withOpacity(0.2),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(icon, color: const Color(0xFF00BCD4), size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: items.map((item) {
+                  final name = item[nameKey] ?? '';
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00BCD4).withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF00BCD4).withOpacity(0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF00838F),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF00BCD4).withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.chat_bubble_outline_rounded,
-              color: Color(0xFF00BCD4),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'A note from us',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade700,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Personal interests and personality traits are intentionally left for you to discover through real conversation. We believe genuine compatibility is felt, not filtered.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.6,
-                    color: Colors.grey.shade800,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        const SizedBox(height: 16),
+      ],
     );
+  }
+
+  Widget _buildDiscoveryNote() {
+    return const SizedBox.shrink();
   }
 
   Widget _buildInfoSection(String title, IconData icon, List<Widget> children) {
