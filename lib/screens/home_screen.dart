@@ -260,9 +260,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> with TickerProviderStateMixin {
-  late TabController _discoveryTabController;
-  late TabController _activityTabController;
-  int _activeGroup = 0; // 0: Discovery, 1: Activity
+  late TabController _tabController;
   List<User> _recommendedUsers = [];
   bool _isLoadingRecommended = true;
   String? _recommendedError;
@@ -287,33 +285,20 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     _interestTimers = {};
     _interestCountdown = {};
     _shortlistedUserIds = {};
-    _discoveryTabController = TabController(length: 5, vsync: this);
-    _discoveryTabController.addListener(() {
-      if (!_discoveryTabController.indexIsChanging) {
-        setState(() => _activeGroup = 0);
-        _loadTabUsers(0, _discoveryTabController.index);
-      }
-    });
-
-    _activityTabController = TabController(length: 4, vsync: this);
-    _activityTabController.addListener(() {
-      if (!_activityTabController.indexIsChanging) {
-        setState(() => _activeGroup = 1);
-        _loadTabUsers(1, _activityTabController.index);
-      }
-    });
     
-    // Set initial group/index
-    _activeGroup = 0; 
+    _tabController = TabController(length: 9, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        _loadTabUsers(_tabController.index);
+      }
+    });
     
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_hasInitialized) return;
       _hasInitialized = true;
       
-      // Hit suggestions API first then any of them
       // Load initial tab
-      // Load initial tab
-    await _loadTabUsers(0, 0);
+      await _loadTabUsers(0);
 
       if (!mounted) return;
 
@@ -333,8 +318,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
   @override
   void dispose() {
-    _discoveryTabController.dispose();
-    _activityTabController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -545,89 +529,81 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     }
   }
 
-  Future<void> _loadTabUsers(int group, int index) async {
+  Future<void> _loadTabUsers(int index) async {
     try {
       if (!mounted) return;
       setState(() {
         _isLoadingRecommended = true;
         _recommendedError = null;
-        _activeGroup = group;
       });
 
       http.Response response;
-      if (group == 0) { // Discovery
-        switch (index) {
-          case 0: // Search
-            response = await MatchingService.getSuggestions();
-            break;
-          case 1: // My Match
-            response = await SearchService.searchProfiles(); 
-            break;
-          case 2: // New Match
-            response = await SearchService.searchProfiles(field: 'new_members');
-            break;
-          case 3: // Near Me
-            response = await SearchService.getNearbyProfiles();
-            break;
-          case 4: // Online
-            response = await SearchService.searchProfiles();
-            break;
-          default:
-            response = await MatchingService.getSuggestions();
-        }
-      } else { // Activity
-        switch (index) {
-          case 0: // Shortlist
-            response = await ShortlistService.getShortlistedProfiles();
-            break;
-          case 1: // Contact Viewed
-            response = await ProfileViewService.getContactViewedProfiles();
-            break;
-          case 2: // Visited
-            response = await ProfileViewService.getVisitedProfiles();
-            break;
-          case 3: // Visitors
-            response = await ProfileViewService.getVisitors();
-            break;
-          default:
-            response = await ShortlistService.getShortlistedProfiles();
-        }
+      switch (index) {
+        case 0: // My Search
+          response = await MatchingService.getSuggestions();
+          break;
+        case 1: // My Match
+          response = await SearchService.searchProfiles();
+          break;
+        case 2: // New Match
+          response = await SearchService.searchProfiles(field: 'new_members');
+          break;
+        case 3: // Near Me
+          response = await SearchService.getNearbyProfiles();
+          break;
+        case 4: // Online
+          response = await SearchService.searchProfiles();
+          break;
+        case 5: // Shortlist
+          response = await ShortlistService.getShortlistedProfiles();
+          break;
+        case 6: // Contact Viewed
+          response = await ProfileViewService.getContactViewedProfiles();
+          break;
+        case 7: // Visited
+          response = await ProfileViewService.getVisitedProfiles();
+          break;
+        case 8: // Visitors
+          response = await ProfileViewService.getVisitors();
+          break;
+        default:
+          response = await MatchingService.getSuggestions();
       }
 
       if (response.statusCode == 200) {
         final decodedData = json.decode(response.body);
         List<dynamic> usersData = [];
 
-        if (group == 1 && index == 0) { // Shortlist extraction
+        if (index == 5) { // Shortlist extraction
           if (decodedData is Map<String, dynamic> && decodedData.containsKey('shortlisted')) {
             final shortlistedData = decodedData['shortlisted'];
             final List<dynamic> items = (shortlistedData is Map) ? (shortlistedData['data'] ?? []) : (shortlistedData ?? []);
-            _parseAndSetUsers(items, isShortlist: true);
+            _parseAndSetUsers(items, isShortlist: true, index: index);
             return;
           }
         }
         
-        if (group == 1 && index == 1) { // Contact Viewed
+        if (index == 6) { // Contact Viewed
              if (decodedData is Map<String, dynamic> && decodedData.containsKey('unlocked')) {
                 final unlockedData = decodedData['unlocked'];
                 final List<dynamic> items = (unlockedData is Map) ? (unlockedData['data'] ?? []) : (unlockedData ?? []);
-                _parseAndSetUsers(items, isUnlocked: true);
+                _parseAndSetUsers(items, isUnlocked: true, index: index);
                 return;
              }
         }
         
-        if (group == 1 && index == 2) { // Visited
+        if (index == 7) { // Visited
              if (decodedData is Map<String, dynamic> && decodedData.containsKey('visited')) {
                 final visitedData = decodedData['visited'];
                 final List<dynamic> items = (visitedData is Map) ? (visitedData['data'] ?? []) : (visitedData ?? []);
-                _parseAndSetUsers(items, isVisited: true);
+                _parseAndSetUsers(items, isVisited: true, index: index);
                 return;
              }
         }
         
-        if (group == 1 && index == 3) { // Visitors
+        if (index == 8) { // Visitors
              if (decodedData is Map<String, dynamic> && decodedData.containsKey('visitors')) {
-                _parseAndSetUsers(decodedData['visitors'] ?? []);
+                _parseAndSetUsers(decodedData['visitors'] ?? [], index: index);
                 return;
              }
         }
@@ -647,7 +623,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           }
         }
 
-        _parseAndSetUsers(usersData, group: group, index: index);
+        _parseAndSetUsers(usersData, index: index);
       } else {
         if (!mounted) return;
         setState(() {
@@ -664,7 +640,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     }
   }
 
-  void _parseAndSetUsers(List<dynamic> items, {bool isShortlist = false, bool isUnlocked = false, bool isVisited = false, int? group, int? index}) {
+  void _parseAndSetUsers(List<dynamic> items, {bool isShortlist = false, bool isUnlocked = false, bool isVisited = false, int? index}) {
     List<User> allUsers = [];
     for (var item in items) {
       if (item is Map<String, dynamic>) {
@@ -688,7 +664,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       }
     }
 
-    if (group == 0 && index == 1) { // My Match sorting
+    if (index == 1) { // My Match sorting
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final profile = authProvider.user?.userProfile;
       allUsers = allUsers.where((u) {
@@ -705,7 +681,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       });
     }
     
-    if (group == 0 && index == 4) { // Online filter
+    if (index == 4) { // Online filter
        allUsers = allUsers.where((u) => u.status?.toLowerCase() == 'active').toList();
     }
 
@@ -729,7 +705,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     return Scaffold(
       backgroundColor: Colors.white,
       body: RefreshIndicator(
-        onRefresh: () => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index),
+        onRefresh: () => _loadTabUsers(_tabController.index),
         color: AppColors.primaryCyan,
         child: Stack(
           children: [
@@ -794,7 +770,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   scrolledUnderElevation: 0,
                   backgroundColor: Colors.transparent,
                   expandedHeight: 0,
-                  toolbarHeight: 90,
+                  toolbarHeight: 70,
                   automaticallyImplyLeading: false,
                   title: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
@@ -867,7 +843,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                   ),
                                 );
                                 if (result == true) {
-                                  _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index);
+                                  _loadTabUsers(_tabController.index);
                                 }
                               },
                             ),
@@ -908,126 +884,31 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     ),
                   ),
                   bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(100),
+                    preferredSize: const Size.fromHeight(46),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 0),
-                      child: Column(
-                        children: [
-                          // Group Selector (Discovery | Activity)
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if (_activeGroup != 0) {
-                                        setState(() => _activeGroup = 0);
-                                        _loadTabUsers(0, _discoveryTabController.index);
-                                      }
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        color: _activeGroup == 0 ? Colors.white : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: _activeGroup == 0 ? [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.05),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          )
-                                        ] : null,
-                                      ),
-                                      child: Text(
-                                        'Discovery',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: _activeGroup == 0 ? FontWeight.bold : FontWeight.w500,
-                                          color: _activeGroup == 0 ? AppColors.primaryCyan : Colors.grey.shade600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      if (_activeGroup != 1) {
-                                        setState(() => _activeGroup = 1);
-                                        _loadTabUsers(1, _activityTabController.index);
-                                      }
-                                    },
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      margin: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        color: _activeGroup == 1 ? Colors.white : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: _activeGroup == 1 ? [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(0.05),
-                                            blurRadius: 4,
-                                            offset: const Offset(0, 2),
-                                          )
-                                        ] : null,
-                                      ),
-                                      child: Text(
-                                        'Activity',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: _activeGroup == 1 ? FontWeight.bold : FontWeight.w500,
-                                          color: _activeGroup == 1 ? AppColors.primaryCyan : Colors.grey.shade600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Specific Category Tabs
-                          SizedBox(
-                            height: 40,
-                            child: _activeGroup == 0 
-                              ? TabBar(
-                                  controller: _discoveryTabController,
-                                  isScrollable: true,
-                                  tabAlignment: TabAlignment.start,
-                                  dividerColor: Colors.transparent,
-                                  indicatorColor: Colors.transparent,
-                                  labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                                  tabs: [
-                                    _buildCategoryTab('My Search', 0, 0),
-                                    _buildCategoryTab('My Match', 0, 1),
-                                    _buildCategoryTab('New', 0, 2),
-                                    _buildCategoryTab('Near Me', 0, 3),
-                                    _buildCategoryTab('Online', 0, 4),
-                                  ],
-                                )
-                              : TabBar(
-                                  controller: _activityTabController,
-                                  isScrollable: true,
-                                  tabAlignment: TabAlignment.start,
-                                  dividerColor: Colors.transparent,
-                                  indicatorColor: Colors.transparent,
-                                  labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                                  tabs: [
-                                    _buildCategoryTab('Shortlist', 1, 0),
-                                    _buildCategoryTab('Contact Viewed', 1, 1),
-                                    _buildCategoryTab('Visited', 1, 2),
-                                    _buildCategoryTab('Visitors', 1, 3),
-                                  ],
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: SizedBox(
+                        height: 38,
+                        child: TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          tabAlignment: TabAlignment.start,
+                          dividerColor: Colors.transparent,
+                          indicatorColor: Colors.transparent,
+                          indicator: const BoxDecoration(),
+                          labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+                          tabs: [
+                            _buildCategoryTab('My Search', 0),
+                            _buildCategoryTab('My Match', 1),
+                            _buildCategoryTab('New', 2),
+                            _buildCategoryTab('Near Me', 3),
+                            _buildCategoryTab('Online', 4),
+                            _buildCategoryTab('Shortlist', 5),
+                            _buildCategoryTab('Visited', 6),
+                            _buildCategoryTab('Interviewer', 7),
+                            _buildCategoryTab('Visitors', 8),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -1218,28 +1099,33 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     return _recommendedUsers;
   }
 
-  Widget _buildCategoryTab(String text, int group, int index) {
-    bool isSelected = _activeGroup == group && 
-        (group == 0 ? _discoveryTabController.index : _activityTabController.index) == index;
+  Widget _buildCategoryTab(String text, int index) {
+    bool isSelected = _tabController.index == index;
     
     return Tab(
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryCyan : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primaryCyan : Colors.grey.shade300,
-            width: 1,
-          ),
+          color: isSelected 
+              ? AppColors.primaryCyan 
+              : AppColors.primaryBlue.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: AppColors.primaryCyan.withOpacity(0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            )
+          ] : null,
         ),
         child: Text(
           text,
           style: TextStyle(
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-            color: isSelected ? Colors.white : Colors.grey.shade600,
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            color: isSelected ? Colors.white : Colors.grey.shade700,
+            letterSpacing: -0.2,
           ),
         ),
       ),
@@ -1658,7 +1544,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               ],
             ),
             child: ElevatedButton.icon(
-              onPressed: () => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index),
+              onPressed: () => _loadTabUsers(_tabController.index),
               icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
               label: const Text(
                 'Refresh Suggestions',
@@ -1677,7 +1563,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           ),
           const SizedBox(height: 16),
           TextButton.icon(
-            onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadTabUsers(_activeGroup, _activeGroup == 0 ? _discoveryTabController.index : _activityTabController.index)),
+            onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadTabUsers(_tabController.index)),
             icon: const Icon(Icons.tune_rounded, size: 18, color: Color(0xFF0D47A1)),
             label: const Text(
               'Refine Preferences',
