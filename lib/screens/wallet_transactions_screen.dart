@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import '../services/payment_service.dart';
 import '../services/api_service.dart';
-import 'dart:js' as js;
-import 'dart:html' as html;
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class WalletTransactionsScreen extends StatefulWidget {
   const WalletTransactionsScreen({super.key});
@@ -18,10 +17,15 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
   List<dynamic> _transactions = [];
   bool _isLoading = true;
   int? _currentTransactionId;
+  late Razorpay _razorpay;
 
   @override
   void initState() {
     super.initState();
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     _loadData();
   }
 
@@ -266,42 +270,31 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
       _currentTransactionId = orderData['transaction_id'];
     });
 
-    final script = html.ScriptElement()
-      ..src = 'https://checkout.razorpay.com/v1/checkout.js'
-      ..async = true;
-    html.document.head?.append(script);
+    final options = {
+      'key': orderData['key'],
+      'amount': (orderData['amount'] * 100).toInt(),
+      'currency': 'INR',
+      'name': 'Matrimony App',
+      'description': 'Wallet Recharge',
+      'order_id': orderData['order_id'],
+      'theme': {'color': '#00BCD4'},
+    };
 
-    script.onLoad.listen((event) {
-      final options = js.JsObject.jsify({
-        'key': orderData['key'],
-        'amount': (orderData['amount'] * 100).toInt(),
-        'currency': 'INR',
-        'name': 'Matrimony App',
-        'description': 'Wallet Recharge',
-        'order_id': orderData['order_id'],
-        'handler': js.allowInterop((response) {
-          _handleWebPaymentSuccess(response);
-        }),
-        'modal': {
-          'ondismiss': js.allowInterop(() {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Payment cancelled')),
-            );
-          })
-        },
-        'theme': {'color': '#00BCD4'} // Turquoise theme for Razorpay
-      });
-
-      final razorpay = js.JsObject(js.context['Razorpay'], [options]);
-      razorpay.callMethod('open');
-    });
+    _razorpay.open(options);
   }
 
-  void _handleWebPaymentSuccess(dynamic response) async {
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
     try {
-      final razorpayOrderId = js.JsObject.fromBrowserObject(response)['razorpay_order_id'];
-      final razorpayPaymentId = js.JsObject.fromBrowserObject(response)['razorpay_payment_id'];
-      final razorpaySignature = js.JsObject.fromBrowserObject(response)['razorpay_signature'];
+      final razorpayOrderId = response.orderId;
+      final razorpayPaymentId = response.paymentId;
+      final razorpaySignature = response.signature;
+
+      if (razorpayOrderId == null || razorpayPaymentId == null || razorpaySignature == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid payment response')),
+        );
+        return;
+      }
 
       final verifyResponse = await PaymentService.verifyPayment(
         razorpayOrderId: razorpayOrderId,
@@ -322,5 +315,33 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         const SnackBar(content: Text('Payment verification failed')),
       );
     }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Payment failed: ${response.message}'),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('External wallet selected: ${response.walletName}'),
+        backgroundColor: Colors.orange,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _razorpay.clear();
+    super.dispose();
   }
 }
