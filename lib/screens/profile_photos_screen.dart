@@ -39,8 +39,16 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
         final profilePhotos = data['user']['profile_photos'] as List?;
 
         if (profilePhotos != null) {
+          // Sort photos so that primary is first
+          List sortedPhotos = List.from(profilePhotos);
+          sortedPhotos.sort((a, b) {
+            if (a['is_primary'] == true) return -1;
+            if (b['is_primary'] == true) return 1;
+            return 0; // Keep original order for others
+          });
+
           setState(() {
-            _photos = profilePhotos;
+            _photos = sortedPhotos;
             _isLoading = false;
           });
         } else {
@@ -605,81 +613,134 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
   }
 
   Widget _buildGradientHeader(Size size, BuildContext context) {
+    // Find primary photo url
+    String? primaryUrl;
+    if (_photos.isNotEmpty) {
+      final primaryPhoto = _photos.firstWhere(
+        (p) => p['is_primary'] == true,
+        orElse: () => null,
+      );
+      if (primaryPhoto != null) {
+        primaryUrl = primaryPhoto['photo_url'] ?? primaryPhoto['full_photo_url'];
+      }
+    }
+
     return Container(
       width: double.infinity,
-      height: size.height * 0.22,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF00BCD4), // Turquoise
-            Color(0xFF0D47A1), // Deep blue
-          ],
-          stops: [0.0, 1.0],
-        ),
-      ),
+      height: size.height * 0.28, // Slightly taller for the background effect
       child: Stack(
+        fit: StackFit.expand,
         children: [
-          Positioned(
-            top: 8,
-            left: 8,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.of(context).pop(),
+          // Background Image with Blur/Overlay
+          if (primaryUrl != null)
+            Image.network(
+              ApiService.getImageUrl(primaryUrl),
+              fit: BoxFit.cover,
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                ),
+              ),
+            ),
+            
+          // Dark Gradient Overlay for readability
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.3),
+                  Colors.black.withOpacity(0.7),
+                ],
+              ),
             ),
           ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 70,
-                  height: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
+
+          // Content
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 20),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3), // White border
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
                   child: Container(
-                    margin: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.95),
-                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      image: primaryUrl != null
+                          ? DecorationImage(
+                              image: NetworkImage(ApiService.getImageUrl(primaryUrl)),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
-                    child: Icon(
-                      Icons.photo_library,
-                      size: 35,
-                      color: Color(0xFF00BCD4),
+                    child: primaryUrl == null
+                        ? Icon(
+                            Icons.photo_library,
+                            size: 45,
+                            color: Color(0xFF00BCD4),
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Profile Photos',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(0, 2),
+                      blurRadius: 4,
+                      color: Colors.black45,
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Profile Photos',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
-                  ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Show your best moments',
+                style: TextStyle(
+                  fontSize: 15,
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Show your best moments',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.white.withOpacity(0.95),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+          
+          // Back Button
+          Positioned(
+            top: 10,
+            left: 10,
+            child: CircleAvatar(
+              backgroundColor: Colors.black.withOpacity(0.2),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
           ),
         ],

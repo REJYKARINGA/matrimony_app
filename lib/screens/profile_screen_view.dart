@@ -736,7 +736,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildPhotosSection() {
-    final photos = _user?.profilePhotos ?? [];
+    List<ProfilePhoto> photos = [];
+    if (_user?.profilePhotos != null) {
+      photos = List<ProfilePhoto>.from(_user!.profilePhotos!);
+      // Sort so primary is first
+      photos.sort((a, b) {
+        if (a.isPrimary == true) return -1;
+        if (b.isPrimary == true) return 1;
+        return 0;
+      });
+    }
+    
     if (photos.isEmpty) return const SizedBox.shrink();
 
     return Padding(
