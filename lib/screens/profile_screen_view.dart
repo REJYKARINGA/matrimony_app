@@ -818,29 +818,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               // Watermark
               Positioned(
-                bottom: 40,
+                bottom: 80, // Moved up to avoid overlap with swipe indicator
                 right: 20,
                 child: Opacity(
-                  opacity: 0.5,
+                  opacity: 0.7, // Increased opacity slightly
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         'Vivah4Ever',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
                           shadows: [
-                            Shadow(blurRadius: 10, color: Colors.black, offset: Offset(2, 2)),
+                            Shadow(blurRadius: 10, color: Colors.black54, offset: Offset(2, 2)),
                           ],
                         ),
                       ),
                       Text(
                         'Kerala Matrimony',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withOpacity(0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
