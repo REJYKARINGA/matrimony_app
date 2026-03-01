@@ -632,7 +632,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   Widget _buildPhotoGallery() {
-    final photos = _user?.profilePhotos ?? [];
+    List<ProfilePhoto> photos = [];
+    if (_user?.profilePhotos != null) {
+      photos = List<ProfilePhoto>.from(_user!.profilePhotos!);
+      // Sort so primary is first
+      photos.sort((a, b) {
+        if (a.isPrimary == true) return -1;
+        if (b.isPrimary == true) return 1;
+        return 0;
+      });
+    }
+
     if (photos.isEmpty) return const SizedBox.shrink();
 
     return Column(
@@ -708,29 +718,29 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ),
               // Watermark
               Positioned(
-                bottom: 40,
+                bottom: 80, // Moved up to avoid overlap with swipe indicator
                 right: 20,
                 child: Opacity(
-                  opacity: 0.5,
+                  opacity: 0.7, // Increased opacity for better visibility
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         'Vivah4Ever',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
                           shadows: const [
-                            Shadow(blurRadius: 10, color: Colors.black, offset: Offset(2, 2)),
+                            Shadow(blurRadius: 10, color: Colors.black54, offset: Offset(2, 2)),
                           ],
                         ),
                       ),
                       Text(
                         'Kerala Matrimony',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withOpacity(0.8),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),

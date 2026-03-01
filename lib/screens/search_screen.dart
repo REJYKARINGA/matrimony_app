@@ -698,9 +698,12 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         if (decodedData is List) {
           usersData = List.from(decodedData);
         } else if (decodedData is Map<String, dynamic>) {
-          if (decodedData.containsKey('suggestions') &&
-              decodedData['suggestions'] is Map<String, dynamic>) {
-            usersData = List.from(decodedData['suggestions']['data'] ?? []);
+          if (decodedData.containsKey('suggestions')) {
+            final sug = decodedData['suggestions'];
+            usersData = (sug is Map) ? List.from(sug['data'] ?? []) : List.from(sug);
+          } else if (decodedData.containsKey('profiles')) {
+            final prof = decodedData['profiles'];
+            usersData = (prof is Map) ? List.from(prof['data'] ?? []) : List.from(prof);
           } else if (decodedData.containsKey('users')) {
             usersData = List.from(decodedData['users'] ?? []);
           } else if (decodedData.containsKey('data')) {
@@ -912,14 +915,25 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         );
         if (responseNearby.statusCode == 200) {
           final data = json.decode(responseNearby.body);
-          final List<dynamic> profilesData = data['profiles']['data'] ?? [];
+          final prof = data['profiles'];
+          List<dynamic> profilesData = [];
+          bool hasMore = false;
+          
+          if (prof is List) {
+            profilesData = prof;
+            hasMore = false;
+          } else if (prof is Map) {
+            profilesData = prof['data'] ?? [];
+            hasMore = prof['next_page_url'] != null;
+          }
+          
           List<User> newUsers = profilesData.map((u) => User.fromJson(u)).toList();
 
           setState(() {
             _users.addAll(newUsers);
             _isLoading = false;
             _currentPage++;
-            _hasMore = data['profiles']['next_page_url'] != null;
+            _hasMore = hasMore;
           });
           return;
         }
@@ -941,14 +955,25 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final List<dynamic> profilesData = data['profiles']['data'] ?? [];
+        final prof = data['profiles'];
+        List<dynamic> profilesData = [];
+        bool hasMore = false;
+        
+        if (prof is List) {
+          profilesData = prof;
+          hasMore = false;
+        } else if (prof is Map) {
+          profilesData = prof['data'] ?? [];
+          hasMore = prof['next_page_url'] != null;
+        }
+        
         List<User> newUsers = profilesData.map((u) => User.fromJson(u)).toList();
 
         setState(() {
           _users.addAll(newUsers);
           _isLoading = false;
           _currentPage++;
-          _hasMore = data['profiles']['next_page_url'] != null;
+          _hasMore = hasMore;
         });
       } else {
         setState(() {
