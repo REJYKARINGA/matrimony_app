@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../services/payment_service.dart';
 import '../services/api_service.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'view_profile_screen.dart';
 
 class WalletTransactionsScreen extends StatefulWidget {
   const WalletTransactionsScreen({super.key});
@@ -18,6 +19,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
   bool _isLoading = true;
   int? _currentTransactionId;
   late Razorpay _razorpay;
+  String _selectedFilter = 'all';
 
   @override
   void initState() {
@@ -81,6 +83,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                   children: [
                     _buildBalanceCard(),
                     _buildQuickRecharge(),
+                    _buildUsageFeeSummary(),
                     _buildTransactionHistory(),
                   ],
                 ),
@@ -126,6 +129,97 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildUsageFeeSummary() {
+    final usageFees = _transactions.where((t) => t['type'] == 'usage_fee').toList();
+    if (usageFees.isEmpty) return const SizedBox.shrink();
+    final totalDeducted = usageFees.fold<double>(
+      0,
+      (sum, t) => sum + (double.tryParse(t['amount'].toString()) ?? 0),
+    );
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.orange.shade200),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.orange.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.timelapse_rounded, color: Colors.orange.shade800, size: 22),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Auto-deducted Usage Fees',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                    color: Colors.orange.shade900,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${usageFees.length} deduction${usageFees.length > 1 ? 's' : ''} — ₹${totalDeducted.toStringAsFixed(0)} total deducted for passive usage',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.orange.shade700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _filterChip(String value, String label, IconData icon) {
+    final isSelected = _selectedFilter == value;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedFilter = value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade200,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: isSelected ? Colors.white : Colors.grey.shade600,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.grey.shade700,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -176,6 +270,13 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
   }
 
   Widget _buildTransactionHistory() {
+    // Apply filter
+    final filtered = _selectedFilter == 'all'
+        ? _transactions
+        : _transactions
+            .where((t) => t['type'] == _selectedFilter)
+            .toList();
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -186,60 +287,236 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          if (_transactions.isEmpty)
+          // Filter chips — only show if data exists for that type
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _filterChip('all', 'All', Icons.list_rounded),
+                if (_transactions.any((t) => t['type'] == 'wallet_recharge')) ...[
+                  const SizedBox(width: 8),
+                  _filterChip('wallet_recharge', 'Recharges', Icons.add_circle_rounded),
+                ],
+                if (_transactions.any((t) => t['type'] == 'contact_unlock')) ...[
+                  const SizedBox(width: 8),
+                  _filterChip('contact_unlock', 'Unlocks', Icons.lock_open_rounded),
+                ],
+                if (_transactions.any((t) => t['type'] == 'usage_fee')) ...[
+                  const SizedBox(width: 8),
+                  _filterChip('usage_fee', 'Usage Fees', Icons.timelapse_rounded),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (filtered.isEmpty)
             const Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 40),
-                child: Text('No transactions yet'),
+                child: Text('No transactions in this category'),
               ),
             )
           else
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: _transactions.length,
+              itemCount: filtered.length,
               itemBuilder: (context, index) {
-                final tx = _transactions[index];
-                final isCredit = tx['type'] == 'wallet_recharge';
-                return Card(
+                final tx = filtered[index];
+                final type = tx['type'] as String? ?? '';
+                final isCredit = type == 'wallet_recharge';
+                final isUsageFee = type == 'usage_fee';
+                final isContactUnlock = type == 'contact_unlock';
+
+                // Icon, color, and label per type
+                IconData iconData;
+                Color iconBg;
+                Color iconColor;
+                String typeLabel;
+
+                if (isCredit) {
+                  iconData = Icons.add_circle_rounded;
+                  iconBg = Colors.green.withOpacity(0.12);
+                  iconColor = Colors.green.shade700;
+                  typeLabel = 'Wallet Recharge';
+                } else if (isUsageFee) {
+                  iconData = Icons.timelapse_rounded;
+                  iconBg = Colors.orange.withOpacity(0.12);
+                  iconColor = Colors.orange.shade800;
+                  typeLabel = 'Usage Fee';
+                } else if (isContactUnlock) {
+                  iconData = Icons.lock_open_rounded;
+                  iconBg = const Color(0xFF0D47A1).withOpacity(0.10);
+                  iconColor = const Color(0xFF0D47A1);
+                  typeLabel = 'Contact Unlock';
+                } else {
+                  iconData = Icons.remove_circle_rounded;
+                  iconBg = Colors.red.withOpacity(0.10);
+                  iconColor = Colors.red.shade700;
+                  typeLabel = 'Deduction';
+                }
+
+                final description = tx['description'] as String? ?? typeLabel;
+                final amount = tx['amount']?.toString() ?? '0';
+                final status = tx['status']?.toString() ?? '';
+                final createdAt = DateTime.tryParse(tx['created_at'] ?? '') ?? DateTime.now();
+
+                final unlockedUser = isContactUnlock
+                    ? tx['unlocked_user'] as Map<String, dynamic>?
+                    : null;
+                final unlockedUserId = unlockedUser?['id'] as int?;
+
+                final card = Card(
                   margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: isCredit ? Colors.green.withOpacity(0.1) : const Color(0xFF0D47A1).withOpacity(0.1), // Deep blue for debit
-                      child: Icon(
-                        isCredit ? Icons.add : Icons.remove,
-                        color: isCredit ? Colors.green : const Color(0xFF0D47A1), // Deep blue for debit
-                      ),
-                    ),
-                    title: Text(tx['description'] ?? (isCredit ? 'Wallet Recharge' : 'Contact Unlock')),
-                    subtitle: Text(
-                      DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.parse(tx['created_at'])),
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                  elevation: 0,
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(color: Colors.grey.shade100),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${isCredit ? '+' : '-'}₹${tx['amount']}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: isCredit ? Colors.green : Colors.black87,
-                            fontSize: 16,
+                        // Icon badge
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: iconBg,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(iconData, color: iconColor, size: 22),
+                        ),
+                        const SizedBox(width: 14),
+                        // Details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                typeLabel,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: Color(0xFF1A1A1A),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              // For contact_unlock — show person's name & matrimony_id
+                              if (isContactUnlock && unlockedUser != null) ...[
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        [
+                                          unlockedUser['first_name'],
+                                          unlockedUser['last_name'],
+                                        ].where((e) => e != null && e.toString().isNotEmpty).join(' '),
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF1A1A1A),
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF0D47A1).withOpacity(0.09),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        unlockedUser['matrimony_id']?.toString() ?? '',
+                                        style: const TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF0D47A1),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 2),
+                              ] else ...[
+                                Text(
+                                  description,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                              ],
+                              Text(
+                                DateFormat('dd MMM yyyy, hh:mm a').format(createdAt),
+                                style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                              ),
+                            ],
                           ),
                         ),
-                        Text(
-                          tx['status'].toString().toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: tx['status'] == 'success' ? Colors.green : Colors.orange,
-                          ),
+                        const SizedBox(width: 12),
+                        // Amount + status
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${isCredit ? '+' : '-'}₹$amount',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isCredit
+                                    ? Colors.green.shade700
+                                    : isUsageFee
+                                        ? Colors.orange.shade800
+                                        : const Color(0xFF0D47A1),
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: status == 'success'
+                                    ? Colors.green.withOpacity(0.10)
+                                    : Colors.orange.withOpacity(0.10),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                status.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: status == 'success'
+                                      ? Colors.green.shade700
+                                      : Colors.orange.shade800,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 );
+
+                // Contact unlock cards navigate to that person's profile
+                if (isContactUnlock && unlockedUserId != null) {
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ViewProfileScreen(userId: unlockedUserId),
+                      ),
+                    ),
+                    child: card,
+                  );
+                }
+
+                return card;
               },
             ),
         ],

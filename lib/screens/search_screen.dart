@@ -10,6 +10,7 @@ import 'view_profile_screen.dart';
 import 'messages_screen.dart';
 import '../widgets/common_footer.dart';
 import 'preferences_screen.dart';
+import '../widgets/recharge_dialog.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -72,6 +73,15 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         final rawCategories = data['categories'] as List? ?? [];
         setState(() {
           _categories = rawCategories.where((c) => c['field'] != 'religion').toList();
+          _isLoading = false;
+        });
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        if (data['required_recharge'] == true) {
+          _showRechargeRequiredDialog(data['message']);
+        }
+        setState(() {
+          _error = data['message'] ?? 'Access denied';
           _isLoading = false;
         });
       } else {
@@ -715,6 +725,15 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           _allMatches = usersData.map((u) => User.fromJson(u)).toList();
           _isLoadingAllMatches = false;
         });
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        if (data['required_recharge'] == true) {
+          _showRechargeRequiredDialog(data['message']);
+        }
+        setState(() {
+          _allMatchesError = data['message'] ?? 'Access denied';
+          _isLoadingAllMatches = false;
+        });
       } else {
         setState(() {
           _allMatchesError = 'Failed to load recommendations';
@@ -727,6 +746,14 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         _isLoadingAllMatches = false;
       });
     }
+  }
+
+  void _showRechargeRequiredDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => RechargeRequiredDialog(message: message),
+    );
   }
 
   void _navigateToResults(dynamic category) {

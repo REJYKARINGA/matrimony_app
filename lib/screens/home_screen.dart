@@ -30,6 +30,7 @@ import '../widgets/common_footer.dart';
 import 'search_screen.dart';
 import 'preferences_screen.dart';
 import '../utils/app_colors.dart';
+import '../widgets/recharge_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -450,6 +451,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     );
   }
 
+  void _showRechargeRequiredDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => RechargeRequiredDialog(message: message),
+    );
+  }
+
   Future<void> _loadInterestsAndMatches() async {
     try {
       final sentResponse = await MatchingService.getSentInterests();
@@ -669,6 +678,16 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         }
 
         _parseAndSetUsers(usersData, index: index);
+      } else if (response.statusCode == 403) {
+        if (!mounted) return;
+        final data = json.decode(response.body);
+        if (data['required_recharge'] == true) {
+          _showRechargeRequiredDialog(data['message']);
+        }
+        setState(() {
+          _recommendedError = data['message'] ?? 'Access denied';
+          _isLoadingRecommended = false;
+        });
       } else {
         if (!mounted) return;
         setState(() {
