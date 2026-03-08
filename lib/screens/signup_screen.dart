@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
+import '../services/api_service.dart';
 import '../utils/app_colors.dart';
 import 'create_profile_screen.dart';
 import 'home_screen.dart';
@@ -20,9 +22,18 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _otpController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
+  
+  // OTP States
+  bool _isPhoneVerified = false;
+  bool _isSendingOtp = false;
+  bool _isVerifyingOtp = false;
+  String? _otpSessionId;
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -46,6 +57,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
@@ -183,10 +195,52 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                               _buildTextField(
                                 controller: _phoneController,
                                 label: 'Phone Number',
-                                hint: 'Enter your phone (optional)',
+                                hint: 'Enter your phone number',
                                 icon: Icons.phone_outlined,
                                 keyboardType: TextInputType.phone,
+                                suffixIcon: _isPhoneVerified
+                                    ? const Icon(Icons.check_circle, color: Colors.green)
+                                    : TextButton(
+                                        onPressed: _isSendingOtp ? null : _sendOtp,
+                                        child: _isSendingOtp
+                                            ? const SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: CircularProgressIndicator(strokeWidth: 2),
+                                              )
+                                            : const Text('Verify', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
+                                      ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your phone number';
+                                  }
+                                  if (value.length < 10) {
+                                    return 'Please enter a valid phone number';
+                                  }
+                                  return null;
+                                },
                               ),
+                              
+                              if (_otpSessionId != null && !_isPhoneVerified) ...[
+                                const SizedBox(height: 20),
+                                _buildTextField(
+                                  controller: _otpController,
+                                  label: 'Enter OTP',
+                                  hint: '6-digit OTP',
+                                  icon: Icons.password_outlined,
+                                  keyboardType: TextInputType.number,
+                                  suffixIcon: TextButton(
+                                    onPressed: _isVerifyingOtp ? null : _verifyOtp,
+                                    child: _isVerifyingOtp
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          )
+                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
+                                  ),
+                                ),
+                              ],
                               
                               const SizedBox(height: 20),
                               
@@ -390,11 +444,19 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                               );
                                               return;
                                             }
+                                            if (!_isPhoneVerified) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Please verify your phone number using OTP first'),
+                                                  backgroundColor: Colors.orange,
+                                                  behavior: SnackBarBehavior.floating,
+                                                ),
+                                              );
+                                              return;
+                                            }
                                             bool success = await authProvider.register(
                                               email: _emailController.text.trim(),
-                                              phone: _phoneController.text.isNotEmpty
-                                                  ? _phoneController.text
-                                                  : null,
+                                              phone: _phoneController.text.trim(),
                                               password: _passwordController.text,
                                             );
                                             if (success && mounted) {
@@ -584,5 +646,76 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
         ),
       ],
     );
+  }
+
+  Future<void> _sendOtp() async {
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty || phone.length < 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSendingOtp = true;
+    });
+
+    try {
+      final response = await ApiService.sendPhoneOtp(phone: phone, isSignup: true);
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _otpSessionId = data['session_id'];
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['message'] ?? 'OTP Sent!'), backgroundColor: Colors.green),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['error'] ?? 'Failed to send OTP'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isSendingOtp = false);
+    }
+  }
+
+  Future<void> _verifyOtp() async {
+    final otp = _otpController.text.trim();
+    if (otp.isEmpty || _otpSessionId == null) return;
+
+    setState(() {
+      _isVerifyingOtp = true;
+    });
+
+    try {
+      final response = await ApiService.verifyPhoneOtp(sessionId: _otpSessionId!, otp: otp);
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _isPhoneVerified = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Phone number verified successfully!'), backgroundColor: Colors.green),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(data['error'] ?? 'Invalid OTP'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isVerifyingOtp = false);
+    }
   }
 }

@@ -139,6 +139,30 @@ class ApiService {
     return response;
   }
 
+  static Future<http.Response> sendPhoneOtp({
+    required String phone,
+    bool isSignup = false,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$authUrl/send-phone-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'phone': phone, 'is_signup': isSignup}),
+    );
+    return response;
+  }
+
+  static Future<http.Response> verifyPhoneOtp({
+    required String sessionId,
+    required String otp,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$authUrl/verify-phone-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'session_id': sessionId, 'otp': otp}),
+    );
+    return response;
+  }
+
   static Future<http.Response> changePassword({
     required String currentPassword,
     required String newPassword,
