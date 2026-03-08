@@ -4,6 +4,9 @@ import 'dart:convert';
 import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
 import '../utils/date_formatter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'dart:io' show File;
 import '../utils/app_colors.dart';
 import '../widgets/profile_creation_widgets.dart';
 
@@ -18,7 +21,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final PageController _pageController = PageController();
   int _currentStep = 0;
-  final int _totalSteps = 12; // Increased for Preview step
+  final int _totalSteps = 13; // Increased for Photo and Preview steps
+  List<XFile> _selectedPhotos = [];
 
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
@@ -198,6 +202,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        // Upload photos sequentially
+        int uploadedCount = 0;
+        for (var photo in _selectedPhotos) {
+          try {
+            final uploadResponse = await ProfileService.uploadProfilePhoto(photo);
+            if (uploadResponse.statusCode == 200 || uploadResponse.statusCode == 201) {
+              uploadedCount++;
+            }
+          } catch (e) {
+            debugPrint('Error uploading photo: $e');
+          }
+        }
+
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
         await authProvider.loadCurrentUserWithProfile();
         Navigator.of(context).pushReplacementNamed('/home');
@@ -220,6 +237,16 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_currentStep < _totalSteps - 1) {
+      // Validate photos if on photo step (Step 11)
+      if (_currentStep == 11) {
+        if (_selectedPhotos.length < 3) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please upload at least 3 photos'), backgroundColor: Colors.red),
+          );
+          return;
+        }
+      }
+
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -272,6 +299,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     _buildEducationStep(),
                     _buildLocationStep(),
                     _buildBioStep(),
+                    _buildPhotoStep(),
                     _buildPreviewStep(),
                   ],
                 ),
@@ -875,10 +903,149 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               style: const TextStyle(color: Colors.black87, height: 1.5),
             ),
           ),
+          const SizedBox(height: 16),
+          _buildPreviewSection(
+            title: 'Photos',
+            icon: Icons.photo_library_outlined,
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: _selectedPhotos.length,
+              itemBuilder: (context, index) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: kIsWeb 
+                    ? Image.network(_selectedPhotos[index].path, fit: BoxFit.cover)
+                    : Image.file(File(_selectedPhotos[index].path), fit: BoxFit.cover),
+                );
+              },
+            ),
+          ),
           const SizedBox(height: 20),
         ],
       ),
     );
+  }
+
+  Widget _buildPhotoStep() {
+    return _buildStepContainer(
+      title: 'Upload Photos',
+      subtitle: 'Show your best moments! Please upload minimum 3 and maximum 5 photos.',
+      child: Column(
+        children: [
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1,
+            ),
+            itemCount: 5,
+            itemBuilder: (context, index) {
+              if (index < _selectedPhotos.length) {
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: AppColors.primaryCyan.withOpacity(0.3)),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: kIsWeb 
+                          ? Image.network(_selectedPhotos[index].path, fit: BoxFit.cover)
+                          : Image.file(File(_selectedPhotos[index].path), fit: BoxFit.cover),
+                      ),
+                    ),
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedPhotos.removeAt(index)),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.close, size: 14, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: Colors.grey[300]!,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    child: Icon(Icons.add_a_photo_outlined, color: Colors.grey[400]),
+                  ),
+                );
+              }
+            },
+          ),
+          const SizedBox(height: 24),
+          if (_selectedPhotos.length < 3)
+            Text(
+              'Upload ${3 - _selectedPhotos.length} more photos to continue',
+              style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+            )
+          else
+            Text(
+              '${_selectedPhotos.length} photos uploaded',
+              style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickImage() async {
+    if (_selectedPhotos.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Maximum 5 photos allowed')),
+      );
+      return;
+    }
+
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      // Check for duplicates by name or path
+      bool isDuplicate = _selectedPhotos.any((p) => p.name == image.name);
+      
+      if (isDuplicate) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This photo is already selected'),
+            backgroundColor: Colors.orange,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+
+      setState(() {
+        _selectedPhotos.add(image);
+      });
+    }
   }
 
   Widget _buildPreviewSection({required String title, required IconData icon, List<Widget>? items, Widget? child}) {
