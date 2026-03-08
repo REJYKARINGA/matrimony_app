@@ -39,6 +39,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   late TextEditingController _occupationController;
   late TextEditingController _annualIncomeController;
   late TextEditingController _cityController;
+  late TextEditingController _maritalStatusController;
+  late TextEditingController _smokeController;
+  late TextEditingController _alcoholController;
+  late TextEditingController _districtController;
   String? _selectedDistrict;
   late TextEditingController _stateController;
   late TextEditingController _countryController;
@@ -60,6 +64,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   List<dynamic> _availableSubCastes = [];
   List<dynamic> _educations = [];
   List<dynamic> _occupations = [];
+
+  final List<Map<String, dynamic>> _maritalStatuses = [
+    {'id': 'never_married', 'name': 'Single'},
+    {'id': 'nikkah_divorced', 'name': 'Nikkah Divorced'},
+    {'id': 'divorced', 'name': 'Divorced'},
+    {'id': 'widowed', 'name': 'Widowed'},
+  ];
+
+  final List<Map<String, dynamic>> _habitOptions = [
+    {'id': 'never', 'name': 'Never'},
+    {'id': 'occasionally', 'name': 'Occasionally'},
+    {'id': 'regularly', 'name': 'Regularly'},
+  ];
 
   // Selected IDs
   int? _selectedReligionId;
@@ -148,8 +165,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _occupationController = TextEditingController();
     _annualIncomeController = TextEditingController();
     _cityController = TextEditingController();
+    _districtController = TextEditingController();
     _stateController = TextEditingController(text: 'Kerala');
     _countryController = TextEditingController(text: 'India');
+    _maritalStatusController = TextEditingController();
+    _smokeController = TextEditingController(text: 'Never');
+    _alcoholController = TextEditingController(text: 'Never');
     _bioController = TextEditingController();
   }
 
@@ -167,6 +188,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _occupationController.dispose();
     _annualIncomeController.dispose();
     _cityController.dispose();
+    _districtController.dispose();
+    _maritalStatusController.dispose();
+    _smokeController.dispose();
+    _alcoholController.dispose();
     _stateController.dispose();
     _countryController.dispose();
     _bioController.dispose();
@@ -631,20 +656,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return _buildStepContainer(
       title: 'Marital Status',
       subtitle: 'This helps us filter profiles based on your requirements.',
-      child: DropdownButtonFormField<String>(
-        value: _selectedMaritalStatus,
-        decoration: InputDecoration(
-          labelText: 'Marital Status',
-          prefixIcon: const Icon(Icons.favorite_outline),
+      child: _buildTextField(
+        controller: _maritalStatusController,
+        label: 'Marital Status',
+        icon: Icons.favorite_outline,
+        readOnly: true,
+        onTap: () => _openSearchablePicker(
+          title: 'Marital Status',
+          items: _maritalStatuses,
+          controller: _maritalStatusController,
+          onSelected: (item) {
+            setState(() {
+              _selectedMaritalStatus = item['id'];
+            });
+          },
         ),
-        items: const [
-          DropdownMenuItem(value: 'never_married', child: Text('Single')),
-          DropdownMenuItem(value: 'nikkah_divorced', child: Text('Nikkah Divorced')),
-          DropdownMenuItem(value: 'divorced', child: Text('Divorced')),
-          DropdownMenuItem(value: 'widowed', child: Text('Widowed')),
-        ],
-        validator: (val) => val == null ? 'Required' : null,
-        onChanged: (val) => setState(() => _selectedMaritalStatus = val),
       ),
     );
   }
@@ -663,9 +689,39 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             onChanged: (val) => setState(() => _drugAddiction = val),
           ),
           const SizedBox(height: 16),
-          _buildHabitDropdown('Smoking', _smoke, (val) => setState(() => _smoke = val!)),
+          _buildTextField(
+            controller: _smokeController,
+            label: 'Smoking',
+            icon: Icons.smoke_free,
+            readOnly: true,
+            onTap: () => _openSearchablePicker(
+              title: 'Smoking',
+              items: _habitOptions,
+              controller: _smokeController,
+              onSelected: (item) {
+                setState(() {
+                  _smoke = item['id'];
+                });
+              },
+            ),
+          ),
           const SizedBox(height: 16),
-          _buildHabitDropdown('Alcohol', _alcohol, (val) => setState(() => _alcohol = val!)),
+          _buildTextField(
+            controller: _alcoholController,
+            label: 'Alcohol',
+            icon: Icons.local_bar,
+            readOnly: true,
+            onTap: () => _openSearchablePicker(
+              title: 'Alcohol',
+              items: _habitOptions,
+              controller: _alcoholController,
+              onSelected: (item) {
+                setState(() {
+                  _alcohol = item['id'];
+                });
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -813,15 +869,21 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         children: [
           _buildTextField(controller: _cityController, label: 'City', icon: Icons.location_city),
           const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            value: _selectedDistrict,
-            decoration: InputDecoration(
-              labelText: 'District',
-              prefixIcon: const Icon(Icons.map),
+          _buildTextField(
+            controller: _districtController,
+            label: 'District',
+            icon: Icons.map,
+            readOnly: true,
+            onTap: () => _openSearchablePicker(
+              title: 'District',
+              items: _keralaDistricts,
+              controller: _districtController,
+              onSelected: (item) {
+                setState(() {
+                  _selectedDistrict = item;
+                });
+              },
             ),
-            items: _keralaDistricts.map((d) => DropdownMenuItem(value: d, child: Text(d))).toList(),
-            validator: (val) => val == null ? 'Required' : null,
-            onChanged: (val) => setState(() => _selectedDistrict = val),
           ),
         ],
       ),
