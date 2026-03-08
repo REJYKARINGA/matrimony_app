@@ -144,9 +144,9 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _rechargeButton(100),
-              _rechargeButton(500),
-              _rechargeButton(1000),
+              _rechargeButton(199),
+              _rechargeButton(499),
+              _rechargeButton(999),
             ],
           ),
         ],

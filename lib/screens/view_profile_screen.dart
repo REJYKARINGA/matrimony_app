@@ -2049,10 +2049,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildRechargeOption(100.0, context),
-            _buildRechargeOption(500.0, context),
-            _buildRechargeOption(1000.0, context),
-            _buildRechargeOption(2000.0, context),
+            _buildRechargeOption(199.0, context),
+            _buildRechargeOption(499.0, context),
+            _buildRechargeOption(999.0, context),
+            _buildRechargeOption(1999.0, context),
           ],
         ),
       ),
