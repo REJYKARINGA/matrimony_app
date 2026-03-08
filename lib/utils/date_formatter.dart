@@ -21,7 +21,11 @@ class DateFormatter {
       try {
         return DateFormat('MMM dd, yyyy').parse(dateString);
       } catch (e) {
-        return DateTime.tryParse(dateString);
+        try {
+          return DateFormat('dd MMM, yyyy').parse(dateString);
+        } catch (e) {
+          return DateTime.tryParse(dateString);
+        }
       }
     }
   }
