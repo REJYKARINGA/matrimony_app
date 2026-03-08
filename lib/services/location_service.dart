@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'api_service.dart';
 
 class LocationService {
+
   // Check and request permissions
   static Future<bool> requestLocationPermission() async {
     var status = await Permission.location.status;
@@ -70,24 +71,51 @@ class LocationService {
   // Reverse Geocoding: Get Address from Coordinates
   static Future<Map<String, String>?> getAddressFromCoordinates(double lat, double lon) async {
     try {
-      // Using OpenStreetMap's Nominatim API (Free, no key required)
-      // Increased zoom for better address/postal code accuracy
-      final url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=$lat&lon=$lon&zoom=18&addressdetails=1');
+      final url = '${ApiService.baseUrl}/location/geocode?lat=$lat&lon=$lon';
       
-      final response = await ApiService.makeRequest(url.toString(), method: 'GET');
+      final response = await ApiService.makeRequest(url, method: 'GET');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final address = data['address'];
-        
-        return {
-          'city': (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString(),
-          'district': (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString(),
-          'county': (address['county'] ?? '').toString(),
-          'state': (address['state'] ?? '').toString(),
-          'country': (address['country'] ?? '').toString(),
-          'postal_code': (address['postcode'] ?? address['postal_code'] ?? '').toString(),
-        };
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          final components = data['results'][0]['address_components'] as List;
+          
+          String city = '';
+          String district = '';
+          String county = '';
+          String state = '';
+          String country = '';
+          String postalCode = '';
+
+          for (var component in components) {
+            final types = component['types'] as List;
+            if (types.contains('locality') || types.contains('sublocality')) {
+               if (city.isEmpty) city = component['long_name'];
+            }
+            if (types.contains('administrative_area_level_3') || types.contains('administrative_area_level_2')) {
+               if (district.isEmpty) district = component['long_name'];
+               if (county.isEmpty) county = component['long_name'];
+            }
+            if (types.contains('administrative_area_level_1')) {
+               state = component['long_name'];
+            }
+            if (types.contains('country')) {
+               country = component['long_name'];
+            }
+            if (types.contains('postal_code')) {
+               postalCode = component['long_name'];
+            }
+          }
+
+          return {
+            'city': city,
+            'district': district,
+            'county': county,
+            'state': state,
+            'country': country,
+            'postal_code': postalCode,
+          };
+        }
       }
       return null;
     } catch (e) {
@@ -99,25 +127,54 @@ class LocationService {
   // Forward Geocoding: Search Address by Query (City/Place)
   static Future<Map<String, dynamic>?> searchAddressByCity(String query) async {
     try {
-      final url = Uri.parse('https://nominatim.openstreetmap.org/search?format=json&q=${Uri.encodeComponent(query)}&limit=1&addressdetails=1');
+      final url = '${ApiService.baseUrl}/location/search?query=${Uri.encodeComponent(query)}';
       
-      final response = await ApiService.makeRequest(url.toString(), method: 'GET');
+      final response = await ApiService.makeRequest(url, method: 'GET');
 
       if (response.statusCode == 200) {
-        final List<dynamic> results = json.decode(response.body);
-        if (results.isNotEmpty) {
-          final data = results[0];
-          final address = data['address'];
+        final data = json.decode(response.body);
+        
+        if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          final result = data['results'][0];
+          final geometry = result['geometry']['location'];
+          final components = result['address_components'] as List;
           
+          String city = query;
+          String district = '';
+          String county = '';
+          String state = '';
+          String country = '';
+          String postalCode = '';
+
+          for (var component in components) {
+            final types = component['types'] as List;
+            if (types.contains('locality') || types.contains('sublocality')) {
+               city = component['long_name'];
+            }
+            if (types.contains('administrative_area_level_3') || types.contains('administrative_area_level_2')) {
+               if (district.isEmpty) district = component['long_name'];
+               if (county.isEmpty) county = component['long_name'];
+            }
+            if (types.contains('administrative_area_level_1')) {
+               state = component['long_name'];
+            }
+            if (types.contains('country')) {
+               country = component['long_name'];
+            }
+            if (types.contains('postal_code')) {
+               postalCode = component['long_name'];
+            }
+          }
+
           return {
-            'lat': double.tryParse(data['lat']?.toString() ?? '0'),
-            'lon': double.tryParse(data['lon']?.toString() ?? '0'),
-            'city': (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? query).toString(),
-            'district': (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString(),
-            'county': (address['county'] ?? '').toString(),
-            'state': (address['state'] ?? '').toString(),
-            'country': (address['country'] ?? '').toString(),
-            'postal_code': (address['postcode'] ?? address['postal_code'] ?? '').toString(),
+            'lat': geometry['lat'],
+            'lon': geometry['lng'], // Google Maps returns 'lng', not 'lon'
+            'city': city,
+            'district': district,
+            'county': county,
+            'state': state,
+            'country': country,
+            'postal_code': postalCode,
           };
         }
       }
