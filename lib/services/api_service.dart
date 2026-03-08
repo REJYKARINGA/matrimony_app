@@ -139,6 +139,18 @@ class ApiService {
     return response;
   }
 
+  static Future<http.Response> sendEmailOtp({
+    required String email,
+    bool isSignup = false,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$authUrl/send-email-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'is_signup': isSignup}),
+    );
+    return response;
+  }
+
   static Future<http.Response> sendPhoneOtp({
     required String phone,
     bool isSignup = false,

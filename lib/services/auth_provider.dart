@@ -197,6 +197,36 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> sendEmailOtpSignup({
+    required String email,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService.sendEmailOtp(email: email, isSignup: true);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _errorMessage = data['message'] ?? 'OTP sent successfully';
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = jsonDecode(response.body)['error'] ?? 'Failed to send OTP';
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> sendOtp({
     required String email,
   }) async {

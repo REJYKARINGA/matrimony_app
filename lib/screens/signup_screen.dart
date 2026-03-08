@@ -23,16 +23,23 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _otpController = TextEditingController();
+  final _emailOtpController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
   
-  // OTP States
+  // Phone OTP States
   bool _isPhoneVerified = false;
   bool _isSendingOtp = false;
   bool _isVerifyingOtp = false;
   String? _otpSessionId;
+
+  // Email OTP States
+  bool _isEmailVerified = false;
+  bool _isSendingEmailOtp = false;
+  bool _isVerifyingEmailOtp = false;
+  bool _emailOtpSent = false;
 
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -58,6 +65,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _otpController.dispose();
+    _emailOtpController.dispose();
     super.dispose();
   }
 
@@ -177,6 +185,18 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                 hint: 'Enter your email',
                                 icon: Icons.email_outlined,
                                 keyboardType: TextInputType.emailAddress,
+                                suffixIcon: _isEmailVerified
+                                    ? const Icon(Icons.check_circle, color: Colors.green)
+                                    : TextButton(
+                                        onPressed: _isSendingEmailOtp ? null : _sendEmailOtp,
+                                        child: _isSendingEmailOtp
+                                            ? const SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child: CircularProgressIndicator(strokeWidth: 2),
+                                              )
+                                            : const Text('Verify', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
+                                      ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your email';
@@ -188,6 +208,27 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                   return null;
                                 },
                               ),
+                              
+                              if (_emailOtpSent && !_isEmailVerified) ...[
+                                const SizedBox(height: 20),
+                                _buildTextField(
+                                  controller: _emailOtpController,
+                                  label: 'Enter Email OTP',
+                                  hint: 'OTP sent to email',
+                                  icon: Icons.mark_email_read_outlined,
+                                  keyboardType: TextInputType.number,
+                                  suffixIcon: TextButton(
+                                    onPressed: _isVerifyingEmailOtp ? null : _verifyEmailOtp,
+                                    child: _isVerifyingEmailOtp
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          )
+                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
+                                  ),
+                                ),
+                              ],
                               
                               const SizedBox(height: 20),
                               
@@ -438,6 +479,16 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
                                                   content: Text('Please agree to the Terms and Conditions to continue'),
+                                                  backgroundColor: Colors.orange,
+                                                  behavior: SnackBarBehavior.floating,
+                                                ),
+                                              );
+                                              return;
+                                            }
+                                            if (!_isEmailVerified) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Please verify your email address using OTP first'),
                                                   backgroundColor: Colors.orange,
                                                   behavior: SnackBarBehavior.floating,
                                                 ),
@@ -716,6 +767,77 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
       );
     } finally {
       if (mounted) setState(() => _isVerifyingOtp = false);
+    }
+  }
+
+  Future<void> _sendEmailOtp() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSendingEmailOtp = true;
+    });
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.sendEmailOtpSignup(email: email);
+
+      if (success) {
+        setState(() {
+          _emailOtpSent = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('OTP sent to your email!'), backgroundColor: Colors.green),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(authProvider.errorMessage ?? 'Failed to send OTP'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isSendingEmailOtp = false);
+    }
+  }
+
+  Future<void> _verifyEmailOtp() async {
+    final otp = _emailOtpController.text.trim();
+    if (otp.isEmpty) return;
+
+    setState(() {
+      _isVerifyingEmailOtp = true;
+    });
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.verifyOtp(email: _emailController.text.trim(), otp: otp);
+
+      if (success) {
+        setState(() {
+          _isEmailVerified = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Email verified successfully!'), backgroundColor: Colors.green),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(authProvider.errorMessage ?? 'Invalid OTP'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isVerifyingEmailOtp = false);
     }
   }
 }
