@@ -142,11 +142,12 @@ class ApiService {
   static Future<http.Response> sendPhoneOtp({
     required String phone,
     bool isSignup = false,
+    bool isReset = false,
   }) async {
     final response = await http.post(
       Uri.parse('$authUrl/send-phone-otp'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'phone': phone, 'is_signup': isSignup}),
+      body: jsonEncode({'phone': phone, 'is_signup': isSignup, 'is_reset': isReset}),
     );
     return response;
   }
@@ -154,11 +155,18 @@ class ApiService {
   static Future<http.Response> verifyPhoneOtp({
     required String sessionId,
     required String otp,
+    String? phone,
+    bool isReset = false,
   }) async {
     final response = await http.post(
       Uri.parse('$authUrl/verify-phone-otp'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'session_id': sessionId, 'otp': otp}),
+      body: jsonEncode({
+        'session_id': sessionId,
+        'otp': otp,
+        if (phone != null) 'phone': phone,
+        'is_reset': isReset
+      }),
     );
     return response;
   }

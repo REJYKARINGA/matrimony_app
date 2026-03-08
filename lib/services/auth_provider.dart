@@ -294,4 +294,68 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<String?> sendPhoneOtpForReset({
+    required String phone,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService.sendPhoneOtp(phone: phone, isReset: true);
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return data['session_id']; // return session_id directly
+      } else {
+        _errorMessage = data['error'] ?? 'Failed to send OTP';
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> verifyPhoneOtpForReset({
+    required String phone,
+    required String otp,
+    required String sessionId,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService.verifyPhoneOtp(
+        sessionId: sessionId,
+        otp: otp,
+        phone: phone,
+        isReset: true,
+      );
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        // Return email returned by server 
+        return data['email'];
+      } else {
+        _errorMessage = data['error'] ?? 'Invalid OTP';
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

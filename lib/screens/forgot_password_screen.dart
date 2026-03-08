@@ -14,9 +14,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _otpFormKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
+  bool _isUsingEmail = true;
+  String? _phoneSessionId;
+  String? _verifiedEmail;
 
   int _currentStep = 0; // 0: Enter email, 1: Enter OTP, 2: Reset password
   bool _isLoading = false;
@@ -80,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               // Step indicator
               Row(
                 children: [
-                  _buildStepIndicator(0, 'Email'),
+                  _buildStepIndicator(0, _isUsingEmail ? 'Email' : 'Phone'),
                   _buildStepLine(),
                   _buildStepIndicator(1, 'OTP'),
                   _buildStepLine(),
@@ -132,9 +137,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   String _getSubtitle() {
     switch (_currentStep) {
       case 0:
-        return 'Enter your email address to receive a verification code';
+        return _isUsingEmail 
+            ? 'Enter your email address to receive a verification code'
+            : 'Enter your phone number to receive a verification code';
       case 1:
-        return 'Enter the OTP sent to your email';
+        return _isUsingEmail 
+            ? 'Enter the OTP sent to your email'
+            : 'Enter the OTP sent to your phone';
       case 2:
         return 'Create your new password';
       default:
@@ -215,39 +224,106 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Email Address',
-              hintText: 'Enter your registered email',
-              labelStyle: TextStyle(color: Colors.grey[600]),
-              prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF00BCD4)),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ChoiceChip(
+                label: const Text('Email'),
+                selected: _isUsingEmail,
+                onSelected: (val) {
+                  if (val) setState(() => _isUsingEmail = true);
+                },
+                selectedColor: Color(0xFF00BCD4).withOpacity(0.2),
+                labelStyle: TextStyle(
+                  color: _isUsingEmail ? Color(0xFF0D47A1) : Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey.shade300),
+              const SizedBox(width: 16),
+              ChoiceChip(
+                label: const Text('Phone Number'),
+                selected: !_isUsingEmail,
+                onSelected: (val) {
+                  if (val) setState(() => _isUsingEmail = false);
+                },
+                selectedColor: Color(0xFF00BCD4).withOpacity(0.2),
+                labelStyle: TextStyle(
+                  color: !_isUsingEmail ? Color(0xFF0D47A1) : Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
-              ),
-              filled: true,
-              fillColor: Colors.grey.shade50,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
+            ],
           ),
+          const SizedBox(height: 20),
+          _isUsingEmail
+              ? TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    hintText: 'Enter your registered email',
+                    labelStyle: TextStyle(color: Colors.grey[600]),
+                    prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF00BCD4)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                )
+              : TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    hintText: 'Enter your registered phone',
+                    labelStyle: TextStyle(color: Colors.grey[600]),
+                    prefixIcon: Icon(Icons.phone_outlined, color: Color(0xFF00BCD4)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your phone number';
+                    }
+                    if (value.length < 10) {
+                      return 'Please enter a valid phone number';
+                    }
+                    return null;
+                  },
+                ),
           const SizedBox(height: 30),
           Container(
             height: 56,
@@ -275,21 +351,37 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         });
 
                         try {
-                          bool success = await authProvider.sendOtp(
-                            email: _emailController.text.trim(),
-                          );
-
-                          if (success) {
-                            setState(() {
-                              _currentStep = 1;
-                              _isLoading = false;
-                            });
+                          if (_isUsingEmail) {
+                            bool success = await authProvider.sendOtp(
+                              email: _emailController.text.trim(),
+                            );
+                            if (success) {
+                              setState(() {
+                                _currentStep = 1;
+                                _isLoading = false;
+                              });
+                            } else {
+                              setState(() {
+                                _errorMessage = authProvider.errorMessage ?? 'Failed to send OTP';
+                                _isLoading = false;
+                              });
+                            }
                           } else {
-                            setState(() {
-                              _errorMessage =
-                                  authProvider.errorMessage ?? 'Failed to send OTP';
-                              _isLoading = false;
-                            });
+                            String? sessionId = await authProvider.sendPhoneOtpForReset(
+                              phone: _phoneController.text.trim(),
+                            );
+                            if (sessionId != null) {
+                              setState(() {
+                                _phoneSessionId = sessionId;
+                                _currentStep = 1;
+                                _isLoading = false;
+                              });
+                            } else {
+                              setState(() {
+                                _errorMessage = authProvider.errorMessage ?? 'Failed to send OTP';
+                                _isLoading = false;
+                              });
+                            }
                           }
                         } catch (e) {
                           setState(() {
@@ -375,7 +467,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            'OTP sent to ${_emailController.text}',
+            'OTP sent to ${_isUsingEmail ? _emailController.text : _phoneController.text}',
             style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
           ),
           const SizedBox(height: 20),
@@ -405,22 +497,47 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         });
 
                         try {
-                          bool success = await authProvider.verifyOtp(
-                            email: _emailController.text.trim(),
-                            otp: _otpController.text.trim(),
-                          );
-
-                          if (success) {
-                            setState(() {
-                              _currentStep = 2;
-                              _isLoading = false;
-                            });
+                          if (_isUsingEmail) {
+                            bool success = await authProvider.verifyOtp(
+                              email: _emailController.text.trim(),
+                              otp: _otpController.text.trim(),
+                            );
+                            if (success) {
+                              setState(() {
+                                _currentStep = 2;
+                                _isLoading = false;
+                              });
+                            } else {
+                              setState(() {
+                                _errorMessage = authProvider.errorMessage ?? 'Invalid OTP';
+                                _isLoading = false;
+                              });
+                            }
                           } else {
-                            setState(() {
-                              _errorMessage =
-                                  authProvider.errorMessage ?? 'Invalid OTP';
-                              _isLoading = false;
-                            });
+                            if (_phoneSessionId == null) {
+                                setState(() {
+                                  _errorMessage = 'Session expired. Please request OTP again.';
+                                  _isLoading = false;
+                                });
+                                return;
+                            }
+                            String? resolvedEmail = await authProvider.verifyPhoneOtpForReset(
+                              phone: _phoneController.text.trim(),
+                              otp: _otpController.text.trim(),
+                              sessionId: _phoneSessionId!,
+                            );
+                            if (resolvedEmail != null) {
+                              setState(() {
+                                _verifiedEmail = resolvedEmail;
+                                _currentStep = 2;
+                                _isLoading = false;
+                              });
+                            } else {
+                              setState(() {
+                                _errorMessage = authProvider.errorMessage ?? 'Invalid OTP';
+                                _isLoading = false;
+                              });
+                            }
                           }
                         } catch (e) {
                           setState(() {
@@ -471,26 +588,39 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       });
 
                       try {
-                        bool success = await authProvider.sendOtp(
-                          email: _emailController.text.trim(),
-                        );
-
-                        if (success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('New OTP sent successfully'),
-                              backgroundColor: Colors.green,
-                            ),
+                        if (_isUsingEmail) {
+                          bool success = await authProvider.sendOtp(
+                            email: _emailController.text.trim(),
                           );
-                          setState(() {
-                            _isLoading = false;
-                          });
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('New OTP sent successfully'), backgroundColor: Colors.green),
+                            );
+                            setState(() => _isLoading = false);
+                          } else {
+                            setState(() {
+                              _errorMessage = authProvider.errorMessage ?? 'Failed to resend OTP';
+                              _isLoading = false;
+                            });
+                          }
                         } else {
-                          setState(() {
-                            _errorMessage =
-                                authProvider.errorMessage ?? 'Failed to resend OTP';
-                            _isLoading = false;
-                          });
+                          String? sessionId = await authProvider.sendPhoneOtpForReset(
+                            phone: _phoneController.text.trim(),
+                          );
+                          if (sessionId != null) {
+                            setState(() {
+                              _phoneSessionId = sessionId;
+                              _isLoading = false;
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('New OTP sent successfully'), backgroundColor: Colors.green),
+                            );
+                          } else {
+                            setState(() {
+                              _errorMessage = authProvider.errorMessage ?? 'Failed to resend OTP';
+                              _isLoading = false;
+                            });
+                          }
                         }
                       } catch (e) {
                         setState(() {
@@ -639,8 +769,21 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         });
 
                         try {
+                          // verifiedEmail is captured in step 1 if using Phone
+                          String resetEmail = _isUsingEmail 
+                              ? _emailController.text.trim() 
+                              : (_verifiedEmail ?? '');
+
+                          if (resetEmail.isEmpty) {
+                            setState(() {
+                              _errorMessage = 'Error: Cannot resolve email account associated with this phone structure. Please try again or use Email.';
+                              _isLoading = false;
+                            });
+                            return;
+                          }
+
                           bool success = await authProvider.resetPassword(
-                            email: _emailController.text.trim(),
+                            email: resetEmail,
                             newPassword: _newPasswordController.text,
                           );
 
@@ -712,6 +855,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   void dispose() {
     _emailController.dispose();
+    _phoneController.dispose();
     _otpController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
