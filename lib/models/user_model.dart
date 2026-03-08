@@ -64,7 +64,11 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     // Parse contact_info block if present (returned when viewing other profiles)
     final contactInfoJson = json['contact_info'] as Map<String, dynamic>?;
-    final contactInfo = contactInfoJson != null ? ContactInfo.fromJson(contactInfoJson) : null;
+    final contactInfo = contactInfoJson != null 
+        ? ContactInfo.fromJson(contactInfoJson) 
+        : (json['is_contact_unlocked'] != null 
+            ? ContactInfo(isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1) 
+            : null);
 
     return User(
       id: json['id'],
@@ -77,7 +81,9 @@ class User {
       emailVerified: json['email_verified'] == 1 || json['email_verified'] == true,
       phoneVerified: json['phone_verified'] == 1 || json['phone_verified'] == true,
       lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
-      userProfile: json['user_profile'] != null ? UserProfile.fromJson(json['user_profile']) : null,
+      userProfile: json['user_profile'] != null 
+          ? UserProfile.fromJson(json['user_profile']) 
+          : (json['age'] != null ? UserProfile.fromCardJson(json) : null),
       familyDetails: json['family_details'] != null ? FamilyDetail.fromJson(json['family_details']) : null,
       preferences: json['preferences'] != null ? Preference.fromJson(json['preferences']) : null,
       profilePhotos: json['profile_photos'] != null 
@@ -185,6 +191,7 @@ class UserProfile {
   final String? alcohol;
   final bool? isActiveVerified;
   final DateTime? createdAt;
+  final int? ageOverride;
 
   UserProfile({
     this.id,
@@ -223,7 +230,24 @@ class UserProfile {
     this.alcohol,
     this.isActiveVerified,
     this.createdAt,
+    this.ageOverride,
   });
+
+  factory UserProfile.fromCardJson(Map<String, dynamic> json) {
+    return UserProfile(
+      firstName: '', 
+      lastName: '',
+      height: json['height'],
+      maritalStatus: json['marital_status']?.toString(),
+      caste: json['caste']?.toString(),
+      education: json['education']?.toString(),
+      occupation: json['occupation']?.toString(),
+      city: json['city']?.toString(),
+      profilePicture: json['profile_picture']?.toString(),
+      isActiveVerified: json['is_active_verified'] == true || json['is_active_verified'] == 1,
+      ageOverride: json['age'],
+    );
+  }
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
     return UserProfile(
@@ -302,6 +326,7 @@ class UserProfile {
   }
 
   int? get age {
+    if (ageOverride != null) return ageOverride;
     if (dateOfBirth != null) {
       var today = DateTime.now();
       var age = today.year - dateOfBirth!.year;
