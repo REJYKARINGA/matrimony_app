@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../utils/app_colors.dart';
 import 'create_profile_screen.dart';
 import 'home_screen.dart';
+import 'terms_and_conditions_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _agreeToTerms = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -252,9 +255,67 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                   return null;
                                 },
                               ),
-                              
+
+                              const SizedBox(height: 20),
+
+                              // Terms and Conditions Checkbox
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: Checkbox(
+                                      value: _agreeToTerms,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _agreeToTerms = value ?? false;
+                                        });
+                                      },
+                                      activeColor: AppColors.primaryCyan,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        text: 'I agree to the ',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey.shade700,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Terms and Conditions',
+                                            style: const TextStyle(
+                                              color: AppColors.primaryCyan,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.underline,
+                                            ),
+                                            recognizer: TapGestureRecognizer()
+                                              ..onTap = () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const TermsAndConditionsScreen(),
+                                                  ),
+                                                );
+                                              },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
                               const SizedBox(height: 8),
-                              
+
                               // Error Message
                               if (authProvider.errorMessage != null)
                                 Container(
@@ -319,6 +380,16 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                       ? null
                                       : () async {
                                           if (_formKey.currentState!.validate()) {
+                                            if (!_agreeToTerms) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Please agree to the Terms and Conditions to continue'),
+                                                  backgroundColor: Colors.orange,
+                                                  behavior: SnackBarBehavior.floating,
+                                                ),
+                                              );
+                                              return;
+                                            }
                                             bool success = await authProvider.register(
                                               email: _emailController.text.trim(),
                                               phone: _phoneController.text.isNotEmpty

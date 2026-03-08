@@ -10,6 +10,8 @@ import 'account_settings_screen.dart';
 import 'contact_us_screen.dart';
 import 'engagement_poster_info_screen.dart';
 import 'search_screen.dart';
+import 'terms_and_conditions_screen.dart';
+import 'privacy_policy_screen.dart';
 
 import '../services/payment_service.dart';
 import 'wallet_transactions_screen.dart';
@@ -652,6 +654,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Center(
               child: Column(
                 children: [
+                  // Legal Links
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TermsAndConditionsScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Terms & Conditions',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        ' • ',
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PrivacyPolicyScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Privacy Policy',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
                   Text(
                     'Version 1.0.0',
                     style: TextStyle(fontSize: 13, color: Colors.grey[500]),
