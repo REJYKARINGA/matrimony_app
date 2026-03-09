@@ -18,19 +18,21 @@ import '../models/user_model.dart';
 import 'profile_screen_view.dart';
 import 'matching_screen.dart';
 import 'messages_screen.dart';
-import 'subscription_screen.dart';
 import 'settings_screen.dart';
 import 'view_profile_screen.dart';
 import 'notification_screen.dart';
 import '../services/reverb_service.dart';
 import '../services/message_service.dart';
 import '../services/navigation_provider.dart';
+import '../services/subscription_service.dart';
 import '../services/profile_view_service.dart';
 import '../widgets/common_footer.dart';
 import 'search_screen.dart';
 import 'preferences_screen.dart';
 import '../utils/app_colors.dart';
 import '../widgets/recharge_dialog.dart';
+import 'wallet_transactions_screen.dart';
+import '../widgets/wallet_recharge_paywall.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -287,11 +289,13 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   late Map<int, int> _interestCountdown;
   late Set<int> _shortlistedUserIds;
   int _unreadNotificationCount = 0;
+  List<dynamic> _subscriptionPlans = [];
+  bool _isLoadingPlans = false;
+  bool _isRechargeRequired = false;
   List<dynamic> _visitors = [];
   bool _isLoadingVisitors = true;
   bool _isIdSearchExpanded = false;
   final TextEditingController _idSearchController = TextEditingController();
-
   bool _hasInitialized = false;
   
   @override
@@ -315,6 +319,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       
       // Load initial tab
       await _loadTabUsers(0);
+      _loadSubscriptionPlans();
 
       if (!mounted) return;
 
@@ -365,6 +370,13 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             _isLoadingVisitors = false;
           });
         }
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        if (data['required_recharge'] == true) {
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
+          setState(() => _isRechargeRequired = true);
+        }
+        if (mounted) setState(() => _isLoadingVisitors = false);
       }
     } catch (e) {
       print('Error loading visitors: $e');
@@ -405,6 +417,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             _shortlistedUserIds = ids;
           });
         }
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        if (data['required_recharge'] == true) {
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
+          setState(() => _isRechargeRequired = true);
+        }
       }
     } catch (e) {
       print('Error loading shortlisted profiles: $e');
@@ -440,6 +458,28 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       print('Error checking for matches: $e');
     }
   }
+  
+  Future<void> _loadSubscriptionPlans() async {
+    if (_subscriptionPlans.isNotEmpty) return;
+    setState(() => _isLoadingPlans = true);
+    try {
+      final response = await SubscriptionService.getPlans();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _subscriptionPlans = data['plans'] ?? [];
+            _isLoadingPlans = false;
+          });
+        }
+      } else {
+        setState(() => _isLoadingPlans = false);
+      }
+    } catch (e) {
+      print('Error loading plans: $e');
+      if (mounted) setState(() => _isLoadingPlans = false);
+    }
+  }
 
   void _showMatchPopup(User otherUser) {
     showDialog(
@@ -448,14 +488,6 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       builder: (context) => MatchCelebrationDialog(
         otherUser: otherUser,
       ),
-    );
-  }
-
-  void _showRechargeRequiredDialog(String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => RechargeRequiredDialog(message: message),
     );
   }
 
@@ -515,6 +547,22 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         }
       }
 
+      if (sentResponse.statusCode == 403) {
+        final data = json.decode(sentResponse.body);
+        if (data['required_recharge'] == true) {
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
+          setState(() => _isRechargeRequired = true);
+        }
+      }
+
+      if (receivedResponse.statusCode == 403) {
+        final data = json.decode(receivedResponse.body);
+        if (data['required_recharge'] == true) {
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
+          setState(() => _isRechargeRequired = true);
+        }
+      }
+      
       if (mounted) {
         setState(() {
           _sentInterests = sentIds;
@@ -559,6 +607,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       setState(() {
         _isLoadingRecommended = true;
         _recommendedError = null;
+        _isRechargeRequired = false;
       });
 
       http.Response response;
@@ -682,7 +731,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         if (!mounted) return;
         final data = json.decode(response.body);
         if (data['required_recharge'] == true) {
-          _showRechargeRequiredDialog(data['message']);
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
+          _isRechargeRequired = true;
+          _loadSubscriptionPlans();
         }
         setState(() {
           _recommendedError = data['message'] ?? 'Access denied';
@@ -758,7 +809,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    return Scaffold(
+    final scaffold = Scaffold(
       backgroundColor: Colors.white,
       body: RefreshIndicator(
         onRefresh: () => _loadTabUsers(_tabController.index),
@@ -1114,6 +1165,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     ),
                   ),
                 )
+              : _isRechargeRequired
+              ? _buildBlurredPaywallCards()
               : _recommendedError != null
               ? SliverToBoxAdapter(
                   child: Padding(
@@ -1158,7 +1211,165 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   ),
 ),
 );
+    return scaffold;
   }
+
+  Widget _buildBlurredPaywallCards() {
+    final List<Map<String, dynamic>> placeholders = [
+      {'name': 'Priya S.', 'age': 26, 'location': 'Chennai', 'female': true},
+      {'name': 'Ananya R.', 'age': 24, 'location': 'Bangalore', 'female': true},
+      {'name': 'Meera K.', 'age': 28, 'location': 'Coimbatore', 'female': true},
+    ];
+
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final p = placeholders[index % placeholders.length];
+          return GestureDetector(
+            onTap: () => showDialog(
+              context: context,
+              builder: (_) => RechargeRequiredDialog(
+                message: _recommendedError ?? 'Please recharge your wallet to continue viewing profiles and purchasing contacts.',
+              ),
+            ),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              height: 480,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryCyan.withOpacity(0.15),
+                    blurRadius: 25,
+                    offset: const Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(32),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // ---- Blurred photo/silhouette area only ----
+                    ImageFiltered(
+                      imageFilter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: p['female'] == true
+                                ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+                                : [const Color(0xFFE0F7FA), const Color(0xFFB2EBF2)],
+                          ),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            p['female'] == true ? Icons.face_3_rounded : Icons.face_6_rounded,
+                            size: 200,
+                            color: AppColors.primaryCyan.withOpacity(0.35),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // ---- Sharp gradient overlay at bottom (not blurred) ----
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.55),
+                              Colors.black.withOpacity(0.92),
+                            ],
+                            stops: const [0.0, 0.45, 0.72, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                    // ---- Lock icon overlay in center ----
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.35),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white38, width: 1.5),
+                        ),
+                        child: const Icon(Icons.lock_rounded, color: Colors.white, size: 32),
+                      ),
+                    ),
+                    // ---- Blurred text info at bottom ----
+                    Positioned(
+                      left: 24,
+                      right: 24,
+                      bottom: 32,
+                      child: ImageFiltered(
+                        imageFilter: ui.ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${p['name']}, ${p['age']}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on_rounded, color: Colors.white70, size: 14),
+                                const SizedBox(width: 4),
+                                Text(
+                                  p['location'],
+                                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // ---- Sharp "Recharge to View" chip at bottom right ----
+                    Positioned(
+                      right: 24,
+                      bottom: 32,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryCyan,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryCyan.withOpacity(0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: const Text(
+                          'Recharge to View',
+                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+        childCount: 3,
+      ),
+    );
+  }
+
 
   List<User> _getActiveTabUsers() {
     return _recommendedUsers;

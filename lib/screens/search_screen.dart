@@ -11,6 +11,7 @@ import 'messages_screen.dart';
 import '../widgets/common_footer.dart';
 import 'preferences_screen.dart';
 import '../widgets/recharge_dialog.dart';
+import '../widgets/wallet_recharge_paywall.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -78,7 +79,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       } else if (response.statusCode == 403) {
         final data = json.decode(response.body);
         if (data['required_recharge'] == true) {
-          _showRechargeRequiredDialog(data['message']);
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
         }
         setState(() {
           _error = data['message'] ?? 'Access denied';
@@ -323,9 +324,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
               child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
             )
           else if (_error != null)
-            SliverFillRemaining(
-              child: Center(child: Text(_error!, style: const TextStyle(color: Colors.red))),
-            )
+            WalletRechargePaywall(errorMessage: _error)
           else if (_categories.isEmpty)
             const SliverFillRemaining(
               child: Center(
@@ -391,9 +390,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                   child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
                 )
               : _allMatchesError != null
-              ? SliverFillRemaining(
-                  child: Center(child: Text(_allMatchesError!, style: const TextStyle(color: Colors.red))),
-                )
+              ? WalletRechargePaywall(errorMessage: _allMatchesError)
               : _allMatches.isEmpty
               ? const SliverFillRemaining(
                   child: Center(child: Text('No recommendations found')),
@@ -728,7 +725,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       } else if (response.statusCode == 403) {
         final data = json.decode(response.body);
         if (data['required_recharge'] == true) {
-          _showRechargeRequiredDialog(data['message']);
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
         }
         setState(() {
           _allMatchesError = data['message'] ?? 'Access denied';
@@ -746,14 +743,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         _isLoadingAllMatches = false;
       });
     }
-  }
-
-  void _showRechargeRequiredDialog(String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => RechargeRequiredDialog(message: message),
-    );
   }
 
   void _navigateToResults(dynamic category) {
@@ -1002,6 +991,15 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           _currentPage++;
           _hasMore = hasMore;
         });
+      } else if (response.statusCode == 403) {
+        final data = json.decode(response.body);
+        if (data['required_recharge'] == true) {
+          RechargeRequiredDialog.show(context, data['message'] ?? '');
+        }
+        setState(() {
+          _error = data['message'] ?? 'Access denied';
+          _isLoading = false;
+        });
       } else {
         setState(() {
           _error = 'Failed to load results';
@@ -1009,10 +1007,12 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         });
       }
     } catch (e) {
-      setState(() {
-        _error = 'Error: $e';
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = 'Error: $e';
+          _isLoading = false;
+        });
+      }
     }
   }
 

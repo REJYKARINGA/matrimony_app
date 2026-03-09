@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
-import '../screens/subscription_screen.dart';
+import '../screens/wallet_transactions_screen.dart';
 
 class RechargeRequiredDialog extends StatelessWidget {
   final String message;
+  static bool _isShowing = false;
 
   const RechargeRequiredDialog({
     Key? key,
     required this.message,
   }) : super(key: key);
+
+  /// Shows the recharge dialog if it's not already visible.
+  /// Returns immediately if a dialog is already on screen.
+  static void show(BuildContext context, String message) {
+    if (_isShowing) return;
+    _isShowing = true;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => RechargeRequiredDialog(message: message),
+    ).then((_) {
+      _isShowing = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +87,7 @@ class RechargeRequiredDialog extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const SubscriptionScreen(),
+                      builder: (context) => const WalletTransactionsScreen(),
                     ),
                   );
                 },
