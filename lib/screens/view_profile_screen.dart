@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 import '../services/matching_service.dart';
 import '../services/payment_service.dart';
 import '../utils/date_formatter.dart';
+import '../services/shortlist_service.dart';
 import 'messages_screen.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import 'verification_screen.dart';
 import 'wallet_transactions_screen.dart';
-import '../services/shortlist_service.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class ViewProfileScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   double _walletBalance = 0.0;
   int? _currentTransactionId;
   int _todayUnlockCount = 0;
-  static const int _dailyUnlockLimit = 20; // Can be changed to 20 or any value
+  int _dailyUnlockLimit = 20; // Default, will be updated from backend
   Set<int> _shortlistedUserIds = {};
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -1822,6 +1823,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         if (mounted) {
           setState(() {
             _todayUnlockCount = data['count'] ?? 0;
+            // Get daily limit from backend (default 20 if not provided)
+            _dailyUnlockLimit = data['daily_limit'] ?? 20;
           });
         }
       }
@@ -1986,13 +1989,16 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         widget.userId,
       );
       if (response.statusCode == 200) {
+        final data = json.decode(response.body);
         if (mounted) {
           setState(() {
             _contactUnlocked = true;
+            // Update unlock count and limit from response
+            _todayUnlockCount = data['today_unlocks'] ?? _todayUnlockCount;
+            _dailyUnlockLimit = data['daily_limit'] ?? _dailyUnlockLimit;
           });
         }
         _loadWalletBalance();
-        _loadTodayUnlockCount(); // Refresh count after unlock
         _loadUserProfile();      // Reload to get fresh contact_info from API
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -2011,11 +2017,61 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ),
         );
       }
+    } on http.Response catch (e) {
+      // Handle HTTP errors
+      final errorData = json.decode(e.body);
+      String errorMessage = 'Failed to unlock contact';
+      
+      if (errorData['error'] == 'daily_limit_exceeded') {
+        errorMessage = errorData['message'] ?? 'Daily limit exceeded';
+        _showDailyLimitExceededDialog(errorMessage);
+      } else if (errorData['error'] == 'Insufficient wallet balance') {
+        errorMessage = 'Insufficient wallet balance. Please recharge.';
+      }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to unlock contact')));
     }
+  }
+
+  void _showDailyLimitExceededDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('Daily Limit Reached'),
+          ],
+        ),
+        content: Text(
+          message,
+          style: TextStyle(fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK', style: TextStyle(color: Colors.grey)),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _unlockWithDirectPayment() async {

@@ -100,8 +100,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.brightness == Brightness.dark ? Colors.black : const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Subscription Plans'),
+        title: const Text(
+          'Premium Plans',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.8),
+        ),
+        centerTitle: true,
+        elevation: 0,
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
       ),
@@ -109,7 +115,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         onRefresh: _loadData,
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -141,7 +147,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                _currentSubscription['plan']['name'],
+                                _currentSubscription['plan']?['name'] ?? 'Unknown Plan',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -170,17 +176,26 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            'Expires: ${DateTime.parse(_currentSubscription['end_date']).toString().split(' ')[0]}',
-                            style: TextStyle(
-                              color: theme.brightness == Brightness.dark
-                                  ? Colors.grey[400]
-                                  : Colors.grey[600],
+                          if (_currentSubscription['end_date'] != null)
+                            Text(
+                              'Expires: ${DateTime.parse(_currentSubscription['end_date']).toString().split(' ')[0]}',
+                              style: TextStyle(
+                                color: theme.brightness == Brightness.dark
+                                    ? Colors.grey[400]
+                                    : Colors.grey[600],
+                              ),
+                            )
+                          else
+                            Text(
+                              'No Expiry (Lifetime)',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[700],
+                              ),
                             ),
-                          ),
                           const SizedBox(height: 8),
                           Text(
-                            '₹${_currentSubscription['plan']['price']}',
+                            '₹${_currentSubscription['plan']?['price'] ?? '0.00'}',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -289,63 +304,143 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   Widget _buildPlanCard(dynamic plan) {
     final theme = Theme.of(context);
+    final String planName = plan['name'].toString().toLowerCase();
+    
+    Color accentColor;
+    List<Color> gradientColors;
+    
+    if (planName.contains('platinum')) {
+      accentColor = const Color(0xFFE5E4E2);
+      gradientColors = [const Color(0xFF2C3E50), const Color(0xFF000000)];
+    } else if (planName.contains('gold')) {
+      accentColor = const Color(0xFFFFD700);
+      gradientColors = [const Color(0xFFB8860B), const Color(0xFF8B4513)];
+    } else if (planName.contains('silver')) {
+      accentColor = const Color(0xFFC0C0C0);
+      gradientColors = [const Color(0xFF708090), const Color(0xFF2F4F4F)];
+    } else {
+      accentColor = theme.colorScheme.primary;
+      gradientColors = [theme.colorScheme.primary, theme.colorScheme.secondary];
+    }
 
-    return Card(
-      color: theme.brightness == Brightness.dark
-          ? Colors.grey[800]
-          : Colors.white,
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors[0].withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  plan['name'],
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: theme.brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black87,
-                  ),
+            Positioned(
+              right: -50,
+              top: -50,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  shape: BoxShape.circle,
                 ),
-                Text(
-                  '₹${plan['price']}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${plan['duration_days']} days',
-              style: TextStyle(
-                color: theme.brightness == Brightness.dark
-                    ? Colors.grey[400]
-                    : Colors.grey[600],
               ),
             ),
-            const SizedBox(height: 12),
-            _buildFeatureItem('Messages: ${plan['max_messages'] ?? 'Unlimited'}', theme),
-            _buildFeatureItem('Contacts: ${plan['max_contacts'] ?? 'Unlimited'}', theme),
-            _buildFeatureItem(plan['can_view_contact'] == 1 ? '✓ View contact details' : '✗ View contact details', theme),
-            _buildFeatureItem(plan['priority_listing'] == 1 ? '✓ Priority listing' : '✗ Priority listing', theme),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => _subscribe(plan['id']),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 40),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              plan['name'],
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const Text(
+                              'Lifetime Access',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white24),
+                        ),
+                        child: Text(
+                          '₹${plan['price'].toString().replaceAll('.00', '')}',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Divider(color: Colors.white24, height: 1),
+                  const SizedBox(height: 20),
+                  ... (plan['features'] as List).map((feature) => _buildFeatureItem(feature, theme, true)),
+                  const SizedBox(height: 28),
+                  GestureDetector(
+                    onTap: () => _subscribe(plan['id']),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Upgrade to ${plan['name']}',
+                          style: TextStyle(
+                            color: gradientColors[0],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: const Text('Subscribe Now'),
             ),
           ],
         ),
@@ -353,26 +448,39 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  Widget _buildFeatureItem(String feature, ThemeData theme) {
-    bool isEnabled = feature.startsWith('✓');
+  Widget _buildFeatureItem(String feature, ThemeData theme, [bool isDarkBackground = false]) {
+    bool isEnabled = !feature.startsWith('✗');
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          Icon(
-            isEnabled ? Icons.check_circle : Icons.cancel,
-            color: isEnabled
-                ? (theme.brightness == Brightness.dark ? Colors.green[300] : Colors.green[700])
-                : (theme.brightness == Brightness.dark ? Colors.red[300] : Colors.red[700]),
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            feature.replaceFirst(RegExp(r'^[✗✓]\s*'), ''),
-            style: TextStyle(
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: isEnabled 
+                ? (isDarkBackground ? Colors.white.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.1))
+                : (isDarkBackground ? Colors.white.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1)),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isEnabled ? Icons.check : Icons.close,
               color: isEnabled
-                  ? (theme.brightness == Brightness.dark ? Colors.white : Colors.black87)
-                  : (theme.brightness == Brightness.dark ? Colors.grey[400] : Colors.grey[600]),
+                  ? (isDarkBackground ? Colors.white : Colors.green[700])
+                  : (isDarkBackground ? Colors.white54 : Colors.red[700]),
+              size: 14,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              feature.replaceFirst(RegExp(r'^[✗✓]\s*'), ''),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isEnabled ? FontWeight.w500 : FontWeight.normal,
+                color: isEnabled
+                    ? (isDarkBackground ? Colors.white : Colors.black87)
+                    : (isDarkBackground ? Colors.white60 : Colors.grey[600]),
+              ),
             ),
           ),
         ],
