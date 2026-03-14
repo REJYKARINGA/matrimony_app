@@ -2,6 +2,7 @@ import 'package:laravel_echo/laravel_echo.dart';
 import 'package:pusher_client/pusher_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import '../utils/app_config.dart';
 
 class ReverbService {
   static Echo? _echo;
@@ -17,9 +18,9 @@ class ReverbService {
 
     // Configuration for Reverb
     PusherOptions options = PusherOptions(
-      host: 'localhost', 
+      host: AppConfig.reverbHost, 
       wsPort: 8080,
-      encrypted: false,
+      encrypted: AppConfig.baseUrl.startsWith('https'),
     );
 
     _pusherClient = PusherClient(

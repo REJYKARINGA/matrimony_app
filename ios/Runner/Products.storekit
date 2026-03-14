@@ -1,0 +1,93 @@
+{
+  "identifier" : "matrimony_iap",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "49",
+      "familyShareable" : false,
+      "internalID" : "contact_49",
+      "localizations" : [
+        {
+          "description" : "Unlock one contact detail",
+          "displayName" : "Unlock Contact 49",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "contact_unlock_49",
+      "referenceName" : "Contact 49",
+      "type" : "consumable"
+    },
+    {
+      "displayPrice" : "199",
+      "familyShareable" : false,
+      "internalID" : "wallet_199",
+      "localizations" : [
+        {
+          "description" : "Get 4 contacts unlock credit",
+          "displayName" : "Wallet Recharge 199",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "wallet_recharge_199",
+      "referenceName" : "Wallet 199",
+      "type" : "consumable"
+    },
+    {
+      "displayPrice" : "499",
+      "familyShareable" : false,
+      "internalID" : "wallet_499",
+      "localizations" : [
+        {
+          "description" : "Get 10 contacts unlock credit",
+          "displayName" : "Wallet Recharge 499",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "wallet_recharge_499",
+      "referenceName" : "Wallet 499",
+      "type" : "consumable"
+    },
+    {
+      "displayPrice" : "999",
+      "familyShareable" : false,
+      "internalID" : "wallet_999",
+      "localizations" : [
+        {
+          "description" : "Get 20 contacts unlock credit",
+          "displayName" : "Wallet Recharge 999",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "wallet_recharge_999",
+      "referenceName" : "Wallet 999",
+      "type" : "consumable"
+    },
+    {
+      "displayPrice" : "1999",
+      "familyShareable" : false,
+      "internalID" : "wallet_1999",
+      "localizations" : [
+        {
+          "description" : "Get 40 contacts unlock credit",
+          "displayName" : "Wallet Recharge 1999",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "wallet_recharge_1999",
+      "referenceName" : "Wallet 1999",
+      "type" : "consumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
