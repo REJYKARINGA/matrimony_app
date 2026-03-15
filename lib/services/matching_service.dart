@@ -50,4 +50,10 @@ class MatchingService {
       method: 'POST',
     );
   }
+
+  static Future<http.Response> getDailyTopPick() async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/matching/daily-pick',
+    );
+  }
 }

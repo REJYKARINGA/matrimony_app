@@ -270,6 +270,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 }
 
+
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({Key? key}) : super(key: key);
 
@@ -297,6 +298,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   bool _isIdSearchExpanded = false;
   final TextEditingController _idSearchController = TextEditingController();
   bool _hasInitialized = false;
+  User? _dailyTopPick;
+  bool _isLoadingPick = true;
   
   @override
   void initState() {
@@ -330,6 +333,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           _loadInterestsAndMatches(),
           _loadVisitors(),
           _checkNewMatches(),
+          _loadDailyPick(),
         ]);
       } catch (e) {
         print('Error during initial data load: $e');
@@ -357,6 +361,274 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     } catch (e) {
       print('Error loading unread count: $e');
     }
+  }
+
+  Future<void> _loadDailyPick() async {
+    try {
+      final response = await MatchingService.getDailyTopPick();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _dailyTopPick = User.fromJson(data);
+            _isLoadingPick = false;
+          });
+        }
+      } else {
+        if (mounted) setState(() => _isLoadingPick = false);
+      }
+    } catch (e) {
+      print('Error loading daily pick: $e');
+      if (mounted) setState(() => _isLoadingPick = false);
+    }
+  }
+
+  Widget _buildDailyPickSection() {
+    if (_dailyTopPick == null) return const SizedBox.shrink();
+
+    final user = _dailyTopPick!;
+    final profile = user.userProfile;
+    
+    String ageText = '';
+    if (profile?.age != null) {
+      ageText = ', ${profile!.age}';
+    }
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF4B4B), // Premium Red Accent
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  "Exclusive Today's Pick",
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1F1F1F),
+                    letterSpacing: -0.3,
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFD700), Color(0xFFFF8C00)],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFD700).withOpacity(0.35),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: Colors.white, size: 12),
+                      SizedBox(width: 4),
+                      Text(
+                        'PREMIUM',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (c) => ViewProfileScreen(userId: user.id!)),
+            ),
+            child: Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Background Image
+                    user.displayImage != null
+                        ? Image.network(
+                            ApiService.getImageUrl(user.displayImage!),
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppColors.primaryCyan.withOpacity(0.8),
+                                  AppColors.primaryBlue.withOpacity(0.8),
+                                ],
+                              ),
+                            ),
+                            child: const Icon(Icons.person, color: Colors.white, size: 80),
+                          ),
+                          
+                    // Gradient Overlay
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.1),
+                              Colors.black.withOpacity(0.75),
+                            ],
+                            stops: const [0.0, 0.4, 1.0],
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    // Profile Info
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      right: 20,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      '${user.matrimonyId ?? 'User'}$ageText',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    if (profile?.isActiveVerified == true)
+                                      const Icon(Icons.verified, color: AppColors.primaryCyan, size: 18),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${profile?.city ?? ''}${profile?.city != null && profile?.district != null ? ', ' : ''}${profile?.district ?? ''}',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${profile?.caste ?? ''} • ${profile?.education ?? ''}',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.8),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: const [
+                                BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))
+                              ],
+                            ),
+                            child: const Text(
+                              'VIEW NOW',
+                              style: TextStyle(
+                                color: Color(0xFF1F1F1F),
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Floating Badge
+                    Positioned(
+                      top: 15,
+                      left: 15,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.25),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white30, width: 0.5),
+                        ),
+                        child: BackdropFilter(
+                          filter: ui.ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.bolt, color: Colors.white, size: 16),
+                              SizedBox(width: 4),
+                              Text(
+                                "Today's Special",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadVisitors() async {
@@ -1029,6 +1301,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     ),
                   ),
                 ),
+
+          // Daily Top Pick Section
+          if (_dailyTopPick != null)
+            SliverToBoxAdapter(
+              child: _buildDailyPickSection(),
+            ),
 
           // Visitors section
           if (_visitors.isNotEmpty)
