@@ -462,6 +462,50 @@ class _ChatScreenState extends State<ChatScreen> {
       final response = await MessageService.sendMessage(widget.otherUserId, txt);
       if (response.statusCode == 200 || response.statusCode == 201) {
         _loadMessages();
+      } else if (response.statusCode == 403) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: const Row(
+                children: [
+                  Icon(Icons.lock, color: Colors.orange),
+                  SizedBox(width: 8),
+                  Text('Contact Locked'),
+                ],
+              ),
+              content: const Text(
+                'You must unlock this contact before you can send messages. Do you want to go to their profile to purchase contact access?',
+                style: TextStyle(fontSize: 15),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewProfileScreen(userId: widget.otherUserId),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00BCD4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text('View Profile'),
+                ),
+              ],
+            ),
+          );
+        }
       } else {
         final data = json.decode(response.body);
         final errorMessage = data['error'] ?? 'Failed to send message';

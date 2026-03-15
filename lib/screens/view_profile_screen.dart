@@ -997,7 +997,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           // Chat
           GestureDetector(
             onTap: () {
-              if ((isMatched || isContactUnlocked) && _user != null) {
+              if (isContactUnlocked && _user != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -1013,7 +1013,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Match first or purchase contact to message!'),
+                    content: const Text('Purchase contact to message!'),
                     backgroundColor: Colors.orange,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
