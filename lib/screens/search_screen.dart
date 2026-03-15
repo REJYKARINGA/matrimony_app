@@ -12,6 +12,8 @@ import '../widgets/common_footer.dart';
 import 'preferences_screen.dart';
 import '../widgets/recharge_dialog.dart';
 import '../widgets/wallet_recharge_paywall.dart';
+import 'package:provider/provider.dart';
+import '../services/navigation_provider.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -113,7 +115,14 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             backgroundColor: Colors.white,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () {
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                } else {
+                  final navProvider = Provider.of<NavigationProvider>(context, listen: false);
+                  navProvider.setSelectedIndex(0);
+                }
+              },
             ),
             title: const Text(
               'Discover Matches',
