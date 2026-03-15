@@ -33,6 +33,7 @@ import '../utils/app_colors.dart';
 import '../widgets/recharge_dialog.dart';
 import 'wallet_transactions_screen.dart';
 import '../widgets/wallet_recharge_paywall.dart';
+import '../widgets/interest_notification_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -387,6 +388,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     if (_dailyTopPick == null) return const SizedBox.shrink();
 
     final user = _dailyTopPick!;
+    // Guard: if user has no id, skip rendering (prevents null assertion crash)
+    if (user.id == null) return const SizedBox.shrink();
     final profile = user.userProfile;
     
     String ageText = '';
@@ -457,10 +460,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             ),
           ),
           GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (c) => ViewProfileScreen(userId: user.id!)),
-            ),
+            onTap: () {
+              if (user.id != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (c) => ViewProfileScreen(userId: user.id!)),
+                );
+              }
+            },
             child: Container(
               height: 200,
               width: double.infinity,
@@ -707,7 +714,22 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final List<dynamic> notifications = data['notifications']['data'] ?? [];
-        
+
+        // --- PRIORITY 1: Unread interest notifications (shown FIRST, before recharge) ---
+        final interestNotification = notifications.firstWhere(
+          (n) => n['type'] == 'interest' && (n['is_read'] == false || n['is_read'] == 0),
+          orElse: () => null,
+        );
+
+        if (interestNotification != null && mounted) {
+          final senderData = interestNotification['sender'];
+          if (senderData != null) {
+            _showInterestPopup(interestNotification, senderData);
+            return; // show interest popup first, stop here
+          }
+        }
+
+        // --- PRIORITY 2: Match notification ---
         final matchNotification = notifications.firstWhere(
           (n) => n['type'] == 'match' && (n['is_read'] == false || n['is_read'] == 0),
           orElse: () => null,
@@ -730,6 +752,35 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       print('Error checking for matches: $e');
     }
   }
+
+  void _showInterestPopup(Map<String, dynamic> notification, Map<String, dynamic> senderData) {
+    final senderProfile = senderData['user_profile'] as Map<String, dynamic>?;
+    final senderName = senderProfile != null
+        ? '${senderProfile['first_name'] ?? ''} ${senderProfile['last_name'] ?? ''}'.trim()
+        : 'Someone';
+    final senderPic = senderProfile?['profile_picture'] as String?;
+    final notifId = notification['id'];
+
+    InterestNotificationDialog.show(
+      context: context,
+      senderName: senderName,
+      senderPicUrl: senderPic,
+      message: notification['message'] ?? '$senderName showed interest in your profile',
+      onView: () async {
+        Navigator.of(context).pop();
+        await NotificationService.markAsRead(notifId);
+        _loadUnreadCount();
+        if (mounted) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationScreen()));
+        }
+      },
+      onDismiss: () {
+        Navigator.of(context).pop();
+        // Do NOT mark as read — shows again on next refresh until explicitly read
+      },
+    );
+  }
+
   
   Future<void> _loadSubscriptionPlans() async {
     if (_subscriptionPlans.isNotEmpty) return;
@@ -2561,3 +2612,5 @@ class MatchCelebrationDialog extends StatelessWidget {
     );
   }
 }
+
+
