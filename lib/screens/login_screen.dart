@@ -295,18 +295,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: authProvider.isLoading
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 40),
-                                    child: SizedBox(
-                                      height: 4,
-                                      child: LinearProgressIndicator(
-                                        backgroundColor:
-                                            Colors.white.withOpacity(0.3),
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                                Colors.white),
-                                      ),
+                                ? const Text(
+                                    'Signing In...',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   )
                                 : const Text(

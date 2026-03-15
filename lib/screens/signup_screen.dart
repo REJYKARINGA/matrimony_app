@@ -389,7 +389,6 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                             style: const TextStyle(
                                               color: AppColors.primaryCyan,
                                               fontWeight: FontWeight.bold,
-                                              decoration: TextDecoration.underline,
                                             ),
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () {
@@ -549,12 +548,12 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                     ),
                                   ),
                                   child: authProvider.isLoading
-                                      ? const SizedBox(
-                                          height: 24,
-                                          width: 24,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2.5,
-                                            color: Colors.white,
+                                      ? const Text(
+                                          'Signing Up...',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5,
                                           ),
                                         )
                                       : const Text(
@@ -596,7 +595,6 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                 color: AppColors.primaryCyan,
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ),
