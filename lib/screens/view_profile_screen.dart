@@ -15,6 +15,7 @@ import '../services/auth_provider.dart';
 import 'verification_screen.dart';
 import 'wallet_transactions_screen.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import '../services/photo_request_service.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final int userId;
@@ -613,6 +614,37 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
+  Future<void> _handlePhotoRequest() async {
+    if (_user?.id == null) return;
+    
+    setState(() => _isActionLoading = true);
+    try {
+      final response = await PhotoRequestService.sendRequest(_user!.id!);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        _loadUserProfile();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Photo request sent successfully!'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to send request: ${json.decode(response.body)['error'] ?? 'Unknown error'}'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isActionLoading = false);
+    }
+  }
+
   Widget _buildSliverAppBar() {
     final displayImage = _user?.displayImage;
     return SliverAppBar(
@@ -829,6 +861,83 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   Widget _buildPhotoGallery() {
+    if (_user?.hasHiddenPhotos == true) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Photo Gallery',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.lock_person_rounded, size: 48, color: Colors.grey.shade400),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Photos are Hidden',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'This user has chosen to hide their photos. You can request access or send an interest to view them.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey.shade600, height: 1.4),
+                  ),
+                  const SizedBox(height: 20),
+                  if (_user!.photoRequestPending)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: Colors.orange.shade200),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.pending_actions, size: 18, color: Colors.orange.shade700),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Request Pending',
+                            style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ElevatedButton.icon(
+                      onPressed: _isActionLoading ? null : _handlePhotoRequest,
+                      icon: const Icon(Icons.key, size: 20),
+                      label: const Text('Request Photo Access', style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF00BCD4),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     List<ProfilePhoto> photos = [];
     if (_user?.profilePhotos != null) {
       photos = List<ProfilePhoto>.from(_user!.profilePhotos!);

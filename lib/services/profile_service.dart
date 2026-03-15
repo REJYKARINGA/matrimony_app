@@ -38,6 +38,7 @@ class ProfileService {
     String? alcohol,
     List<int>? personalityIds,
     List<int>? interestIds,
+    bool? hidePhotos,
   }) async {
     final body = {
       if (firstName != null) 'first_name': firstName,
@@ -67,6 +68,7 @@ class ProfileService {
       if (postalCode != null) 'postal_code': postalCode,
       if (personalityIds != null) 'personality_ids': personalityIds,
       if (interestIds != null) 'interest_ids': interestIds,
+      if (hidePhotos != null) 'hide_photos': hidePhotos,
     };
 
     return await ApiService.makeRequest(

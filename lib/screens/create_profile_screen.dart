@@ -52,6 +52,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   bool _drugAddiction = false;
   String _smoke = 'never';
   String _alcohol = 'never';
+  bool _hidePhotos = false;
   bool _isLoading = false;
   bool _isLocating = false;
 
@@ -244,6 +245,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         drugAddiction: _drugAddiction,
         smoke: _smoke,
         alcohol: _alcohol,
+        hidePhotos: _hidePhotos,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -1218,6 +1220,43 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               '${_selectedPhotos.length} photos uploaded',
               style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
             ),
+          const SizedBox(height: 20),
+          // Hide My Photos toggle
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.primaryCyan.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primaryCyan.withOpacity(0.25)),
+            ),
+            child: SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Row(
+                children: [
+                  Icon(Icons.hide_image_outlined, color: AppColors.primaryBlue, size: 20),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Hide My Photos',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1A1A2E),
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Text(
+                  'Only matched or requested users can see your photos',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ),
+              value: _hidePhotos,
+              activeColor: AppColors.primaryCyan,
+              onChanged: (val) => setState(() => _hidePhotos = val),
+            ),
+          ),
         ],
       ),
     );

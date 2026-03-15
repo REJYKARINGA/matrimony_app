@@ -638,15 +638,30 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                 child: SizedBox(
                   width: 96,
                   height: 96,
-                  child: user.displayImage != null
-                      ? Image.network(
-                          ApiService.getImageUrl(user.displayImage!),
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          color: Colors.grey.shade100,
-                          child: const Icon(Icons.person, color: Colors.grey),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: user.displayImage != null
+                            ? Image.network(
+                                ApiService.getImageUrl(user.displayImage!),
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                color: Colors.grey.shade100,
+                                child: const Icon(Icons.person, color: Colors.grey),
+                              ),
+                      ),
+                      if (user.hasHiddenPhotos)
+                        Positioned.fill(
+                          child: Container(
+                            color: Colors.black.withOpacity(0.2),
+                            child: const Center(
+                              child: Icon(Icons.lock_person_rounded, color: Colors.white, size: 24),
+                            ),
+                          ),
                         ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -1105,15 +1120,39 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: profile?.profilePicture != null
+              child: user.displayImage != null
                   ? Image.network(
-                      ApiService.getImageUrl(profile!.profilePicture!),
+                      ApiService.getImageUrl(user.displayImage!),
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
                           _buildPlaceholderBackground(profile?.gender),
                     )
                   : _buildPlaceholderBackground(profile?.gender),
             ),
+            if (user.hasHiddenPhotos)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.lock_person_rounded, color: Colors.white.withOpacity(0.9), size: 48),
+                        const SizedBox(height: 8),
+                        Text(
+                          'PRIVATE PHOTO',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(

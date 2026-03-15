@@ -38,6 +38,8 @@ class User {
   final ContactInfo? contactInfo;
   final List<dynamic>? personalities;
   final List<dynamic>? interests;
+  final bool hasHiddenPhotos;
+  final bool photoRequestPending;
 
   User({
     this.id,
@@ -59,6 +61,8 @@ class User {
     this.contactInfo,
     this.personalities,
     this.interests,
+    this.hasHiddenPhotos = false,
+    this.photoRequestPending = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -95,6 +99,8 @@ class User {
       contactInfo: contactInfo,
       personalities: json['personalities'] != null ? List<dynamic>.from(json['personalities']) : null,
       interests: json['interests'] != null ? List<dynamic>.from(json['interests']) : null,
+      hasHiddenPhotos: json['has_hidden_photos'] == true,
+      photoRequestPending: json['photo_request_pending'] == true,
     );
   }
 

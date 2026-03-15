@@ -499,6 +499,30 @@ class _MatchingScreenState extends State<MatchingScreen>
                     )
                   : _buildPlaceholderBackground(profile?.gender),
             ),
+            if (user.hasHiddenPhotos)
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.lock_person_rounded, color: Colors.white.withOpacity(0.9), size: 48),
+                        const SizedBox(height: 8),
+                        Text(
+                          'PRIVATE PHOTO',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             // Gradient Overlay
             Positioned.fill(
               child: DecoratedBox(

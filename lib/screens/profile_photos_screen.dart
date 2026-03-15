@@ -18,6 +18,8 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   bool _isUploading = false;
+  bool _hidePhotos = false;
+  bool _isUpdatingPrivacy = false;
 
   @override
   void initState() {
@@ -49,6 +51,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
           setState(() {
             _photos = sortedPhotos;
+            _hidePhotos = data['user']['user_profile']['hide_photos'] == true || data['user']['user_profile']['hide_photos'] == 1;
             _isLoading = false;
           });
         } else {
@@ -230,6 +233,40 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
     });
   }
 
+  Future<void> _toggleHidePhotos(bool value) async {
+    setState(() {
+      _isUpdatingPrivacy = true;
+    });
+
+    try {
+      final response = await ProfileService.updateMyProfile(hidePhotos: value);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _hidePhotos = value;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(value ? 'Photos are now hidden' : 'Photos are now visible'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update privacy settings'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    } finally {
+      setState(() {
+        _isUpdatingPrivacy = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -374,6 +411,70 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Privacy Settings
+                      Card(
+                        elevation: 0,
+                        color: Colors.grey.shade50,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: BorderSide(color: Colors.grey.shade200),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF00BCD4).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  _hidePhotos ? Icons.visibility_off : Icons.visibility,
+                                  color: Color(0xFF00BCD4),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Hide My Photos',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Only matched or requested users can see',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (_isUpdatingPrivacy)
+                                const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              else
+                                Switch(
+                                  value: _hidePhotos,
+                                  onChanged: _toggleHidePhotos,
+                                  activeColor: Color(0xFF00BCD4),
+                                ),
+                            ],
                           ),
                         ),
                       ),

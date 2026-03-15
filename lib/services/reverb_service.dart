@@ -1,5 +1,5 @@
 import 'package:laravel_echo/laravel_echo.dart';
-import 'package:pusher_client/pusher_client.dart';
+import 'package:pusher_client_socket/pusher_client_socket.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import '../utils/app_config.dart';
@@ -11,24 +11,27 @@ class ReverbService {
   static void initialize(BuildContext context) {
     if (_echo != null) return;
 
-    if (kIsWeb) {
-      print('Reverb Service skipped on Web: pusher_client does not support Web platform.');
-      return;
-    }
+    // Use current API base to determine secure status
+    final bool isSecure = AppConfig.baseUrl.startsWith('https');
 
     // Configuration for Reverb
     PusherOptions options = PusherOptions(
-      host: AppConfig.reverbHost, 
+      key: 'fbenztk7q74qyavthtqk',
+      host: AppConfig.reverbHost,
       wsPort: 8080,
-      encrypted: AppConfig.baseUrl.startsWith('https'),
+      wssPort: 8080,
+      encrypted: isSecure,
+      authOptions: PusherAuthOptions(
+        '${AppConfig.baseUrl}/broadcasting/auth',
+      ),
+      cluster: 'mt1', // Default cluster
     );
 
     _pusherClient = PusherClient(
-      'fbenztk7q74qyavthtqk',
-      options,
-      autoConnect: true,
-      enableLogging: true,
+      options: options,
     );
+
+    _pusherClient!.connect();
 
     _echo = Echo(
       broadcaster: EchoBroadcasterType.Pusher,
