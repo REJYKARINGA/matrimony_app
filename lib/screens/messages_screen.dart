@@ -6,7 +6,9 @@ import '../services/message_service.dart';
 import '../services/auth_provider.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
+import '../services/profile_service.dart';
 import '../models/user_model.dart';
+import 'view_profile_screen.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({Key? key}) : super(key: key);
@@ -36,7 +38,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   void _startPolling() {
-    _pollingTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
+    _pollingTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
       _loadConversations(isPolling: true);
     });
   }
@@ -394,13 +396,31 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   List<dynamic> _messages = [];
   bool _isLoading = true;
+  User? _otherUser;
   Timer? _pollingTimer;
 
   @override
   void initState() {
     super.initState();
+    _loadOtherUserProfile();
     _loadMessages();
     _startPolling();
+  }
+
+  Future<void> _loadOtherUserProfile() async {
+    try {
+      final response = await ProfileService.getUserProfile(widget.otherUserId);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (mounted) {
+          setState(() {
+            _otherUser = User.fromJson(data['user']);
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading other user profile: $e');
+    }
   }
 
   @override
@@ -412,7 +432,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _startPolling() {
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _pollingTimer = Timer.periodic(const Duration(minutes: 10), (timer) {
       _loadMessages(isPolling: true);
     });
   }
@@ -439,10 +459,32 @@ class _ChatScreenState extends State<ChatScreen> {
     final txt = _messageController.text.trim();
     _messageController.clear();
     try {
-      await MessageService.sendMessage(widget.otherUserId, txt);
-      _loadMessages();
+      final response = await MessageService.sendMessage(widget.otherUserId, txt);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _loadMessages();
+      } else {
+        final data = json.decode(response.body);
+        final errorMessage = data['error'] ?? 'Failed to send message';
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
     } catch (e) {
-      print(e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -485,7 +527,9 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: _isLoading 
               ? const Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4)))
-              : ListView.builder(
+              : _messages.isEmpty 
+                  ? _buildProfileCard()
+                  : ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   reverse: true,
@@ -551,6 +595,107 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildProfileCard() {
+    if (_otherUser == null) return const SizedBox.shrink();
+    final profile = _otherUser!.userProfile;
+    
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+                border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.1)),
+              ),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey.shade100,
+                    backgroundImage: widget.otherUserImage != null ? NetworkImage(widget.otherUserImage!) : null,
+                    child: widget.otherUserImage == null ? const Icon(Icons.person, color: Colors.grey, size: 40) : null,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    widget.otherUserName,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                  const SizedBox(height: 8),
+                  if (profile != null)
+                    Text(
+                      '${profile.age} yrs • ${profile.height} cm • ${profile.maritalStatus?.replaceAll('_', ' ').toUpperCase() ?? ''}',
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                  const SizedBox(height: 16),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  _buildProfileCardRow(Icons.location_on_outlined, '${profile?.city ?? ''}, ${profile?.state ?? ''}'),
+                  const SizedBox(height: 12),
+                  _buildProfileCardRow(Icons.work_outline_rounded, profile?.occupation ?? 'Not specified'),
+                  const SizedBox(height: 12),
+                  _buildProfileCardRow(Icons.school_outlined, profile?.education ?? 'Not specified'),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewProfileScreen(userId: widget.otherUserId),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00BCD4).withOpacity(0.1),
+                      foregroundColor: const Color(0xFF00BCD4),
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    ),
+                    child: const Text('View Full Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+            Text(
+              'No messages yet. Say hello!',
+              style: TextStyle(color: Colors.grey.shade400, fontSize: 15, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCardRow(IconData icon, String text) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 18, color: const Color(0xFF00BCD4)),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 }
