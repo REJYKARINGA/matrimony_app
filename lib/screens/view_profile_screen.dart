@@ -49,6 +49,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   String? _unlockedFatherName;
   String? _unlockedMotherName;
   bool _isLoadingContactDetails = false;
+  
+  // Compatibility Match Score
+  double _compatibilityScore = 0.0;
+  List<Map<String, dynamic>> _matchAnalysis = [];
+  int _matchedCount = 0;
+  int _totalCount = 0;
+  bool _isCompatibilityExpanded = false;
 
   @override
   void initState() {
@@ -106,6 +113,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           _unlockedFatherName = null;
           _unlockedMotherName = null;
         });
+        _calculateCompatibility();
         _animationController.forward();
       } else {
         if (!mounted) return;
@@ -240,6 +248,194 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
+  }
+
+  void _calculateCompatibility() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final myProfile = authProvider.user?.userProfile;
+    final otherPrefs = _user?.preferences;
+
+    if (myProfile == null || otherPrefs == null) return;
+
+    List<Map<String, dynamic>> analysis = [];
+    int matched = 0;
+    int total = 0;
+
+    // 1. Age (Does my age fit their preference?)
+    total++;
+    bool ageMatch = false;
+    final myAge = myProfile.age;
+    if (myAge != null && otherPrefs.minAge != null && otherPrefs.maxAge != null) {
+      ageMatch = myAge >= otherPrefs.minAge! && myAge <= otherPrefs.maxAge!;
+    }
+    if (ageMatch) matched++;
+    analysis.add({
+      'label': 'Age Suitability',
+      'isMatch': ageMatch,
+      'value': 'They seek ${otherPrefs.minAge}-${otherPrefs.maxAge}',
+      'icon': Icons.calendar_today,
+    });
+
+    // 2. Height (Does my height fit their preference?)
+    total++;
+    bool heightMatch = false;
+    if (myProfile.height != null && otherPrefs.minHeight != null && otherPrefs.maxHeight != null) {
+      heightMatch = myProfile.height! >= otherPrefs.minHeight! && myProfile.height! <= otherPrefs.maxHeight!;
+    }
+    if (heightMatch) matched++;
+    analysis.add({
+      'label': 'Height Suitability',
+      'isMatch': heightMatch,
+      'value': 'They seek ${otherPrefs.minHeight}-${otherPrefs.maxHeight}cm',
+      'icon': Icons.height,
+    });
+
+    // 3. Marital Status
+    if (otherPrefs.maritalStatus != null && otherPrefs.maritalStatus != 'any') {
+      total++;
+      bool statusMatch = myProfile.maritalStatus?.toLowerCase() == otherPrefs.maritalStatus?.toLowerCase();
+      if (statusMatch) matched++;
+      analysis.add({
+        'label': 'Marital Status',
+        'isMatch': statusMatch,
+        'value': 'They seek ${otherPrefs.maritalStatus!.replaceAll('_', ' ')}',
+        'icon': Icons.favorite_border,
+      });
+    }
+
+    // 4. Caste
+    if (otherPrefs.casteIds != null && otherPrefs.casteIds!.isNotEmpty) {
+      total++;
+      bool casteMatch = otherPrefs.casteIds!.contains(myProfile.casteId);
+      if (casteMatch) matched++;
+      analysis.add({
+        'label': 'Caste Match',
+        'isMatch': casteMatch,
+        'value': 'Matches their preference',
+        'icon': Icons.groups,
+      });
+    }
+
+    // 5. Education
+    if (otherPrefs.educationIds != null && otherPrefs.educationIds!.isNotEmpty) {
+      total++;
+      bool eduMatch = otherPrefs.educationIds!.contains(myProfile.educationId);
+      if (eduMatch) matched++;
+      analysis.add({
+        'label': 'Education Suitability',
+        'isMatch': eduMatch,
+        'value': 'Matches their criteria',
+        'icon': Icons.school,
+      });
+    }
+
+    // 6. Occupation
+    if (otherPrefs.occupationIds != null && otherPrefs.occupationIds!.isNotEmpty) {
+      total++;
+      bool occMatch = otherPrefs.occupationIds!.contains(myProfile.occupationId);
+      if (occMatch) matched++;
+      analysis.add({
+        'label': 'Occupation Suitability',
+        'isMatch': occMatch,
+        'value': 'Matches their criteria',
+        'icon': Icons.work,
+      });
+    }
+
+    // 7. Income Range
+    if (otherPrefs.minIncome != null || otherPrefs.maxIncome != null) {
+      total++;
+      bool incomeMatch = true;
+      if (myProfile.annualIncome != null) {
+        if (otherPrefs.minIncome != null && myProfile.annualIncome! < otherPrefs.minIncome!) incomeMatch = false;
+        if (otherPrefs.maxIncome != null && myProfile.annualIncome! > otherPrefs.maxIncome!) incomeMatch = false;
+      } else {
+        incomeMatch = false;
+      }
+      if (incomeMatch) matched++;
+      analysis.add({
+        'label': 'Income Compatibility',
+        'isMatch': incomeMatch,
+        'value': 'They seek â‚¹${otherPrefs.minIncome ?? 0} - â‚¹${otherPrefs.maxIncome ?? 'Any'}',
+        'icon': Icons.payments_outlined,
+      });
+    }
+
+    // 8. Distance Preference
+    if (otherPrefs.maxDistance != null && _user?.distance != null) {
+      total++;
+      bool distanceMatch = _user!.distance! <= otherPrefs.maxDistance!;
+      if (distanceMatch) matched++;
+      analysis.add({
+        'label': 'Location Distance',
+        'isMatch': distanceMatch,
+        'value': 'Max ${otherPrefs.maxDistance}km (You are ${_user!.distance!.toInt()}km)',
+        'icon': Icons.map_outlined,
+      });
+    } else if (otherPrefs.preferredLocations != null && otherPrefs.preferredLocations!.isNotEmpty) {
+      total++;
+      bool locMatch = otherPrefs.preferredLocations!.any((loc) => 
+        (myProfile.city?.toLowerCase().contains(loc.toLowerCase()) ?? false) ||
+        (myProfile.district?.toLowerCase().contains(loc.toLowerCase()) ?? false) ||
+        (myProfile.state?.toLowerCase().contains(loc.toLowerCase()) ?? false)
+      );
+      if (locMatch) matched++;
+      analysis.add({
+        'label': 'Area Preference',
+        'isMatch': locMatch,
+        'value': 'They seek ${otherPrefs.preferredLocations!.first}',
+        'icon': Icons.location_on,
+      });
+    }
+
+    // 9. Lifestyle Habits (Smoking, Alcohol, Drugs)
+    if (otherPrefs.smoke != null && otherPrefs.smoke!.isNotEmpty) {
+      total++;
+      bool smokeMatch = otherPrefs.smoke!.contains(myProfile.smoke?.toLowerCase() ?? 'never');
+      if (smokeMatch) matched++;
+      analysis.add({
+        'label': 'Smoking Habit',
+        'isMatch': smokeMatch,
+        'value': 'They seek: ${otherPrefs.smoke!.join("/")}',
+        'icon': Icons.smoke_free_outlined,
+      });
+    }
+
+    if (otherPrefs.alcohol != null && otherPrefs.alcohol!.isNotEmpty) {
+      total++;
+      bool alcoholMatch = otherPrefs.alcohol!.contains(myProfile.alcohol?.toLowerCase() ?? 'never');
+      if (alcoholMatch) matched++;
+      analysis.add({
+        'label': 'Alcohol Habit',
+        'isMatch': alcoholMatch,
+        'value': 'They seek: ${otherPrefs.alcohol!.join("/")}',
+        'icon': Icons.local_bar_outlined,
+      });
+    }
+
+    if (otherPrefs.drugAddiction != null && otherPrefs.drugAddiction != 'any') {
+      total++;
+      bool drugMatch = false;
+      if (otherPrefs.drugAddiction!.toLowerCase() == 'no') {
+        drugMatch = myProfile.drugAddiction == false;
+      } else {
+        drugMatch = myProfile.drugAddiction == true;
+      }
+      if (drugMatch) matched++;
+      analysis.add({
+        'label': 'No-Drug Policy',
+        'isMatch': drugMatch,
+        'value': 'Matches their preference',
+        'icon': Icons.health_and_safety_outlined,
+      });
+    }
+
+    setState(() {
+      _matchAnalysis = analysis;
+      _matchedCount = matched;
+      _totalCount = total;
+      _compatibilityScore = total > 0 ? (matched / total) : 0.0;
+    });
   }
 
   @override
@@ -461,7 +657,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   const Icon(Icons.account_balance_wallet, color: Colors.white, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    '₹${_walletBalance.toStringAsFixed(0)}',
+                    'â‚¹${_walletBalance.toStringAsFixed(0)}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -577,21 +773,23 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       ),
                     ),
                   const SizedBox(height: 12),
-
                   // Row 4: Location & Distance Badges
                   Wrap(
-                    spacing: 12,
+                    spacing: 8,
                     runSpacing: 8,
                     children: [
                       if (_user?.userProfile?.city != null)
                         _buildBadge(Icons.location_on, _user!.userProfile!.city!),
-                      if (_user?.userProfile?.district != null)
-                        _buildBadge(Icons.map, _user!.userProfile!.district!),
                       if (_user?.distance != null)
                         _buildBadge(Icons.near_me_rounded, '${_user!.distance!.toStringAsFixed(1)} KM', isDistance: true),
+                      if (_compatibilityScore > 0)
+                        _buildBadge(
+                          Icons.insights_rounded,
+                          '${(_compatibilityScore * 100).toInt()}% Match',
+                          isCompatibility: true,
+                        ),
                     ],
                   ),
-
                 ],
               ),
             ),
@@ -601,18 +799,16 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildBadge(IconData icon, String text, {bool isDistance = false}) {
+  Widget _buildBadge(IconData icon, String text, {bool isDistance = false, bool isCompatibility = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: isDistance 
-            ? const Color(0xFF00BCD4).withOpacity(0.35) 
-            : Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.3),
-          width: 0.5,
-        ),
+        color: isCompatibility
+            ? const Color(0xFF4CD9A6)
+            : (isDistance
+                ? const Color(0xFF00BCD4).withOpacity(0.4)
+                : Colors.white.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1034,7 +1230,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             if (_user?.userProfile?.annualIncome != null)
               _buildDetailRow(
                 'Annual Income',
-                '₹${_user!.userProfile!.annualIncome}',
+                'â‚¹${_user!.userProfile!.annualIncome}',
               ),
           ]),
           _buildInfoSection('Family Details', Icons.family_restroom_outlined, [
@@ -1092,7 +1288,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             _buildChipsSection('Interests & Hobbies', Icons.auto_awesome_outlined, _user!.interests!, 'interest_name'),
           if (_user?.personalities != null && _user!.personalities!.isNotEmpty)
             _buildChipsSection('Personality Traits', Icons.psychology_outlined, _user!.personalities!, 'personality_name'),
-          SizedBox(height: 24),
+          if (_compatibilityScore > 0) ...[
+            const SizedBox(height: 24),
+            _buildCompatibilityAnalysis(),
+          ],
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -1166,6 +1366,151 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       ],
     );
   }
+
+  Widget _buildCompatibilityAnalysis() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+        border: Border.all(color: const Color(0xFF4CD9A6).withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () {
+              setState(() {
+                _isCompatibilityExpanded = !_isCompatibilityExpanded;
+              });
+            },
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF4CD9A6).withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.insights_rounded, color: Color(0xFF4CD9A6), size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Match Compatibility',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                      ),
+                      Text(
+                        'Based on their preferences',
+                        style: TextStyle(fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '${(_compatibilityScore * 100).toInt()}%',
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF4CD9A6)),
+                    ),
+                    Icon(
+                      _isCompatibilityExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                      color: const Color(0xFF4CD9A6),
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          
+          if (_isCompatibilityExpanded) ...[
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 20),
+            
+            // Summary Line
+            Row(
+              children: [
+                const Icon(Icons.check_circle_outline_rounded, color: Color(0xFF4CD9A6), size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'You meet $_matchedCount of their $_totalCount criteria.',
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87),
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Detailed List
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _matchAnalysis.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final item = _matchAnalysis[index];
+                final bool isMatch = item['isMatch'];
+                
+                return Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: isMatch ? const Color(0xFF4CD9A6).withOpacity(0.1) : Colors.grey.shade100,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isMatch ? Icons.check_rounded : Icons.close_rounded,
+                        color: isMatch ? const Color(0xFF4CD9A6) : Colors.grey.shade400,
+                        size: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        item['label'],
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isMatch ? Colors.black87 : Colors.grey.shade500,
+                          fontWeight: isMatch ? FontWeight.w500 : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      isMatch ? 'Match' : 'No Match',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: isMatch ? const Color(0xFF4CD9A6) : Colors.grey.shade400,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildDiscoveryNote() {
     return const SizedBox.shrink();
@@ -1724,7 +2069,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           Divider(color: Colors.grey.shade300),
           const SizedBox(height: 20),
           Text(
-            '© 2026 Vivah4Ever. All Rights Reserved.',
+            'Â© 2026 Vivah4Ever. All Rights Reserved.',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey.shade500,
@@ -1733,7 +2078,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Made with ❤️ in Kerala',
+            'Made with â¤ï¸ in Kerala',
             style: TextStyle(
               fontSize: 11,
               color: Colors.grey.shade400,
@@ -1834,11 +2179,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   String _maskPhone(String? phone) {
-    if (phone == null || phone.isEmpty) return '••••••••••';
+    if (phone == null || phone.isEmpty) return 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢';
     if (phone.length < 4) return phone;
     final start = phone.substring(0, phone.length >= 6 ? 3 : 2);
     final end = phone.substring(phone.length - 2);
-    return '$start••••••$end';
+    return '$startâ€¢â€¢â€¢â€¢â€¢â€¢$end';
   }
 
   void _checkVerificationAndProceed(VoidCallback onSuccess) {
@@ -1917,7 +2262,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ],
           ),
           content: Text(
-            'Are you sure you want to unlock this contact? ₹49 will be deducted from your wallet.',
+            'Are you sure you want to unlock this contact? â‚¹49 will be deducted from your wallet.',
             style: TextStyle(fontSize: 15),
           ),
           actions: [
@@ -1956,7 +2301,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ],
           ),
           content: Text(
-            'Your wallet balance is ₹${_walletBalance.toStringAsFixed(0)}. Would you like to recharge your wallet?',
+            'Your wallet balance is â‚¹${_walletBalance.toStringAsFixed(0)}. Would you like to recharge your wallet?',
             style: TextStyle(fontSize: 15),
           ),
           actions: [
@@ -2149,7 +2494,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       child: ListTile(
         leading: Icon(Icons.account_balance_wallet, color: Color(0xFF00BCD4)),
         title: Text(
-          '₹${amount.toStringAsFixed(0)}',
+          'â‚¹${amount.toStringAsFixed(0)}',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         trailing: Icon(
