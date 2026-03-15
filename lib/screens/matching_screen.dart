@@ -280,7 +280,7 @@ class _MatchingScreenState extends State<MatchingScreen>
       color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         itemCount: _declinedInterests.length,
         itemBuilder: (context, index) {
           final interest = _declinedInterests[index];
@@ -330,7 +330,7 @@ class _MatchingScreenState extends State<MatchingScreen>
       color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         itemCount: _matches.length,
         itemBuilder: (context, index) {
           final match = _matches[index];
@@ -375,7 +375,7 @@ class _MatchingScreenState extends State<MatchingScreen>
       color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         itemCount: _sentInterests.length,
         itemBuilder: (context, index) {
           final interest = _sentInterests[index];
@@ -418,7 +418,7 @@ class _MatchingScreenState extends State<MatchingScreen>
       color: gradientCyan,
       onRefresh: _loadData,
       child: ListView.builder(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         itemCount: _receivedInterests.length,
         itemBuilder: (context, index) {
           final interest = _receivedInterests[index];
@@ -471,7 +471,7 @@ class _MatchingScreenState extends State<MatchingScreen>
           }).join(' ');
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
       height: 480,
       decoration: BoxDecoration(
         color: Colors.white,

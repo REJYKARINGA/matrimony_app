@@ -1042,7 +1042,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           ? const Center(child: Text('No matches found'))
           : ListView.builder(
         controller: _scrollController,
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 100),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16).copyWith(bottom: 100),
         itemCount: _users.length + (_isLoading ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _users.length) {
@@ -1087,7 +1087,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           }).join(' ');
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
       height: 480,
       decoration: BoxDecoration(
         color: Colors.white,
