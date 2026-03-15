@@ -657,7 +657,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   const Icon(Icons.account_balance_wallet, color: Colors.white, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    'â‚¹${_walletBalance.toStringAsFixed(0)}',
+                    '₹${_walletBalance.toStringAsFixed(0)}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -972,6 +972,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         (_interestReceived != null &&
             _interestReceived['status'] == 'accepted') ||
         (_interestSent != null && _interestSent['status'] == 'accepted');
+    bool isContactUnlocked = _user?.contactInfo?.isContactUnlocked ?? false;
     bool isPending =
         _interestReceived != null && _interestReceived['status'] == 'pending';
     bool isSent = _interestSent != null && !isMatched;
@@ -996,7 +997,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           // Chat
           GestureDetector(
             onTap: () {
-              if (isMatched && _user != null) {
+              if ((isMatched || isContactUnlocked) && _user != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -1012,7 +1013,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: const Text('Match first to message!'),
+                    content: const Text('Match first or purchase contact to message!'),
                     backgroundColor: Colors.orange,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
@@ -2069,7 +2070,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           Divider(color: Colors.grey.shade300),
           const SizedBox(height: 20),
           Text(
-            'Â© 2026 Vivah4Ever. All Rights Reserved.',
+            '© 2026 Vivah4Ever. All Rights Reserved.',
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey.shade500,
@@ -2078,7 +2079,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            'Made with â¤ï¸ in Kerala',
+            'Made with ❤️ in Kerala',
             style: TextStyle(
               fontSize: 11,
               color: Colors.grey.shade400,
@@ -2167,9 +2168,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         final data = json.decode(response.body);
         if (mounted) {
           setState(() {
-            _todayUnlockCount = data['count'] ?? 0;
+            _todayUnlockCount = int.tryParse(data['count'].toString()) ?? 0;
             // Get daily limit from backend (default 20 if not provided)
-            _dailyUnlockLimit = data['daily_limit'] ?? 20;
+            _dailyUnlockLimit = int.tryParse(data['daily_limit'].toString()) ?? 20;
           });
         }
       }
@@ -2179,11 +2180,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   String _maskPhone(String? phone) {
-    if (phone == null || phone.isEmpty) return 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢';
+    if (phone == null || phone.isEmpty) return '••••••••••';
     if (phone.length < 4) return phone;
     final start = phone.substring(0, phone.length >= 6 ? 3 : 2);
     final end = phone.substring(phone.length - 2);
-    return '$startâ€¢â€¢â€¢â€¢â€¢â€¢$end';
+    return '$start••••••$end';
   }
 
   void _checkVerificationAndProceed(VoidCallback onSuccess) {
@@ -2262,7 +2263,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ],
           ),
           content: Text(
-            'Are you sure you want to unlock this contact? â‚¹49 will be deducted from your wallet.',
+            'Are you sure you want to unlock this contact? ₹49 will be deducted from your wallet.',
             style: TextStyle(fontSize: 15),
           ),
           actions: [
@@ -2301,7 +2302,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ],
           ),
           content: Text(
-            'Your wallet balance is â‚¹${_walletBalance.toStringAsFixed(0)}. Would you like to recharge your wallet?',
+            'Your wallet balance is ₹${_walletBalance.toStringAsFixed(0)}. Would you like to recharge your wallet?',
             style: TextStyle(fontSize: 15),
           ),
           actions: [
@@ -2333,14 +2334,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       final response = await PaymentService.unlockContactWithWallet(
         widget.userId,
       );
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+      
+      final data = json.decode(response.body);
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
         if (mounted) {
           setState(() {
             _contactUnlocked = true;
-            // Update unlock count and limit from response
-            _todayUnlockCount = data['today_unlocks'] ?? _todayUnlockCount;
-            _dailyUnlockLimit = data['daily_limit'] ?? _dailyUnlockLimit;
+            _todayUnlockCount = int.tryParse((data['today_unlocks'] ?? _todayUnlockCount).toString()) ?? _todayUnlockCount;
+            _dailyUnlockLimit = int.tryParse((data['daily_limit'] ?? _dailyUnlockLimit).toString()) ?? _dailyUnlockLimit;
           });
         }
         _loadWalletBalance();
@@ -2361,35 +2363,39 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ),
           ),
         );
+      } else {
+        String errorMessage = data['message'] ?? data['error'] ?? 'Failed to unlock contact';
+        
+        if (data['error'] == 'daily_limit_exceeded') {
+          _showDailyLimitExceededDialog(errorMessage);
+        } else if (response.statusCode == 402 || data['error'] == 'Insufficient wallet balance') {
+          errorMessage = 'Insufficient wallet balance. Please recharge.';
+        }
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          );
+        }
       }
-    } on http.Response catch (e) {
-      // Handle HTTP errors
-      final errorData = json.decode(e.body);
-      String errorMessage = 'Failed to unlock contact';
-      
-      if (errorData['error'] == 'daily_limit_exceeded') {
-        errorMessage = errorData['message'] ?? 'Daily limit exceeded';
-        _showDailyLimitExceededDialog(errorMessage);
-      } else if (errorData['error'] == 'Insufficient wallet balance') {
-        errorMessage = 'Insufficient wallet balance. Please recharge.';
-      }
-      
+    } catch (e) {
+      print('Unlock error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errorMessage),
+            content: Text('Error: ${e.toString()}'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to unlock contact')));
     }
   }
 
@@ -2494,7 +2500,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       child: ListTile(
         leading: Icon(Icons.account_balance_wallet, color: Color(0xFF00BCD4)),
         title: Text(
-          'â‚¹${amount.toStringAsFixed(0)}',
+          '₹${amount.toStringAsFixed(0)}',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         trailing: Icon(
