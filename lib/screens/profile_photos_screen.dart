@@ -72,6 +72,16 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
   }
 
   Future<void> _uploadPhoto() async {
+    if (_photos.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You can only upload a maximum of 5 photos. Please delete a photo to upload a new one.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 

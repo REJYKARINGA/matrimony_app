@@ -1226,7 +1226,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Future<void> _pickImage() async {
     if (_selectedPhotos.length >= 5) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximum 5 photos allowed')),
+        const SnackBar(
+          content: Text('You can only select a maximum of 5 photos. Please remove a photo to select a new one.'),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
       return;
     }

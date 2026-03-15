@@ -66,6 +66,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickAndUploadImage() async {
+    // Check if user already has 5 photos
+    if (_user?.profilePhotos != null && _user!.profilePhotos!.length >= 5) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Photo limit reached. Redirecting to Manage Photos...'),
+          backgroundColor: Colors.orange,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      // Wait a moment for snackbar to be seen, then navigate
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          Navigator.pushNamed(context, '/profile-photos');
+        }
+      });
+      return;
+    }
+
     final ImagePicker picker = ImagePicker();
     
     // Show dialog to choose source
