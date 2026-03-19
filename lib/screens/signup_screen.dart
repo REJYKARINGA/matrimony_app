@@ -29,14 +29,14 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
   bool _obscureConfirmPassword = true;
   bool _agreeToTerms = false;
   
-  // Phone OTP States
-  bool _isPhoneVerified = false;
+  // Phone OTP States (Temporarily set to true as per user request)
+  bool _isPhoneVerified = true;
   bool _isSendingOtp = false;
   bool _isVerifyingOtp = false;
   String? _otpSessionId;
 
-  // Email OTP States
-  bool _isEmailVerified = false;
+  // Email OTP States (Temporarily set to true as per user request)
+  bool _isEmailVerified = true;
   bool _isSendingEmailOtp = false;
   bool _isVerifyingEmailOtp = false;
   bool _emailOtpSent = false;
@@ -185,18 +185,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                 hint: 'Enter your email',
                                 icon: Icons.email_outlined,
                                 keyboardType: TextInputType.emailAddress,
-                                suffixIcon: _isEmailVerified
-                                    ? const Icon(Icons.check_circle, color: Colors.green)
-                                    : TextButton(
-                                        onPressed: _isSendingEmailOtp ? null : _sendEmailOtp,
-                                        child: _isSendingEmailOtp
-                                            ? const SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child: CircularProgressIndicator(strokeWidth: 2),
-                                              )
-                                            : const Text('Verify', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
-                                      ),
+                                suffixIcon: null, // Temporarily disabled
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your email';
@@ -239,18 +228,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                 hint: 'Enter your phone number',
                                 icon: Icons.phone_outlined,
                                 keyboardType: TextInputType.phone,
-                                suffixIcon: _isPhoneVerified
-                                    ? const Icon(Icons.check_circle, color: Colors.green)
-                                    : TextButton(
-                                        onPressed: _isSendingOtp ? null : _sendOtp,
-                                        child: _isSendingOtp
-                                            ? const SizedBox(
-                                                width: 16,
-                                                height: 16,
-                                                child: CircularProgressIndicator(strokeWidth: 2),
-                                              )
-                                            : const Text('Verify', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
-                                      ),
+                                suffixIcon: null, // Temporarily disabled
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your phone number';
@@ -484,6 +462,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                               );
                                               return;
                                             }
+/*
                                             if (!_isEmailVerified) {
                                               ScaffoldMessenger.of(context).showSnackBar(
                                                 const SnackBar(
@@ -504,6 +483,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                               );
                                               return;
                                             }
+*/
                                             bool success = await authProvider.register(
                                               email: _emailController.text.trim(),
                                               phone: _phoneController.text.trim(),
