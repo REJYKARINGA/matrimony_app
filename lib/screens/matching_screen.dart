@@ -458,6 +458,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     bool isSentByMe = false,
   }) {
     final profile = user.userProfile;
+    final isBlurred = (user.isDisplayImageVerified != true) || (user.hasHiddenPhotos && !user.isContactUnlocked);
     
     final age = profile?.age;
     String ageText = age != null ? age.toString() : '';
@@ -473,6 +474,11 @@ class _MatchingScreenState extends State<MatchingScreen>
             if (word.isEmpty) return word;
             return word[0].toUpperCase() + word.substring(1).toLowerCase();
           }).join(' ');
+
+    String currentLoc = [
+      profile?.presentCity,
+      profile?.presentCountry,
+    ].where((e) => e != null && e.isNotEmpty).join(', ');
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
@@ -505,41 +511,36 @@ class _MatchingScreenState extends State<MatchingScreen>
                               _buildPlaceholderBackground(profile?.gender),
                         )
                       : _buildPlaceholderBackground(profile?.gender),
-                  if (user.displayImage != null && user.isDisplayImageVerified != true)
-                    BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                      child: Container(
-                        color: Colors.black.withOpacity(0.4),
-                        child: const Center(
-                          child: Icon(Icons.pending_actions, color: Colors.white, size: 40),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            if (user.hasHiddenPhotos)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.3),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.lock_person_rounded, color: Colors.white.withOpacity(0.9), size: 48),
-                        const SizedBox(height: 8),
-                        Text(
-                          'PRIVATE PHOTO',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
+                    if (user.displayImage != null && isBlurred)
+                      BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                        child: Container(
+                          color: Colors.black.withOpacity(0.4),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  (user.isDisplayImageVerified != true) ? Icons.pending_actions_rounded : Icons.lock_person_rounded,
+                                  color: Colors.white,
+                                  size: 40,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  (user.isDisplayImageVerified != true) ? 'UNDER REVIEW' : 'PRIVATE PHOTO',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                  ],
                 ),
               ),
             // Gradient Overlay
@@ -662,13 +663,31 @@ class _MatchingScreenState extends State<MatchingScreen>
                             ),
                             const SizedBox(width: 4),
                             Expanded(
-                              child: Text(
-                                loc.isNotEmpty ? loc : 'Unknown Location',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 13,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    loc.isNotEmpty ? loc : 'Unknown Location',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 13,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (currentLoc.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        'Present: $currentLoc',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],
@@ -778,7 +797,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                                 Icon(Icons.phone_iphone_rounded, color: Colors.white, size: 20),
                                 SizedBox(width: 10),
                                 Text(
-                                  'VIEW CONTACT DETAILS',
+                                  'VIEW PROFILE',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,

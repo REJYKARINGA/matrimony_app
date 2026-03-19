@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../models/user_model.dart';
 import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
+import '../services/location_service.dart';
 import '../utils/date_formatter.dart';
 
 class CreateProfileScreen extends StatefulWidget {
@@ -39,6 +40,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   late TextEditingController _customOccupationController;
   String? _selectedAnnualIncome;
   late TextEditingController _cityController;
+  late TextEditingController _presentCityController;
+  late TextEditingController _presentCountryController;
   String? _selectedDistrict;
   late TextEditingController _stateController;
   late TextEditingController _countryController;
@@ -157,6 +160,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _customOccupationController = TextEditingController();
     _selectedAnnualIncome = null;
     _cityController = TextEditingController();
+    _presentCityController = TextEditingController();
+    _presentCountryController = TextEditingController();
     _selectedDistrict = null;
     _stateController = TextEditingController(text: 'Kerala');
     _countryController = TextEditingController(text: 'India');
@@ -203,6 +208,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         occupation: _getOccupationValue(),
         annualIncome: _selectedAnnualIncome != null ? double.tryParse(_selectedAnnualIncome!) : null,
         city: _cityController.text,
+        presentCity: _presentCityController.text,
+        presentCountry: _presentCountryController.text,
         district: _selectedDistrict,
         state: _stateController.text,
         country: _countryController.text,
@@ -238,6 +245,48 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _detectLocation() async {
+    setState(() => _isLoading = true);
+    try {
+      final position = await LocationService.getCurrentLocation();
+      if (position != null) {
+        await LocationService.updateLocationToServer(position);
+        final address = await LocationService.getAddressFromCoordinates(
+          position.latitude, 
+          position.longitude
+        );
+
+        if (address != null && mounted) {
+          setState(() {
+            _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
+            _stateController.text = (address['state'] ?? '').toString();
+            _countryController.text = (address['country'] ?? '').toString();
+            
+            String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
+            if (detDistrict != null) {
+              detDistrict = detDistrict.replaceAll(' District', '').trim();
+              try {
+                _selectedDistrict = _keralaDistricts.firstWhere(
+                  (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
+                  orElse: () => _selectedDistrict ?? _keralaDistricts.first,
+                );
+              } catch (_) {}
+            }
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location detected!'), backgroundColor: accentGreen),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Permission denied or location not found'), backgroundColor: Colors.orange),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -706,9 +755,22 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Location & About',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Location & About',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            TextButton.icon(
+              onPressed: _isLoading ? null : _detectLocation,
+              icon: const Icon(Icons.my_location, color: primaryCyan, size: 18),
+              label: const Text(
+                'Detect GPS',
+                style: TextStyle(color: primaryCyan, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(
@@ -719,8 +781,38 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         TextFormField(
           controller: _cityController,
           decoration: InputDecoration(
-            labelText: 'City',
+            labelText: 'Home City',
+            prefixIcon: const Icon(Icons.home_outlined, color: primaryCyan),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _presentCityController,
+          decoration: InputDecoration(
+            labelText: 'Present City (if different)',
             prefixIcon: const Icon(Icons.location_city, color: primaryCyan),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryCyan, width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextFormField(
+          controller: _presentCountryController,
+          decoration: InputDecoration(
+            labelText: 'Present Country (if different)',
+            prefixIcon: const Icon(Icons.public, color: primaryCyan),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -919,6 +1011,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _customEducationController.dispose();
     _customOccupationController.dispose();
     _cityController.dispose();
+    _presentCityController.dispose();
+    _presentCountryController.dispose();
     _stateController.dispose();
     _countryController.dispose();
     _bioController.dispose();

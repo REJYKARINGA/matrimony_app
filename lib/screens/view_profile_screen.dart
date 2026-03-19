@@ -653,6 +653,92 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     }
   }
 
+  Widget _buildLockedPhotoGallery({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    final bool isPending = _user?.photoRequestPending == true;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Photo Gallery',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Column(
+              children: [
+                Icon(icon, size: 48, color: Colors.grey.shade400),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey.shade600, height: 1.4),
+                ),
+                const SizedBox(height: 20),
+                if (isPending)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.orange.shade200),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.pending_actions, size: 18, color: Colors.orange.shade700),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Request Pending',
+                          style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  ElevatedButton.icon(
+                    onPressed: _isActionLoading ? null : _handlePhotoRequest,
+                    icon: const Icon(Icons.key, size: 20),
+                    label: Text(
+                      title == 'No Photos Uploaded' ? 'Request Photo' : 'Request Photo Access',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF00BCD4),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSliverAppBar() {
     final displayImage = _user?.displayImage;
     return SliverAppBar(
@@ -841,6 +927,23 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                  const SizedBox(height: 4),
+
+                  // Present Location Info
+                  if ((_user?.userProfile?.presentCity ?? '').isNotEmpty || (_user?.userProfile?.presentCountry ?? '').isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        'Present: ${_user?.userProfile?.presentCity ?? ''}${(_user?.userProfile?.presentCity != null && (_user?.userProfile?.presentCountry ?? '').isNotEmpty) ? ', ' : ''}${_user?.userProfile?.presentCountry ?? ''}',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.95),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ),
+
                   const SizedBox(height: 12),
                   // Row 4: Location & Distance Badges
                   Wrap(
@@ -898,95 +1001,34 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   Widget _buildPhotoGallery() {
-    if (_user?.hasHiddenPhotos == true) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Photo Gallery',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade50,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                children: [
-                  Icon(Icons.lock_person_rounded, size: 48, color: Colors.grey.shade400),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Photos are Hidden',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'This user has chosen to hide their photos. You can request access or send an interest to view them.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey.shade600, height: 1.4),
-                  ),
-                  const SizedBox(height: 20),
-                  if (_user!.photoRequestPending)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: Colors.orange.shade200),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.pending_actions, size: 18, color: Colors.orange.shade700),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Request Pending',
-                            style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    )
-                  else
-                    ElevatedButton.icon(
-                      onPressed: _isActionLoading ? null : _handlePhotoRequest,
-                      icon: const Icon(Icons.key, size: 20),
-                      label: const Text('Request Photo Access', style: TextStyle(fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00BCD4),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        elevation: 0,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    final bool hasHidden = _user?.hasHiddenPhotos == true;
+    final List<ProfilePhoto> photos = _user?.profilePhotos ?? [];
+    
+    // 1. If photos are HIDDEN (Locked)
+    if (hasHidden) {
+      return _buildLockedPhotoGallery(
+        title: 'Photos are Hidden',
+        subtitle: 'This user has chosen to hide their photos. You can request access or send an interest to view them.',
+        icon: Icons.lock_person_rounded,
       );
     }
 
-    List<ProfilePhoto> photos = [];
-    if (_user?.profilePhotos != null) {
-      photos = List<ProfilePhoto>.from(_user!.profilePhotos!);
-      // Sort so primary is first
-      photos.sort((a, b) {
-        if (a.isPrimary == true) return -1;
-        if (b.isPrimary == true) return 1;
-        return 0;
-      });
+    // 2. If NO photos are uploaded at all
+    if (photos.isEmpty) {
+      return _buildLockedPhotoGallery(
+        title: 'No Photos Uploaded',
+        subtitle: 'This user hasn\'t uploaded any photos yet. You can request them to upload a photo.',
+        icon: Icons.no_photography_rounded,
+      );
     }
 
-    if (photos.isEmpty) return const SizedBox.shrink();
+    // 3. Normal Public Gallery
+    List<ProfilePhoto> sortedPhotos = List<ProfilePhoto>.from(photos);
+    sortedPhotos.sort((a, b) {
+      if (a.isPrimary == true) return -1;
+      if (b.isPrimary == true) return 1;
+      return 0;
+    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1424,7 +1466,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ]),
           _buildInfoSection('Location', Icons.location_on_outlined, [
             if ((_user?.userProfile?.city ?? '').isNotEmpty)
-              _buildDetailRow('City', _user!.userProfile!.city!),
+              _buildDetailRow('Home City', _user!.userProfile!.city!),
+            if ((_user?.userProfile?.presentCity ?? '').isNotEmpty)
+              _buildDetailRow('Present City', _user!.userProfile!.presentCity!),
+            if ((_user?.userProfile?.presentCountry ?? '').isNotEmpty)
+              _buildDetailRow('Present Country', _user!.userProfile!.presentCountry!),
             if ((_user?.userProfile?.district ?? '').isNotEmpty)
               _buildDetailRow('District', _user!.userProfile!.district!),
           ]),

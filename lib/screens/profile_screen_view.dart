@@ -246,6 +246,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildCompactInfo(Icons.currency_rupee, 'Income', _user?.userProfile?.annualIncome != null ? '₹${_user!.userProfile!.annualIncome}' : null),
                       ]),
                     ]),
+                    _buildSection('Location Details', [
+                      _buildGrid([
+                        _buildCompactInfo(Icons.home_outlined, 'Home City', _user?.userProfile?.city),
+                        _buildCompactInfo(Icons.map_outlined, 'District', _user?.userProfile?.district),
+                        _buildCompactInfo(Icons.location_city_outlined, 'Present City', _user?.userProfile?.presentCity),
+                        _buildCompactInfo(Icons.public_outlined, 'Present Country', _user?.userProfile?.presentCountry),
+                        _buildCompactInfo(Icons.flag_outlined, 'State', _user?.userProfile?.state),
+                        _buildCompactInfo(Icons.public_outlined, 'Country', _user?.userProfile?.country),
+                      ]),
+                    ]),
                     _buildSection('Family Details', [
                       _buildCompactInfo(Icons.person_outline, 'Father', _maskName(_user?.familyDetails?.fatherName)),
                       const SizedBox(height: 12),
@@ -941,6 +951,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _occupationController;
   late TextEditingController _annualIncomeController;
   late TextEditingController _cityController;
+  late TextEditingController _presentCityController;
+  late TextEditingController _presentCountryController;
   late TextEditingController _districtController;
   String? _selectedDistrict;
   late TextEditingController _stateController;
@@ -1102,6 +1114,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _cityController = TextEditingController(
       text: widget.user?.userProfile?.city ?? '',
     );
+    _presentCityController = TextEditingController(
+      text: widget.user?.userProfile?.presentCity ?? '',
+    );
+    _presentCountryController = TextEditingController(
+      text: widget.user?.userProfile?.presentCountry ?? '',
+    );
     _selectedDistrict = widget.user?.userProfile?.district;
     _districtController = TextEditingController(text: _selectedDistrict ?? '');
     _stateController = TextEditingController(
@@ -1154,6 +1172,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         occupationId: _selectedOccupationId,
         annualIncome: double.tryParse(_annualIncomeController.text),
         city: _cityController.text,
+        presentCity: _presentCityController.text,
+        presentCountry: _presentCountryController.text,
         district: _districtController.text,
         county: _countyController.text,
         state: _stateController.text,
@@ -1861,13 +1881,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       textInputAction: TextInputAction.search,
                       onFieldSubmitted: (_) => _triggerCityLookup(),
                       decoration: _buildModernInputDecoration(
-                        label: 'City',
-                        icon: Icons.location_city_rounded,
+                        label: 'Home City',
+                        icon: Icons.home_rounded,
                         helperText: 'Tap icon to auto-fill location details',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.travel_explore, color: Color(0xFF00BCD4)),
                           onPressed: _triggerCityLookup,
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    TextFormField(
+                      controller: _presentCityController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Present City (if different)',
+                        icon: Icons.location_city_rounded,
+                        hint: 'e.g. Dubai, London etc.',
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _presentCountryController,
+                      decoration: _buildModernInputDecoration(
+                        label: 'Present Country (if different)',
+                        icon: Icons.public_rounded,
+                        hint: 'e.g. UAE, UK etc.',
                       ),
                     ),
                     const SizedBox(height: 16),

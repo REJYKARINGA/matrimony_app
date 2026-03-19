@@ -41,6 +41,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   late TextEditingController _occupationController;
   late TextEditingController _annualIncomeController;
   late TextEditingController _cityController;
+  late TextEditingController _presentCityController;
+  late TextEditingController _presentCountryController;
   late TextEditingController _maritalStatusController;
   late TextEditingController _smokeController;
   late TextEditingController _alcoholController;
@@ -49,6 +51,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   late TextEditingController _stateController;
   late TextEditingController _countryController;
   late TextEditingController _bioController;
+  bool _isPresentSameAsHome = true;
   bool _drugAddiction = false;
   String _smoke = 'never';
   String _alcohol = 'never';
@@ -186,6 +189,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _occupationController = TextEditingController();
     _annualIncomeController = TextEditingController();
     _cityController = TextEditingController();
+    _presentCityController = TextEditingController();
+    _presentCountryController = TextEditingController();
     _districtController = TextEditingController();
     _stateController = TextEditingController(text: 'Kerala');
     _countryController = TextEditingController(text: 'India');
@@ -209,6 +214,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _occupationController.dispose();
     _annualIncomeController.dispose();
     _cityController.dispose();
+    _presentCityController.dispose();
+    _presentCountryController.dispose();
     _districtController.dispose();
     _maritalStatusController.dispose();
     _smokeController.dispose();
@@ -238,6 +245,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         occupationId: _selectedOccupationId,
         annualIncome: double.tryParse(_annualIncomeController.text),
         city: _cityController.text,
+        presentCity: _isPresentSameAsHome ? _cityController.text : _presentCityController.text,
+        presentCountry: _isPresentSameAsHome ? _countryController.text : _presentCountryController.text,
         district: _selectedDistrict,
         state: _stateController.text,
         country: _countryController.text,
@@ -885,8 +894,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   Widget _buildLocationStep() {
     return _buildStepContainer(
-      title: 'Location',
-      subtitle: 'Where are you currently located?',
+      title: 'Location Settings',
+      subtitle: 'Where is your home and where do you currently live?',
       child: Column(
         children: [
           SizedBox(
@@ -990,7 +999,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           const SizedBox(height: 20),
           _buildTextField(
             controller: _districtController,
-            label: 'District',
+            label: 'Home District',
             icon: Icons.map,
             readOnly: true,
             onTap: () => _openSearchablePicker(
@@ -1008,7 +1017,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           const SizedBox(height: 16),
           _buildTextField(
             controller: _cityController,
-            label: 'City',
+            label: 'Home City',
             icon: Icons.location_city,
             readOnly: true,
             onTap: () {
@@ -1032,6 +1041,28 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               );
             },
           ),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Present Address same as Home?'),
+            subtitle: const Text('Toggle off if you currently live elsewhere'),
+            value: _isPresentSameAsHome,
+            activeColor: AppColors.primaryBlue,
+            onChanged: (val) => setState(() => _isPresentSameAsHome = val),
+          ),
+          if (!_isPresentSameAsHome) ...[
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _presentCityController,
+              label: 'Present City',
+              icon: Icons.location_city,
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _presentCountryController,
+              label: 'Present Country',
+              icon: Icons.public,
+            ),
+          ],
         ],
       ),
     );
@@ -1089,8 +1120,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             title: 'Location',
             icon: Icons.location_on_outlined,
             items: [
-              _buildPreviewItem('City', _cityController.text),
-              _buildPreviewItem('District', _selectedDistrict ?? ''),
+              _buildPreviewItem('Native City', _cityController.text),
+              _buildPreviewItem('Native District', _selectedDistrict ?? ''),
+              _buildPreviewItem('Native Country', _countryController.text),
+              if (!_isPresentSameAsHome) ...[
+                _buildPreviewItem('Present City', _presentCityController.text),
+                _buildPreviewItem('Present Country', _presentCountryController.text),
+              ] else
+                _buildPreviewItem('Present Address', 'Same as Native'),
             ],
           ),
           const SizedBox(height: 16),

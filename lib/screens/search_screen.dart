@@ -1111,6 +1111,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             return word[0].toUpperCase() + word.substring(1).toLowerCase();
           }).join(' ');
 
+    String currentLoc = [
+      profile?.presentCity,
+      profile?.presentCountry,
+    ].where((e) => e != null && e.isNotEmpty).join(', ');
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
       height: 480,
@@ -1263,13 +1268,31 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                             ),
                             const SizedBox(width: 4),
                             Expanded(
-                              child: Text(
-                                loc.isNotEmpty ? loc : 'Unknown Location',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 13,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    loc.isNotEmpty ? loc : 'Unknown Location',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 13,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (currentLoc.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        'Present: $currentLoc',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],

@@ -294,7 +294,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   List<dynamic> _subscriptionPlans = [];
   bool _isLoadingPlans = false;
   bool _isRechargeRequired = false;
-  List<dynamic> _visitors = [];
+  List<User> _visitors = [];
   bool _isLoadingVisitors = true;
   bool _isIdSearchExpanded = false;
   final TextEditingController _idSearchController = TextEditingController();
@@ -569,13 +569,26 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                   ],
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
-                                  '${profile?.city ?? ''}${profile?.city != null && profile?.district != null ? ', ' : ''}${profile?.district ?? ''}',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontSize: 13,
+                                  Text(
+                                    '${profile?.city ?? ''}${profile?.city != null && profile?.district != null ? ', ' : ''}${profile?.district ?? ''}',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontSize: 13,
+                                    ),
                                   ),
-                                ),
+                                  if ((profile?.presentCity ?? '').isNotEmpty || (profile?.presentCountry ?? '').isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        'Present: ${profile?.presentCity ?? ''}${profile?.presentCity != null && (profile?.presentCountry ?? '').isNotEmpty ? ', ' : ''}${profile?.presentCountry ?? ''}',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.95),
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                 const SizedBox(height: 2),
                                 Text(
                                   '${profile?.caste ?? ''} • ${profile?.education ?? ''}',
@@ -660,7 +673,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         final data = json.decode(response.body);
         if (mounted) {
           setState(() {
-            _visitors = data['visitors'] ?? [];
+            _visitors = (data['visitors'] as List? ?? [])
+                .map((v) => User.fromJson(v))
+                .toList();
             _isLoadingVisitors = false;
           });
         }
@@ -1432,12 +1447,16 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         itemCount: _visitors.length,
                         itemBuilder: (context, index) {
                           final visitor = _visitors[index];
-                          final pic = visitor['user_profile']?['profile_picture'];
+                          final pic = visitor.displayImage;
+                          // If photo is verified AND (not hidden OR already unlocked), then it's NOT blurred.
+                          // Otherwise, it stays blurred.
+                          final isBlurred = (visitor.isDisplayImageVerified != true) || (visitor.hasHiddenPhotos && !visitor.isContactUnlocked);
+                          
                           return GestureDetector(
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (c) => ViewProfileScreen(userId: visitor['id']),
+                                builder: (c) => ViewProfileScreen(userId: visitor.id!),
                               ),
                             ).then((_) => _loadVisitors()),
                             child: Container(
@@ -1456,21 +1475,41 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(3),
-                                      child: CircleAvatar(
-                                        radius: 32,
-                                        backgroundColor: Colors.grey.shade100,
-                                        backgroundImage: pic != null
-                                            ? NetworkImage(ApiService.getImageUrl(pic))
-                                            : null,
-                                        child: pic == null
-                                            ? const Icon(Icons.person, color: Colors.grey, size: 30)
-                                            : null,
+                                      child: Stack(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 32,
+                                            backgroundColor: Colors.grey.shade100,
+                                            backgroundImage: pic != null
+                                                ? NetworkImage(ApiService.getImageUrl(pic))
+                                                : null,
+                                            child: pic == null
+                                                ? const Icon(Icons.person, color: Colors.grey, size: 30)
+                                                : null,
+                                          ),
+                                          if (pic != null && isBlurred)
+                                            ClipOval(
+                                              child: BackdropFilter(
+                                                filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                                                child: Container(
+                                                  color: Colors.black.withOpacity(0.3),
+                                                  child: Center(
+                                                    child: Icon(
+                                                      visitor.hasHiddenPhotos ? Icons.lock_rounded : Icons.pending_actions,
+                                                      color: Colors.white,
+                                                      size: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    visitor['matrimony_id']?.toString() ?? 'User',
+                                    visitor.matrimonyId ?? 'ID: ${visitor.id}',
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Colors.grey.shade600,
@@ -1791,6 +1830,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       maritalStatus,
     ].where((s) => s != null && s.isNotEmpty).join(', ');
 
+    String currentLoc = [
+      profile?.presentCity,
+      profile?.presentCountry,
+    ].where((e) => e != null && e.isNotEmpty).join(', ');
+
     return SwipeCard(
       onSwipeRight: () {
         _handleQuickInterest(user.id!);
@@ -1822,14 +1866,48 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           child: Stack(
           children: [
             Positioned.fill(
-              child: user.displayImage != null
-                  ? Image.network(
-                      ApiService.getImageUrl(user.displayImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildPlaceholderBackground(profile?.gender),
-                    )
-                  : _buildPlaceholderBackground(profile?.gender),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  user.displayImage != null
+                      ? Image.network(
+                          ApiService.getImageUrl(user.displayImage!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildPlaceholderBackground(profile?.gender),
+                        )
+                      : _buildPlaceholderBackground(profile?.gender),
+                  if (user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified))
+                    BackdropFilter(
+                      filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.4),
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                (user.isDisplayImageVerified != true) ? Icons.pending_actions_rounded : Icons.lock_person_rounded,
+                                color: Colors.white,
+                                size: 48,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                (user.isDisplayImageVerified != true) ? 'UNDER REVIEW' : 'PRIVATE PHOTO',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             Positioned.fill(
               child: DecoratedBox(
@@ -1916,13 +1994,31 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             ),
                             const SizedBox(width: 4),
                             Expanded(
-                              child: Text(
-                                loc.isNotEmpty ? loc : 'Unknown Location',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.8),
-                                  fontSize: 13,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    loc.isNotEmpty ? loc : 'Unknown Location',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.8),
+                                      fontSize: 13,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (currentLoc.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        'Present: $currentLoc',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],

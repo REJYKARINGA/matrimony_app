@@ -40,6 +40,7 @@ class User {
   final List<dynamic>? interests;
   final bool hasHiddenPhotos;
   final bool photoRequestPending;
+  final bool isPhotoVerified;
 
   User({
     this.id,
@@ -63,6 +64,7 @@ class User {
     this.interests,
     this.hasHiddenPhotos = false,
     this.photoRequestPending = false,
+    this.isPhotoVerified = true,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -87,7 +89,7 @@ class User {
       lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
       userProfile: json['user_profile'] != null 
           ? UserProfile.fromJson(json['user_profile']) 
-          : (json['age'] != null ? UserProfile.fromCardJson(json) : null),
+          : (json['profile_picture'] != null || json['age'] != null ? UserProfile.fromCardJson(json) : null),
       familyDetails: json['family_details'] != null ? FamilyDetail.fromJson(json['family_details']) : null,
       preferences: json['preferences'] != null ? Preference.fromJson(json['preferences']) : null,
       profilePhotos: json['profile_photos'] != null 
@@ -101,6 +103,7 @@ class User {
       interests: json['interests'] != null ? List<dynamic>.from(json['interests']) : null,
       hasHiddenPhotos: json['has_hidden_photos'] == true,
       photoRequestPending: json['photo_request_pending'] == true,
+      isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1,
     );
   }
 
@@ -133,6 +136,9 @@ class User {
     return userProfile?.profilePicture;
   }
 
+  /// Check if the contact is unlocked
+  bool get isContactUnlocked => contactInfo?.isContactUnlocked ?? false;
+
   /// Get if the display image is verified
   bool get isDisplayImageVerified {
     if (profilePhotos != null && profilePhotos!.isNotEmpty) {
@@ -146,7 +152,7 @@ class User {
         return profilePhotos!.first.isVerified == true;
       }
     }
-    return true; // If no photo array but has a direct profilePicture, assume true or check user verification
+    return isPhotoVerified;
   }
 }
 
@@ -205,6 +211,8 @@ class UserProfile {
   final String? county;
   final String? state;
   final String? country;
+  final String? presentCity;
+  final String? presentCountry;
   final String? postalCode;
   final double? latitude;
   final double? longitude;
@@ -245,6 +253,8 @@ class UserProfile {
     this.county,
     this.state,
     this.country,
+    this.presentCity,
+    this.presentCountry,
     this.postalCode,
     this.latitude,
     this.longitude,
@@ -267,6 +277,8 @@ class UserProfile {
       education: json['education']?.toString(),
       occupation: json['occupation']?.toString(),
       city: json['city']?.toString(),
+      presentCity: json['present_city']?.toString(),
+      presentCountry: json['present_country']?.toString(),
       profilePicture: json['profile_picture']?.toString(),
       isActiveVerified: json['is_active_verified'] == true || json['is_active_verified'] == 1,
       ageOverride: json['age'],
@@ -303,6 +315,8 @@ class UserProfile {
       county: json['county']?.toString(),
       state: json['state']?.toString(),
       country: json['country']?.toString(),
+      presentCity: json['present_city']?.toString(),
+      presentCountry: json['present_country']?.toString(),
       postalCode: json['postal_code']?.toString(),
       latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
       longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
