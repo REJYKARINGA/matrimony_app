@@ -2373,7 +2373,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     );
   }
 
-  Widget _buildPlaceholderBackground(String? gender) {
+  Widget _buildPlaceholderBackground(String? gender, {double size = 80}) {
     bool isFemale = gender?.toLowerCase() == 'female';
     return Container(
       decoration: BoxDecoration(
@@ -2390,8 +2390,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       ),
       child: Center(
         child: Icon(
-          isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
-          size: 80,
+          Icons.person_rounded,
+          size: size,
           color: isFemale
               ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
               : const Color(0xFF00BCD4).withOpacity(0.3), // Turquoise

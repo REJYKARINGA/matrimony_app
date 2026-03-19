@@ -655,18 +655,26 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                             ? Image.network(
                                 ApiService.getImageUrl(user.displayImage!),
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    _buildPlaceholderBackground(profile?.gender, size: 40),
                               )
-                            : Container(
-                                color: Colors.grey.shade100,
-                                child: const Icon(Icons.person, color: Colors.grey),
-                              ),
+                            : _buildPlaceholderBackground(profile?.gender, size: 40),
                       ),
-                      if (user.hasHiddenPhotos)
+                      if (user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified))
                         Positioned.fill(
-                          child: Container(
-                            color: Colors.black.withOpacity(0.2),
-                            child: const Center(
-                              child: Icon(Icons.lock_person_rounded, color: Colors.white, size: 24),
+                          child: ClipRRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                              child: Container(
+                                color: Colors.black.withOpacity(0.4),
+                                child: Center(
+                                  child: Icon(
+                                    (user.isDisplayImageVerified != true) ? Icons.pending_actions_rounded : Icons.lock_person_rounded,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -780,6 +788,30 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         builder: (context) => SearchResultsScreen(
           title: category['title'],
           filter: category,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderBackground(String? gender, {double size = 80}) {
+    bool isFemale = gender?.toLowerCase() == 'female';
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isFemale
+              ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.person_rounded,
+          size: size,
+          color: isFemale
+              ? const Color(0xFFFF2D55).withOpacity(0.3)
+              : const Color(0xFF5CB3FF).withOpacity(0.3),
         ),
       ),
     );
@@ -1438,7 +1470,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     );
   }
 
-  Widget _buildPlaceholderBackground(String? gender) {
+  Widget _buildPlaceholderBackground(String? gender, {double size = 80}) {
     bool isFemale = gender?.toLowerCase() == 'female';
     return Container(
       decoration: BoxDecoration(
@@ -1452,8 +1484,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       ),
       child: Center(
         child: Icon(
-          isFemale ? Icons.face_3_rounded : Icons.face_6_rounded,
-          size: 80,
+          Icons.person_rounded,
+          size: size,
           color: isFemale
               ? const Color(0xFFFF2D55).withOpacity(0.3)
               : const Color(0xFF5CB3FF).withOpacity(0.3),
