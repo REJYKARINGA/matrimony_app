@@ -672,7 +672,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
-                            decoration: TextDecoration.underline,
                           ),
                         ),
                       ),
@@ -694,7 +693,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
-                            decoration: TextDecoration.underline,
                           ),
                         ),
                       ),
