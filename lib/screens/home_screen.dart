@@ -1580,11 +1580,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   }
                   return SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
+                      if (index == filteredUsers.length) {
+                        return _buildEndOfResultsCard();
+                      }
                       return _buildDynamicProfileCard(
                         context,
                         filteredUsers[index],
                       );
-                    }, childCount: filteredUsers.length),
+                    }, childCount: filteredUsers.length + 1),
                   );
                 }(),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -2200,6 +2203,72 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   );
 }
 
+  Widget _buildEndOfResultsCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00BCD4).withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.done_all_rounded,
+              size: 40,
+              color: Color(0xFF00BCD4),
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            "You've Scrolled All Matches",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1F1F1F),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Widen your search preference to see more amazing people around you.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey.shade600,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+          TextButton.icon(
+            onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadTabUsers(_tabController.index)),
+            icon: const Icon(Icons.tune_rounded, size: 18, color: Color(0xFF00BCD4)),
+            label: const Text(
+              'Change Preferences',
+              style: TextStyle(
+                color: Color(0xFF00BCD4),
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEmptyRecommendationsState() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 60),
@@ -2230,7 +2299,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           
           // Professional Message
           const Text(
-            'Refining Matches For You',
+            'Check Back Soon!',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 22,
@@ -2241,7 +2310,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           ),
           const SizedBox(height: 16),
           Text(
-            "Fresh profiles are added regularly—please check back in a day or a week for new recommendations.",
+            "You've caught up with all profiles matching your current preferences. Try broadening your preferences to discover more amazing people!",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
