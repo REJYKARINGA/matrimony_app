@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:ui';
 import '../models/user_model.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
@@ -334,19 +335,30 @@ class _MatchingScreenState extends State<MatchingScreen>
         itemCount: _matches.length,
         itemBuilder: (context, index) {
           final match = _matches[index];
-          if (match == null || match['user1'] == null || match['user2'] == null) {
-            return const SizedBox.shrink();
-          }
+          if (match == null) return const SizedBox.shrink();
           
-          final currentUser = _currentUserId; 
-          final otherUserJson = match['user1']['id'].toString() != currentUser.toString()
-              ? match['user1']
-              : match['user2'];
+          dynamic otherUserJson;
+          // Check for new API structure 'user' key first
+          if (match['user'] != null) {
+            otherUserJson = match['user'];
+          } 
+          // Fallback to old structure with user1/user2 if needed
+          else if (match['user1'] != null && match['user2'] != null) {
+            final currentUser = _currentUserId; 
+            otherUserJson = match['user1']['id']?.toString() != currentUser?.toString()
+                ? match['user1']
+                : match['user2'];
+          }
               
           if (otherUserJson == null) return const SizedBox.shrink();
-          final user = User.fromJson(otherUserJson);
-
-          return _buildProfileCard(user, isMatch: true, isSentByMe: true);
+          
+          try {
+            final user = User.fromJson(otherUserJson);
+            return _buildProfileCard(user, isMatch: true, isSentByMe: true);
+          } catch (e) {
+            print('Error parsing user in matches: $e');
+            return const SizedBox.shrink();
+          }
         },
       ),
     );
@@ -447,16 +459,8 @@ class _MatchingScreenState extends State<MatchingScreen>
   }) {
     final profile = user.userProfile;
     
-    String ageText = '';
-    if (profile?.dateOfBirth != null) {
-      final birth = profile!.dateOfBirth!;
-      int age = DateTime.now().year - birth.year;
-      if (DateTime.now().month < birth.month ||
-          (DateTime.now().month == birth.month &&
-              DateTime.now().day < birth.day))
-        age--;
-      ageText = '$age';
-    }
+    final age = profile?.age;
+    String ageText = age != null ? age.toString() : '';
 
     String loc = [
       profile?.city,
@@ -490,14 +494,29 @@ class _MatchingScreenState extends State<MatchingScreen>
           children: [
             // Background Image
             Positioned.fill(
-              child: user.displayImage != null
-                  ? Image.network(
-                      ApiService.getImageUrl(user.displayImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildPlaceholderBackground(profile?.gender),
-                    )
-                  : _buildPlaceholderBackground(profile?.gender),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  user.displayImage != null
+                      ? Image.network(
+                          ApiService.getImageUrl(user.displayImage!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildPlaceholderBackground(profile?.gender),
+                        )
+                      : _buildPlaceholderBackground(profile?.gender),
+                  if (user.displayImage != null && user.isDisplayImageVerified != true)
+                    BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.4),
+                        child: const Center(
+                          child: Icon(Icons.pending_actions, color: Colors.white, size: 40),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             if (user.hasHiddenPhotos)
               Positioned.fill(
@@ -586,7 +605,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                   Row(
                     children: [
                       Text(
-                        '${user.matrimonyId ?? 'User'}, $ageText',
+                        '${profile?.changedFields?.contains('first_name') == true ? 'Under Review' : user.matrimonyId ?? 'User'}${ageText.isNotEmpty ? ', $ageText' : ''}',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,

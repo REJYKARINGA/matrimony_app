@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../models/user_model.dart';
@@ -57,6 +58,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   int _matchedCount = 0;
   int _totalCount = 0;
   bool _isCompatibilityExpanded = false;
+
+  bool _isHidden(String field) {
+    if (_user?.userProfile?.changedFields?.contains(field) == true) {
+      return true;
+    }
+    return false;
+  }
 
   @override
   void initState() {
@@ -706,11 +714,40 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           fit: StackFit.expand,
           children: [
             // Background blur/image
-            if (displayImage != null) ...[
-               Image.network(
-                ApiService.getImageUrl(displayImage),
-                fit: BoxFit.cover,
-              ),
+             if (displayImage != null) ...[
+               Stack(
+                 fit: StackFit.expand,
+                 children: [
+                   Image.network(
+                    ApiService.getImageUrl(displayImage),
+                    fit: BoxFit.cover,
+                  ),
+                  if (_user?.isDisplayImageVerified != true)
+                    BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.5),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.pending_actions, color: Colors.white, size: 40),
+                              SizedBox(height: 8),
+                              Text(
+                                "Photo in Verification",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                 ],
+               ),
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -752,8 +789,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           children: [
                             Text(
                               _contactUnlocked 
-                                ? '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}'.trim()
-                                : '${_maskName(_user?.userProfile?.firstName)} ${_maskName(_user?.userProfile?.lastName)}',
+                                ? '${_isHidden('first_name') ? 'Reviewing' : _user?.userProfile?.firstName ?? ''} ${_isHidden('last_name') ? '' : _user?.userProfile?.lastName ?? ''}'.trim()
+                                : '${_isHidden('first_name') ? 'Under' : _maskName(_user?.userProfile?.firstName)} ${_isHidden('last_name') ? 'Review' : _maskName(_user?.userProfile?.lastName)}',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
@@ -988,6 +1025,18 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       fit: BoxFit.cover,
                     ),
                   ),
+                  child: photos[index].isVerified != true ? ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                      child: Container(
+                         color: Colors.black.withOpacity(0.4),
+                         child: const Center(
+                           child: Icon(Icons.pending, color: Colors.white),
+                         ),
+                      ),
+                    ),
+                  ) : null,
                 ),
               );
             },
@@ -1010,13 +1059,31 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 itemBuilder: (context, index) {
                   return InteractiveViewer(
                     child: Center(
-                      child: Image.network(
-                        ApiService.getImageUrl(photos[index].photoUrl!),
-                        fit: BoxFit.contain,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(child: CircularProgressIndicator(color: Colors.white));
-                        },
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.network(
+                            ApiService.getImageUrl(photos[index].photoUrl!),
+                            fit: BoxFit.contain,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const Center(child: CircularProgressIndicator(color: Colors.white));
+                            },
+                          ),
+                          if (photos[index].isVerified != true)
+                            BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+                              child: Container(
+                                color: Colors.black.withOpacity(0.5),
+                                child: const Center(
+                                  child: Text(
+                                    "Verification Pending",
+                                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   );
@@ -1251,7 +1318,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if ((_user?.userProfile?.bio ?? '').isNotEmpty) ...[
+          if ((_user?.userProfile?.bio ?? '').isNotEmpty && !_isHidden('bio')) ...[
             _buildModernCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

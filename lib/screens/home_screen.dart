@@ -487,24 +487,39 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   fit: StackFit.expand,
                   children: [
                     // Background Image
-                    user.displayImage != null
-                        ? Image.network(
-                            ApiService.getImageUrl(user.displayImage!),
-                            fit: BoxFit.cover,
-                          )
-                        : Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.primaryCyan.withOpacity(0.8),
-                                  AppColors.primaryBlue.withOpacity(0.8),
-                                ],
+                    Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        user.displayImage != null
+                            ? Image.network(
+                                ApiService.getImageUrl(user.displayImage!),
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      AppColors.primaryCyan.withOpacity(0.8),
+                                      AppColors.primaryBlue.withOpacity(0.8),
+                                    ],
+                                  ),
+                                ),
+                                child: const Icon(Icons.person, color: Colors.white, size: 80),
+                              ),
+                        if (user.displayImage != null && user.isDisplayImageVerified != true)
+                          BackdropFilter(
+                            filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                            child: Container(
+                              color: Colors.black.withOpacity(0.4),
+                              child: const Center(
+                                child: Icon(Icons.pending_actions, color: Colors.white, size: 40),
                               ),
                             ),
-                            child: const Icon(Icons.person, color: Colors.white, size: 80),
                           ),
+                      ],
+                    ),
                           
                     // Gradient Overlay
                     Positioned.fill(
@@ -540,7 +555,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 Row(
                                   children: [
                                     Text(
-                                      '${user.matrimonyId ?? 'User'}$ageText',
+                                      '${profile?.changedFields?.contains('first_name') == true ? 'Under Review' : user.matrimonyId ?? 'User'}$ageText',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,

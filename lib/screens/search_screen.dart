@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/search_service.dart';
 import '../services/api_service.dart';
@@ -1129,14 +1130,29 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         child: Stack(
           children: [
             Positioned.fill(
-              child: user.displayImage != null
-                  ? Image.network(
-                      ApiService.getImageUrl(user.displayImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          _buildPlaceholderBackground(profile?.gender),
-                    )
-                  : _buildPlaceholderBackground(profile?.gender),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  user.displayImage != null
+                      ? Image.network(
+                          ApiService.getImageUrl(user.displayImage!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              _buildPlaceholderBackground(profile?.gender),
+                        )
+                      : _buildPlaceholderBackground(profile?.gender),
+                  if (user.displayImage != null && user.isDisplayImageVerified != true)
+                    BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Container(
+                        color: Colors.black.withOpacity(0.4),
+                        child: const Center(
+                          child: Icon(Icons.pending_actions, color: Colors.white, size: 40),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             if (user.hasHiddenPhotos)
               Positioned.fill(
@@ -1190,7 +1206,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                   Row(
                     children: [
                       Text(
-                        '${user.matrimonyId ?? 'User'}, $ageText',
+                        '${profile?.changedFields?.contains('first_name') == true ? 'Under Review' : user.matrimonyId ?? 'User'}, $ageText',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,

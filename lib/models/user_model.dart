@@ -132,6 +132,22 @@ class User {
     }
     return userProfile?.profilePicture;
   }
+
+  /// Get if the display image is verified
+  bool get isDisplayImageVerified {
+    if (profilePhotos != null && profilePhotos!.isNotEmpty) {
+      try {
+        final primary = profilePhotos!.firstWhere(
+          (p) => p.isPrimary == true,
+          orElse: () => profilePhotos!.first,
+        );
+        return primary.isVerified == true;
+      } catch (e) {
+        return profilePhotos!.first.isVerified == true;
+      }
+    }
+    return true; // If no photo array but has a direct profilePicture, assume true or check user verification
+  }
 }
 
 class UserVerification {
@@ -198,6 +214,7 @@ class UserProfile {
   final bool? isActiveVerified;
   final DateTime? createdAt;
   final int? ageOverride;
+  final List<String>? changedFields;
 
   UserProfile({
     this.id,
@@ -237,6 +254,7 @@ class UserProfile {
     this.isActiveVerified,
     this.createdAt,
     this.ageOverride,
+    this.changedFields,
   });
 
   factory UserProfile.fromCardJson(Map<String, dynamic> json) {
@@ -293,6 +311,7 @@ class UserProfile {
       alcohol: json['alcohol']?.toString(),
       isActiveVerified: json['is_active_verified'] == 1 || json['is_active_verified'] == true,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
+      changedFields: json['changed_fields'] != null ? List<String>.from(json['changed_fields']) : null,
     );
   }
 
@@ -579,6 +598,7 @@ class ProfilePhoto {
   final String? photoUrl;
   final String? fullPhotoUrl;
   final bool? isPrimary;
+  final bool? isVerified;
 
   ProfilePhoto({
     this.id,
@@ -586,6 +606,7 @@ class ProfilePhoto {
     this.photoUrl,
     this.fullPhotoUrl,
     this.isPrimary,
+    this.isVerified,
   });
 
   factory ProfilePhoto.fromJson(Map<String, dynamic> json) {
@@ -595,6 +616,7 @@ class ProfilePhoto {
       photoUrl: json['photo_url']?.toString(),
       fullPhotoUrl: json['full_photo_url']?.toString(),
       isPrimary: json['is_primary'] == 1 || json['is_primary'] == true,
+      isVerified: json['is_verified'] == 1 || json['is_verified'] == true,
     );
   }
 
