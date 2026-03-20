@@ -28,6 +28,9 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   List<User> _allMatches = [];
   bool _isLoadingAllMatches = false;
   String? _allMatchesError;
+  List<User> _shortlistedProfiles = [];
+  bool _isLoadingShortlisted = false;
+  String? _shortlistedError;
   List<dynamic> _categories = [];
   bool _isLoading = true;
   String? _error;
@@ -37,10 +40,14 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
-      if (!_tabController.indexIsChanging && _tabController.index == 1 && _allMatches.isEmpty) {
-        _loadAllMatches();
+      if (!_tabController.indexIsChanging) {
+        if (_tabController.index == 1 && _allMatches.isEmpty) {
+          _loadAllMatches();
+        } else if (_tabController.index == 2 && _shortlistedProfiles.isEmpty) {
+          _loadShortlisted();
+        }
       }
       setState(() {});
     });
@@ -324,6 +331,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                   tabs: const [
                     Tab(text: 'Categories'),
                     Tab(text: 'Recommendations'),
+                    Tab(text: 'Shortlisted'),
                   ],
                 ),
               ),
@@ -393,7 +401,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                     ),
                   ),
                 )
-          else
+          else if (_tabController.index == 1)
             // Matches Tab (Direct Results)
             _isLoadingAllMatches
               ? const SliverFillRemaining(
@@ -413,6 +421,49 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         return _buildResultCard(_allMatches[index]);
                       },
                       childCount: _allMatches.length,
+                    ),
+                  ),
+                )
+          else
+            // Shortlisted Tab
+            _isLoadingShortlisted
+              ? const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
+                )
+              : _shortlistedError != null
+              ? SliverFillRemaining(
+                  child: Center(child: Text(_shortlistedError ?? 'Failed to load shortlist')),
+                )
+              : _shortlistedProfiles.isEmpty
+              ? const SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.bookmark_border_rounded, size: 80, color: Color(0xFFD1D1D1)),
+                        SizedBox(height: 16),
+                        Text(
+                          'No shortlisted profiles',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Shortlist profiles you like to see them here!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return _buildResultCard(_shortlistedProfiles[index]);
+                      },
+                      childCount: _shortlistedProfiles.length,
                     ),
                   ),
                 ),
@@ -627,7 +678,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
-        height: 120,
+        height: 145,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -646,8 +697,8 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: SizedBox(
-                  width: 96,
-                  height: 96,
+                  width: 110,
+                  height: 120,
                   child: Stack(
                     children: [
                       Positioned.fill(
@@ -694,29 +745,84 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                           user.matrimonyId ?? 'User',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 15,
+                            color: Color(0xFF1A1A1A),
                           ),
                         ),
                         if (user.userProfile?.isActiveVerified == true) ...[
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified, color: Color(0xFF00BCD4), size: 16),
+                          const Icon(Icons.verified, color: Color(0xFF00BCD4), size: 14),
                         ],
                       ],
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${age ?? ''} yrs • ${profile?.height ?? ''} cm',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                      '${profile?.age ?? ''} yrs • ${profile?.height != null ? '${profile!.height} cm' : ''}${profile?.maritalStatus != null ? ' • ${profile!.maritalStatus!.replaceAll('_', ' ').split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}' : ''}${profile?.caste != null ? ' • ${profile!.caste}' : ''}',
+                      style: TextStyle(color: Colors.grey.shade700, fontSize: 11, fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      '${profile?.city ?? ''}${profile?.city != null ? ', ' : ''}${profile?.state ?? ''}',
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
+                    if ((profile?.education ?? '').isNotEmpty || (profile?.occupation ?? '').isNotEmpty)
+                      Text(
+                        '${profile?.education ?? ''}${profile?.education != null && (profile?.occupation ?? '').isNotEmpty ? ', ' : ''}${profile?.occupation ?? ''}',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on, size: 12, color: Colors.grey.shade400),
+                        const SizedBox(width: 2),
+                        Expanded(
+                          child: Text(
+                            '${profile?.city ?? ''}${profile?.city != null && profile?.district != null ? ', ' : ''}${profile?.district ?? ''}',
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
+                    if ((profile?.presentCity ?? '').isNotEmpty || (profile?.presentCountry ?? '').isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          'Present: ${profile?.presentCity ?? ''}${profile?.presentCity != null && (profile?.presentCountry ?? '').isNotEmpty ? ', ' : ''}${profile?.presentCountry ?? ''}',
+                          style: TextStyle(color: Colors.grey.shade800, fontSize: 10, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    
+                    if (user.distance != null && user.distance! > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00BCD4).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.2)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.near_me_rounded, color: Color(0xFF00BCD4), size: 8),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${user.distance!.toStringAsFixed(1)} KM',
+                                style: const TextStyle(color: Color(0xFF00BCD4), fontSize: 9, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Colors.grey),
+              const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
             ],
           ),
         ),
@@ -774,6 +880,34 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       setState(() {
         _allMatchesError = 'Error: $e';
         _isLoadingAllMatches = false;
+      });
+    }
+  }
+
+  Future<void> _loadShortlisted() async {
+    setState(() {
+      _isLoadingShortlisted = true;
+      _shortlistedError = null;
+    });
+    try {
+      final response = await ShortlistService.getShortlistedProfiles();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> items = data['shortlist']['data'] ?? [];
+        setState(() {
+          _shortlistedProfiles = items.map((i) => User.fromJson(i['shortlisted_user'])).toList();
+          _isLoadingShortlisted = false;
+        });
+      } else {
+        setState(() {
+          _shortlistedError = 'Failed to load shortlist';
+          _isLoadingShortlisted = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _shortlistedError = 'Error: $e';
+        _isLoadingShortlisted = false;
       });
     }
   }
