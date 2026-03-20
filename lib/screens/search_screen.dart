@@ -40,12 +40,10 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        if (_tabController.index == 1 && _allMatches.isEmpty) {
-          _loadAllMatches();
-        } else if (_tabController.index == 2 && _shortlistedProfiles.isEmpty) {
+        if (_tabController.index == 1 && _shortlistedProfiles.isEmpty) {
           _loadShortlisted();
         }
       }
@@ -330,7 +328,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                   dividerColor: Colors.transparent,
                   tabs: const [
                     Tab(text: 'Categories'),
-                    Tab(text: 'Recommendations'),
                     Tab(text: 'Shortlisted'),
                   ],
                 ),
@@ -402,29 +399,6 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                   ),
                 )
           else if (_tabController.index == 1)
-            // Matches Tab (Direct Results)
-            _isLoadingAllMatches
-              ? const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
-                )
-              : _allMatchesError != null
-              ? WalletRechargePaywall(errorMessage: _allMatchesError)
-              : _allMatches.isEmpty
-              ? const SliverFillRemaining(
-                  child: Center(child: Text('No recommendations found')),
-                )
-              : SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return _buildResultCard(_allMatches[index]);
-                      },
-                      childCount: _allMatches.length,
-                    ),
-                  ),
-                )
-          else
             // Shortlisted Tab
             _isLoadingShortlisted
               ? const SliverFillRemaining(
@@ -757,7 +731,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${profile?.age ?? ''} yrs • ${profile?.height != null ? '${profile!.height} cm' : ''}${profile?.maritalStatus != null ? ' • ${profile!.maritalStatus!.replaceAll('_', ' ').split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}' : ''}${profile?.caste != null ? ' • ${profile!.caste}' : ''}',
+                      '${profile?.age ?? ''} yrs • ${profile?.height != null ? '${profile!.height} cm' : ''}${profile?.maritalStatus != null ? ' • ${profile!.maritalStatus!.toLowerCase() == 'never_married' ? 'Single' : profile!.maritalStatus!.replaceAll('_', ' ').split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}' : ''}${profile?.caste != null ? ' • ${profile!.caste}' : ''}',
                       style: TextStyle(color: Colors.grey.shade700, fontSize: 11, fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

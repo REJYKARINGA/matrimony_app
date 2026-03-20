@@ -58,6 +58,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   int _matchedCount = 0;
   int _totalCount = 0;
   bool _isCompatibilityExpanded = false;
+  List<User> _recommendedProfiles = [];
+  bool _isLoadingRecommended = false;
 
   bool _isHidden(String field) {
     if (_user?.userProfile?.changedFields?.contains(field) == true) {
@@ -91,6 +93,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     _loadWalletBalance();
     _loadTodayUnlockCount();
     _loadShortlistedProfiles();
+    _loadRecommendedProfiles();
   }
 
   Future<void> _loadUserProfile() async {
@@ -123,6 +126,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           _unlockedMotherName = null;
         });
         _calculateCompatibility();
+        _loadRecommendedProfiles(); // Fetch recommended profiles
         _animationController.forward();
       } else {
         if (!mounted) return;
@@ -137,6 +141,38 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         _errorMessage = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadRecommendedProfiles() async {
+    if (mounted) setState(() => _isLoadingRecommended = true);
+    try {
+      final response = await ApiService.makeRequest(
+        '${ApiService.baseUrl}/profiles/${widget.userId}/related',
+      );
+      if (response.statusCode == 200) {
+        final decodedData = json.decode(response.body);
+        List<dynamic> usersData = [];
+
+        if (decodedData is Map<String, dynamic> && decodedData.containsKey('data')) {
+          usersData = List.from(decodedData['data'] ?? []);
+        } else if (decodedData is List) {
+          usersData = decodedData;
+        }
+
+        if (mounted) {
+          setState(() {
+            _recommendedProfiles = usersData
+                .map((u) => User.fromJson(u))
+                .take(5)
+                .toList();
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading recommendations: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingRecommended = false);
     }
   }
 
@@ -1515,6 +1551,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             const SizedBox(height: 24),
             _buildCompatibilityAnalysis(),
           ],
+          if (_recommendedProfiles.isNotEmpty || _isLoadingRecommended) ...[
+            const SizedBox(height: 32),
+            _buildRecommendedProfilesSection(),
+          ],
           const SizedBox(height: 24),
         ],
       ),
@@ -2858,5 +2898,238 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     _razorpay.clear();
     _animationController.dispose();
     super.dispose();
+  }
+
+  Widget _buildRecommendedProfilesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Recommended Profiles',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+              if (_isLoadingRecommended)
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00BCD4)),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (_isLoadingRecommended && _recommendedProfiles.isEmpty)
+          const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _recommendedProfiles.length,
+            itemBuilder: (context, index) {
+              return _buildResultCard(_recommendedProfiles[index]);
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _buildResultCard(User user) {
+    final profile = user.userProfile;
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (c) => ViewProfileScreen(userId: user.id!),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        height: 145,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.grey.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: SizedBox(
+                  width: 110,
+                  height: 121,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: user.displayImage != null
+                            ? Image.network(
+                                ApiService.getImageUrl(user.displayImage!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    _buildPlaceholderBackground(profile?.gender, size: 40),
+                              )
+                            : _buildPlaceholderBackground(profile?.gender, size: 40),
+                      ),
+                      if (user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified))
+                        Positioned.fill(
+                          child: ClipRRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                              child: Container(
+                                color: Colors.black.withOpacity(0.4),
+                                child: Center(
+                                  child: Icon(
+                                    (user.isDisplayImageVerified != true) ? Icons.pending_actions_rounded : Icons.lock_person_rounded,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          user.matrimonyId ?? 'User',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Color(0xFF1A1A1A),
+                          ),
+                        ),
+                        if (user.userProfile?.isActiveVerified == true) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.verified, color: Color(0xFF00BCD4), size: 14),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${profile?.age ?? ''} yrs • ${profile?.height != null ? '${profile!.height} cm' : ''}${profile?.maritalStatus != null ? ' • ${profile!.maritalStatus!.toLowerCase() == 'never_married' ? 'Single' : profile!.maritalStatus!.replaceAll('_', ' ').split(' ').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}' : ''}${profile?.caste != null ? ' • ${profile!.caste}' : ''}',
+                      style: TextStyle(color: Colors.grey.shade700, fontSize: 11, fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    if ((profile?.education ?? '').isNotEmpty || (profile?.occupation ?? '').isNotEmpty)
+                      Text(
+                        '${profile?.education ?? ''}${profile?.education != null && (profile?.occupation ?? '').isNotEmpty ? ', ' : ''}${profile?.occupation ?? ''}',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on, size: 12, color: Colors.grey.shade400),
+                        const SizedBox(width: 2),
+                        Expanded(
+                          child: Text(
+                            '${profile?.city ?? ''}${profile?.city != null && profile?.district != null ? ', ' : ''}${profile?.district ?? ''}',
+                            style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    if ((profile?.presentCity ?? '').isNotEmpty || (profile?.presentCountry ?? '').isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          'Present: ${profile?.presentCity ?? ''}${profile?.presentCity != null && (profile?.presentCountry ?? '').isNotEmpty ? ', ' : ''}${profile?.presentCountry ?? ''}',
+                          style: TextStyle(color: Colors.grey.shade800, fontSize: 10, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    
+                    if (user.distance != null && user.distance! > 0)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00BCD4).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.2)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.near_me_rounded, color: Color(0xFF00BCD4), size: 8),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${user.distance!.toStringAsFixed(1)} KM',
+                                style: const TextStyle(color: Color(0xFF00BCD4), fontSize: 9, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderBackground(String? gender, {double size = 80}) {
+    bool isFemale = gender?.toLowerCase() == 'female';
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: isFemale
+              ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.person_rounded,
+          size: size,
+          color: isFemale
+              ? const Color(0xFFFF2D55).withOpacity(0.3)
+              : const Color(0xFF5CB3FF).withOpacity(0.3),
+        ),
+      ),
+    );
   }
 }
