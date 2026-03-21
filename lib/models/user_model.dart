@@ -41,6 +41,7 @@ class User {
   final bool hasHiddenPhotos;
   final bool photoRequestPending;
   final bool isPhotoVerified;
+  final int reportsCount;
 
   User({
     this.id,
@@ -65,6 +66,7 @@ class User {
     this.hasHiddenPhotos = false,
     this.photoRequestPending = false,
     this.isPhotoVerified = true,
+    this.reportsCount = 0,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -104,6 +106,7 @@ class User {
       hasHiddenPhotos: json['has_hidden_photos'] == true,
       photoRequestPending: json['photo_request_pending'] == true,
       isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1,
+      reportsCount: json['reports_count'] ?? 0,
     );
   }
 

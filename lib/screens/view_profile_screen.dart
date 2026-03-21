@@ -794,6 +794,19 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         ),
       ),
       actions: [
+        // Report Button
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.black.withOpacity(0.3),
+            child: IconButton(
+              icon: const Icon(Icons.report_gmailerrorred_rounded, color: Colors.white, size: 20),
+              tooltip: 'Report Profile',
+              onPressed: () => _showReportDialog(),
+            ),
+          ),
+        ),
+        // Wallet Button
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: InkWell(
@@ -2450,6 +2463,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   void _checkVerificationAndProceed(VoidCallback onSuccess) {
+    // Stage 1: Check for high report counts to warn the buyer
+    if (_user != null && _user!.reportsCount > 5) {
+      _showReportWarningDialog(() {
+        _performVerificationCheck(onSuccess);
+      });
+    } else {
+      _performVerificationCheck(onSuccess);
+    }
+  }
+
+  void _performVerificationCheck(VoidCallback onSuccess) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isVerified = authProvider.user?.verification?.status == 'verified';
 
@@ -2465,6 +2489,62 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       // User is within daily limit, allow without verification
       onSuccess();
     }
+  }
+
+  void _showReportWarningDialog(VoidCallback onContinue) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange.shade800, size: 28),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'High Report Alert',
+                style: TextStyle(color: Colors.orange.shade800, fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Caution: This profile has been reported ${_user?.reportsCount} times.',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'Multiple users have flagged this profile for non-responsiveness or misinformation. We recommend you review the details carefully before spending your balance.',
+              style: TextStyle(color: Colors.grey.shade700, height: 1.4, fontSize: 14),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              onContinue();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade50,
+              foregroundColor: Colors.orange.shade900,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              side: BorderSide(color: Colors.orange.withOpacity(0.3)),
+            ),
+            child: Text('Proceed Anyway', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showVerificationDialog() {
@@ -2891,6 +2971,167 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
+  }
+
+  void _showReportDialog() {
+    String? selectedReason;
+    final TextEditingController customController = TextEditingController();
+    bool isCustom = false;
+
+    final reasons = [
+      'No response on WhatsApp/Call (after contact-unlock)',
+      'False Pref (Caste/Distance is "matter" now)',
+      'Fake Profile / Photo mismatch',
+      'Scammer / Asking for money / Business',
+      'Suspected Fake for Referral Bonus',
+      'Already Married / Not Single',
+      'Other',
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Report Profile',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  'Help us understand what is wrong with this profile. Your report is anonymous.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ...reasons.map((reason) => RadioListTile<String>(
+                    title: Text(reason, style: const TextStyle(fontSize: 15)),
+                    value: reason,
+                    groupValue: selectedReason,
+                    activeColor: const Color(0xFF00BCD4),
+                    onChanged: (value) {
+                      setModalState(() {
+                        selectedReason = value;
+                        isCustom = (value == 'Other');
+                      });
+                    },
+                  )),
+              if (isCustom)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+                  child: TextField(
+                    controller: customController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'Describe the issue...',
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    maxLines: 2,
+                  ),
+                ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600)),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          elevation: 0,
+                        ),
+                        onPressed: selectedReason == null
+                            ? null
+                            : () async {
+                                final finalReason = isCustom && customController.text.isNotEmpty
+                                    ? customController.text
+                                    : selectedReason;
+                                
+                                Navigator.pop(context);
+                                _submitReport(finalReason!);
+                              },
+                        child: const Text('Submit Report', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _submitReport(String reason) async {
+    setState(() => _isActionLoading = true);
+    try {
+      final response = await ApiService.makeRequest(
+        '${ApiService.baseUrl}/users/${widget.userId}/report',
+        method: 'POST',
+        body: {'reason': reason},
+      );
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile reported successfully. We will review it shortly.'),
+              backgroundColor: Colors.black87,
+            ),
+          );
+        }
+      } else {
+        throw Exception('Failed to report');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to send report. Please try again.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isActionLoading = false);
+    }
   }
 
   @override
