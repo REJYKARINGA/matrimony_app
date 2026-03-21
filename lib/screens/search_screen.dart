@@ -1484,9 +1484,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                    // Close / Dismiss
                   GestureDetector(
                     onTap: () {
-                       ScaffoldMessenger.of(context).showSnackBar(
-                         const SnackBar(content: Text('Profile dismissed')),
-                       );
+                       _dismissProfile(user.id!);
                     },
                     child: _buildFloatingButton(
                       icon: Icons.close_rounded,
@@ -1627,5 +1625,29 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         child: Icon(icon, color: iconColor, size: size * 0.5),
       ),
     );
+  }
+
+  Future<void> _dismissProfile(int userId) async {
+    try {
+      final response = await ApiService.makeRequest(
+        '${ApiService.baseUrl}/users/$userId/block',
+        method: 'POST',
+        body: {'reason': 'Dismissed from search UI'}
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile dismissed')),
+          );
+        }
+        
+        setState(() {
+          _users.removeWhere((u) => u.id == userId);
+        });
+      }
+    } catch (e) {
+      print('Error dismissing profile: $e');
+    }
   }
 }

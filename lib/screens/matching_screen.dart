@@ -24,6 +24,7 @@ class _MatchingScreenState extends State<MatchingScreen>
   List<dynamic> _sentInterests = [];
   List<dynamic> _receivedInterests = [];
   List<dynamic> _declinedInterests = [];
+  List<dynamic> _blockedUsers = [];
   Set<int> _shortlistedUserIds = {};
   bool _isLoading = true;
   String? _errorMessage;
@@ -68,6 +69,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         MatchingService.getSentInterests(),
         MatchingService.getReceivedInterests(),
         ShortlistService.getShortlistedProfiles(),
+        ApiService.makeRequest('${ApiService.baseUrl}/users/blocked'),
       ]);
 
       // Process matches
@@ -102,6 +104,12 @@ class _MatchingScreenState extends State<MatchingScreen>
         final data = json.decode(results[3].body);
         final List<dynamic> items = data['shortlist']['data'] ?? [];
         _shortlistedUserIds = items.map((i) => i['shortlisted_user_id'] as int).toSet();
+      }
+
+      // Process blocked users
+      if (results[4].statusCode == 200) {
+        final data = json.decode(results[4].body);
+        _blockedUsers = data['blocked_users']['data'] ?? [];
       }
 
       setState(() {
@@ -259,8 +267,6 @@ class _MatchingScreenState extends State<MatchingScreen>
   }
 
   Widget _buildDeclinedInterestsTab() {
-    final theme = Theme.of(context);
-
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(
@@ -269,7 +275,10 @@ class _MatchingScreenState extends State<MatchingScreen>
       );
     }
 
-    if (_declinedInterests.isEmpty) {
+    final bool hasDeclinedInterests = _declinedInterests.isNotEmpty;
+    final bool hasBlockedUsers = _blockedUsers.isNotEmpty;
+
+    if (!hasDeclinedInterests && !hasBlockedUsers) {
       return _buildEmptyState(
         icon: Icons.block_rounded,
         title: 'No Declined Interactions',
@@ -280,31 +289,62 @@ class _MatchingScreenState extends State<MatchingScreen>
     return RefreshIndicator(
       color: gradientCyan,
       onRefresh: _loadData,
-      child: ListView.builder(
+      child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        itemCount: _declinedInterests.length,
-        itemBuilder: (context, index) {
-          final interest = _declinedInterests[index];
-          if (interest == null) return const SizedBox.shrink();
-          
-          // Check who the target profile is
-          final bool isSentByMe = interest['sender_id'] == _currentUserId;
-          
-          final userJson = isSentByMe ? interest['receiver'] : interest['sender'];
-          if (userJson == null) return const SizedBox.shrink();
-          
-          final user = User.fromJson(userJson);
+        children: [
+          // --- Declined Interests Section ---
+          if (hasDeclinedInterests) ...
+            _declinedInterests.map((interest) {
+              if (interest == null) return const SizedBox.shrink();
+              final bool isSentByMe = interest['sender_id'] == _currentUserId;
+              final userJson = isSentByMe ? interest['receiver'] : interest['sender'];
+              if (userJson == null) return const SizedBox.shrink();
+              final user = User.fromJson(userJson);
+              return _buildProfileCard(
+                user,
+                isInterest: true,
+                status: interest['status'],
+                isSentByMe: isSentByMe,
+                interestId: interest['id'],
+              );
+            }).toList(),
 
-          return _buildProfileCard(
-            user,
-            isInterest: true,
-            status: interest['status'],
-            isSentByMe: isSentByMe,
-          );
-        },
+          // --- Blocked / Dismissed Section ---
+          if (hasBlockedUsers) ...([
+            if (hasDeclinedInterests)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.block_rounded, size: 16, color: Colors.grey.shade500),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Dismissed Profiles',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ..._blockedUsers.map((block) {
+              final blockedUserJson = block['blocked_user'];
+              if (blockedUserJson == null) return const SizedBox.shrink();
+              final user = User.fromJson(blockedUserJson);
+              return _buildProfileCard(
+                user,
+                status: 'blocked',
+                blockId: block['id'],
+              );
+            }).toList(),
+          ]),
+        ],
       ),
     );
   }
+
 
   Widget _buildMatchesTab() {
     final theme = Theme.of(context);
@@ -401,6 +441,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             isInterest: true,
             status: interest['status'],
             isSentByMe: true,
+            interestId: interest['id'],
           );
         },
       ),
@@ -444,6 +485,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             isInterest: true,
             status: interest['status'],
             isSentByMe: false,
+            interestId: interest['id'],
           );
         },
       ),
@@ -456,6 +498,8 @@ class _MatchingScreenState extends State<MatchingScreen>
     bool isInterest = false,
     String? status,
     bool isSentByMe = false,
+    int? interestId,
+    int? blockId,
   }) {
     final profile = user.userProfile;
     final isBlurred = (user.isDisplayImageVerified != true) || (user.hasHiddenPhotos && !user.isContactUnlocked);
@@ -562,18 +606,20 @@ class _MatchingScreenState extends State<MatchingScreen>
               ),
             ),
             // Status Badge
-            if (isInterest && status != null)
+            if (status != null)
               Positioned(
                 top: 24,
                 right: 24,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: (status == 'accepted' 
-                            ? accentGreen 
-                            : status == 'rejected' 
-                                ? Colors.redAccent 
-                                : gradientCyan).withOpacity(0.9),
+                    color: (status == 'accepted'
+                            ? accentGreen
+                            : status == 'rejected'
+                                ? Colors.redAccent
+                                : status == 'blocked'
+                                    ? Colors.grey.shade700
+                                    : gradientCyan).withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -584,7 +630,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                     ],
                   ),
                   child: Text(
-                    status.toUpperCase(),
+                    status == 'blocked' ? 'DISMISSED' : status.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -734,17 +780,74 @@ class _MatchingScreenState extends State<MatchingScreen>
               bottom: 24,
               left: 20,
               right: 20,
-              child: Row(
-                children: [
+              child: status == 'blocked'
+                  // --- Blocked: show Unblock button only ---
+                  ? GestureDetector(
+                      onTap: () async {
+                        if (blockId == null) return;
+                        try {
+                          final response = await ApiService.makeRequest(
+                            '${ApiService.baseUrl}/users/${user.id}/block',
+                            method: 'DELETE',
+                          );
+                          if (response.statusCode == 200 && mounted) {
+                            setState(() {
+                              _blockedUsers.removeWhere((b) => b['id'] == blockId);
+                            });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Profile unblocked')),
+                            );
+                          }
+                        } catch (e) {
+                          print('Error unblocking: $e');
+                        }
+                      },
+                      child: Container(
+                        height: 55,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [gradientCyan, gradientLightBlue],
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: gradientCyan.withOpacity(0.35),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.lock_open_rounded, color: Colors.white, size: 20),
+                              SizedBox(width: 10),
+                              Text(
+                                'UNBLOCK PROFILE',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 1.2,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : Row(
+              children: [
                   // Close / Dismiss (Always shown)
                   GestureDetector(
                     onTap: () {
-                      if (isInterest && status == 'pending' && !isSentByMe) {
-                         _handleInterestAction(user.id!, false);
+                      if (isInterest && status == 'pending' && !isSentByMe && interestId != null) {
+                         _handleInterestAction(interestId, false);
                       } else {
-                         ScaffoldMessenger.of(context).showSnackBar(
-                           const SnackBar(content: Text('Profile dismissed')),
-                         );
+                         _dismissProfile(user.id!);
                       }
                     },
                     child: _buildFloatingButton(
@@ -878,8 +981,8 @@ class _MatchingScreenState extends State<MatchingScreen>
                           // Accept / Match (Heart)
                           GestureDetector(
                             onTap: () {
-                              if (isInterest && status == 'pending' && !isSentByMe) {
-                                 _handleInterestAction(user.id!, true);
+                              if (isInterest && status == 'pending' && !isSentByMe && interestId != null) {
+                                 _handleInterestAction(interestId, true);
                               } else if (!isMatch && status != 'accepted' && (status != 'pending' || !isSentByMe)) {
                                  _sendInterest(user.id!);
                               }
@@ -978,35 +1081,65 @@ class _MatchingScreenState extends State<MatchingScreen>
     );
   }
 
-  Future<void> _handleInterestAction(int userId, bool accept) async {
+  Future<void> _handleInterestAction(int interestId, bool accept) async {
     try {
-      final status = await MatchingService.getReceivedInterests();
-      if (status.statusCode == 200) {
-        final data = json.decode(status.body);
-        final List<dynamic> received = data['interests']['data'] ?? [];
-        final interest = received.firstWhere(
-          (i) => i['sender_id'] == userId && i['status'] == 'pending',
-          orElse: () => null,
-        );
+      final response = accept 
+        ? await MatchingService.acceptInterest(interestId)
+        : await MatchingService.rejectInterest(interestId);
 
-        if (interest != null) {
-          final response = accept 
-            ? await MatchingService.acceptInterest(interest['id'])
-            : await MatchingService.rejectInterest(interest['id']);
-
-          if (response.statusCode == 200) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(accept ? 'Interest accepted!' : 'Interest declined'),
-                backgroundColor: accept ? accentGreen : Colors.redAccent,
-              ),
-            );
-            _loadData();
-          }
+      if (response.statusCode == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(accept ? 'Interest accepted!' : 'Interest declined'),
+              backgroundColor: accept ? accentGreen : Colors.redAccent,
+            ),
+          );
+        }
+        _loadData();
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to process action'), backgroundColor: Colors.red),
+          );
         }
       }
     } catch (e) {
       print('Error handling interest: $e');
+    }
+  }
+
+  Future<void> _dismissProfile(int userId) async {
+    try {
+      final response = await ApiService.makeRequest(
+        '${ApiService.baseUrl}/users/$userId/block',
+        method: 'POST',
+        body: {'reason': 'Dismissed from matching UI'}
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile dismissed')),
+          );
+        }
+        
+        // Remove locally immediately for snappy UI
+        setState(() {
+          _matches.removeWhere((m) {
+            final matchUser = m['user'] ?? (m['user1'] != null && m['user1']['id'] != _currentUserId ? m['user1'] : m['user2']);
+            return matchUser != null && matchUser['id'] == userId;
+          });
+          _sentInterests.removeWhere((i) => i['receiver'] != null && i['receiver']['id'] == userId);
+          _receivedInterests.removeWhere((i) => i['sender'] != null && i['sender']['id'] == userId);
+          _declinedInterests.removeWhere((i) {
+             final u = i['sender_id'] == _currentUserId ? i['receiver'] : i['sender'];
+             return u != null && u['id'] == userId;
+          });
+        });
+      }
+    } catch (e) {
+      print('Error dismissing profile: $e');
     }
   }
 

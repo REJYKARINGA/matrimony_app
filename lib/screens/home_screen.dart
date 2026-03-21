@@ -2073,7 +2073,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 children: [
                   // Pass (Close)
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      _dismissProfile(user.id!);
+                    },
                     child: _buildFloatingButton(
                       icon: Icons.close_rounded,
                       color: Colors.white,
@@ -2202,6 +2204,30 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     ),
   );
 }
+
+  Future<void> _dismissProfile(int userId) async {
+    try {
+      final response = await ApiService.makeRequest(
+        '${ApiService.baseUrl}/users/$userId/block',
+        method: 'POST',
+        body: {'reason': 'Dismissed from home UI'}
+      );
+      
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile dismissed')),
+          );
+        }
+        
+        setState(() {
+          _recommendedUsers.removeWhere((u) => u.id == userId);
+        });
+      }
+    } catch (e) {
+      print('Error dismissing profile: $e');
+    }
+  }
 
   Widget _buildEndOfResultsCard() {
     return Container(
