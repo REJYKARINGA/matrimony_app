@@ -12,6 +12,7 @@ import 'engagement_poster_info_screen.dart';
 import 'search_screen.dart';
 import 'terms_and_conditions_screen.dart';
 import 'privacy_policy_screen.dart';
+import 'security_settings_screen.dart';
 
 import '../services/payment_service.dart';
 import 'wallet_transactions_screen.dart';
@@ -492,6 +493,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const AccountSettingsScreen(),
+                        ),
+                      );
+                    },
+                    showDivider: true,
+                  ),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.history_rounded,
+                    title: 'Security & Login History',
+                    subtitle: 'Check recent login activity',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SecuritySettingsScreen(),
                         ),
                       );
                     },

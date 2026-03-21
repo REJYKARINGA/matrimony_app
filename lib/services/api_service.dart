@@ -139,6 +139,11 @@ class ApiService {
     return response;
   }
 
+  static Future<http.Response> getLoginHistory() async {
+    final response = await makeRequest('$authUrl/login-history');
+    return response;
+  }
+
   static Future<http.Response> sendEmailOtp({
     required String email,
     bool isSignup = false,
