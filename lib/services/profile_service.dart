@@ -177,6 +177,9 @@ class ProfileService {
     String? drugAddiction,
     List<String>? smoke,
     List<String>? alcohol,
+    bool? hideViewed,
+    bool? hideInterested,
+    String? sortBy,
   }) async {
     final body = {
       if (minAge != null) 'min_age': minAge,
@@ -196,6 +199,9 @@ class ProfileService {
       if (drugAddiction != null) 'drug_addiction': drugAddiction,
       if (smoke != null) 'smoke': smoke,
       if (alcohol != null) 'alcohol': alcohol,
+      if (hideViewed != null) 'hide_viewed': hideViewed,
+      if (hideInterested != null) 'hide_interested': hideInterested,
+      if (sortBy != null) 'sort_by': sortBy,
     };
 
     return await ApiService.makeRequest(

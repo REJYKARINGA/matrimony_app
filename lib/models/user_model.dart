@@ -499,6 +499,9 @@ class Preference {
   final String? drugAddiction;
   final List<String>? smoke;
   final List<String>? alcohol;
+  final bool hideViewed;
+  final bool hideInterested;
+  final String sortBy;
 
   Preference({
     this.id,
@@ -529,6 +532,9 @@ class Preference {
     this.drugAddiction,
     this.smoke,
     this.alcohol,
+    this.hideViewed = true,
+    this.hideInterested = true,
+    this.sortBy = 'recent_login',
   });
 
   factory Preference.fromJson(Map<String, dynamic> json) {
@@ -580,6 +586,9 @@ class Preference {
               ? List<String>.from(json['alcohol'].map((e) => e.toString())) 
               : [json['alcohol'].toString()]) 
           : null,
+      hideViewed: json['hide_viewed'] == true || json['hide_viewed'] == 1 || json['hide_viewed'] == null,
+      hideInterested: json['hide_interested'] == true || json['hide_interested'] == 1 || json['hide_interested'] == null,
+      sortBy: json['sort_by']?.toString() ?? 'recent_login',
     );
   }
 
@@ -605,6 +614,9 @@ class Preference {
       'drug_addiction': drugAddiction,
       'smoke': smoke,
       'alcohol': alcohol,
+      'hide_viewed': hideViewed,
+      'hide_interested': hideInterested,
+      'sort_by': sortBy,
     };
   }
 }

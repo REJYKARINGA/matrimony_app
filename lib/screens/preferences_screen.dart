@@ -57,6 +57,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   String _selectedDrugAddiction = 'any';
   List<String> _selectedSmoke = ['never', 'occasionally', 'regularly'];
   List<String> _selectedAlcohol = ['never', 'occasionally', 'regularly'];
+  
+  // Discovery preferences
+  bool _hideViewed = true;
+  bool _hideInterested = true;
+  String _sortBy = 'recent_login';
 
   // Sorting states
   bool _isEducationAscending = false;
@@ -163,6 +168,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _selectedDrugAddiction = 'any';
     _selectedSmoke = ['never', 'occasionally', 'regularly'];
     _selectedAlcohol = ['never', 'occasionally', 'regularly'];
+    _hideViewed = true;
+    _hideInterested = true;
+    _sortBy = 'recent_login';
   }
 
   void _initializeControllersWithData(Map<String, dynamic> preferences, String? userReligion, int? userReligionId) {
@@ -232,11 +240,17 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     } else {
       _selectedSmoke = ['never', 'occasionally', 'regularly'];
     }
+    
     if (preferences['alcohol'] != null && preferences['alcohol'] is List) {
       _selectedAlcohol = (preferences['alcohol'] as List).map((e) => e.toString()).toList();
     } else {
       _selectedAlcohol = ['never', 'occasionally', 'regularly'];
     }
+    
+    // Discovery preferences
+    _hideViewed = preferences['hide_viewed'] == true || preferences['hide_viewed'] == 1 || preferences['hide_viewed'] == null;
+    _hideInterested = preferences['hide_interested'] == true || preferences['hide_interested'] == 1 || preferences['hide_interested'] == null;
+    _sortBy = preferences['sort_by']?.toString() ?? 'recent_login';
   }
 
   Future<void> _savePreferences() async {
@@ -265,6 +279,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         drugAddiction: _selectedDrugAddiction,
         smoke: _selectedSmoke,
         alcohol: _selectedAlcohol,
+        hideViewed: _hideViewed,
+        hideInterested: _hideInterested,
+        sortBy: _sortBy,
       );
 
       if (response.statusCode == 200) {
@@ -580,6 +597,59 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   ],
                 ]),
 
+                _buildSection('Discovery Settings', [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Don`t Show', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.brown)),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            _buildBubbleItem(
+                              'Viewed profiles',
+                              _hideViewed,
+                              () => setState(() => _hideViewed = !_hideViewed),
+                            ),
+                            _buildBubbleItem(
+                              'Interested',
+                              _hideInterested,
+                              () => setState(() => _hideInterested = !_hideInterested),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        const Text('Sort By', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.brown)),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: [
+                            _buildBubbleItem(
+                              'Recent Login',
+                              _sortBy == 'recent_login',
+                              () => setState(() => _sortBy = 'recent_login'),
+                            ),
+                            _buildBubbleItem(
+                              'Recent Registration',
+                              _sortBy == 'newest',
+                              () => setState(() => _sortBy = 'newest'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]),
+
                 const SizedBox(height: 100),
                 ],
               ),
@@ -587,12 +657,49 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           ),
       ),
     ),
-      bottomNavigationBar: Consumer<NavigationProvider>(
-        builder: (context, navProvider, child) => AnimatedSlide(
-          duration: const Duration(milliseconds: 300),
-          offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
-          child: const CommonFooter(),
-        ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _savePreferences,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00BCD4),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 2,
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text(
+                        'Search',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+          Consumer<NavigationProvider>(
+            builder: (context, navProvider, child) => AnimatedSlide(
+              duration: const Duration(milliseconds: 300),
+              offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
+              child: const CommonFooter(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -626,28 +733,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         ],
       ),
       centerTitle: true,
-      actions: [
-        TextButton(
-          onPressed: _isLoading ? null : _savePreferences,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Color(0xFF00BCD4),
-                  ),
-                )
-              : const Text(
-                  'Update',
-                  style: TextStyle(
-                    color: Color(0xFF00BCD4),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-        ),
-        const SizedBox(width: 8),
+      actions: const [
+        SizedBox(width: 8),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
@@ -1593,6 +1680,40 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             }).toList(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBubbleItem(String label, bool isSelected, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF00BCD4).withOpacity(0.05) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isSelected) ...[
+              const Icon(Icons.check, size: 16, color: Color(0xFF00BCD4)),
+              const SizedBox(width: 8),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
