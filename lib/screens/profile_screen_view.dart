@@ -14,6 +14,8 @@ import 'family_details_screen.dart';
 import 'preferences_screen.dart';
 import 'profile_photos_screen.dart';
 import 'verification_screen.dart';
+import 'map_picker_screen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -964,6 +966,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedSmoke;
   String? _selectedAlcohol;
   bool _isLoading = false;
+  double? _latitude;
+  double? _longitude;
 
   // Master data for searchable selects
   List<dynamic> _religions = [];
@@ -1146,6 +1150,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (widget.user?.interests != null) {
       _selectedInterestIds = widget.user!.interests!.map<int>((i) => int.parse(i['id'].toString())).toList();
     }
+    _latitude = widget.user?.userProfile?.latitude;
+    _longitude = widget.user?.userProfile?.longitude;
   }
 
   Future<void> _saveProfile() async {
@@ -1185,6 +1191,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         alcohol: _selectedAlcohol,
         personalityIds: _selectedPersonalityIds,
         interestIds: _selectedInterestIds,
+        latitude: _latitude,
+        longitude: _longitude,
       );
 
       if (response.statusCode == 200) {
@@ -1230,10 +1238,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (detDistrict != null) {
             detDistrict = detDistrict.replaceAll(' District', '').trim();
             try {
-              _selectedDistrict = _keralaDistricts.firstWhere(
+              final matchedDistrict = _keralaDistricts.firstWhere(
                 (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
                 orElse: () => _selectedDistrict ?? _keralaDistricts.first,
               );
+              _selectedDistrict = matchedDistrict;
+              _districtController.text = matchedDistrict;
             } catch (_) {}
           }
         });
@@ -1817,24 +1827,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
 
                     const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildSectionHeader('Location', Icons.location_on_outlined),
-                        TextButton.icon(
-                          onPressed: () async {
-                            setState(() => _isLoading = true);
-                            try {
-                              final position = await LocationService.getCurrentLocation();
-                              if (position != null) {
-                                await LocationService.updateLocationToServer(position);
-                                final address = await LocationService.getAddressFromCoordinates(
-                                  position.latitude, 
-                                  position.longitude
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 10,
+                          children: [
+                            _buildCompactActionButton(
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MapPickerScreen(
+                                      initialLat: _latitude,
+                                      initialLng: _longitude,
+                                    ),
+                                  ),
                                 );
 
-                                if (address != null && mounted) {
+                                if (result != null && result['location'] != null && result['address'] != null) {
+                                  LatLng loc = result['location'];
+                                  Map<String, String> address = result['address'];
                                   setState(() {
+                                    _latitude = loc.latitude;
+                                    _longitude = loc.longitude;
                                     _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
                                     _stateController.text = (address['state'] ?? '').toString();
                                     _countryController.text = (address['country'] ?? '').toString();
@@ -1845,29 +1864,72 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     if (detDistrict != null) {
                                       detDistrict = detDistrict.replaceAll(' District', '').trim();
                                       try {
-                                        _selectedDistrict = _keralaDistricts.firstWhere(
+                                        final matched = _keralaDistricts.firstWhere(
                                           (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
                                           orElse: () => _selectedDistrict ?? _keralaDistricts.first,
                                         );
+                                        _selectedDistrict = matched;
+                                        _districtController.text = matched;
                                       } catch (_) {}
                                     }
                                   });
                                 }
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Location detected!')),
-                                  );
+                              },
+                              icon: Icons.map_outlined,
+                              label: 'Pick on Map',
+                              color: const Color(0xFF009688),
+                            ),
+                            _buildCompactActionButton(
+                              onPressed: () async {
+                                setState(() => _isLoading = true);
+                                try {
+                                  final position = await LocationService.getCurrentLocation();
+                                  if (position != null) {
+                                    await LocationService.updateLocationToServer(position);
+                                    final address = await LocationService.getAddressFromCoordinates(
+                                      position.latitude, 
+                                      position.longitude
+                                    );
+
+                                    if (address != null && mounted) {
+                                      setState(() {
+                                        _latitude = position.latitude;
+                                        _longitude = position.longitude;
+                                        _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
+                                        _stateController.text = (address['state'] ?? '').toString();
+                                        _countryController.text = (address['country'] ?? '').toString();
+                                        _countyController.text = (address['county'] ?? '').toString();
+                                        _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
+                                        
+                                        String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
+                                        if (detDistrict != null) {
+                                          detDistrict = detDistrict.replaceAll(' District', '').trim();
+                                          try {
+                                            final matched = _keralaDistricts.firstWhere(
+                                              (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
+                                              orElse: () => _selectedDistrict ?? _keralaDistricts.first,
+                                            );
+                                            _selectedDistrict = matched;
+                                            _districtController.text = matched;
+                                          } catch (_) {}
+                                        }
+                                      });
+                                    }
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Location detected!')),
+                                      );
+                                    }
+                                  }
+                                } finally {
+                                  if (mounted) setState(() => _isLoading = false);
                                 }
-                              }
-                            } finally {
-                              if (mounted) setState(() => _isLoading = false);
-                            }
-                          },
-                          icon: const Icon(Icons.my_location_rounded, size: 18, color: Color(0xFF0D47A1)),
-                          label: const Text(
-                            'Detect GPS',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D47A1)),
-                          ),
+                              },
+                              icon: Icons.my_location_rounded,
+                              label: 'Detect GPS',
+                              color: const Color(0xFF0D47A1),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -2317,6 +2379,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             }).toList(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCompactActionButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 18),
+      label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: color,
+        side: BorderSide(color: color, width: 1.5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        backgroundColor: color.withOpacity(0.05),
       ),
     );
   }

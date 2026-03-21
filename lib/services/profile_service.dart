@@ -41,6 +41,8 @@ class ProfileService {
     List<int>? personalityIds,
     List<int>? interestIds,
     bool? hidePhotos,
+    double? latitude,
+    double? longitude,
   }) async {
     final body = {
       if (firstName != null) 'first_name': firstName,
@@ -73,6 +75,8 @@ class ProfileService {
       if (personalityIds != null) 'personality_ids': personalityIds,
       if (interestIds != null) 'interest_ids': interestIds,
       if (hidePhotos != null) 'hide_photos': hidePhotos,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
     };
 
     return await ApiService.makeRequest(

@@ -92,9 +92,13 @@ class LocationService {
             if (types.contains('locality') || types.contains('sublocality')) {
                if (city.isEmpty) city = component['long_name'];
             }
-            if (types.contains('administrative_area_level_3') || types.contains('administrative_area_level_2')) {
+            if (types.contains('administrative_area_level_2')) {
+               district = component['long_name'];
+            }
+            if (types.contains('administrative_area_level_3')) {
+               county = component['long_name'];
+               // Fallback for district if level_2 is missing
                if (district.isEmpty) district = component['long_name'];
-               if (county.isEmpty) county = component['long_name'];
             }
             if (types.contains('administrative_area_level_1')) {
                state = component['long_name'];
@@ -151,9 +155,12 @@ class LocationService {
             if (types.contains('locality') || types.contains('sublocality')) {
                city = component['long_name'];
             }
-            if (types.contains('administrative_area_level_3') || types.contains('administrative_area_level_2')) {
+            if (types.contains('administrative_area_level_2')) {
+               district = component['long_name'];
+            }
+            if (types.contains('administrative_area_level_3')) {
+               county = component['long_name'];
                if (district.isEmpty) district = component['long_name'];
-               if (county.isEmpty) county = component['long_name'];
             }
             if (types.contains('administrative_area_level_1')) {
                state = component['long_name'];

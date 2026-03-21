@@ -71,6 +71,7 @@ dependencies:
   pusher_client_socket: any
   razorpay_flutter: ^1.4.0
   photo_view: ^0.15.0
+  google_maps_flutter: ^2.16.0
 
 
 dev_dependencies:
