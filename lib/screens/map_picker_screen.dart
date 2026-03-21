@@ -118,10 +118,18 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pick Location', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF00BCD4),
+        title: const Text('Pick Location', style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF00ACC1), Color(0xFF00838F)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         foregroundColor: Colors.white,
-        elevation: 0,
+        elevation: 4,
         actions: [
           if (_isSearching || _isReverseGeocoding)
             const Center(
@@ -166,18 +174,32 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.location_on, size: 50, color: Colors.redAccent.withOpacity(0.9)),
+                  // Custom Marker Design
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(Icons.location_on, size: 52, color: Colors.redAccent.withOpacity(0.9)),
+                      const Positioned(
+                        top: 10,
+                        child: CircleAvatar(
+                          radius: 8,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(radius: 5, backgroundColor: Colors.redAccent),
+                        ),
+                      ),
+                    ],
+                  ),
                   Container(
-                    width: 10,
-                    height: 10,
+                    width: 12,
+                    height: 5,
                     decoration: BoxDecoration(
-                      color: Colors.black45,
-                      shape: BoxShape.circle,
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.all(Radius.elliptical(20, 10)),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2),
-                          blurRadius: 5,
-                          spreadRadius: 2,
+                          blurRadius: 4,
+                          spreadRadius: 1,
                         )
                       ],
                     ),
@@ -189,36 +211,68 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
           // Top Search Bar
           Positioned(
             top: 20,
-            left: 20,
-            right: 20,
-            child: Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              elevation: 8,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: "Search city, area or country...",
-                    border: InputBorder.none,
-                    icon: const Icon(Icons.search, color: Color(0xFF00BCD4)),
-                    suffixIcon: _searchController.text.isNotEmpty 
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 20),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() {});
-                          },
-                        ) 
-                      : null,
+            left: 15,
+            right: 15,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
                   ),
-                  onSubmitted: _performSearch,
-                  textInputAction: TextInputAction.search,
-                  onChanged: (val) {
-                    setState(() {}); // Trigger rebuild to show/hide clear icon
-                  },
-                ),
+                ],
               ),
+              child: TextField(
+                controller: _searchController,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+                decoration: InputDecoration(
+                  hintText: "Search city, area or country...",
+                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  prefixIcon: const Icon(Icons.search, color: Color(0xFF00ACC1)),
+                  suffixIcon: _searchController.text.isNotEmpty 
+                    ? IconButton(
+                        icon: const Icon(Icons.cancel, size: 20, color: Colors.grey),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {});
+                        },
+                      ) 
+                    : null,
+                ),
+                onSubmitted: _performSearch,
+                textInputAction: TextInputAction.search,
+                onChanged: (val) {
+                  setState(() {}); 
+                },
+              ),
+            ),
+          ),
+          // My Location Button
+          Positioned(
+            bottom: 120,
+            right: 15,
+            child: FloatingActionButton(
+              mini: true,
+              onPressed: () async {
+                try {
+                  Position position = await Geolocator.getCurrentPosition();
+                  _mapController?.animateCamera(
+                    CameraUpdate.newLatLngZoom(LatLng(position.latitude, position.longitude), 16),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Could not get current location")),
+                  );
+                }
+              },
+              backgroundColor: Colors.white,
+              elevation: 4,
+              child: const Icon(Icons.my_location, color: Color(0xFF00ACC1)),
             ),
           ),
           // Bottom Actions
@@ -226,49 +280,44 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             bottom: 30,
             left: 20,
             right: 20,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FloatingActionButton(
-                  onPressed: () async {
-                    try {
-                      Position position = await Geolocator.getCurrentPosition();
-                      _mapController?.animateCamera(
-                        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Could not get current location")),
-                      );
-                    }
-                  },
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.my_location, color: Color(0xFF00BCD4)),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: _addressData == null ? null : () {
-                      Navigator.pop(context, {
-                        'location': _pickedLocation,
-                        'address': _addressData,
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00BCD4),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                      elevation: 5,
+            child: Container(
+              width: double.infinity,
+              height: 58,
+              decoration: BoxDecoration(
+                gradient: _addressData == null 
+                  ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
+                  : const LinearGradient(
+                      colors: [Color(0xFF00ACC1), Color(0xFF00838F)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
                     ),
-                    child: const Text(
-                      'Confirm Location',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  if (_addressData != null)
+                    BoxShadow(
+                      color: const Color(0xFF00ACC1).withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
                     ),
-                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: _addressData == null ? null : () {
+                  Navigator.pop(context, {
+                    'location': _pickedLocation,
+                    'address': _addressData,
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 ),
-              ],
+                child: const Text(
+                  'Confirm Location',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.8),
+                ),
+              ),
             ),
           ),
         ],

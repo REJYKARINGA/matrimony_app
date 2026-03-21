@@ -1855,13 +1855,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     _latitude = loc.latitude;
                                     _longitude = loc.longitude;
                                     _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
-                                    _stateController.text = (address['state'] ?? '').toString();
+                                    _stateController.text = (address['state'] ?? address['province'] ?? '').toString();
                                     _countryController.text = (address['country'] ?? '').toString();
                                     _countyController.text = (address['county'] ?? '').toString();
                                     _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
                                     
                                     String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
-                                    if (detDistrict != null) {
+                                    if (detDistrict != null && detDistrict.isNotEmpty) {
                                       detDistrict = detDistrict.replaceAll(' District', '').trim();
                                       try {
                                         final matched = _keralaDistricts.firstWhere(
@@ -1875,9 +1875,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   });
                                 }
                               },
-                              icon: Icons.map_outlined,
+                              icon: Icons.map_rounded,
                               label: 'Pick on Map',
-                              color: const Color(0xFF009688),
+                              colors: [const Color(0xFF009688), const Color(0xFF00695C)],
                             ),
                             _buildCompactActionButton(
                               onPressed: () async {
@@ -1896,13 +1896,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         _latitude = position.latitude;
                                         _longitude = position.longitude;
                                         _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
-                                        _stateController.text = (address['state'] ?? '').toString();
+                                        _stateController.text = (address['state'] ?? address['province'] ?? '').toString();
                                         _countryController.text = (address['country'] ?? '').toString();
                                         _countyController.text = (address['county'] ?? '').toString();
                                         _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
                                         
                                         String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
-                                        if (detDistrict != null) {
+                                        if (detDistrict != null && detDistrict.isNotEmpty) {
                                           detDistrict = detDistrict.replaceAll(' District', '').trim();
                                           try {
                                             final matched = _keralaDistricts.firstWhere(
@@ -1925,12 +1925,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   if (mounted) setState(() => _isLoading = false);
                                 }
                               },
-                              icon: Icons.my_location_rounded,
+                              icon: Icons.gps_fixed_rounded,
                               label: 'Detect GPS',
-                              color: const Color(0xFF0D47A1),
+                              colors: [const Color(0xFF1565C0), const Color(0xFF0D47A1)],
                             ),
                           ],
                         ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                     
@@ -2387,18 +2388,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required VoidCallback onPressed,
     required IconData icon,
     required String label,
-    required Color color,
+    required List<Color> colors,
   }) {
-    return OutlinedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      label: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: color,
-        side: BorderSide(color: color, width: 1.5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        backgroundColor: color.withOpacity(0.05),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: colors[0].withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

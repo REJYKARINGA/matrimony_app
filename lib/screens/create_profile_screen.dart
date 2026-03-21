@@ -11,6 +11,8 @@ import '../utils/app_colors.dart';
 import '../widgets/profile_creation_widgets.dart';
 import '../services/location_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'map_picker_screen.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({Key? key}) : super(key: key);
@@ -58,6 +60,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   bool _hidePhotos = false;
   bool _isLoading = false;
   bool _isLocating = false;
+  double? _latitude;
+  double? _longitude;
 
   final List<String> _keralaDistricts = [
     'Thiruvananthapuram', 'Kollam', 'Pathanamthitta', 'Alappuzha', 'Kottayam',
@@ -255,6 +259,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         smoke: _smoke,
         alcohol: _alcohol,
         hidePhotos: _hidePhotos,
+        latitude: _latitude,
+        longitude: _longitude,
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -898,109 +904,114 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       subtitle: 'Where is your home and where do you currently live?',
       child: Column(
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _isLocating
-                  ? null
-                  : () async {
-                      setState(() => _isLocating = true);
-                      try {
-                        final hasPermission = await LocationService.requestLocationPermission();
-                        if (!hasPermission) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Location permission is required to detect location automatically.')),
-                          );
-                          return;
-                        }
-
-                        final position = await LocationService.getCurrentLocation();
-                        if (position == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Could not get current location.')),
-                          );
-                          return;
-                        }
-
-                        final addressInfo = await LocationService.getAddressFromCoordinates(
-                          position.latitude,
-                          position.longitude,
-                        );
-
-                        if (addressInfo != null) {
-                          setState(() {
-                            // Find matching district
-                            final matchedDistrict = _keralaDistricts.firstWhere(
-                              (d) => addressInfo['district']?.toLowerCase().contains(d.toLowerCase()) ?? false,
-                              orElse: () => '',
-                            );
-
-                            if (matchedDistrict.isNotEmpty) {
-                              _selectedDistrict = matchedDistrict;
-                              _districtController.text = matchedDistrict;
-
-                              // If we have a district, try to match city
-                              final citiesInDistrict = _keralaCities[matchedDistrict] ?? [];
-                              final matchedCity = citiesInDistrict.firstWhere(
-                                (c) => addressInfo['city']?.toLowerCase().contains(c.toLowerCase()) ?? false,
-                                orElse: () => addressInfo['city'] ?? '',
-                              );
-                              _cityController.text = matchedCity;
-                            } else {
-                               _districtController.text = addressInfo['district'] ?? '';
-                               _selectedDistrict = addressInfo['district'] ?? '';
-                               _cityController.text = addressInfo['city'] ?? '';
-                            }
-                          });
-                          
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Location detected successfully!'), backgroundColor: Colors.green),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Could not resolve address details.')),
-                          );
-                        }
-                      } catch (e) {
-                         ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error: $e')),
-                          );
-                      } finally {
-                        if (mounted) setState(() => _isLocating = false);
-                      }
-                    },
-              icon: _isLocating
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Icon(Icons.my_location),
-              label: Text(_isLocating ? 'Detecting...' : 'Detect My Location'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: Divider(color: Colors.grey.shade300)),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text('OR', style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.bold)),
+              Expanded(
+                child: _buildCompactActionButton(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapPickerScreen(
+                          initialLat: _latitude,
+                          initialLng: _longitude,
+                        ),
+                      ),
+                    );
+
+                    if (result != null && result['location'] != null && result['address'] != null) {
+                      final loc = result['location'];
+                      final address = result['address'];
+                      setState(() {
+                        _latitude = loc.latitude;
+                        _longitude = loc.longitude;
+                        _cityController.text = (address['city'] ?? address['town'] ?? address['village'] ?? address['suburb'] ?? '').toString();
+                        _stateController.text = (address['state'] ?? address['province'] ?? 'Kerala').toString();
+                        _countryController.text = (address['country'] ?? 'India').toString();
+                        
+                        String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
+                        if (detDistrict != null && detDistrict.isNotEmpty) {
+                          detDistrict = detDistrict.replaceAll(' District', '').trim();
+                          final matched = _keralaDistricts.firstWhere(
+                            (d) => d.toLowerCase() == detDistrict!.toLowerCase(),
+                            orElse: () => _selectedDistrict ?? '',
+                          );
+                          if (matched.isNotEmpty) {
+                            _selectedDistrict = matched;
+                            _districtController.text = matched;
+                          }
+                        }
+                      });
+                    }
+                  },
+                  icon: Icons.map_rounded,
+                  label: 'Pick on Map',
+                  colors: [const Color(0xFF009688), const Color(0xFF00695C)],
+                ),
               ),
-              Expanded(child: Divider(color: Colors.grey.shade300)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildCompactActionButton(
+                  onPressed: _isLocating
+                      ? () {}
+                      : () async {
+                          setState(() => _isLocating = true);
+                          try {
+                            final hasPermission = await LocationService.requestLocationPermission();
+                            if (!hasPermission) return;
+
+                            final position = await LocationService.getCurrentLocation();
+                            if (position == null) return;
+
+                            final addressInfo = await LocationService.getAddressFromCoordinates(
+                              position.latitude,
+                              position.longitude,
+                            );
+
+                            if (addressInfo != null) {
+                              setState(() {
+                                _latitude = position.latitude;
+                                _longitude = position.longitude;
+                                _stateController.text = (addressInfo['state'] ?? addressInfo['province'] ?? 'Kerala').toString();
+                                _countryController.text = (addressInfo['country'] ?? 'India').toString();
+
+                                final matchedDistrict = _keralaDistricts.firstWhere(
+                                  (d) => addressInfo['district']?.toLowerCase().contains(d.toLowerCase()) ?? false,
+                                  orElse: () => '',
+                                );
+
+                                if (matchedDistrict.isNotEmpty) {
+                                  _selectedDistrict = matchedDistrict;
+                                  _districtController.text = matchedDistrict;
+                                  final citiesInDistrict = _keralaCities[matchedDistrict] ?? [];
+                                  final matchedCity = citiesInDistrict.firstWhere(
+                                    (c) => addressInfo['city']?.toLowerCase().contains(c.toLowerCase()) ?? false,
+                                    orElse: () => addressInfo['city'] ?? '',
+                                  );
+                                  _cityController.text = matchedCity;
+                                } else {
+                                  _districtController.text = addressInfo['district'] ?? '';
+                                  _selectedDistrict = addressInfo['district'] ?? '';
+                                  _cityController.text = addressInfo['city'] ?? '';
+                                }
+                              });
+                            }
+                          } finally {
+                            if (mounted) setState(() => _isLocating = false);
+                          }
+                        },
+                  icon: Icons.gps_fixed_rounded,
+                  label: _isLocating ? '...' : 'Detect GPS',
+                  colors: [const Color(0xFF1565C0), const Color(0xFF0D47A1)],
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           _buildTextField(
             controller: _districtController,
             label: 'Home District',
-            icon: Icons.map,
+            icon: Icons.location_city_outlined,
             readOnly: true,
             onTap: () => _openSearchablePicker(
               title: 'District',
@@ -1009,7 +1020,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               onSelected: (item) {
                 setState(() {
                   _selectedDistrict = item;
-                  _cityController.clear(); // Clear city when district changes
+                  _cityController.clear();
                 });
               },
             ),
@@ -1463,5 +1474,51 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       // Default to 21 for male or if gender not yet selected
       return DateTime(now.year - 21, now.month, now.day);
     }
+  }
+
+  Widget _buildCompactActionButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+    required List<Color> colors,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: colors[0].withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: Colors.white),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
