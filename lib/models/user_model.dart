@@ -42,6 +42,7 @@ class User {
   final bool photoRequestPending;
   final bool isPhotoVerified;
   final int reportsCount;
+  final bool isReportedByMe;
 
   User({
     this.id,
@@ -67,6 +68,7 @@ class User {
     this.photoRequestPending = false,
     this.isPhotoVerified = true,
     this.reportsCount = 0,
+    this.isReportedByMe = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -107,6 +109,7 @@ class User {
       photoRequestPending: json['photo_request_pending'] == true,
       isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1 || json['is_primary_photo_verified'] == true,
       reportsCount: json['reports_count'] ?? 0,
+      isReportedByMe: json['is_reported_by_me'] == true || json['is_reported_by_me'] == 1,
     );
   }
 

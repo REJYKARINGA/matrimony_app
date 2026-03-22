@@ -751,7 +751,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   )
                 else
                   ElevatedButton.icon(
-                    onPressed: _isActionLoading ? null : _handlePhotoRequest,
+                    onPressed: (_isActionLoading || _user?.isReportedByMe == true) 
+                        ? (_user?.isReportedByMe == true ? _showReportedWarning : null) 
+                        : _handlePhotoRequest,
                     icon: const Icon(Icons.key, size: 20),
                     label: Text(
                       title == 'No Photos Uploaded' ? 'Request Photo' : 'Request Photo Access',
@@ -802,7 +804,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             child: IconButton(
               icon: const Icon(Icons.report_gmailerrorred_rounded, color: Colors.black87, size: 20),
               tooltip: 'Report Profile',
-              onPressed: () => _showReportDialog(),
+              onPressed: () => _user?.isReportedByMe == true ? _showReportedWarning() : _showReportDialog(),
             ),
           ),
         ),
@@ -1020,15 +1022,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
-  Widget _buildBadge(IconData icon, String text, {bool isDistance = false, bool isCompatibility = false}) {
+  Widget _buildBadge(IconData icon, String text, {bool isDistance = false, bool isCompatibility = false, bool isReported = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: isCompatibility
-            ? const Color(0xFF4CD9A6)
-            : (isDistance
-                ? const Color(0xFF00BCD4).withOpacity(0.4)
-                : Colors.white.withOpacity(0.2)),
+        color: isReported 
+            ? Colors.orange.withOpacity(0.9)
+            : (isCompatibility
+                ? const Color(0xFF4CD9A6)
+                : (isDistance
+                    ? const Color(0xFF00BCD4).withOpacity(0.4)
+                    : Colors.white.withOpacity(0.2))),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -1260,116 +1264,175 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               size: 50,
             ),
           ),
-
-          // Chat
-          GestureDetector(
-            onTap: () {
-              if (isContactUnlocked && _user != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatScreen(
-                      otherUserId: _user!.id!,
-                      otherUserName: '${_user!.matrimonyId ?? 'User'}',
-                      otherUserImage: _user?.displayImage != null
-                        ? ApiService.getImageUrl(_user!.displayImage!)
-                        : null,
+          
+          if (_user?.isReportedByMe == true) ...[
+            Expanded(
+              child: GestureDetector(
+                onTap: _showReportedWarning,
+                child: Container(
+                  height: 60,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade100,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.orange.shade300),
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.report_gmailerrorred_rounded, color: Colors.orange.shade800),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Profile Reported',
+                          style: TextStyle(
+                            color: Colors.orange.shade900,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Purchase contact to message!'),
-                    backgroundColor: Colors.orange,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                );
-              }
-            },
-            child: _buildFloatingButton(
-              icon: Icons.chat_bubble_rounded,
-              color: const Color(0xFF00BCD4),
-              iconColor: Colors.white,
-              size: 50,
-              shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                ),
+              ),
             ),
-          ),
-
-          // Star (Save)
-          GestureDetector(
-            onTap: () async {
-              try {
-                if (_shortlistedUserIds.contains(_user!.id!)) {
-                  final response = await ShortlistService.removeFromShortlist(_user!.id!);
-                  if (response.statusCode == 200) {
-                    setState(() {
-                      _shortlistedUserIds.remove(_user!.id!);
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Removed from shortlist'),
-                        backgroundColor: Colors.orange,
-                        duration: Duration(seconds: 1),
+          ] else ...[
+            // Chat
+            GestureDetector(
+              onTap: () {
+                if (isContactUnlocked && _user != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(
+                        otherUserId: _user!.id!,
+                        otherUserName: '${_user!.matrimonyId ?? 'User'}',
+                        otherUserImage: _user?.displayImage != null
+                          ? ApiService.getImageUrl(_user!.displayImage!)
+                          : null,
                       ),
-                    );
-                  }
+                    ),
+                  );
                 } else {
-                  final response = await ShortlistService.addToShortlist(_user!.id!);
-                  if (response.statusCode == 200 || response.statusCode == 201) {
-                    setState(() {
-                      _shortlistedUserIds.add(_user!.id!);
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Added to shortlist'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 1),
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Purchase contact to message!'),
+                      backgroundColor: Colors.orange,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    );
-                  }
+                    ),
+                  );
                 }
-              } catch (e) {
-                print('Error toggling shortlist: $e');
-              }
-            },
-            child: _buildFloatingButton(
-              icon: _shortlistedUserIds.contains(_user!.id) ? Icons.star_rounded : Icons.star_outline_rounded,
-              color: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700) : Colors.white,
-              iconColor: _shortlistedUserIds.contains(_user!.id) ? Colors.white : const Color(0xFFFFD700),
-              size: 50,
-              shadowColor: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+              },
+              child: _buildFloatingButton(
+                icon: Icons.chat_bubble_rounded,
+                color: const Color(0xFF00BCD4),
+                iconColor: Colors.white,
+                size: 50,
+                shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+              ),
             ),
-          ),
 
-          // Like (Heart/Check)
-          GestureDetector(
-            onTap: () {
-              if (_isActionLoading) return;
-              if (isMatched) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('You are already matched!')),
-                );
-              } else if (isPending) {
-                _handleAcceptInterest();
-              } else if (isSent) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Interest already sent!')),
-                );
-              } else {
-                _handleSendInterest();
-              }
-            },
-            child: _buildFloatingButton(
-              icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : Icons.favorite_rounded),
-              color: (isMatched || isSent) ? const Color(0xFF42D368) : (isPending ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
-              iconColor: Colors.white,
-              size: 60,
-              shadowColor: ((isMatched || isSent) ? const Color(0xFF42D368) : (isPending ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
+            // Star (Save)
+            GestureDetector(
+              onTap: () async {
+                try {
+                  if (_shortlistedUserIds.contains(_user!.id!)) {
+                    final response = await ShortlistService.removeFromShortlist(_user!.id!);
+                    if (response.statusCode == 200) {
+                      setState(() {
+                        _shortlistedUserIds.remove(_user!.id!);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Removed from shortlist'),
+                          backgroundColor: Colors.orange,
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  } else {
+                    final response = await ShortlistService.addToShortlist(_user!.id!);
+                    if (response.statusCode == 200 || response.statusCode == 201) {
+                      setState(() {
+                        _shortlistedUserIds.add(_user!.id!);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Added to shortlist'),
+                          backgroundColor: Colors.green,
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  print('Error toggling shortlist: $e');
+                }
+              },
+              child: _buildFloatingButton(
+                icon: _shortlistedUserIds.contains(_user!.id) ? Icons.star_rounded : Icons.star_outline_rounded,
+                color: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700) : Colors.white,
+                iconColor: _shortlistedUserIds.contains(_user!.id) ? Colors.white : const Color(0xFFFFD700),
+                size: 50,
+                shadowColor: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+              ),
             ),
+
+            // Like (Heart/Check)
+            GestureDetector(
+              onTap: () {
+                if (_isActionLoading) return;
+                if (isMatched) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('You are already matched!')),
+                  );
+                } else if (isPending) {
+                  _handleAcceptInterest();
+                } else if (isSent) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Interest already sent!')),
+                  );
+                } else {
+                  _handleSendInterest();
+                }
+              },
+              child: _buildFloatingButton(
+                icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : Icons.favorite_rounded),
+                color: (isMatched || isSent) ? const Color(0xFF42D368) : (isPending ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
+                iconColor: Colors.white,
+                size: 60,
+                shadowColor: ((isMatched || isSent) ? const Color(0xFF42D368) : (isPending ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showReportedWarning() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: const [
+            Icon(Icons.report_gmailerrorred_rounded, color: Colors.orange),
+            SizedBox(width: 8),
+            Text('Profile Reported'),
+          ],
+        ),
+        content: const Text(
+          'You have reported this profile. For your safety, further interactions with this user are restricted until our team reviews the report.',
+          style: TextStyle(height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('I Understand', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF00BCD4))),
           ),
         ],
       ),
@@ -3112,21 +3175,38 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {
+        _loadUserProfile(); // Refresh to show reported status
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Profile reported successfully. We will review it shortly.'),
               backgroundColor: Colors.black87,
+              behavior: SnackBarBehavior.floating,
             ),
           );
         }
       } else {
-        throw Exception('Failed to report');
+        final data = json.decode(response.body);
+        final String errorMsg = data['error'] ?? 'Failed to send report. Please try again.';
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMsg),
+              backgroundColor: response.statusCode == 409 ? Colors.orange : Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to send report. Please try again.')),
+          const SnackBar(
+            content: Text('Connection error. Please try again.'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
         );
       }
     } finally {
