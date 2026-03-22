@@ -401,7 +401,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       analysis.add({
         'label': 'Income Compatibility',
         'isMatch': incomeMatch,
-        'value': 'They seek â‚¹${otherPrefs.minIncome ?? 0} - â‚¹${otherPrefs.maxIncome ?? 'Any'}',
+        'value': 'They seek \u20B9${otherPrefs.minIncome ?? 0} - \u20B9${otherPrefs.maxIncome ?? 'Any'}',
         'icon': Icons.payments_outlined,
       });
     }
@@ -781,14 +781,14 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       expandedHeight: 420.0,
       floating: false,
       pinned: true,
-      backgroundColor: const Color(0xFF00BCD4),
+      backgroundColor: Colors.white,
       elevation: 0,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
-          backgroundColor: Colors.black.withOpacity(0.3),
+          backgroundColor: Colors.grey.withOpacity(0.1),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+            icon: const Icon(Icons.arrow_back, color: Colors.black87, size: 20),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -798,9 +798,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: CircleAvatar(
-            backgroundColor: Colors.black.withOpacity(0.3),
+            backgroundColor: Colors.grey.withOpacity(0.1),
             child: IconButton(
-              icon: const Icon(Icons.report_gmailerrorred_rounded, color: Colors.white, size: 20),
+              icon: const Icon(Icons.report_gmailerrorred_rounded, color: Colors.black87, size: 20),
               tooltip: 'Report Profile',
               onPressed: () => _showReportDialog(),
             ),
@@ -823,18 +823,18 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.account_balance_wallet, color: Colors.white, size: 16),
+                  const Icon(Icons.account_balance_wallet, color: Color(0xFF00BCD4), size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    '₹${_walletBalance.toStringAsFixed(0)}',
+                    '\u20B9${_walletBalance.toStringAsFixed(0)}',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.black87,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -1498,7 +1498,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             if (_user?.userProfile?.annualIncome != null)
               _buildDetailRow(
                 'Annual Income',
-                'â‚¹${_user!.userProfile!.annualIncome}',
+                '\u20B9${_user!.userProfile!.annualIncome}',
               ),
           ]),
           _buildInfoSection('Family Details', Icons.family_restroom_outlined, [
