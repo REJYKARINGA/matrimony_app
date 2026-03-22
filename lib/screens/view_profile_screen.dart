@@ -45,6 +45,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Razorpay _razorpay;
+  final ScrollController _scrollController = ScrollController();
+  bool _isCollapsed = false;
 
   // Unlocked contact details (fetched via separate API)
   String? _unlockedPhone;
@@ -87,6 +89,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
+    _scrollController.addListener(() {
+      if (_scrollController.hasClients) {
+        final isCollapsed = _scrollController.offset > (420.0 - kToolbarHeight - 20);
+        if (isCollapsed != _isCollapsed) {
+          setState(() {
+            _isCollapsed = isCollapsed;
+          });
+        }
+      }
+    });
 
     _loadUserProfile();
     _checkContactUnlock();
@@ -599,6 +612,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
+        controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           _buildSliverAppBar(),
@@ -784,13 +798,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       floating: false,
       pinned: true,
       backgroundColor: Colors.white,
-      elevation: 0,
+      elevation: _isCollapsed ? 1 : 0,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
-          backgroundColor: Colors.grey.withOpacity(0.1),
+          backgroundColor: _isCollapsed ? Colors.transparent : Colors.black38,
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black87, size: 20),
+            icon: Icon(
+              Icons.arrow_back, 
+              color: _isCollapsed ? Colors.black87 : Colors.white, 
+              size: 20
+            ),
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -800,9 +818,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: CircleAvatar(
-            backgroundColor: Colors.grey.withOpacity(0.1),
+            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black38,
             child: IconButton(
-              icon: const Icon(Icons.report_gmailerrorred_rounded, color: Colors.black87, size: 20),
+              icon: Icon(
+                Icons.report_gmailerrorred_rounded, 
+                color: _isCollapsed ? Colors.black87 : Colors.white, 
+                size: 20
+              ),
               tooltip: 'Report Profile',
               onPressed: () => _user?.isReportedByMe == true ? _showReportedWarning() : _showReportDialog(),
             ),
@@ -825,18 +847,22 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: _isCollapsed ? Colors.transparent : Colors.black38,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.account_balance_wallet, color: Color(0xFF00BCD4), size: 16),
+                  Icon(
+                    Icons.account_balance_wallet, 
+                    color: _isCollapsed ? const Color(0xFF00838F) : const Color(0xFF00BCD4), 
+                    size: 16
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     '\u20B9${_walletBalance.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                      color: Colors.black87,
+                    style: TextStyle(
+                      color: _isCollapsed ? Colors.black87 : Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -3218,6 +3244,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   void dispose() {
     _razorpay.clear();
     _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
