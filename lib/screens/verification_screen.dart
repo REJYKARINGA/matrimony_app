@@ -62,7 +62,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 70,
+      imageQuality: 50,
+      maxWidth: 1200,
+      maxHeight: 1200,
     );
 
     if (image != null) {

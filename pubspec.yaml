@@ -37,6 +37,7 @@ dependencies:
 
   # HTTP client for API calls
   http: ^1.2.1
+  http_parser: ^4.0.2
 
   # State management
   provider: ^6.1.1

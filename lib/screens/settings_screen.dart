@@ -13,6 +13,7 @@ import 'search_screen.dart';
 import 'terms_and_conditions_screen.dart';
 import 'privacy_policy_screen.dart';
 import 'security_settings_screen.dart';
+import 'verification_screen.dart';
 
 import '../services/payment_service.dart';
 import 'wallet_transactions_screen.dart';
@@ -391,6 +392,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         MaterialPageRoute(
                           builder: (context) =>
                               const EngagementPosterInfoScreen(),
+                        ),
+                      );
+                    },
+                    showDivider: true,
+                  ),
+                  _buildMenuItem(
+                    context: context,
+                    icon: Icons.verified_user_outlined,
+                    title: 'Verify Account',
+                    subtitle: 'Verify your ID for a trusted profile',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const VerificationScreen(),
                         ),
                       );
                     },

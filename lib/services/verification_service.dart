@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'api_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -31,22 +32,30 @@ class VerificationService {
 
     // Add front image
     final frontBytes = await frontImage.readAsBytes();
+    final frontExt = frontImage.name.split('.').last.toLowerCase();
+    final frontMime = frontExt == 'png' ? 'png' : 'jpeg';
+    
     request.files.add(
       http.MultipartFile.fromBytes(
         'id_proof_front',
         frontBytes,
         filename: frontImage.name,
+        contentType: MediaType('image', frontMime),
       ),
     );
 
     // Add back image if exists
     if (backImage != null) {
       final backBytes = await backImage.readAsBytes();
+      final backExt = backImage.name.split('.').last.toLowerCase();
+      final backMime = backExt == 'png' ? 'png' : 'jpeg';
+
       request.files.add(
         http.MultipartFile.fromBytes(
           'id_proof_back',
           backBytes,
           filename: backImage.name,
+          contentType: MediaType('image', backMime),
         ),
       );
     }

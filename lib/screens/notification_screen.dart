@@ -291,8 +291,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = Icons.check_circle_rounded;
         badgeColor = accentGreen;
         break;
+      case 'verification':
+        badgeIcon = Icons.verified_user_rounded;
+        badgeColor = accentGreen;
+        break;
       default:
-        badgeIcon = Icons.person_rounded;
+        badgeIcon = Icons.notifications_rounded;
         badgeColor = Colors.grey;
     }
 
@@ -315,6 +319,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             ),
           );
+        } else if (type == 'verification') {
+          // Maybe navigate to settings/verification status
         } else if (notification['sender_id'] != null) {
           Navigator.push(
             context,
@@ -389,7 +395,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       style: const TextStyle(color: Colors.black87, fontSize: 14),
                       children: [
                         TextSpan(
-                          text: senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone ',
+                          text: type == 'verification' 
+                              ? 'System Update ' 
+                              : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone '),
                           style: const TextStyle(fontWeight: FontWeight.bold, color: primaryCyan),
                         ),
                         TextSpan(text: notification['message'] ?? 'sent you a notification'),
@@ -416,7 +424,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
               child: Center(
                 child: Icon(
-                  type == 'interest' ? Icons.favorite_outline_rounded : (type == 'message' ? Icons.chat_outlined : Icons.notifications_none_rounded),
+                  type == 'interest' 
+                      ? Icons.favorite_outline_rounded 
+                      : (type == 'message' 
+                          ? Icons.chat_outlined 
+                          : (type == 'verification' ? Icons.verified_user_outlined : Icons.notifications_none_rounded)),
                   size: 16,
                   color: badgeColor,
                 ),
