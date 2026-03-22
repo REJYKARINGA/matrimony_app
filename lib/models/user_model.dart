@@ -103,9 +103,9 @@ class User {
       contactInfo: contactInfo,
       personalities: json['personalities'] != null ? List<dynamic>.from(json['personalities']) : null,
       interests: json['interests'] != null ? List<dynamic>.from(json['interests']) : null,
-      hasHiddenPhotos: json['has_hidden_photos'] == true,
+      hasHiddenPhotos: json['has_hidden_photos'] == true || (json['user_profile'] != null && (json['user_profile']['hide_photos'] == true || json['user_profile']['hide_photos'] == 1)),
       photoRequestPending: json['photo_request_pending'] == true,
-      isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1,
+      isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1 || json['is_primary_photo_verified'] == true,
       reportsCount: json['reports_count'] ?? 0,
     );
   }
@@ -223,6 +223,7 @@ class UserProfile {
   final String? smoke;
   final String? alcohol;
   final bool? isActiveVerified;
+  final bool? hidePhotos;
   final DateTime? createdAt;
   final int? ageOverride;
   final List<String>? changedFields;
@@ -265,6 +266,7 @@ class UserProfile {
     this.smoke,
     this.alcohol,
     this.isActiveVerified,
+    this.hidePhotos,
     this.createdAt,
     this.ageOverride,
     this.changedFields,
@@ -327,6 +329,7 @@ class UserProfile {
       smoke: json['smoke']?.toString(),
       alcohol: json['alcohol']?.toString(),
       isActiveVerified: json['is_active_verified'] == 1 || json['is_active_verified'] == true,
+      hidePhotos: json['hide_photos'] == 1 || json['hide_photos'] == true,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       changedFields: json['changed_fields'] != null ? List<String>.from(json['changed_fields']) : null,
     );
@@ -364,6 +367,7 @@ class UserProfile {
       'smoke': smoke,
       'alcohol': alcohol,
       'is_active_verified': isActiveVerified,
+      'hide_photos': hidePhotos,
     };
   }
 

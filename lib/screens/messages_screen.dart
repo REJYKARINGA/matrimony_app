@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -203,15 +204,52 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                 shape: BoxShape.circle,
                                                 border: Border.all(color: Colors.grey.shade200, width: 2),
                                               ),
-                                              child: CircleAvatar(
-                                                radius: 32,
-                                                backgroundColor: Colors.grey.shade100,
-                                                backgroundImage: user.displayImage != null
-                                                    ? NetworkImage(ApiService.getImageUrl(user.displayImage!))
-                                                    : null,
-                                                child: user.displayImage == null
-                                                    ? Icon(Icons.person, color: Colors.grey.shade400, size: 30)
-                                                    : null,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(32),
+                                                child: CircleAvatar(
+                                                  radius: 32,
+                                                  backgroundColor: Colors.grey.shade100,
+                                                  child: Stack(
+                                                    children: [
+                                                      if (user.displayImage != null)
+                                                        Positioned.fill(
+                                                          child: Image.network(
+                                                            ApiService.getImageUrl(user.displayImage!),
+                                                            fit: BoxFit.cover,
+                                                            errorBuilder: (context, error, stackTrace) =>
+                                                                const Icon(Icons.person, color: Colors.grey),
+                                                          ),
+                                                        ),
+                                                      if (user.displayImage == null)
+                                                        const Center(child: Icon(Icons.person, color: Colors.grey, size: 30)),
+                                                      
+                                                      // Visibility Overlays
+                                                      if (user.displayImage != null) ...[
+                                                        // 1. Under Review (Blur)
+                                                        if (user.isDisplayImageVerified != true)
+                                                          Positioned.fill(
+                                                            child: ClipRRect(
+                                                              child: BackdropFilter(
+                                                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                                                child: Container(
+                                                                  color: Colors.black.withOpacity(0.2),
+                                                                  child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 20),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        // 2. Locked (Private)
+                                                        if (user.hasHiddenPhotos && !user.isContactUnlocked)
+                                                          Positioned.fill(
+                                                            child: Container(
+                                                              color: Colors.black.withOpacity(0.4),
+                                                              child: const Icon(Icons.lock_rounded, color: Colors.white, size: 20),
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                             Positioned(
@@ -307,11 +345,70 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         ),
                                       ).then((_) => _loadConversations());
                                     },
-                                    leading: CircleAvatar(
-                                      radius: 30,
-                                      backgroundColor: Colors.grey.shade100,
-                                      backgroundImage: profilePic != null ? NetworkImage(profilePic) : null,
-                                      child: profilePic == null ? const Icon(Icons.person, color: Colors.grey) : null,
+                                    leading: Stack(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(30),
+                                          child: CircleAvatar(
+                                            radius: 30,
+                                            backgroundColor: Colors.grey.shade100,
+                                            child: Stack(
+                                              children: [
+                                                if (profilePic != null)
+                                                  Positioned.fill(
+                                                    child: Image.network(
+                                                      profilePic,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context, error, stackTrace) =>
+                                                          const Icon(Icons.person, color: Colors.grey),
+                                                    ),
+                                                  ),
+                                                if (profilePic == null)
+                                                  const Center(child: Icon(Icons.person, color: Colors.grey)),
+
+                                                // Visibility Overlays
+                                                if (profilePic != null) ...[
+                                                  // 1. Under Review (Blur)
+                                                  if (otherUserObj.isDisplayImageVerified != true)
+                                                    Positioned.fill(
+                                                      child: ClipRRect(
+                                                        child: BackdropFilter(
+                                                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                                          child: Container(
+                                                            color: Colors.black.withOpacity(0.2),
+                                                            child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 18),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  // 2. Locked (Private)
+                                                  if (otherUserObj.hasHiddenPhotos && !otherUserObj.isContactUnlocked)
+                                                    Positioned.fill(
+                                                      child: Container(
+                                                        color: Colors.black.withOpacity(0.4),
+                                                        child: const Icon(Icons.lock_rounded, color: Colors.white, size: 18),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        if (isUnread)
+                                          Positioned(
+                                            right: 0,
+                                            top: 0,
+                                            child: Container(
+                                              width: 12,
+                                              height: 12,
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF00BCD4),
+                                                shape: BoxShape.circle,
+                                                border: Border.all(color: Colors.white, width: 2),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                     title: Text(
                                       otherUserName,
@@ -546,11 +643,56 @@ class _ChatScreenState extends State<ChatScreen> {
         titleSpacing: 0,
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.grey.shade100,
-              backgroundImage: widget.otherUserImage != null ? NetworkImage(widget.otherUserImage!) : null,
-              child: widget.otherUserImage == null ? const Icon(Icons.person, color: Colors.grey, size: 20) : null,
+            SizedBox(
+              width: 36,
+              height: 36,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.grey.shade100,
+                  child: Stack(
+                    children: [
+                      if (widget.otherUserImage != null)
+                        Positioned.fill(
+                          child: Image.network(
+                            widget.otherUserImage!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.person, color: Colors.grey, size: 20),
+                          ),
+                        ),
+                      if (widget.otherUserImage == null)
+                        const Center(child: Icon(Icons.person, color: Colors.grey, size: 20)),
+
+                      // Visibility Overlays (using _otherUser data if available)
+                      if (widget.otherUserImage != null && _otherUser != null) ...[
+                        // 1. Under Review (Blur)
+                        if (_otherUser!.isDisplayImageVerified != true)
+                          Positioned.fill(
+                            child: ClipRRect(
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                                child: Container(
+                                  color: Colors.black.withOpacity(0.1),
+                                  child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        // 2. Locked (Private)
+                        if (_otherUser!.hasHiddenPhotos && !_otherUser!.isContactUnlocked)
+                          Positioned.fill(
+                            child: Container(
+                              color: Colors.black.withOpacity(0.3),
+                              child: const Icon(Icons.lock_rounded, color: Colors.white, size: 14),
+                            ),
+                          ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             Column(
@@ -667,11 +809,56 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.grey.shade100,
-                    backgroundImage: widget.otherUserImage != null ? NetworkImage(widget.otherUserImage!) : null,
-                    child: widget.otherUserImage == null ? const Icon(Icons.person, color: Colors.grey, size: 40) : null,
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey.shade100,
+                          child: Stack(
+                            children: [
+                              if (widget.otherUserImage != null)
+                                Positioned.fill(
+                                  child: Image.network(
+                                    widget.otherUserImage!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) =>
+                                        const Icon(Icons.person, color: Colors.grey, size: 40),
+                                  ),
+                                ),
+                              if (widget.otherUserImage == null)
+                                const Center(child: Icon(Icons.person, color: Colors.grey, size: 40)),
+
+                              // Visibility Overlays
+                              if (widget.otherUserImage != null && _otherUser != null) ...[
+                                // 1. Under Review (Blur)
+                                if (_otherUser!.isDisplayImageVerified != true)
+                                  Positioned.fill(
+                                    child: ClipRRect(
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                        child: Container(
+                                          color: Colors.black.withOpacity(0.2),
+                                          child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 30),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                // 2. Locked (Private)
+                                if (_otherUser!.hasHiddenPhotos && !_otherUser!.isContactUnlocked)
+                                  Positioned.fill(
+                                    child: Container(
+                                      color: Colors.black.withOpacity(0.4),
+                                      child: const Icon(Icons.lock_rounded, color: Colors.white, size: 30),
+                                    ),
+                                  ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   Text(
