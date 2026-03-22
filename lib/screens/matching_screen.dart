@@ -9,6 +9,7 @@ import 'messages_screen.dart' as msg;
 import '../services/shortlist_service.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
+import '../services/navigation_provider.dart';
 
 class MatchingScreen extends StatefulWidget {
   const MatchingScreen({Key? key}) : super(key: key);
@@ -363,7 +364,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         title: 'No Matches Yet',
         description: "Your perfect match might be just a swipe away! Keep exploring profiles to find someone special.",
         actionLabel: 'Browse Profiles',
-        onAction: () => Navigator.of(context).pop(), // Go back to Home/Search
+        onAction: () => Provider.of<NavigationProvider>(context, listen: false).setSelectedIndex(0), 
       );
     }
 
@@ -420,6 +421,8 @@ class _MatchingScreenState extends State<MatchingScreen>
         icon: Icons.send_rounded,
         title: 'Nothing Sent Yet',
         description: "Be proactive! When you find an interesting profile, send them an interest to start your journey.",
+        actionLabel: 'Browse Profiles',
+        onAction: () => Provider.of<NavigationProvider>(context, listen: false).setSelectedIndex(0),
       );
     }
 
@@ -464,6 +467,8 @@ class _MatchingScreenState extends State<MatchingScreen>
         icon: Icons.notifications_active_rounded,
         title: 'Waiting for Responses',
         description: "No interests received so far. Enhance your profile with better photos to attract more attention.",
+        actionLabel: 'Browse Profiles',
+        onAction: () => Provider.of<NavigationProvider>(context, listen: false).setSelectedIndex(0),
       );
     }
 
