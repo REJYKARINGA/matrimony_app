@@ -4,6 +4,7 @@ import '../services/notification_service.dart';
 import '../services/api_service.dart';
 import '../services/navigation_provider.dart';
 import '../widgets/common_footer.dart';
+import 'verification_screen.dart';
 import 'view_profile_screen.dart';
 import 'messages_screen.dart';
 import 'package:intl/intl.dart';
@@ -320,7 +321,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ),
           );
         } else if (type == 'verification') {
-          // Maybe navigate to settings/verification status
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const VerificationScreen(),
+            ),
+          );
         } else if (notification['sender_id'] != null) {
           Navigator.push(
             context,
