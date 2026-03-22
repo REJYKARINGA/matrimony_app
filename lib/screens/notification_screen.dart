@@ -293,8 +293,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeColor = accentGreen;
         break;
       case 'verification':
-        badgeIcon = Icons.verified_user_rounded;
-        badgeColor = accentGreen;
+        final bool isRejected = (notification['title'] ?? '').toString().toLowerCase().contains('rejected') || 
+                               (notification['message'] ?? '').toString().toLowerCase().contains('rejected');
+        badgeIcon = isRejected ? Icons.gpp_bad_rounded : Icons.verified_user_rounded;
+        badgeColor = isRejected ? const Color(0xFFFF2D55) : accentGreen;
         break;
       default:
         badgeIcon = Icons.notifications_rounded;
@@ -434,7 +436,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ? Icons.favorite_outline_rounded 
                       : (type == 'message' 
                           ? Icons.chat_outlined 
-                          : (type == 'verification' ? Icons.verified_user_outlined : Icons.notifications_none_rounded)),
+                          : (type == 'verification' 
+                              ? ((notification['title'] ?? '').toString().toLowerCase().contains('rejected') || 
+                                 (notification['message'] ?? '').toString().toLowerCase().contains('rejected')
+                                  ? Icons.error_outline_rounded 
+                                  : Icons.verified_user_outlined) 
+                              : Icons.notifications_none_rounded)),
                   size: 16,
                   color: badgeColor,
                 ),
