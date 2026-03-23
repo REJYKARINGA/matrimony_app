@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
@@ -19,25 +21,62 @@ class _EngagementPosterInfoScreenState
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
+  final _partnerMatrimonyIdController = TextEditingController();
+  
+  Map<String, dynamic>? _existingPoster;
+  bool _isLoading = true;
 
-  File? _posterImage;
+  XFile? _posterImage;
   DateTime? _engagementDate;
   DateTime? _displayExpireAt;
   bool _isActive = true;
   bool _softDelete = false;
   bool _isVerified = false;
+  String? _partnerPhotoUrl;
+  String? _ownPhotoUrl;
+  bool _isOwner = true;
 
   final ImagePicker _picker = ImagePicker();
 
-  // Updated colors to match the cyan header from the image
-  static const Color primaryCyan = Color(0xFF00D9E1);
-  static const Color lightCyan = Color(0xFF64C3E8);
+  // Design Tokens - Matching the Gray-White premium theme
+  static const Color primaryCyan = Color(0xFF00BCD4);
+  static const Color backgroundGray = Color(0xFFF5F7F9);
+  static const Color cardGray = Color(0xFFF9FAFB);
+  static const Color textBlack = Color(0xFF1A1A1A);
   static const Color accentGreen = Color(0xFF4CD9A6);
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMyPoster();
+  }
+
+  Future<void> _fetchMyPoster() async {
+    try {
+      final response = await ApiService.getMyEngagementPoster();
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _existingPoster = data['engagement_poster'];
+          _partnerPhotoUrl = data['partner_primary_photo'];
+          _ownPhotoUrl = data['user_primary_photo'];
+          _isOwner = data['is_owner'] ?? true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching my poster: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
     _titleController.dispose();
     _messageController.dispose();
+    _partnerMatrimonyIdController.dispose();
     super.dispose();
   }
 
@@ -60,7 +99,7 @@ class _EngagementPosterInfoScreenState
                 );
                 if (image != null) {
                   setState(() {
-                    _posterImage = File(image.path);
+                    _posterImage = image;
                   });
                 }
               },
@@ -78,7 +117,7 @@ class _EngagementPosterInfoScreenState
                 );
                 if (image != null) {
                   setState(() {
-                    _posterImage = File(image.path);
+                    _posterImage = image;
                   });
                 }
               },
@@ -119,13 +158,20 @@ class _EngagementPosterInfoScreenState
     }
   }
 
-  Future<void> _submitForm() async {
+  Future<void> _submitForm(BuildContext context) async {
+    // Hide keyboard
+    FocusScope.of(context).unfocus();
+
+    final bool isUpdate = _existingPoster != null;
+
     if (_formKey.currentState!.validate()) {
-      if (_posterImage == null) {
+      // Only require image if creating a new poster (when updating, existing image is kept)
+      if (!isUpdate && _posterImage == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please upload an engagement poster image'),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
           ),
         );
         return;
@@ -136,6 +182,7 @@ class _EngagementPosterInfoScreenState
           const SnackBar(
             content: Text('Please select your engagement date'),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
           ),
         );
         return;
@@ -147,12 +194,12 @@ class _EngagementPosterInfoScreenState
           context: context,
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return const AlertDialog(
+            return AlertDialog(
               content: Row(
                 children: [
-                  CircularProgressIndicator(color: primaryCyan),
-                  SizedBox(width: 20),
-                  Text("Uploading engagement poster..."),
+                  const CircularProgressIndicator(color: primaryCyan),
+                  const SizedBox(width: 20),
+                  Text(isUpdate ? 'Updating engagement poster...' : 'Uploading engagement poster...'),
                 ],
               ),
             );
@@ -164,23 +211,42 @@ class _EngagementPosterInfoScreenState
           'engagement_date': _engagementDate!.toIso8601String(),
           'announcement_title': _titleController.text,
           'announcement_message': _messageController.text,
+          'partner_matrimony_id': _partnerMatrimonyIdController.text,
           'is_active': _isActive,
           'display_expire_at': _displayExpireAt?.toIso8601String(),
         };
 
-        // Call the API to create engagement poster
-        final response = await ApiService.createEngagementPoster(
-          formData,
-          _posterImage!,
-        );
+        http.Response response;
+
+        if (isUpdate) {
+          // Update existing poster - image is optional
+          response = await ApiService.updateEngagementPoster(
+            _existingPoster!['id'],
+            formData,
+            imageBytes: _posterImage != null ? await _posterImage!.readAsBytes() : null,
+            fileName: _posterImage?.name,
+          );
+        } else {
+          // Create new poster - image is required (already validated above)
+          response = await ApiService.createEngagementPoster(
+            formData,
+            await _posterImage!.readAsBytes(),
+            _posterImage!.name,
+          );
+        }
 
         // Close loading dialog
         Navigator.of(context).pop();
 
-        if (response.statusCode == 201) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          // Close the bottom sheet
+          if (Navigator.canPop(context)) {
+            Navigator.of(context).pop();
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Engagement poster uploaded successfully!'),
+            SnackBar(
+              content: Text(isUpdate ? 'Engagement poster updated successfully!' : 'Engagement poster uploaded successfully!'),
               backgroundColor: accentGreen,
             ),
           );
@@ -188,26 +254,52 @@ class _EngagementPosterInfoScreenState
           // Clear form
           _titleController.clear();
           _messageController.clear();
+          _partnerMatrimonyIdController.clear();
           setState(() {
             _posterImage = null;
             _engagementDate = null;
             _displayExpireAt = null;
             _isActive = true;
           });
+          
+          // Refresh the page data
+          _fetchMyPoster();
         } else {
-          String errorMessage = 'Failed to upload engagement poster';
+          String errorMessage = isUpdate ? 'Failed to update engagement poster' : 'Failed to upload engagement poster';
           try {
             final data = json.decode(response.body);
-            errorMessage =
-                data['message'] ??
-                data['error'] ??
-                'Failed to upload engagement poster';
+            // Handle Laravel validation errors object
+            if (data['errors'] != null && data['errors'] is Map) {
+              final Map<String, dynamic> errors = data['errors'];
+              if (errors.isNotEmpty) {
+                final firstError = errors.values.first;
+                if (firstError is List && firstError.isNotEmpty) {
+                  errorMessage = firstError[0].toString();
+                } else {
+                  errorMessage = firstError.toString();
+                }
+              }
+            } else {
+              // Show 'reason' if present (partner already confirmed), otherwise fall back to 'message' or 'error'
+              errorMessage = data['reason'] ?? data['message'] ?? data['error'] ?? errorMessage;
+            }
           } catch (e) {
             // If parsing fails, use default message
           }
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+          // Show error in a dialog instead of SnackBar because SnackBar appears behind the bottom sheet
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Validation Error', style: TextStyle(color: Colors.red)),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('OK', style: TextStyle(color: primaryCyan)),
+                ),
+              ],
+            ),
           );
         }
       } catch (e) {
@@ -215,10 +307,17 @@ class _EngagementPosterInfoScreenState
           Navigator.of(context).pop();
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error uploading engagement poster: $e'),
-            backgroundColor: Colors.red,
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Error', style: TextStyle(color: Colors.red)),
+            content: Text('Error: $e'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK', style: TextStyle(color: primaryCyan)),
+              ),
+            ],
           ),
         );
       }
@@ -281,6 +380,26 @@ class _EngagementPosterInfoScreenState
   }
 
   void _showUploadForm() {
+    final bool isUpdate = _existingPoster != null;
+
+    // Pre-fill controllers with existing values when updating
+    if (isUpdate) {
+      _titleController.text = _existingPoster!['announcement_title'] ?? '';
+      _messageController.text = _existingPoster!['announcement_message'] ?? '';
+      _partnerMatrimonyIdController.text = _existingPoster!['partner_matrimony_id'] ?? '';
+      // Pre-fill engagement date
+      final engagementDateStr = _existingPoster!['engagement_date'];
+      if (engagementDateStr != null) {
+        _engagementDate = DateTime.tryParse(engagementDateStr);
+      }
+      // Pre-fill expire date
+      final expireDateStr = _existingPoster!['display_expire_at'];
+      if (expireDateStr != null) {
+        _displayExpireAt = DateTime.tryParse(expireDateStr);
+      }
+      _isActive = _existingPoster!['is_active'] == true;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -312,9 +431,9 @@ class _EngagementPosterInfoScreenState
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    const Text(
-                      'Upload Engagement Poster',
-                      style: TextStyle(
+                    Text(
+                      isUpdate ? 'Update Engagement Poster' : 'Upload Engagement Poster',
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
@@ -360,10 +479,15 @@ class _EngagementPosterInfoScreenState
                                     child: Stack(
                                       fit: StackFit.expand,
                                       children: [
-                                        Image.file(
-                                          _posterImage!,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        kIsWeb
+                                            ? Image.network(
+                                                _posterImage!.path,
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.file(
+                                                File(_posterImage!.path),
+                                                fit: BoxFit.cover,
+                                              ),
                                         Positioned(
                                           top: 8,
                                           right: 8,
@@ -385,33 +509,83 @@ class _EngagementPosterInfoScreenState
                                       ],
                                     ),
                                   )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.add_photo_alternate,
-                                        size: 64,
-                                        color: Colors.grey[400],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        'Upload Engagement Poster',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.grey[600],
+                                : (isUpdate && _existingPoster!['poster_image'] != null)
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(14),
+                                        child: Stack(
+                                          fit: StackFit.expand,
+                                          children: [
+                                            Image.network(
+                                              ApiService.getImageUrl(_existingPoster!['poster_image']),
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (ctx, err, st) => Container(
+                                                color: Colors.grey[200],
+                                                child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 8,
+                                              right: 8,
+                                              child: CircleAvatar(
+                                                backgroundColor: primaryCyan,
+                                                child: IconButton(
+                                                  icon: const Icon(
+                                                    Icons.edit,
+                                                    color: Colors.white,
+                                                    size: 20,
+                                                  ),
+                                                  onPressed: () async {
+                                                    await _pickImage();
+                                                    setModalState(() {});
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              bottom: 8,
+                                              left: 8,
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black54,
+                                                  borderRadius: BorderRadius.circular(6),
+                                                ),
+                                                child: const Text(
+                                                  'Tap ✏️ to change photo',
+                                                  style: TextStyle(color: Colors.white, fontSize: 12),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
+                                      )
+                                    : Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate,
+                                            size: 64,
+                                            color: Colors.grey[400],
+                                          ),
+                                          const SizedBox(height: 12),
+                                          Text(
+                                            'Upload Engagement Poster',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Tap to select or capture',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[500],
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Tap to select or capture',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey[500],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -427,7 +601,10 @@ class _EngagementPosterInfoScreenState
                         ),
                         const SizedBox(height: 8),
                         InkWell(
-                          onTap: () => _selectDate(context, true),
+                          onTap: () async {
+                            await _selectDate(context, true);
+                            setModalState(() {});
+                          },
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
                             padding: const EdgeInsets.all(16),
@@ -530,6 +707,44 @@ class _EngagementPosterInfoScreenState
                         ),
                         const SizedBox(height: 20),
 
+                        // Partner Matrimony ID
+                        Text(
+                          'Partner Matrimony ID *',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _partnerMatrimonyIdController,
+                          decoration: InputDecoration(
+                            hintText: 'e.g., VE123456',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(
+                                color: primaryCyan,
+                                width: 2,
+                              ),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.favorite,
+                              color: primaryCyan,
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter partner Matrimony ID';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+
                         // Display Expire Date
                         Text(
                           'Display Until (Optional)',
@@ -541,8 +756,8 @@ class _EngagementPosterInfoScreenState
                         ),
                         const SizedBox(height: 8),
                         InkWell(
-                          onTap: () {
-                            _selectDate(context, false);
+                          onTap: () async {
+                            await _selectDate(context, false);
                             setModalState(() {});
                           },
                           borderRadius: BorderRadius.circular(12),
@@ -595,9 +810,10 @@ class _EngagementPosterInfoScreenState
                                 value: _isActive,
                                 activeColor: primaryCyan,
                                 onChanged: (value) {
-                                  setModalState(() {
+                                  setState(() {
                                     _isActive = value;
                                   });
+                                  setModalState(() {});
                                 },
                                 contentPadding: EdgeInsets.zero,
                               ),
@@ -606,17 +822,14 @@ class _EngagementPosterInfoScreenState
                         ),
                         const SizedBox(height: 32),
 
-                        // Submit Button with gradient
                         Container(
                           height: 56,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [primaryCyan, lightCyan],
-                            ),
+                            color: primaryCyan,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: ElevatedButton(
-                            onPressed: _submitForm,
+                            onPressed: () => _submitForm(context),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               foregroundColor: Colors.white,
@@ -625,9 +838,9 @@ class _EngagementPosterInfoScreenState
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              'Upload Engagement Poster',
-                              style: TextStyle(
+                            child: Text(
+                              isUpdate ? 'Update Engagement Poster' : 'Upload Engagement Poster',
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -649,74 +862,41 @@ class _EngagementPosterInfoScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundGray,
       body: CustomScrollView(
         slivers: [
-          // Hero Header with cyan gradient
           SliverAppBar(
-            expandedHeight: 280,
+            expandedHeight: 200,
             pinned: true,
-            backgroundColor: primaryCyan,
-            foregroundColor: Colors.white,
+            backgroundColor: backgroundGray,
+            centerTitle: true,
+            elevation: 0,
+            titleTextStyle: const TextStyle(
+              color: textBlack,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
+            iconTheme: const IconThemeData(color: textBlack),
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text(
-                'Engagement Posters',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(0, 1),
-                      blurRadius: 3,
-                      color: Colors.black26,
+              title: const Text('Engagement Posters'),
+              background: Container(
+                color: backgroundGray,
+                child: Center(
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: primaryCyan.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                  ],
+                    child: const Icon(
+                      Icons.celebration_rounded,
+                      size: 48,
+                      color: primaryCyan,
+                    ),
+                  ),
                 ),
-              ),
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // Gradient background with cyan colors
-                  Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [primaryCyan, lightCyan, accentGreen],
-                        stops: [0.0, 0.5, 1.0],
-                      ),
-                    ),
-                  ),
-                  // Decorative pattern
-                  Positioned(
-                    right: -50,
-                    top: 50,
-                    child: Icon(
-                      Icons.favorite,
-                      size: 200,
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                  ),
-                  Positioned(
-                    left: -30,
-                    bottom: 30,
-                    child: Icon(
-                      Icons.favorite,
-                      size: 120,
-                      color: Colors.white.withOpacity(0.1),
-                    ),
-                  ),
-                  // Centered icon
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.only(bottom: 40),
-                      child: Icon(
-                        Icons.celebration,
-                        size: 80,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
@@ -732,16 +912,16 @@ class _EngagementPosterInfoScreenState
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          primaryCyan.withOpacity(0.15),
-                          lightCyan.withOpacity(0.1),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: primaryCyan.withOpacity(0.3),
-                      ),
+                      color: cardGray,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey.shade100),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
@@ -825,15 +1005,16 @@ class _EngagementPosterInfoScreenState
                   const SizedBox(height: 16),
 
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      color: cardGray,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey.shade100),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 15,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -891,49 +1072,52 @@ class _EngagementPosterInfoScreenState
 
                   const SizedBox(height: 40),
 
-                  // Upload Button with gradient
-                  Container(
-                    width: double.infinity,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [primaryCyan, lightCyan],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryCyan.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: _showUploadForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.white,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.cloud_upload, size: 24),
-                          SizedBox(width: 12),
-                          Text(
-                            'Upload Engagement Poster',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  // Show loader, existing poster, or upload button
+                  if (_isLoading)
+                    const Center(child: CircularProgressIndicator(color: primaryCyan))
+                  else if (_existingPoster != null)
+                    _buildExistingPosterCard()
+                  else
+                    Container(
+                      width: double.infinity,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: primaryCyan,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: primaryCyan.withOpacity(0.25),
+                            blurRadius: 15,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
+                      child: ElevatedButton(
+                        onPressed: _showUploadForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.cloud_upload, size: 24),
+                            SizedBox(width: 12),
+                            Text(
+                              'Upload Engagement Poster',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -958,17 +1142,16 @@ class _EngagementPosterInfoScreenState
             Container(
               width: 32,
               height: 32,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [primaryCyan, lightCyan],
-                ),
+              decoration: BoxDecoration(
+                color: primaryCyan.withOpacity(0.1),
                 shape: BoxShape.circle,
+                border: Border.all(color: primaryCyan.withOpacity(0.2), width: 1.5),
               ),
               child: Center(
                 child: Text(
                   '$number',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: primaryCyan,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -1034,5 +1217,376 @@ class _EngagementPosterInfoScreenState
         ],
       ),
     );
+  }
+
+  Widget _buildEngagedProfiles() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox(
+            height: 100,
+            width: 160,
+            child: Stack(
+              children: [
+                // User Photo (Left)
+                Positioned(
+                  left: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryCyan.withOpacity(0.3),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        )
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 45,
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: _ownPhotoUrl != null ? NetworkImage(_ownPhotoUrl!) : null,
+                      child: _ownPhotoUrl == null ? const Icon(Icons.person, size: 40, color: Colors.grey) : null,
+                    ),
+                  ),
+                ),
+                // Partner Photo (Right)
+                Positioned(
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 4),
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryCyan.withOpacity(0.3),
+                          blurRadius: 15,
+                          spreadRadius: 2,
+                        )
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 45,
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: _partnerPhotoUrl != null ? NetworkImage(_partnerPhotoUrl!) : null,
+                      child: _partnerPhotoUrl == null ? const Icon(Icons.favorite_border, size: 40, color: Colors.grey) : null,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Ring/Heart badge in middle
+          Positioned(
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))
+                ],
+              ),
+              child: const Icon(
+                Icons.favorite,
+                color: Colors.redAccent,
+                size: 24,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExistingPosterCard() {
+    final posterImageUrl = _existingPoster?['poster_image'];
+    final partnerId = _existingPoster?['partner_matrimony_id'] ?? 'N/A';
+    final partnerStatus = _existingPoster?['partner_status'] ?? 'pending';
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (posterImageUrl != null)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              child: Image.network(
+                ApiService.getImageUrl(posterImageUrl),
+                fit: BoxFit.cover,
+                height: 250,
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(height: 200, color: Colors.grey[200]),
+              ),
+            ),
+          
+          // New Engaged Design
+          _buildEngagedProfiles(),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _existingPoster?['announcement_title'] ?? 'Engagement Announcement',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _existingPoster?['announcement_message'] ?? '',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Partner ID:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        if (_partnerPhotoUrl != null)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundImage: NetworkImage(_partnerPhotoUrl!),
+                            ),
+                          ),
+                        Text(
+                          partnerId,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: primaryCyan,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Partner Confirmation:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: partnerStatus == 'confirmed'
+                            ? Colors.green[100]
+                            : partnerStatus == 'rejected'
+                                ? Colors.red[100]
+                                : Colors.orange[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        partnerStatus.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: partnerStatus == 'confirmed'
+                              ? Colors.green[800]
+                              : partnerStatus == 'rejected'
+                                  ? Colors.red[800]
+                                  : Colors.orange[800],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Verification Status:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
+                            ? primaryCyan.withOpacity(0.15)
+                            : Colors.orange[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
+                            const Icon(Icons.verified, size: 14, color: primaryCyan),
+                          if (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
+                            const SizedBox(width: 4),
+                          Text(
+                            (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1) ? 'VERIFIED' : 'PENDING',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
+                                  ? primaryCyan
+                                  : Colors.orange[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                
+                // Add Edit/Update button conditionally if not confirmed and not verified
+                if (_isOwner && partnerStatus != 'confirmed' && !(_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)) ...[
+                  const SizedBox(height: 24),
+                  Container(
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: partnerStatus == 'rejected' ? Colors.red[600] : primaryCyan,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _showUploadForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.white,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(partnerStatus == 'rejected' ? Icons.refresh : Icons.edit, size: 20),
+                          const SizedBox(width: 8),
+                          Text(
+                            partnerStatus == 'rejected' ? 'Re-upload Poster' : 'Update Poster',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+
+                // Partner Accept/Reject buttons
+                if (!_isOwner && partnerStatus == 'pending') ...[
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => _respondToPoster('confirmed'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('Accept Engagement', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _respondToPoster('rejected'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _respondToPoster(String status) async {
+    final posterId = _existingPoster?['id'];
+    if (posterId == null) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await ApiService.respondToEngagementPoster(posterId, status);
+      if (response.statusCode == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Engagement $status successfully')),
+          );
+          _fetchMyPoster();
+        }
+      } else {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Error'),
+              content: Text('Failed to $status engagement. Please try again.'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error responding to poster: $e');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 }

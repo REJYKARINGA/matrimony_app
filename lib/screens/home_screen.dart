@@ -34,6 +34,7 @@ import '../widgets/recharge_dialog.dart';
 import 'wallet_transactions_screen.dart';
 import '../widgets/wallet_recharge_paywall.dart';
 import '../widgets/interest_notification_dialog.dart';
+import 'engagement_poster_info_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -777,6 +778,18 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             }
           }
         }
+
+        // --- PRIORITY 3: Engagement Poster notification ---
+        final engagementNotification = notifications.firstWhere(
+          (n) =>
+              (n['type'] == 'engagement_poster' || n['type'] == 'engagement_poster_response' || n['type'] == 'engagement_poster_accepted' || n['type'] == 'engagement_poster_rejected' || n['type'] == 'engagement_poster_verified') &&
+              (n['is_read'] == false || n['is_read'] == 0 || n['is_read'] == '0'),
+          orElse: () => null,
+        );
+
+        if (engagementNotification != null && mounted) {
+          _showEngagementPopup(engagementNotification);
+        }
       }
     } catch (e) {
       print('Error checking for matches: $e');
@@ -808,6 +821,56 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         Navigator.of(context).pop();
         // Do NOT mark as read — shows again on next refresh until explicitly read
       },
+    );
+  }
+
+  void _showEngagementPopup(Map<String, dynamic> notification) {
+    final title = notification['title'] ?? 'Engagement Update';
+    final message = notification['message'] ?? 'You have a new engagement update.';
+    final notifId = notification['id'];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.celebration, color: AppColors.primaryCyan),
+            const SizedBox(width: 10),
+            Text(title),
+          ],
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await NotificationService.markAsRead(notifId);
+              _loadUnreadCount();
+            },
+            child: Text('Later', style: TextStyle(color: Colors.grey[600])),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await NotificationService.markAsRead(notifId);
+              _loadUnreadCount();
+              if (mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const EngagementPosterInfoScreen()),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryCyan,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('View'),
+          ),
+        ],
+      ),
     );
   }
 

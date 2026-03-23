@@ -229,7 +229,8 @@ class ApiService {
 
   static Future<http.Response> createEngagementPoster(
     Map<String, dynamic> postData,
-    File imageFile,
+    Uint8List imageBytes,
+    String fileName,
   ) async {
     String? token = await getToken();
 
@@ -250,22 +251,70 @@ class ApiService {
     });
 
     // Add image file if provided
-    if (imageFile != null) {
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'poster_image',
+        imageBytes,
+        filename: fileName,
+      ),
+    );
+
+    var response = await request.send();
+    return await http.Response.fromStream(response);
+  }
+
+  static Future<http.Response> getMyEngagementPoster() async {
+    return await makeRequest('$baseUrl/engagement-posters/my');
+  }
+
+  static Future<http.Response> updateEngagementPoster(
+    int posterId,
+    Map<String, dynamic> postData, {
+    Uint8List? imageBytes,
+    String? fileName,
+  }) async {
+    String? token = await getToken();
+
+    var request = http.MultipartRequest(
+      'POST', // Laravel multipart forms use POST with _method=PUT
+      Uri.parse('$baseUrl/engagement-posters/$posterId'),
+    );
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    // Spoof PUT for Laravel
+    request.fields['_method'] = 'PUT';
+
+    // Add form fields
+    postData.forEach((key, value) {
+      if (value != null) {
+        request.fields[key] = value.toString();
+      }
+    });
+
+    // Add image file only if a new one was selected
+    if (imageBytes != null && fileName != null) {
       request.files.add(
         http.MultipartFile.fromBytes(
           'poster_image',
-          await imageFile.readAsBytes(),
-          filename: imageFile.path
-              .split('\\')
-              .last
-              .split('/')
-              .last, // Handle both Windows and Unix paths
+          imageBytes,
+          filename: fileName,
         ),
       );
     }
 
     var response = await request.send();
     return await http.Response.fromStream(response);
+  }
+
+  static Future<http.Response> respondToEngagementPoster(int id, String status) async {
+    return await makeRequest(
+      '$baseUrl/engagement-posters/$id/partner-confirm',
+      method: 'POST',
+      body: {'status': status},
+    );
   }
 
   // Forgot Password Methods

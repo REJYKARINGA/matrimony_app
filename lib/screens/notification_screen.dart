@@ -10,6 +10,7 @@ import 'messages_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
+import 'engagement_poster_info_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -298,6 +299,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = isRejected ? Icons.gpp_bad_rounded : Icons.verified_user_rounded;
         badgeColor = isRejected ? const Color(0xFFFF2D55) : accentGreen;
         break;
+      case 'engagement_poster':
+      case 'engagement_poster_response':
+      case 'engagement_poster_accepted':
+      case 'engagement_poster_rejected':
+      case 'engagement_poster_verified':
+        badgeIcon = Icons.celebration_rounded;
+        badgeColor = primaryCyan;
+        break;
       default:
         badgeIcon = Icons.notifications_rounded;
         badgeColor = Colors.grey;
@@ -327,6 +336,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => const VerificationScreen(),
+            ),
+          );
+        } else if (type == 'engagement_poster' || 
+                   type == 'engagement_poster_response' || 
+                   type == 'engagement_poster_accepted' || 
+                   type == 'engagement_poster_rejected' || 
+                   type == 'engagement_poster_verified') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const EngagementPosterInfoScreen(),
             ),
           );
         } else if (notification['sender_id'] != null) {
@@ -437,11 +457,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       : (type == 'message' 
                           ? Icons.chat_outlined 
                           : (type == 'verification' 
-                              ? ((notification['title'] ?? '').toString().toLowerCase().contains('rejected') || 
-                                 (notification['message'] ?? '').toString().toLowerCase().contains('rejected')
-                                  ? Icons.error_outline_rounded 
-                                  : Icons.verified_user_outlined) 
-                              : Icons.notifications_none_rounded)),
+                                  ? ((notification['message'] ?? '').toString().toLowerCase().contains('rejected')
+                                   ? Icons.error_outline_rounded 
+                                   : Icons.verified_user_outlined) 
+                               : (type.toString().startsWith('engagement_poster') 
+                                   ? Icons.celebration_outlined 
+                                   : Icons.notifications_none_rounded))),
                   size: 16,
                   color: badgeColor,
                 ),
