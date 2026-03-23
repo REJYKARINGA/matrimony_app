@@ -713,9 +713,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDiscoveryNoteProfile() {
-    return const SizedBox.shrink();
-  }
+
 
   Widget _buildActionButtons() {
     return Padding(
@@ -966,6 +964,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedSmoke;
   String? _selectedAlcohol;
   bool _isLoading = false;
+  bool _isPersonalitiesExpanded = false;
+  bool _isInterestsExpanded = false;
   double? _latitude;
   double? _longitude;
 
@@ -1455,7 +1455,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title, IconData icon) {
+  Widget _buildSectionHeader(String title, IconData icon, {Widget? trailing}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16, top: 8),
       child: Row(
@@ -1469,15 +1469,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Icon(icon, size: 20, color: const Color(0xFF0D47A1)),
           ),
           const SizedBox(width: 12),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
-              letterSpacing: -0.5,
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A1A),
+                letterSpacing: -0.5,
+              ),
             ),
           ),
+          if (trailing != null) trailing,
         ],
       ),
     );
@@ -1496,26 +1499,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             width: double.infinity,
             padding: EdgeInsets.only(
               top: MediaQuery.of(context).padding.top + 4,
-              bottom: 8,
+              bottom: 12,
             ),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF00BCD4), Color(0xFF0097A7)],
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade100,
+                  width: 1.5,
+                ),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00BCD4).withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
             child: Row(
               children: [
+                const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+                  icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1A1A1A), size: 20),
                   onPressed: () => Navigator.pop(context),
                 ),
                 const Expanded(
@@ -1523,33 +1529,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     'Edit Profile',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Color(0xFF1A1A1A),
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: _isLoading ? null : _saveProfile,
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text(
-                          'Save',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 48),
               ],
             ),
           ),
@@ -2099,13 +2086,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     if (_personalities.isNotEmpty) ...[
                       const SizedBox(height: 32),
-                      _buildSectionHeader('User Personality', Icons.psychology_rounded),
-                      _buildPersonalityMultiSelect(),
+                      InkWell(
+                        onTap: () => setState(() => _isPersonalitiesExpanded = !_isPersonalitiesExpanded),
+                        borderRadius: BorderRadius.circular(10),
+                        child: _buildSectionHeader(
+                          'User Personality', 
+                          Icons.psychology_rounded,
+                          trailing: Icon(
+                            _isPersonalitiesExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                            color: const Color(0xFF00BCD4),
+                          ),
+                        ),
+                      ),
+                      if (_isPersonalitiesExpanded) _buildPersonalityMultiSelect(),
                     ],
                     if (_interests.isNotEmpty) ...[
                       const SizedBox(height: 32),
-                      _buildSectionHeader('Interests & Hobbies', Icons.sports_tennis_rounded),
-                      _buildInterestMultiSelect(),
+                      InkWell(
+                        onTap: () => setState(() => _isInterestsExpanded = !_isInterestsExpanded),
+                        borderRadius: BorderRadius.circular(10),
+                        child: _buildSectionHeader(
+                          'Interests & Hobbies', 
+                          Icons.sports_tennis_rounded,
+                          trailing: Icon(
+                            _isInterestsExpanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                            color: const Color(0xFF00BCD4),
+                          ),
+                        ),
+                      ),
+                      if (_isInterestsExpanded) _buildInterestMultiSelect(),
                     ],
 
                     const SizedBox(height: 40),
@@ -2132,8 +2141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
                     ),
 
-                    const SizedBox(height: 32),
-                    _buildDiscoveryNote(),
+
 
                     const SizedBox(height: 40),
                   ],
@@ -2143,66 +2151,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDiscoveryNote() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF00BCD4).withOpacity(0.06),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF00BCD4).withOpacity(0.2),
-          width: 1,
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
+        child: SafeArea(
+          child: Container(
+            width: double.infinity,
+            height: 56,
             decoration: BoxDecoration(
-              color: const Color(0xFF00BCD4).withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.chat_bubble_outline_rounded,
-              color: Color(0xFF00BCD4),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'A note from us',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey.shade700,
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Personal interests and personality traits are intentionally left for you to discover through real conversation. We believe genuine compatibility is felt, not filtered.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.6,
-                    color: Colors.grey.shade800,
-                    fontStyle: FontStyle.italic,
-                  ),
+              borderRadius: BorderRadius.circular(16),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF00BCD4), Color(0xFF00ACC1)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF00BCD4).withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
                 ),
               ],
             ),
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                    )
+                  : const Text(
+                      'Update Profile',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
+
+
 
   Widget _buildActionButton({
     required String label,
@@ -2259,21 +2266,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
-              Icon(Icons.psychology_rounded, size: 20, color: Color(0xFF00BCD4)),
-              SizedBox(width: 10),
-              Text(
-                'Select Personality Traits',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -2327,21 +2319,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: const [
-              Icon(Icons.sports_tennis_rounded, size: 20, color: Color(0xFF00BCD4)),
-              SizedBox(width: 10),
-              Text(
-                'Select Interests & Hobbies',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
             runSpacing: 8,
