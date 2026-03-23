@@ -131,23 +131,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final profile = user?.userProfile;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFFF5F7F9),
       appBar: AppBar(
         title: const Text('Settings'),
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF00BCD4), // Turquoise
-                Color(0xFF0D47A1), // Deep Blue
-              ],
-            ),
-          ),
-        ),
-        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF5F7F9),
+        centerTitle: true,
         elevation: 0,
+        titleTextStyle: const TextStyle(
+          color: Color(0xFF1A1A1A),
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          letterSpacing: -0.5,
+        ),
+        iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+        bottom: PreferredSize(
+          child: Container(color: Colors.grey.shade100, height: 1.5),
+          preferredSize: const Size.fromHeight(1.5),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -160,28 +160,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _loadWalletBalance();
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: const Color(0xFF00BCD4).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.account_balance_wallet, size: 20, color: Colors.white),
-                    const SizedBox(width: 8),
+                    const Icon(Icons.account_balance_wallet_rounded, size: 18, color: Color(0xFF00BCD4)),
+                    const SizedBox(width: 6),
                     _isWalletLoading
                         ? const SizedBox(
                             width: 12,
                             height: 12,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white,
+                              color: Color(0xFF00BCD4),
                             ),
                           )
                         : Text(
                             '₹${_walletBalance.toStringAsFixed(0)}',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Color(0xFF00BCD4),
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -203,22 +203,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Enhanced Profile Section
             Container(
               margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF00BCD4), // Turquoise
-                    Color(0xFF0D47A1), // Deep Blue
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
+                color: const Color(0xFFF9FAFB),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.grey.shade100),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00BCD4).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
@@ -227,14 +221,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                      border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.1), width: 2),
                     ),
                     child: CircleAvatar(
                       radius: 35,
@@ -284,9 +271,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Text(
                           '${profile?.firstName ?? 'User'} ${profile?.lastName ?? ''}',
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Color(0xFF1A1A1A),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -295,8 +282,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Text(
                               user?.matrimonyId ?? 'ID: -',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 13,
+                                color: Colors.grey[600],
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             if (user?.matrimonyId != null) ...[
@@ -315,13 +303,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: const Color(0xFF00BCD4).withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: const Icon(
                                     Icons.copy_rounded,
                                     size: 14,
-                                    color: Colors.white,
+                                    color: Color(0xFF00BCD4),
                                   ),
                                 ),
                               ),
@@ -331,7 +319,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  const Icon(Icons.verified, color: Colors.white, size: 24),
+                  const Icon(Icons.verified_rounded, color: Color(0xFF4CD9A6), size: 24),
                 ],
               ),
             ),
