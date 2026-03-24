@@ -226,7 +226,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
 
   Widget _buildQuickRecharge() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
