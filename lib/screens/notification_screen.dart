@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
 import 'engagement_poster_info_screen.dart';
+import 'share_suggestion_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -307,6 +308,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = Icons.celebration_rounded;
         badgeColor = primaryCyan;
         break;
+      case 'suggestion_update':
+        badgeIcon = Icons.lightbulb_rounded;
+        badgeColor = primaryCyan;
+        break;
       default:
         badgeIcon = Icons.notifications_rounded;
         badgeColor = Colors.grey;
@@ -347,6 +352,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => const EngagementPosterInfoScreen(),
+            ),
+          );
+        } else if (type == 'suggestion_update') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ShareSuggestionScreen(initialIndex: 1),
             ),
           );
         } else if (notification['sender_id'] != null) {
@@ -417,15 +429,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   RichText(
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                     text: TextSpan(
-                      style: const TextStyle(color: Colors.black87, fontSize: 14),
+                      style: const TextStyle(color: Colors.black87, fontSize: 14, height: 1.4),
                       children: [
                         TextSpan(
-                          text: type == 'verification' 
-                              ? 'System Update ' 
-                              : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone '),
+                          text: (type == 'verification' || type == 'suggestion_update')
+                              ? 'System Update: ' 
+                              : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'System: '),
                           style: const TextStyle(fontWeight: FontWeight.bold, color: primaryCyan),
                         ),
                         TextSpan(text: notification['message'] ?? 'sent you a notification'),
@@ -460,9 +470,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                   ? ((notification['message'] ?? '').toString().toLowerCase().contains('rejected')
                                    ? Icons.error_outline_rounded 
                                    : Icons.verified_user_outlined) 
-                               : (type.toString().startsWith('engagement_poster') 
+                   : (type.toString().startsWith('engagement_poster') 
                                    ? Icons.celebration_outlined 
-                                   : Icons.notifications_none_rounded))),
+                                   : (type == 'suggestion_update'
+                                       ? Icons.lightbulb_outline_rounded
+                                       : Icons.notifications_none_rounded)))),
                   size: 16,
                   color: badgeColor,
                 ),

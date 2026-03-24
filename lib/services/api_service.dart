@@ -227,6 +227,43 @@ class ApiService {
     return response;
   }
 
+  static Future<http.Response> submitSuggestion(
+    String title,
+    String? category,
+    String description,
+    List<Map<String, dynamic>> photos,
+  ) async {
+    String? token = await getToken();
+    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/suggestions'));
+
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+
+    request.fields['title'] = title;
+    if (category != null) {
+      request.fields['category'] = category;
+    }
+    request.fields['description'] = description;
+
+    for (int i = 0; i < photos.length; i++) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'user_photos[]',
+          photos[i]['bytes'],
+          filename: photos[i]['fileName'],
+        ),
+      );
+    }
+
+    var response = await request.send();
+    return await http.Response.fromStream(response);
+  }
+
+  static Future<http.Response> getMySuggestions() async {
+    return await makeRequest('$baseUrl/suggestions');
+  }
+
   static Future<http.Response> createEngagementPoster(
     Map<String, dynamic> postData,
     Uint8List imageBytes,
