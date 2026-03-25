@@ -526,6 +526,95 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                             )
                                           : const Icon(Icons.image, size: 50),
                                     ),
+                                    
+                                    // Rejected Overlay
+                                    if (photo['is_rejected'] == true || photo['is_rejected'] == 1 || photo['is_rejected'] == "1")
+                                      Positioned.fill(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black.withOpacity(0.75),
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              const Icon(Icons.report_problem, color: Colors.redAccent, size: 36),
+                                              const SizedBox(height: 8),
+                                              const Text(
+                                                'REJECTED',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w900,
+                                                  fontSize: 14,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Padding(
+                                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                                child: Text(
+                                                  photo['rejection_reason'] ?? 'This photo does not meet our guidelines',
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 11,
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.yellow.shade700,
+                                                  borderRadius: BorderRadius.circular(20),
+                                                ),
+                                                child: const Text(
+                                                  'Invisible to others',
+                                                  style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                    // Pending Badge
+                                    if (photo['is_verified'] != true && photo['is_verified'] != 1 && photo['is_verified'] != "1" && 
+                                        photo['is_rejected'] != true && photo['is_rejected'] != 1 && photo['is_rejected'] != "1")
+                                      Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withOpacity(0.9),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: const [
+                                              Icon(Icons.hourglass_empty, color: Colors.white, size: 12),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Pending',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
                                     if (isPrimary)
                                       Positioned(
                                         top: 8,
@@ -601,7 +690,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              if (!isPrimary)
+                                              if (!isPrimary && 
+                                                  photo['is_rejected'] != true && 
+                                                  photo['is_rejected'] != 1 && 
+                                                  photo['is_rejected'] != "1")
                                                 Container(
                                                   decoration: BoxDecoration(
                                                     color: Color(

@@ -767,6 +767,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     List<ProfilePhoto> photos = [];
     if (_user?.profilePhotos != null) {
       photos = List<ProfilePhoto>.from(_user!.profilePhotos!);
+      // Filter out rejected photos
+      photos = photos.where((p) => 
+        p.isRejected != true && 
+        p.isRejected != 1 && 
+        p.isRejected != "1"
+      ).toList();
       // Sort so primary is first
       photos.sort((a, b) {
         if (a.isPrimary == true) return -1;

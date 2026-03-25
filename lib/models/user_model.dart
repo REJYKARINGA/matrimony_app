@@ -635,6 +635,8 @@ class ProfilePhoto {
   final String? fullPhotoUrl;
   final bool? isPrimary;
   final bool? isVerified;
+  final bool? isRejected;
+  final String? rejectionReason;
 
   ProfilePhoto({
     this.id,
@@ -643,6 +645,8 @@ class ProfilePhoto {
     this.fullPhotoUrl,
     this.isPrimary,
     this.isVerified,
+    this.isRejected,
+    this.rejectionReason,
   });
 
   factory ProfilePhoto.fromJson(Map<String, dynamic> json) {
@@ -653,6 +657,8 @@ class ProfilePhoto {
       fullPhotoUrl: json['full_photo_url']?.toString(),
       isPrimary: json['is_primary'] == 1 || json['is_primary'] == true,
       isVerified: json['is_verified'] == 1 || json['is_verified'] == true,
+      isRejected: json['is_rejected'] == 1 || json['is_rejected'] == true,
+      rejectionReason: json['rejection_reason']?.toString(),
     );
   }
 
