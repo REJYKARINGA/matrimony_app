@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
 import 'engagement_poster_info_screen.dart';
 import 'share_suggestion_screen.dart';
+import 'profile_photos_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -295,6 +296,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeColor = accentGreen;
         break;
       case 'verification':
+      case 'photo_verification':
         final bool isRejected = (notification['title'] ?? '').toString().toLowerCase().contains('rejected') || 
                                (notification['message'] ?? '').toString().toLowerCase().contains('rejected');
         badgeIcon = isRejected ? Icons.gpp_bad_rounded : Icons.verified_user_rounded;
@@ -336,11 +338,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             ),
           );
-        } else if (type == 'verification') {
+        } else if (type == 'verification' || type == 'photo_verification') {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const VerificationScreen(),
+              builder: (context) => const ProfilePhotosScreen(),
             ),
           );
         } else if (type == 'engagement_poster' || 
@@ -433,7 +435,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       style: const TextStyle(color: Colors.black87, fontSize: 14, height: 1.4),
                       children: [
                         TextSpan(
-                          text: (type == 'verification' || type == 'suggestion_update')
+                          text: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update')
                               ? 'System Update: ' 
                               : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'System: '),
                           style: const TextStyle(fontWeight: FontWeight.bold, color: primaryCyan),
@@ -466,7 +468,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ? Icons.favorite_outline_rounded 
                       : (type == 'message' 
                           ? Icons.chat_outlined 
-                          : (type == 'verification' 
+                          : (type == 'verification' || type == 'photo_verification'
                                   ? ((notification['message'] ?? '').toString().toLowerCase().contains('rejected')
                                    ? Icons.error_outline_rounded 
                                    : Icons.verified_user_outlined) 
