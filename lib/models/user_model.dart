@@ -28,6 +28,7 @@ class User {
   final bool? emailVerified;
   final bool? phoneVerified;
   final DateTime? lastLogin;
+  final DateTime? lastActiveAt;
   final UserProfile? userProfile;
   final FamilyDetail? familyDetails;
   final Preference? preferences;
@@ -54,6 +55,7 @@ class User {
     this.emailVerified,
     this.phoneVerified,
     this.lastLogin,
+    this.lastActiveAt,
     this.userProfile,
     this.familyDetails,
     this.preferences,
@@ -91,6 +93,7 @@ class User {
       emailVerified: json['email_verified'] == 1 || json['email_verified'] == true,
       phoneVerified: json['phone_verified'] == 1 || json['phone_verified'] == true,
       lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
+      lastActiveAt: json['last_active_at'] != null ? DateTime.parse(json['last_active_at']) : null,
       userProfile: json['user_profile'] != null 
           ? UserProfile.fromJson(json['user_profile']) 
           : (json['profile_picture'] != null || json['age'] != null ? UserProfile.fromCardJson(json) : null),
@@ -123,6 +126,7 @@ class User {
       'email_verified': emailVerified,
       'phone_verified': phoneVerified,
       'last_login': lastLogin?.toIso8601String(),
+      'last_active_at': lastActiveAt?.toIso8601String(),
     };
   }
 
@@ -159,6 +163,17 @@ class User {
       }
     }
     return isPhotoVerified;
+  }
+  String get lastActiveString {
+    if (lastActiveAt == null) return 'Offline';
+    final now = DateTime.now();
+    final difference = now.difference(lastActiveAt!);
+
+    if (difference.inMinutes < 1) return 'Active now';
+    if (difference.inMinutes < 60) return 'Active ${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return 'Active ${difference.inHours}h ago';
+    if (difference.inDays < 7) return 'Active ${difference.inDays}d ago';
+    return 'Active on ${lastActiveAt!.day}/${lastActiveAt!.month}/${lastActiveAt!.year}';
   }
 }
 
