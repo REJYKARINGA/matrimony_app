@@ -7,7 +7,8 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'view_profile_screen.dart';
 
 class WalletTransactionsScreen extends StatefulWidget {
-  const WalletTransactionsScreen({super.key});
+  final String? initialMessage;
+  const WalletTransactionsScreen({super.key, this.initialMessage});
 
   @override
   State<WalletTransactionsScreen> createState() => _WalletTransactionsScreenState();
@@ -29,6 +30,50 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     _loadData();
+
+    if (widget.initialMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showHighlightDialog(widget.initialMessage!);
+      });
+    }
+  }
+
+  void _showHighlightDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Icon(Icons.security_rounded, color: Color(0xFF00BCD4)),
+            SizedBox(width: 10),
+            Text('Security Code'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              style: const TextStyle(fontSize: 16, height: 1.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Share the 6-digit code with the sender to complete the transfer.',
+              style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OKAY', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D47A1))),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _loadData() async {
@@ -115,18 +160,43 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Available Balance',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '₹${_walletBalance.toStringAsFixed(2)}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Available Balance',
+                    style: TextStyle(color: Colors.white70, fontSize: 16),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '₹${_walletBalance.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                onPressed: _showTransferDialog,
+                icon: const Icon(Icons.send_rounded, size: 18),
+                label: const Text('Transfer'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(color: Colors.white30),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -305,6 +375,10 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                   const SizedBox(width: 8),
                   _filterChip('usage_fee', 'Usage Fees', Icons.timelapse_rounded),
                 ],
+                if (_transactions.any((t) => t['type'] == 'wallet_transfer')) ...[
+                  const SizedBox(width: 8),
+                  _filterChip('wallet_transfer', 'Transfers', Icons.swap_horiz_rounded),
+                ],
               ],
             ),
           ),
@@ -324,9 +398,10 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
               itemBuilder: (context, index) {
                 final tx = filtered[index];
                 final type = tx['type'] as String? ?? '';
-                final isCredit = type == 'wallet_recharge';
+                final isCredit = type == 'wallet_recharge' || (type == 'wallet_transfer' && tx['description'].toString().contains('Received'));
                 final isUsageFee = type == 'usage_fee';
                 final isContactUnlock = type == 'contact_unlock';
+                final isWalletTransfer = type == 'wallet_transfer';
 
                 // Icon, color, and label per type
                 IconData iconData;
@@ -349,6 +424,11 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                   iconBg = const Color(0xFF0D47A1).withOpacity(0.10);
                   iconColor = const Color(0xFF0D47A1);
                   typeLabel = 'Contact Unlock';
+                } else if (isWalletTransfer) {
+                  iconData = Icons.swap_horiz_rounded;
+                  iconBg = Colors.purple.withOpacity(0.12);
+                  iconColor = Colors.purple.shade700;
+                  typeLabel = tx['description'].toString().contains('Sent') ? 'Transfer Sent' : 'Transfer Received';
                 } else {
                   iconData = Icons.remove_circle_rounded;
                   iconBg = Colors.red.withOpacity(0.10);
@@ -472,7 +552,9 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                     ? Colors.green.shade700
                                     : isUsageFee
                                         ? Colors.orange.shade800
-                                        : const Color(0xFF0D47A1),
+                                        : isWalletTransfer
+                                            ? Colors.purple.shade700
+                                            : const Color(0xFF0D47A1),
                                 fontSize: 16,
                               ),
                             ),
@@ -616,9 +698,351 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
     );
   }
 
+  void _showTransferDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const _TransferDialog(),
+    ).then((success) {
+      if (success == true) {
+        _loadData();
+      }
+    });
+  }
+
   @override
   void dispose() {
     _razorpay.clear();
     super.dispose();
   }
 }
+
+class _TransferDialog extends StatefulWidget {
+  const _TransferDialog();
+
+  @override
+  State<_TransferDialog> createState() => _TransferDialogState();
+}
+
+class _TransferDialogState extends State<_TransferDialog> {
+  int _step = 1; // 1: Search, 2: Amount, 3: OTP
+  final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
+  
+  List<dynamic> _searchResults = [];
+  bool _isSearching = false;
+  Map<String, dynamic>? _selectedUser;
+  bool _isProcessing = false;
+  String? _error;
+
+  double get _amount => double.tryParse(_amountController.text) ?? 0.0;
+  double get _fee => _amount * 0.10;
+  double get _total => _amount + _fee;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        constraints: const BoxConstraints(maxWidth: 400),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _step == 1 ? 'Transfer Cash' : _step == 2 ? 'Enter Amount' : 'Verify Transfer',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (_error != null) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.shade100),
+                ),
+                child: Text(_error!, style: TextStyle(color: Colors.red.shade700, fontSize: 13)),
+              ),
+              const SizedBox(height: 16),
+            ],
+            if (_step == 1) _buildSearchStep(),
+            if (_step == 2) _buildAmountStep(),
+            if (_step == 3) _buildOtpStep(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchStep() {
+    return Column(
+      children: [
+        TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Search by Matrimony ID or Phone',
+            prefixIcon: const Icon(Icons.search),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          ),
+          onChanged: (val) {
+            if (val.length >= 3) _performSearch(val);
+          },
+        ),
+        const SizedBox(height: 16),
+        if (_isSearching)
+          const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
+        else if (_searchResults.isEmpty && _searchController.text.length >= 3)
+          const Padding(padding: EdgeInsets.all(20), child: Text('No users found'))
+        else
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 200),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: _searchResults.length,
+              itemBuilder: (context, index) {
+                final user = _searchResults[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: const Color(0xFF00BCD4).withOpacity(0.1),
+                    child: const Icon(Icons.person, color: Color(0xFF00BCD4)),
+                  ),
+                  title: Text(user['name']),
+                  subtitle: Text(user['matrimony_id']),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    setState(() {
+                      _selectedUser = user;
+                      _step = 2;
+                      _error = null;
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAmountStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: CircleAvatar(child: Text(_selectedUser!['name'][0])),
+          title: Text(_selectedUser!['name']),
+          subtitle: Text(_selectedUser!['matrimony_id']),
+        ),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _amountController,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: InputDecoration(
+            labelText: 'Amount (₹)',
+            prefixText: '₹ ',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          onChanged: (val) => setState(() {}),
+        ),
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              _billRow('Transfer Amount', '₹${_amount.toStringAsFixed(2)}'),
+              const SizedBox(height: 8),
+              _billRow('Platform Fee (10%)', '₹${_fee.toStringAsFixed(2)}'),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Divider(),
+              ),
+              _billRow('Total Deduction', '₹${_total.toStringAsFixed(2)}', isBold: true),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: _amount >= 500 && !_isProcessing ? _requestOtp : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0D47A1),
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          child: _isProcessing 
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            : const Text('Request Recipient OTP', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOtpStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF00BCD4).withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.1)),
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Transfer ₹${_amount.toStringAsFixed(0)} to ${_selectedUser!['name']}',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D47A1)),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Total deduction: ₹${_total.toStringAsFixed(2)}',
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        const Text(
+          'Enter the 6-digit security code provided by the recipient to confirm this transfer.',
+          textAlign: TextAlign.center,
+          style: TextStyle(height: 1.5, fontSize: 13, color: Colors.black87),
+        ),
+        const SizedBox(height: 24),
+        TextField(
+          controller: _otpController,
+          keyboardType: TextInputType.number,
+          maxLength: 6,
+          autofocus: true,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+          decoration: InputDecoration(
+            counterText: '',
+            hintText: '------',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          onChanged: (val) {
+            if (val.length == 6) setState(() {});
+          },
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton(
+          onPressed: _otpController.text.length == 6 && !_isProcessing ? _completeTransfer : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green.shade700,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          child: _isProcessing 
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            : const Text('Confirm Transfer', style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        TextButton(
+          onPressed: () => setState(() => _step = 2),
+          child: const Text('Go Back'),
+        ),
+      ],
+    );
+  }
+
+  Widget _billRow(String label, String value, {bool isBold = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(color: isBold ? Colors.black : Colors.grey.shade600, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 13)),
+        Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.w600, fontSize: isBold ? 15 : 13)),
+      ],
+    );
+  }
+
+  Future<void> _performSearch(String query) async {
+    setState(() => _isSearching = true);
+    try {
+      final res = await PaymentService.searchUser(query);
+      if (res.statusCode == 200) {
+        final data = json.decode(res.body);
+        setState(() => _searchResults = data['users']);
+      }
+    } finally {
+      setState(() => _isSearching = false);
+    }
+  }
+
+  Future<void> _requestOtp() async {
+    setState(() {
+      _isProcessing = true;
+      _error = null;
+    });
+    try {
+      final res = await PaymentService.requestTransferOtp(
+        recipientId: _selectedUser!['id'],
+        amount: _amount,
+      );
+      final data = json.decode(res.body);
+      if (res.statusCode == 200) {
+        setState(() => _step = 3);
+        if (data['otp'] != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('DEBUG: Recipient OTP is ${data['otp']}'), 
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 8)
+            ),
+          );
+        }
+      } else {
+        setState(() => _error = data['error']);
+      }
+    } finally {
+      setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _completeTransfer() async {
+    setState(() {
+      _isProcessing = true;
+      _error = null;
+    });
+    try {
+      final res = await PaymentService.transferWallet(
+        recipientId: _selectedUser!['id'],
+        amount: _amount,
+        otp: _otpController.text,
+      );
+      final data = json.decode(res.body);
+      if (res.statusCode == 200) {
+        Navigator.pop(context, true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transfer successful!'), backgroundColor: Colors.green),
+        );
+      } else {
+        setState(() => _error = data['error']);
+      }
+    } finally {
+      setState(() => _isProcessing = false);
+    }
+  }
+}

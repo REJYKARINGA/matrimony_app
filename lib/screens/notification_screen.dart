@@ -13,6 +13,7 @@ import 'package:flutter/rendering.dart';
 import 'engagement_poster_info_screen.dart';
 import 'share_suggestion_screen.dart';
 import 'profile_photos_screen.dart';
+import 'wallet_transactions_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -314,6 +315,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = Icons.lightbulb_rounded;
         badgeColor = primaryCyan;
         break;
+      case 'wallet_transfer_otp':
+      case 'wallet_transfer_received':
+        badgeIcon = Icons.account_balance_wallet_rounded;
+        badgeColor = const Color(0xFF00BCD4);
+        break;
       default:
         badgeIcon = Icons.notifications_rounded;
         badgeColor = Colors.grey;
@@ -361,6 +367,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => const ShareSuggestionScreen(initialIndex: 1),
+            ),
+          );
+        } else if (type == 'wallet_transfer_otp' || type == 'wallet_transfer_received') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WalletTransactionsScreen(
+                initialMessage: type == 'wallet_transfer_otp' ? notification['message'] : null,
+              ),
             ),
           );
         } else if (notification['sender_id'] != null) {
