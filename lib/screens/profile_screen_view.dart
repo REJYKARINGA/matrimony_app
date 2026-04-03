@@ -14,6 +14,7 @@ import 'family_details_screen.dart';
 import 'preferences_screen.dart';
 import 'profile_photos_screen.dart';
 import 'verification_screen.dart';
+import 'photo_requests_screen.dart';
 import 'map_picker_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -349,6 +350,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         subtitle: const Text('Verify your identity to get a verification badge', style: TextStyle(fontSize: 12)),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationScreen())),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00BCD4).withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.photo_library_rounded, color: Color(0xFF00BCD4), size: 20),
+                        ),
+                        title: const Text('Photo Requests', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        subtitle: const Text('Manage who can access your photos', style: TextStyle(fontSize: 12)),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PhotoRequestsScreen())),
                       ),
                     ]),
                     const SizedBox(height: 24),

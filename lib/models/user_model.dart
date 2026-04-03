@@ -41,6 +41,7 @@ class User {
   final List<dynamic>? interests;
   final bool hasHiddenPhotos;
   final bool photoRequestPending;
+  final bool photoRequestRejected;
   final bool isPhotoVerified;
   final int reportsCount;
   final bool isReportedByMe;
@@ -68,6 +69,7 @@ class User {
     this.interests,
     this.hasHiddenPhotos = false,
     this.photoRequestPending = false,
+    this.photoRequestRejected = false,
     this.isPhotoVerified = true,
     this.reportsCount = 0,
     this.isReportedByMe = false,
@@ -110,6 +112,7 @@ class User {
       interests: json['interests'] != null ? List<dynamic>.from(json['interests']) : null,
       hasHiddenPhotos: json['has_hidden_photos'] == true || (json['user_profile'] != null && (json['user_profile']['hide_photos'] == true || json['user_profile']['hide_photos'] == 1)),
       photoRequestPending: json['photo_request_pending'] == true,
+      photoRequestRejected: json['photo_request_rejected'] == true,
       isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1 || json['is_primary_photo_verified'] == true,
       reportsCount: json['reports_count'] ?? 0,
       isReportedByMe: json['is_reported_by_me'] == true || json['is_reported_by_me'] == 1,

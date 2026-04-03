@@ -625,7 +625,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildPhotoGallery(),
+                  if (_user?.hasHiddenPhotos != true || (!_user!.photoRequestPending && !_user!.photoRequestRejected)) 
+                    _buildPhotoGallery(),
                   _buildProfileDetails(),
                   _buildFooter(),
                   const SizedBox(height: 100), // Space for sticky bottom bar
@@ -709,6 +710,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     required IconData icon,
   }) {
     final bool isPending = _user?.photoRequestPending == true;
+    final bool isRejected = _user?.photoRequestRejected == true;
+    final displayImage = _user?.displayImage;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -722,68 +725,91 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.grey.shade100,
               border: Border.all(color: Colors.grey.shade200),
             ),
-            child: Column(
-              children: [
-                Icon(icon, size: 48, color: Colors.grey.shade400),
-                const SizedBox(height: 12),
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey.shade600, height: 1.4),
-                ),
-                const SizedBox(height: 20),
-                if (isPending)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.orange.shade200),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.pending_actions, size: 18, color: Colors.orange.shade700),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Request Pending',
-                          style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  ElevatedButton.icon(
-                    onPressed: (_isActionLoading || _user?.isReportedByMe == true) 
-                        ? (_user?.isReportedByMe == true ? _showReportedWarning : null) 
-                        : _handlePhotoRequest,
-                    icon: const Icon(Icons.key, size: 20),
-                    label: Text(
-                      title == 'No Photos Uploaded' ? 'Request Photo' : 'Request Photo Access',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00BCD4),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-              ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                   if (displayImage != null)
+                     Image.network(
+                       ApiService.getImageUrl(displayImage),
+                       width: double.infinity,
+                       height: 240,
+                       fit: BoxFit.cover,
+                     )
+                   else
+                     Container(
+                       width: double.infinity,
+                       height: 240,
+                       color: Colors.grey.shade200,
+                     ),
+                   
+                   BackdropFilter(
+                     filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+                     child: Container(
+                       width: double.infinity,
+                       height: 240,
+                       color: Colors.black.withOpacity(0.4),
+                       child: Column(
+                         mainAxisAlignment: MainAxisAlignment.center,
+                         children: [
+                           Container(
+                             padding: const EdgeInsets.all(12),
+                             decoration: BoxDecoration(
+                               color: Colors.white.withOpacity(0.15),
+                               shape: BoxShape.circle,
+                             ),
+                             child: Icon(
+                               isRejected ? Icons.block_rounded : (isPending ? Icons.pending_actions : icon),
+                               size: 40, 
+                               color: Colors.white
+                             ),
+                           ),
+                           const SizedBox(height: 16),
+                           Text(
+                             isRejected ? "Access Request Declined" : (isPending ? "Access Request Pending" : title),
+                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
+                           ),
+                           const SizedBox(height: 8),
+                           Padding(
+                             padding: const EdgeInsets.symmetric(horizontal: 40),
+                             child: Text(
+                               isRejected ? "This user declined your access request." : (isPending ? "We've sent your request to the user." : subtitle),
+                               textAlign: TextAlign.center,
+                               style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13, height: 1.4),
+                             ),
+                           ),
+                           const SizedBox(height: 20),
+                           
+                           if (!isPending && !isRejected)
+                             ElevatedButton.icon(
+                               onPressed: (_isActionLoading || _user?.isReportedByMe == true) 
+                                   ? (_user?.isReportedByMe == true ? _showReportedWarning : null) 
+                                   : _handlePhotoRequest,
+                               icon: const Icon(Icons.key_rounded, size: 18),
+                               label: Text(
+                                 title == 'No Photos Uploaded' ? 'Request Photo' : 'Request Access',
+                                 style: const TextStyle(fontWeight: FontWeight.bold),
+                               ),
+                               style: ElevatedButton.styleFrom(
+                                 backgroundColor: const Color(0xFF00BCD4),
+                                 foregroundColor: Colors.white,
+                                 padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                                 elevation: 0,
+                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                               ),
+                             ),
+                         ],
+                       ),
+                     ),
+                   ),
+                ],
+              ),
             ),
           ),
         ],
@@ -885,28 +911,37 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     ApiService.getImageUrl(displayImage),
                     fit: BoxFit.cover,
                   ),
-                  if (_user?.isDisplayImageVerified != true)
+                   if (_user?.isDisplayImageVerified != true || _user?.hasHiddenPhotos == true)
                     BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                       child: Container(
                         color: Colors.black.withOpacity(0.5),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.pending_actions, color: Colors.white, size: 40),
-                              SizedBox(height: 8),
-                              Text(
-                                "Photo in Verification",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 50.0), // Shifted up slightly
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  _user?.hasHiddenPhotos == true 
+                                    ? (_user?.photoRequestRejected == true ? Icons.block_rounded : Icons.lock_rounded)
+                                    : Icons.pending_actions, 
+                                  color: Colors.white, 
+                                  size: 40
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 8),
+                                Text(
+                                  _user?.hasHiddenPhotos == true 
+                                    ? (_user?.photoRequestRejected == true ? "Access Request Declined" : (_user?.photoRequestPending == true ? "Access Request Pending" : "Photos are Private"))
+                                    : "Photo in Verification",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                       ),
                     ),
                  ],

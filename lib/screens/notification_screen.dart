@@ -13,6 +13,7 @@ import 'package:flutter/rendering.dart';
 import 'engagement_poster_info_screen.dart';
 import 'share_suggestion_screen.dart';
 import 'profile_photos_screen.dart';
+import 'photo_requests_screen.dart';
 import 'wallet_transactions_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -188,18 +189,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             ],
                             flexibleSpace: FlexibleSpaceBar(
                               centerTitle: false,
-                              titlePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                              title: Text(
-                                'Notifications',
-                                style: TextStyle(
-                                  color: Colors.black.withOpacity(0.85),
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
                               background: Container(
                                 color: Colors.white,
-                                padding: const EdgeInsets.fromLTRB(20, 80, 20, 0),
+                                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                                 alignment: Alignment.bottomLeft,
                                 child: RichText(
                                   text: TextSpan(
@@ -315,6 +307,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = Icons.lightbulb_rounded;
         badgeColor = primaryCyan;
         break;
+      case 'photo_request':
+        badgeIcon = Icons.photo_library_rounded;
+        badgeColor = const Color(0xFF00BCD4);
+        break;
+      case 'photo_request_accepted':
+        badgeIcon = Icons.lock_open_rounded;
+        badgeColor = const Color(0xFF4CD9A6);
+        break;
+      case 'photo_request_rejected':
+        badgeIcon = Icons.cancel_outlined;
+        badgeColor = const Color(0xFFFF2D55);
+        break;
       case 'wallet_transfer_otp':
       case 'wallet_transfer_received':
         badgeIcon = Icons.account_balance_wallet_rounded;
@@ -344,6 +348,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             ),
           );
+        } else if (type == 'photo_request') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PhotoRequestsScreen(),
+            ),
+          );
+        } else if (type == 'photo_request_accepted') {
+          // Navigate to the sender's profile so they can view the photos
+          if (notification['sender_id'] != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewProfileScreen(userId: notification['sender_id']),
+              ),
+            );
+          }
         } else if (type == 'verification' || type == 'photo_verification') {
           Navigator.push(
             context,
@@ -413,15 +434,20 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.grey.shade100, width: 2),
                   ),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.grey.shade50,
-                    backgroundImage: senderProfile != null && senderProfile['profile_picture'] != null
-                        ? NetworkImage(ApiService.getImageUrl(senderProfile['profile_picture']))
-                        : null,
-                    child: senderProfile == null || senderProfile['profile_picture'] == null
-                        ? const Icon(Icons.person, color: Colors.grey)
-                        : null,
-                  ),
+                  child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster'))
+                      ? CircleAvatar(
+                          backgroundColor: const Color(0xFF00BCD4).withOpacity(0.12),
+                          child: Icon(badgeIcon, color: badgeColor, size: 26),
+                        )
+                      : CircleAvatar(
+                          backgroundColor: Colors.grey.shade50,
+                          backgroundImage: senderProfile != null && senderProfile['profile_picture'] != null
+                              ? NetworkImage(ApiService.getImageUrl(senderProfile['profile_picture']))
+                              : null,
+                          child: senderProfile == null || senderProfile['profile_picture'] == null
+                              ? const Icon(Icons.person, color: Colors.grey)
+                              : null,
+                        ),
                 ),
                 Positioned(
                   right: -2,
@@ -452,7 +478,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         TextSpan(
                           text: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update')
                               ? 'System Update: ' 
-                              : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'System: '),
+                              : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone '),
                           style: const TextStyle(fontWeight: FontWeight.bold, color: primaryCyan),
                         ),
                         TextSpan(text: notification['message'] ?? 'sent you a notification'),
@@ -483,15 +509,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ? Icons.favorite_outline_rounded 
                       : (type == 'message' 
                           ? Icons.chat_outlined 
-                          : (type == 'verification' || type == 'photo_verification'
-                                  ? ((notification['message'] ?? '').toString().toLowerCase().contains('rejected')
-                                   ? Icons.error_outline_rounded 
-                                   : Icons.verified_user_outlined) 
-                   : (type.toString().startsWith('engagement_poster') 
-                                   ? Icons.celebration_outlined 
-                                   : (type == 'suggestion_update'
-                                       ? Icons.lightbulb_outline_rounded
-                                       : Icons.notifications_none_rounded)))),
+                          : (type == 'photo_request'
+                              ? Icons.photo_library_outlined
+                              : (type == 'photo_request_accepted'
+                                  ? Icons.lock_open_rounded
+                                  : (type == 'photo_request_rejected'
+                                      ? Icons.cancel_outlined
+                                      : (type == 'verification' || type == 'photo_verification'
+                                              ? ((notification['message'] ?? '').toString().toLowerCase().contains('rejected')
+                                               ? Icons.error_outline_rounded 
+                                               : Icons.verified_user_outlined) 
+                             : (type.toString().startsWith('engagement_poster') 
+                                             ? Icons.celebration_outlined 
+                                             : (type == 'suggestion_update'
+                                                 ? Icons.lightbulb_outline_rounded
+                                                 : Icons.notifications_none_rounded))))))),
                   size: 16,
                   color: badgeColor,
                 ),

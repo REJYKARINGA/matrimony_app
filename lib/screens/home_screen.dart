@@ -509,13 +509,17 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 ),
                                 child: const Icon(Icons.person, color: Colors.white, size: 80),
                               ),
-                        if (user.displayImage != null && user.isDisplayImageVerified != true)
+                        if (user.displayImage != null && ((user.isDisplayImageVerified != true) || (user.hasHiddenPhotos && !user.isContactUnlocked)))
                           BackdropFilter(
                             filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                             child: Container(
                               color: Colors.black.withOpacity(0.4),
-                              child: const Center(
-                                child: Icon(Icons.pending_actions, color: Colors.white, size: 40),
+                              child: Center(
+                                child: Icon(
+                                  user.isDisplayImageVerified != true ? Icons.pending_actions : Icons.lock_rounded, 
+                                  color: Colors.white, 
+                                  size: 40
+                                ),
                               ),
                             ),
                           ),
@@ -1558,7 +1562,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                                   color: Colors.black.withOpacity(0.3),
                                                   child: Center(
                                                     child: Icon(
-                                                      visitor.hasHiddenPhotos ? Icons.lock_rounded : Icons.pending_actions,
+                                                      visitor.isDisplayImageVerified != true ? Icons.pending_actions : Icons.lock_rounded,
                                                       color: Colors.white,
                                                       size: 16,
                                                     ),
