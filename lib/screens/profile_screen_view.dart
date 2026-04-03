@@ -495,7 +495,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Transform.translate(
         offset: const Offset(0, -20),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          padding: const EdgeInsets.fromLTRB(16, 28, 16, 20),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
