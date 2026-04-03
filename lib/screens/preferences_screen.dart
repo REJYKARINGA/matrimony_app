@@ -69,6 +69,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   bool _isCasteAscending = false;
   bool _isSubCasteAscending = false;
 
+  // Expansion states
+  bool _isCasteExpanded = false;
+  bool _isSubCasteExpanded = false;
+  bool _isEducationExpanded = false;
+  bool _isOccupationExpanded = false;
+
   // Search queries and controllers
   String _casteSearchQuery = '';
   final TextEditingController _casteSearchController = TextEditingController();
@@ -445,6 +451,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     searchQuery: _casteSearchQuery,
                     controller: _casteSearchController,
                     onSearchChanged: (val) => setState(() => _casteSearchQuery = val),
+                    isExpanded: _isCasteExpanded,
+                    onExpansionChanged: (val) => setState(() => _isCasteExpanded = val),
                   ),
                   const SizedBox(height: 10),
                   _buildCheckboxSelector(
@@ -468,6 +476,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     searchQuery: _subCasteSearchQuery,
                     controller: _subCasteSearchController,
                     onSearchChanged: (val) => setState(() => _subCasteSearchQuery = val),
+                    isExpanded: _isSubCasteExpanded,
+                    onExpansionChanged: (val) => setState(() => _isSubCasteExpanded = val),
                   ),
                   const SizedBox(height: 10),
                   _buildCheckboxSelector(
@@ -491,6 +501,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     searchQuery: _educationSearchQuery,
                     controller: _educationSearchController,
                     onSearchChanged: (val) => setState(() => _educationSearchQuery = val),
+                    isExpanded: _isEducationExpanded,
+                    onExpansionChanged: (val) => setState(() => _isEducationExpanded = val),
                   ),
                   const SizedBox(height: 10),
                   _buildCheckboxSelector(
@@ -514,6 +526,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     searchQuery: _occupationSearchQuery,
                     controller: _occupationSearchController,
                     onSearchChanged: (val) => setState(() => _occupationSearchQuery = val),
+                    isExpanded: _isOccupationExpanded,
+                    onExpansionChanged: (val) => setState(() => _isOccupationExpanded = val),
                   ),
                 ]),
 
@@ -1348,6 +1362,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     required String searchQuery,
     required TextEditingController controller,
     required Function(String) onSearchChanged,
+    required bool isExpanded,
+    required Function(bool) onExpansionChanged,
   }) {
     // 1. Filter based on search query
     final filteredBySearch = options.where((option) {
@@ -1376,244 +1392,278 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       });
     }
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Row: Icon, Label, and Sort Toggle
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 4),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Sort:',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  GestureDetector(
-                    onTap: onSortToggled,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Trending Option
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: !isAscending ? Colors.white : Colors.transparent,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: !isAscending
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 1),
-                                      )
-                                    ]
-                                  : [],
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.trending_up_rounded,
-                                  size: 14,
-                                  color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'Trending',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // A-Z Option
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: isAscending ? Colors.white : Colors.transparent,
-                              borderRadius: BorderRadius.circular(15),
-                              boxShadow: isAscending
-                                  ? [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 1),
-                                      )
-                                    ]
-                                  : [],
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.sort_by_alpha_rounded,
-                                  size: 14,
-                                  color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'A-Z',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          
-          // Search Field
-          Container(
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: TextField(
-              controller: controller,
-              onChanged: onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Search $label...',
-                hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
-                prefixIcon: Icon(Icons.search, size: 18, color: Colors.grey.shade400),
-                suffixIcon: searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () {
-                          controller.clear();
-                          onSearchChanged('');
-                        },
-                      )
-                    : null,
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              ),
-            ),
-          ),
-          
-          const SizedBox(height: 12),
-          
-          if (sortedOptions.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Center(
-                child: Column(
-                  children: [
-                    Icon(Icons.search_off, size: 30, color: Colors.grey.shade300),
-                    const SizedBox(height: 8),
-                    Text(
-                      searchQuery.isEmpty ? 'Loading options...' : 'No results matching "$searchQuery"',
-                      style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: sortedOptions.map((option) {
-                final isSelected = selectedIds.contains(option['id']);
-                final isTrending = (option['popularity_count'] ?? 0) > 10;
-                
-                return FilterChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
+    return InkWell(
+      onTap: () => onExpansionChanged(!isExpanded),
+      borderRadius: BorderRadius.circular(15),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row: Icon, Label, and Sort Toggle
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
                     children: [
-                      Text(option['name'] ?? ''),
-                      if (isTrending) ...[
-                        const SizedBox(width: 4),
-                        const Icon(Icons.trending_up, size: 14, color: Color(0xFF00BCD4)),
+                      Icon(icon, size: 20, color: const Color(0xFF00BCD4)),
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (!isExpanded && selectedIds.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00BCD4).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '${selectedIds.length}',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF00BCD4),
+                            ),
+                          ),
+                        ),
                       ],
                     ],
                   ),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    onChanged(option['id'], selected);
-                  },
-                  selectedColor: const Color(0xFF00BCD4).withOpacity(0.3),
-                  checkmarkColor: const Color(0xFF00BCD4),
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(
-                      color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
-                      width: isSelected ? 2 : 1,
+                ),
+                const SizedBox(width: 4),
+                
+                if (isExpanded)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'Sort:',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      GestureDetector(
+                        onTap: onSortToggled,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Trending Option
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: !isAscending ? Colors.white : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: !isAscending
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.05),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 1),
+                                          )
+                                        ]
+                                      : [],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.trending_up_rounded,
+                                      size: 14,
+                                      color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'Trending',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        color: !isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // A-Z Option
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: isAscending ? Colors.white : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(15),
+                                  boxShadow: isAscending
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.05),
+                                            blurRadius: 4,
+                                            offset: const Offset(0, 1),
+                                          )
+                                        ]
+                                      : [],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.sort_by_alpha_rounded,
+                                      size: 14,
+                                      color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      'A-Z',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w800,
+                                        color: isAscending ? const Color(0xFF00BCD4) : Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                const SizedBox(width: 8),
+                Icon(
+                  isExpanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                  color: Colors.grey.shade400,
+                  size: 20,
+                ),
+              ],
+            ),
+            
+            if (isExpanded) ...[
+              const SizedBox(height: 12),
+              
+              // Search Field
+              Container(
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: TextField(
+                  controller: controller,
+                  onChanged: onSearchChanged,
+                  decoration: InputDecoration(
+                    hintText: 'Search $label...',
+                    hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+                    prefixIcon: Icon(Icons.search, size: 18, color: Colors.grey.shade400),
+                    suffixIcon: searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () {
+                              controller.clear();
+                              onSearchChanged('');
+                            },
+                          )
+                        : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 12),
+              
+              if (sortedOptions.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Icon(Icons.search_off, size: 30, color: Colors.grey.shade300),
+                        const SizedBox(height: 8),
+                        Text(
+                          searchQuery.isEmpty ? 'Loading options...' : 'No results matching "$searchQuery"',
+                          style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                        ),
+                      ],
                     ),
                   ),
-                  labelStyle: TextStyle(
-                    color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                )
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: sortedOptions.map((option) {
+                    final isSelected = selectedIds.contains(option['id']);
+                    final isTrending = (option['popularity_count'] ?? 0) > 10;
+                    
+                    return FilterChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(option['name'] ?? ''),
+                          if (isTrending) ...[
+                            const SizedBox(width: 4),
+                            const Icon(Icons.trending_up, size: 14, color: Color(0xFF00BCD4)),
+                          ],
+                        ],
+                      ),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        onChanged(option['id'], selected);
+                      },
+                      selectedColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                      checkmarkColor: const Color(0xFF00BCD4),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                          color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade300,
+                          width: isSelected ? 2 : 1,
+                        ),
+                      ),
+                      labelStyle: TextStyle(
+                        color: isSelected ? const Color(0xFF00BCD4) : Colors.black87,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    );
+                  }).toList(),
+                ),
+              
+              if (selectedIds.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text(
+                  '${selectedIds.length} selected',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                    fontStyle: FontStyle.italic,
                   ),
-                );
-              }).toList(),
-            ),
-          
-          if (selectedIds.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              '${selectedIds.length} selected',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
+                ),
+              ],
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
