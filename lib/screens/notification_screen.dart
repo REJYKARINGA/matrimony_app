@@ -324,6 +324,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = Icons.account_balance_wallet_rounded;
         badgeColor = const Color(0xFF00BCD4);
         break;
+      case 'scam_alert':
+        badgeIcon = Icons.gpp_bad_rounded;
+        badgeColor = const Color(0xFFFF2D55);
+        break;
       default:
         badgeIcon = Icons.notifications_rounded;
         badgeColor = Colors.grey;
@@ -434,9 +438,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.grey.shade100, width: 2),
                   ),
-                  child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster'))
+                  child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster') || type == 'scam_alert')
                       ? CircleAvatar(
-                          backgroundColor: const Color(0xFF00BCD4).withOpacity(0.12),
+                          backgroundColor: (type == 'scam_alert' ? Colors.red.shade50 : const Color(0xFF00BCD4).withOpacity(0.12)),
                           child: Icon(badgeIcon, color: badgeColor, size: 26),
                         )
                       : CircleAvatar(
@@ -505,25 +509,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
               child: Center(
                 child: Icon(
-                  type == 'interest' 
-                      ? Icons.favorite_outline_rounded 
-                      : (type == 'message' 
-                          ? Icons.chat_outlined 
-                          : (type == 'photo_request'
-                              ? Icons.photo_library_outlined
-                              : (type == 'photo_request_accepted'
-                                  ? Icons.lock_open_rounded
-                                  : (type == 'photo_request_rejected'
-                                      ? Icons.cancel_outlined
-                                      : (type == 'verification' || type == 'photo_verification'
-                                              ? ((notification['message'] ?? '').toString().toLowerCase().contains('rejected')
-                                               ? Icons.error_outline_rounded 
-                                               : Icons.verified_user_outlined) 
-                             : (type.toString().startsWith('engagement_poster') 
-                                             ? Icons.celebration_outlined 
-                                             : (type == 'suggestion_update'
-                                                 ? Icons.lightbulb_outline_rounded
-                                                 : Icons.notifications_none_rounded))))))),
+                  type == 'interest' ? Icons.favorite_outline_rounded :
+                  type == 'message' ? Icons.chat_outlined :
+                  type == 'photo_request' ? Icons.photo_library_outlined :
+                  type == 'photo_request_accepted' ? Icons.lock_open_rounded :
+                  type == 'photo_request_rejected' ? Icons.cancel_outlined :
+                  type == 'scam_alert' ? Icons.gpp_bad_outlined :
+                  (type == 'verification' || type == 'photo_verification') ? 
+                    ((notification['message'] ?? '').toString().toLowerCase().contains('rejected') ? Icons.error_outline_rounded : Icons.verified_user_outlined) :
+                  type.toString().startsWith('engagement_poster') ? Icons.celebration_outlined :
+                  type == 'suggestion_update' ? Icons.lightbulb_outline_rounded :
+                  Icons.notifications_none_rounded,
                   size: 16,
                   color: badgeColor,
                 ),

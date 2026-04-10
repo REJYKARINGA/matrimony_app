@@ -25,7 +25,7 @@ import '../services/reverb_service.dart';
 import '../services/message_service.dart';
 import '../services/navigation_provider.dart';
 import '../services/subscription_service.dart';
-import '../services/profile_view_service.dart';
+import '../services/photo_request_service.dart';
 import '../widgets/common_footer.dart';
 import 'search_screen.dart';
 import 'preferences_screen.dart';
@@ -58,7 +58,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     // Initialize Reverb real-time listening
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ReverbService.initialize(context);
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      ReverbService.initialize(context, authProvider.user?.id);
     });
 
     // Add observer for app lifecycle
@@ -109,10 +110,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       });
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      await authProvider.loadCurrentUserWithProfile();
+      bool success = await authProvider.loadCurrentUserWithProfile();
 
-
-
+      if (!success && mounted && authProvider.errorMessage != null && 
+          authProvider.errorMessage!.toLowerCase().contains('blocked')) {
+        Navigator.of(context).pushReplacementNamed('/blocked');
+        return;
+      }
       if (mounted) {
         setState(() {
           _isRefreshing = false;
@@ -349,6 +353,47 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     super.dispose();
   }
 
+  Future<void> _handlePhotoRequest(User user) async {
+    if (user.id == null) return;
+    
+    try {
+      final response = await PhotoRequestService.sendRequest(user.id!);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        _loadTabUsers(_tabController.index);
+        _loadDailyPick();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Photo request sent successfully!'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        final data = json.decode(response.body);
+        final String errorMsg = data['error'] ?? 'Unknown error';
+        if (errorMsg.contains('already sent') || data['status'] == 'pending') {
+          _loadTabUsers(_tabController.index);
+          _loadDailyPick();
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Photo request is already pending.'), backgroundColor: Colors.orange),
+            );
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to send request: $errorMsg'), backgroundColor: Colors.red),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   Future<void> _loadUnreadCount() async {
     try {
       final response = await NotificationService.getUnreadCount();
@@ -514,11 +559,27 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                             child: Container(
                               color: Colors.black.withOpacity(0.4),
-                              child: Center(
-                                child: Icon(
-                                  user.isDisplayImageVerified != true ? Icons.pending_actions : Icons.lock_rounded, 
-                                  color: Colors.white, 
-                                  size: 40
+                              child: Align(
+                                alignment: const Alignment(0, -0.3),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      user.isDisplayImageVerified != true ? Icons.pending_actions_rounded : (user.photoRequestRejected == true ? Icons.block_rounded : (user.photoRequestPending == true ? Icons.pending_actions_rounded : Icons.lock_rounded)), 
+                                      color: Colors.white, 
+                                      size: 40
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      user.isDisplayImageVerified != true ? 'UNDER REVIEW' : (user.photoRequestRejected == true ? 'ACCESS DECLINED' : (user.photoRequestPending == true ? 'PENDING APPROVAL' : 'PRIVATE PHOTO')),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -1562,7 +1623,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                                   color: Colors.black.withOpacity(0.3),
                                                   child: Center(
                                                     child: Icon(
-                                                      visitor.isDisplayImageVerified != true ? Icons.pending_actions : Icons.lock_rounded,
+                                                      visitor.photoRequestRejected == true ? Icons.block_rounded : (visitor.isDisplayImageVerified != true ? Icons.pending_actions : Icons.lock_rounded),
                                                       color: Colors.white,
                                                       size: 16,
                                                     ),
@@ -1947,30 +2008,69 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               _buildPlaceholderBackground(profile?.gender),
                         )
                       : _buildPlaceholderBackground(profile?.gender),
-                  if (user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified))
+                  if ((user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified)) || (user.displayImage == null))
                     BackdropFilter(
                       filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                       child: Container(
                         color: Colors.black.withOpacity(0.4),
-                        child: Center(
+                        child: Align(
+                          alignment: const Alignment(0, -0.3),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                (user.isDisplayImageVerified != true) ? Icons.pending_actions_rounded : Icons.lock_person_rounded,
+                                (user.displayImage == null)
+                                  ? Icons.no_photography_rounded
+                                  : (user.isDisplayImageVerified != true 
+                                      ? Icons.pending_actions_rounded 
+                                      : (user.photoRequestRejected == true 
+                                          ? Icons.block_rounded 
+                                          : (user.photoRequestPending == true 
+                                              ? Icons.pending_actions_rounded 
+                                              : Icons.lock_person_rounded))),
                                 color: Colors.white,
                                 size: 48,
                               ),
                               const SizedBox(height: 12),
                               Text(
-                                (user.isDisplayImageVerified != true) ? 'UNDER REVIEW' : 'PRIVATE PHOTO',
+                                (user.displayImage == null)
+                                  ? 'No Photos Uploaded'
+                                  : (user.isDisplayImageVerified != true 
+                                      ? 'Photo in Verification' 
+                                      : (user.photoRequestRejected == true 
+                                          ? 'ACCESS DECLINED' 
+                                          : (user.photoRequestPending == true 
+                                              ? 'Access Request Pending' 
+                                              : 'Photos are Private'))),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w900,
-                                  letterSpacing: 2,
+                                  letterSpacing: 1,
                                 ),
                               ),
+                              if (((user.displayImage == null) || (user.isDisplayImageVerified == true && user.hasHiddenPhotos == true)) && 
+                                  !(user.photoRequestPending ?? false) && 
+                                  !(user.photoRequestRejected ?? false)) ...[
+                                const SizedBox(height: 16),
+                                ElevatedButton.icon(
+                                  onPressed: () => _handlePhotoRequest(user),
+                                  icon: const Icon(Icons.key_rounded, size: 14),
+                                  label: Text(
+                                    (user.displayImage == null) ? 'Request Photo' : 'Request Access',
+                                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF00BCD4),
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),

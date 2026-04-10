@@ -45,6 +45,7 @@ class User {
   final bool isPhotoVerified;
   final int reportsCount;
   final bool isReportedByMe;
+  final String? blockReason;
 
   User({
     this.id,
@@ -73,6 +74,7 @@ class User {
     this.isPhotoVerified = true,
     this.reportsCount = 0,
     this.isReportedByMe = false,
+    this.blockReason,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -116,6 +118,7 @@ class User {
       isPhotoVerified: json['is_photo_verified'] == true || json['is_photo_verified'] == 1 || json['is_primary_photo_verified'] == true,
       reportsCount: json['reports_count'] ?? 0,
       isReportedByMe: json['is_reported_by_me'] == true || json['is_reported_by_me'] == 1,
+      blockReason: json['block_reason']?.toString(),
     );
   }
 

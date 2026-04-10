@@ -99,7 +99,8 @@ class AuthProvider with ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = jsonDecode(response.body)['error'] ?? 'Login failed';
+        final data = jsonDecode(response.body);
+        _errorMessage = data['message'] ?? data['error'] ?? 'Login failed';
         notifyListeners();
         return false;
       }
@@ -150,8 +151,12 @@ class AuthProvider with ChangeNotifier {
         _hasProfile = data['has_profile'] ?? (_user?.userProfile != null);
         notifyListeners();
         return true;
+      } else if (response.statusCode == 403) {
+        final data = jsonDecode(response.body);
+        _errorMessage = data['message'] ?? 'Account blocked or inactive';
+        notifyListeners();
+        return false;
       } else {
-        // If API returns non-200, clear the user and token
         await ApiService.removeToken();
         _user = null;
         notifyListeners();
@@ -174,8 +179,12 @@ class AuthProvider with ChangeNotifier {
         _hasProfile = data['has_profile'] ?? (_user?.userProfile != null);
         notifyListeners();
         return true;
+      } else if (response.statusCode == 403) {
+        final data = jsonDecode(response.body);
+        _errorMessage = data['message'] ?? 'Account blocked or inactive';
+        notifyListeners();
+        return false;
       } else {
-        // If API returns non-200, clear the user and token
         await ApiService.removeToken();
         _user = null;
         notifyListeners();

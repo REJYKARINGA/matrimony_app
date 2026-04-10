@@ -10,6 +10,7 @@ import '../services/shortlist_service.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/navigation_provider.dart';
+import '../services/photo_request_service.dart';
 
 class MatchingScreen extends StatefulWidget {
   const MatchingScreen({Key? key}) : super(key: key);
@@ -121,6 +122,45 @@ class _MatchingScreenState extends State<MatchingScreen>
         _errorMessage = e.toString();
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _handlePhotoRequest(User user) async {
+    if (user.id == null) return;
+    
+    try {
+      final response = await PhotoRequestService.sendRequest(user.id!);
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        _loadInitialData();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Photo request sent successfully!'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        final data = json.decode(response.body);
+        final String errorMsg = data['error'] ?? 'Unknown error';
+        if (errorMsg.contains('already sent') || data['status'] == 'pending') {
+          _loadInitialData();
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Photo request is already pending.'), backgroundColor: Colors.orange),
+            );
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to send request: $errorMsg'), backgroundColor: Colors.red),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -507,7 +547,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     int? blockId,
   }) {
     final profile = user.userProfile;
-    final isBlurred = (user.isDisplayImageVerified != true) || (user.hasHiddenPhotos && !user.isContactUnlocked);
+    final isBlurred = (user.isDisplayImageVerified != true) || user.hasHiddenPhotos;
     
     final age = profile?.age;
     String ageText = age != null ? age.toString() : '';
@@ -560,23 +600,40 @@ class _MatchingScreenState extends State<MatchingScreen>
                               _buildPlaceholderBackground(profile?.gender),
                         )
                       : _buildPlaceholderBackground(profile?.gender),
-                    if (user.displayImage != null && isBlurred)
+                    if ((user.displayImage != null && isBlurred) || (user.displayImage == null))
                       BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                         child: Container(
                           color: Colors.black.withOpacity(0.4),
-                          child: Center(
+                          child: Align(
+                            alignment: const Alignment(0, -0.3),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  (user.isDisplayImageVerified != true) ? Icons.pending_actions_rounded : Icons.lock_person_rounded,
+                                  (user.displayImage == null)
+                                    ? Icons.no_photography_rounded
+                                    : (user.isDisplayImageVerified != true 
+                                        ? Icons.pending_actions_rounded 
+                                        : (user.photoRequestRejected == true 
+                                            ? Icons.block_rounded 
+                                            : (user.photoRequestPending == true 
+                                                ? Icons.pending_actions_rounded 
+                                                : Icons.lock_person_rounded))),
                                   color: Colors.white,
                                   size: 40,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  (user.isDisplayImageVerified != true) ? 'UNDER REVIEW' : 'PRIVATE PHOTO',
+                                  (user.displayImage == null)
+                                    ? 'No Photos Uploaded'
+                                    : (user.isDisplayImageVerified != true 
+                                        ? 'Photo in Verification' 
+                                        : (user.photoRequestRejected == true 
+                                            ? 'ACCESS DECLINED' 
+                                            : (user.photoRequestPending == true 
+                                                ? 'Access Request Pending' 
+                                                : 'Photos are Private'))),
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 10,
@@ -584,6 +641,28 @@ class _MatchingScreenState extends State<MatchingScreen>
                                     letterSpacing: 1,
                                   ),
                                 ),
+                                if (((user.displayImage == null) || (user.isDisplayImageVerified == true && user.hasHiddenPhotos == true)) && 
+                                    !(user.photoRequestPending ?? false) && 
+                                    !(user.photoRequestRejected ?? false)) ...[
+                                  const SizedBox(height: 12),
+                                  ElevatedButton.icon(
+                                    onPressed: () => _handlePhotoRequest(user),
+                                    icon: const Icon(Icons.key_rounded, size: 14),
+                                    label: Text(
+                                      (user.displayImage == null) ? 'Request Photo' : 'Request Access',
+                                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF00BCD4),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      minimumSize: Size.zero,
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),

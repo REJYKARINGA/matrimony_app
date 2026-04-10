@@ -8,10 +8,12 @@ import 'screens/family_details_screen.dart';
 import 'screens/preferences_screen.dart';
 import 'screens/profile_photos_screen.dart';
 import 'screens/landing_screen.dart';
+import 'screens/contact_us_screen.dart';
 import 'services/auth_provider.dart';
 import 'services/navigation_provider.dart';
 import 'utils/theme_provider.dart';
 import 'models/user_model.dart';
+import 'screens/blocked_screen.dart';
 
 void main() {
   runApp(const MatrimonyApp());
@@ -44,6 +46,11 @@ class MatrimonyApp extends StatelessWidget {
               '/preferences': (context) => const PreferencesScreen(),
               '/profile-photos': (context) => const ProfilePhotosScreen(),
               '/landing': (context) => const LandingScreen(),
+              '/contact-us': (context) => const ContactUsScreen(),
+              '/blocked': (context) => BlockedScreen(
+                    message: Provider.of<AuthProvider>(context).errorMessage ??
+                        'Your account has been restricted.',
+                  ),
             },
           );
         },
@@ -109,7 +116,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         Navigator.of(context).pushReplacementNamed('/home');
       }
     } else {
-      Navigator.of(context).pushReplacementNamed('/landing');
+      // Check if they failed because they are blocked
+      if (authProvider.errorMessage != null &&
+          authProvider.errorMessage!.toLowerCase().contains('blocked')) {
+        Navigator.of(context).pushReplacementNamed('/blocked');
+      } else {
+        Navigator.of(context).pushReplacementNamed('/landing');
+      }
     }
   }
 
