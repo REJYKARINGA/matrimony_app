@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/navigation_provider.dart';
 import '../services/photo_request_service.dart';
+import '../widgets/watermark_overlay.dart';
 
 class MatchingScreen extends StatefulWidget {
   const MatchingScreen({Key? key}) : super(key: key);
@@ -600,6 +601,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                               _buildPlaceholderBackground(profile?.gender),
                         )
                       : _buildPlaceholderBackground(profile?.gender),
+                  if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
                     if ((user.displayImage != null && isBlurred) || (user.displayImage == null))
                       BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),

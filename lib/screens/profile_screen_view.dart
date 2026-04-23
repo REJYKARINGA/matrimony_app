@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'dart:convert';
+import '../widgets/watermark_overlay.dart';
 import '../models/user_model.dart';
 import '../services/location_service.dart';
 import '../services/profile_service.dart';
@@ -422,6 +423,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Colors.black.withOpacity(0.3),
                 colorBlendMode: BlendMode.darken,
               ),
+            if (_user?.displayImage != null && _user!.displayImage!.trim().isNotEmpty && _user!.displayImage != 'null') const WatermarkOverlay(),
             Positioned(
               bottom: -1,
               left: 0,
@@ -451,15 +453,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           shape: BoxShape.circle,
                           color: Colors.white.withOpacity(0.2),
                         ),
-                        child: CircleAvatar(
-                          radius: 55,
-                          backgroundColor: Colors.white,
-                          backgroundImage: _user?.displayImage != null
-                              ? NetworkImage(ApiService.getImageUrl(_user!.displayImage!))
-                              : null,
-                          child: _user?.displayImage == null
-                              ? const Icon(Icons.person, size: 55, color: Color(0xFF00BCD4))
-                              : null,
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 55,
+                              backgroundColor: Colors.white,
+                              backgroundImage: _user?.displayImage != null
+                                  ? NetworkImage(ApiService.getImageUrl(_user!.displayImage!))
+                                  : null,
+                              child: _user?.displayImage == null
+                                  ? const Icon(Icons.person, size: 55, color: Color(0xFF00BCD4))
+                                  : null,
+                            ),
+                            if (_user?.displayImage != null) const Positioned.fill(child: WatermarkOverlay()),
+                          ],
                         ),
                       ),
                       GestureDetector(
@@ -832,6 +839,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       image: DecorationImage(image: NetworkImage(ApiService.getImageUrl(photos[index].photoUrl)), fit: BoxFit.cover),
                       boxShadow: [BoxShadow(color: const Color(0xFF00BCD4).withOpacity(0.1), blurRadius: 15, offset: const Offset(0, 6))],
                     ),
+                    child: const WatermarkOverlay(),
                   ),
                 );
               },
@@ -867,39 +875,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
-              // Watermark
-              Positioned(
-                bottom: 80, // Moved up to avoid overlap with swipe indicator
-                right: 20,
-                child: Opacity(
-                  opacity: 0.7, // Increased opacity slightly
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Vivah4Ever',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                          shadows: [
-                            Shadow(blurRadius: 10, color: Colors.black54, offset: Offset(2, 2)),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        'Kerala Matrimony',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+             if (_user?.displayImage != null && _user!.displayImage!.trim().isNotEmpty && _user!.displayImage != 'null') const WatermarkOverlay(),
               // Back Button
               Positioned(
                 top: 40,

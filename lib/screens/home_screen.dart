@@ -35,6 +35,7 @@ import 'wallet_transactions_screen.dart';
 import '../widgets/wallet_recharge_paywall.dart';
 import '../widgets/interest_notification_dialog.dart';
 import 'engagement_poster_info_screen.dart';
+import '../widgets/watermark_overlay.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -554,6 +555,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 ),
                                 child: const Icon(Icons.person, color: Colors.white, size: 80),
                               ),
+                      if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
                         if (user.displayImage != null && ((user.isDisplayImageVerified != true) || (user.hasHiddenPhotos && !user.isContactUnlocked)))
                           BackdropFilter(
                             filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -2008,6 +2010,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               _buildPlaceholderBackground(profile?.gender),
                         )
                       : _buildPlaceholderBackground(profile?.gender),
+                  if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
                   if ((user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified)) || (user.displayImage == null))
                     BackdropFilter(
                       filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),

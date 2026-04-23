@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import '../services/profile_service.dart';
 import '../services/api_service.dart';
+import '../widgets/watermark_overlay.dart';
 
 class ProfilePhotosScreen extends StatefulWidget {
   const ProfilePhotosScreen({Key? key}) : super(key: key);
@@ -508,23 +509,24 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   ),
                                 ),
                                 child: Stack(
-                                  fit: StackFit.expand,
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(16),
-                                      child: (photo['photo_url'] != null)
-                                          ? Image.network(
-                                              ApiService.getImageUrl(photo['photo_url'] ?? photo['full_photo_url']),
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                    return const Icon(
-                                                      Icons.broken_image,
-                                                      size: 50,
-                                                    );
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          (photo['photo_url'] != null)
+                                              ? Image.network(
+                                                  ApiService.getImageUrl(photo['photo_url'] ?? photo['full_photo_url']),
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error, stackTrace) {
+                                                    return const Icon(Icons.broken_image, size: 50);
                                                   },
-                                            )
-                                          : const Icon(Icons.image, size: 50),
+                                                )
+                                              : const Icon(Icons.image, size: 50),
+                                          if (photo['photo_url'] != null || photo['full_photo_url'] != null) const WatermarkOverlay(),
+                                        ],
+                                      ),
                                     ),
                                     
                                     // Rejected Overlay
@@ -850,6 +852,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 ),
               ),
             ),
+          if (primaryUrl != null) const WatermarkOverlay(),
             
           // Dark Gradient Overlay for readability
           Container(
@@ -885,24 +888,16 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                   ],
                 ),
                 child: ClipOval(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      image: primaryUrl != null
-                          ? DecorationImage(
-                              image: NetworkImage(ApiService.getImageUrl(primaryUrl)),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
+                    child: Stack(
+                      children: [
+                        if (primaryUrl != null)
+                          Image.network(
+                            ApiService.getImageUrl(primaryUrl),
+                            fit: BoxFit.cover,
+                          ),
+                        if (primaryUrl != null) const WatermarkOverlay(),
+                      ],
                     ),
-                    child: primaryUrl == null
-                        ? Icon(
-                            Icons.photo_library,
-                            size: 45,
-                            color: Color(0xFF00BCD4),
-                          )
-                        : null,
-                  ),
                 ),
               ),
               const SizedBox(height: 12),

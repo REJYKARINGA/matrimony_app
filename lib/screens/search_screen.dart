@@ -16,6 +16,7 @@ import '../services/photo_request_service.dart';
 import '../widgets/recharge_dialog.dart';
 import '../widgets/wallet_recharge_paywall.dart';
 import 'package:provider/provider.dart';
+import '../widgets/watermark_overlay.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -686,6 +687,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                               )
                             : _buildPlaceholderBackground(profile?.gender, size: 40),
                       ),
+                     if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
                       if (user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified))
                         Positioned.fill(
                           child: ClipRRect(
@@ -1328,6 +1330,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                               _buildPlaceholderBackground(profile?.gender),
                         )
                       : _buildPlaceholderBackground(profile?.gender),
+                      if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
                   if ((user.displayImage != null && (user.isDisplayImageVerified != true || user.hasHiddenPhotos)) || (user.displayImage == null))
                     BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),

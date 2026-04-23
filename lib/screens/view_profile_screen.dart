@@ -17,6 +17,7 @@ import 'verification_screen.dart';
 import 'wallet_transactions_screen.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../services/photo_request_service.dart';
+import '../widgets/watermark_overlay.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final int userId;
@@ -966,6 +967,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     ApiService.getImageUrl(displayImage),
                     fit: BoxFit.cover,
                   ),
+                   const WatermarkOverlay(),
                    if (_user?.isDisplayImageVerified != true || _user?.hasHiddenPhotos == true)
                     BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
@@ -1321,7 +1323,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                          ),
                       ),
                     ),
-                  ) : null,
+                  ) : const WatermarkOverlay(),
                 ),
               );
             },
@@ -1350,11 +1352,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           Image.network(
                             ApiService.getImageUrl(photos[index].photoUrl!),
                             fit: BoxFit.contain,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const Center(child: CircularProgressIndicator(color: Colors.white));
-                            },
                           ),
+                          const WatermarkOverlay(),
                           if (photos[index].isVerified != true)
                             BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
@@ -1373,39 +1372,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     ),
                   );
                 },
-              ),
-              // Watermark
-              Positioned(
-                bottom: 80, // Moved up to avoid overlap with swipe indicator
-                right: 20,
-                child: Opacity(
-                  opacity: 0.7, // Increased opacity for better visibility
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Vivah4Ever',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                          shadows: const [
-                            Shadow(blurRadius: 10, color: Colors.black54, offset: Offset(2, 2)),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        'Kerala Matrimony',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
               // Back Button
               Positioned(
