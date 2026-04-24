@@ -231,6 +231,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   Future<void> _createProfile() async {
+    if (_selectedPhotos.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please upload at least 3 photos to complete your profile'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final response = await ProfileService.updateMyProfile(
@@ -300,13 +311,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
     if (_currentStep < _totalSteps - 1) {
       // Validate photos if on photo step (Step 11)
-      if (_currentStep == 11) {
-        if (_selectedPhotos.length < 3) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please upload at least 3 photos'), backgroundColor: Colors.red),
-          );
-          return;
-        }
+      if (_currentStep == 11 && _selectedPhotos.length < 3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please upload at least 3 photos to continue'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
       }
 
       _pageController.nextPage(
@@ -367,12 +380,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 ),
               ),
             ),
-            StepNavigationButtons(
-              currentStep: _currentStep,
-              onNext: _nextStep,
-              onBack: _previousStep,
-              isLoading: _isLoading,
-              nextText: _currentStep == _totalSteps - 1 ? 'Complete' : 'Next',
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: StepNavigationButtons(
+                  currentStep: _currentStep,
+                  onNext: _nextStep,
+                  onBack: _previousStep,
+                  isLoading: _isLoading,
+                  nextText: _currentStep == _totalSteps - 1 ? 'Complete' : 'Next',
+                ),
+              ),
             ),
           ],
         ),
@@ -535,10 +553,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            StepHeader(title: title, subtitle: subtitle),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: child,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Column(
+                children: [
+                  StepHeader(title: title, subtitle: subtitle),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: child,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 40), // Bottom padding for better visual balance
           ],
