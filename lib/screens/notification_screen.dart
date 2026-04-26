@@ -14,6 +14,7 @@ import 'engagement_poster_info_screen.dart';
 import 'share_suggestion_screen.dart';
 import 'profile_photos_screen.dart';
 import 'photo_requests_screen.dart';
+import 'notification_settings_screen.dart';
 import 'wallet_transactions_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -260,7 +261,57 @@ class _NotificationScreenState extends State<NotificationScreen> {
         builder: (context, navProvider, child) => AnimatedSlide(
           duration: const Duration(milliseconds: 300),
           offset: navProvider.isFooterVisible ? Offset.zero : const Offset(0, 2),
-          child: const CommonFooter(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [primaryCyan, Color(0xFF00B8D4)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: primaryCyan.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.settings_suggest_rounded, color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text(
+                          'Notification Settings',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const CommonFooter(),
+            ],
+          ),
         ),
       ),
     );

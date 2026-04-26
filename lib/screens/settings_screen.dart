@@ -15,6 +15,7 @@ import 'privacy_policy_screen.dart';
 import 'security_settings_screen.dart';
 import 'verification_screen.dart';
 import 'share_suggestion_screen.dart';
+import 'notification_settings_screen.dart';
 
 import '../services/payment_service.dart';
 import 'wallet_transactions_screen.dart';
@@ -457,11 +458,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: 'Notifications',
                     subtitle: 'Manage notification preferences',
                     onTap: () {
-                      // TODO: Navigate to notifications settings
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Notifications settings coming soon!'),
-                          duration: Duration(seconds: 2),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationSettingsScreen(),
                         ),
                       );
                     },

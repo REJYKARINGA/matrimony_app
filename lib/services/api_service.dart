@@ -392,6 +392,19 @@ class ApiService {
     return response;
   }
 
+  // Preferences methods
+  static Future<http.Response> updatePreferences(Map<String, dynamic> preferences) async {
+    return await makeRequest(
+      '$baseUrl/notification-settings',
+      method: 'PUT',
+      body: preferences,
+    );
+  }
+
+  static Future<http.Response> getNotificationSettings() async {
+    return await makeRequest('$baseUrl/notification-settings');
+  }
+
   // Helper method to construct proper image URLs
   static String getImageUrl(String? imageUrl) {
     if (imageUrl == null || imageUrl.isEmpty) return '';
