@@ -18,6 +18,9 @@ import 'wallet_transactions_screen.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../services/photo_request_service.dart';
 import '../widgets/watermark_overlay.dart';
+import '../services/profile_share_service.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final int userId;
@@ -610,9 +613,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       );
     }
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
+    return Screenshot(
+      controller: ProfileShareService.screenshotController,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: CustomScrollView(
         controller: _scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -681,7 +686,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       ),
       bottomNavigationBar: _buildStickyBottomActions(),
       extendBody: true,
-    );
+    ));
   }
 
   Widget _buildAppBar({bool lightBackground = false}) {
@@ -909,6 +914,26 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ),
               tooltip: 'Report Profile',
               onPressed: () => _user?.isReportedByMe == true ? _showReportedWarning() : _showReportDialog(),
+            ),
+          ),
+        ),
+        // Share Button
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: CircleAvatar(
+            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black38,
+            child: IconButton(
+              icon: Icon(
+                Icons.share_rounded, 
+                color: _isCollapsed ? Colors.black87 : Colors.white, 
+                size: 20
+              ),
+              tooltip: 'Share Profile',
+              onPressed: () {
+                if (_user != null) {
+                  ProfileShareService.shareProfile(context, _user!);
+                }
+              },
             ),
           ),
         ),
@@ -1534,6 +1559,21 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 iconColor: _shortlistedUserIds.contains(_user!.id) ? Colors.white : const Color(0xFFFFD700),
                 size: 50,
                 shadowColor: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+              ),
+            ),
+
+            // Share
+            GestureDetector(
+              onTap: () {
+                if (_user != null) {
+                  ProfileShareService.shareProfile(context, _user!);
+                }
+              },
+              child: _buildFloatingButton(
+                icon: Icons.share_rounded,
+                color: Colors.white,
+                iconColor: const Color(0xFF00BCD4),
+                size: 50,
               ),
             ),
 
@@ -2196,6 +2236,25 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 ),
               ),
             ),
+            if (_contactUnlocked && _unlockedPhone != null) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: OutlinedButton.icon(
+                  onPressed: () => _launchWhatsApp(_unlockedPhone!),
+                  icon: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF25D366)),
+                  label: const Text(
+                    'Chat on WhatsApp',
+                    style: TextStyle(color: Color(0xFF25D366), fontWeight: FontWeight.bold),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFF25D366), width: 1.5),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                ),
+              ),
+            ],
             SizedBox(height: 8),
           ] else ...[
             // Locked state - show masked phone
@@ -2361,6 +2420,34 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
+  Future<void> _launchWhatsApp(String phone) async {
+    // Remove all non-numeric characters
+    String cleanPhone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    // Auto-prefix with 91 for Indian numbers if it's 10 digits
+    if (cleanPhone.length == 10) {
+      cleanPhone = '91$cleanPhone';
+    }
+
+    final String url = 'https://wa.me/$cleanPhone';
+    final Uri uri = Uri.parse(url);
+    
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open WhatsApp. Please check if it is installed.')),
+        );
+      }
+    } catch (e) {
+      print('Error launching WhatsApp: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error opening WhatsApp')),
+      );
+    }
+  }
+
   Future<void> _showContactDetailsModal() async {
     if (_unlockedPhone == null) {
       setState(() => _isLoadingContactDetails = true);
@@ -2441,59 +2528,66 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           'Father\'s Name',
                           _unlockedFatherName ?? 'Not provided',
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         _buildUnlockedContactRow(
                           Icons.person_outline,
                           'Mother\'s Name',
                           _unlockedMotherName ?? 'Not provided',
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         _buildUnlockedContactRow(
                           Icons.phone_android,
                           'Contact Number',
                           _unlockedPhone ?? 'Not provided',
                           trailing: _unlockedPhone != null
                               ? IconButton(
-                                  icon: Icon(Icons.copy,
-                                      color: Color(0xFF4CD9A6), size: 20),
+                                  icon: const Icon(Icons.copy, color: Color(0xFF4CD9A6), size: 20),
                                   onPressed: () {
-                                    Clipboard.setData(
-                                        ClipboardData(text: _unlockedPhone!));
+                                    Clipboard.setData(ClipboardData(text: _unlockedPhone!));
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Number copied to clipboard'),
+                                        content: const Text('Number copied to clipboard'),
                                         behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                       ),
                                     );
                                   },
                                 )
                               : null,
                         ),
+                        if (_unlockedPhone != null) ...[
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: () => _launchWhatsApp(_unlockedPhone!),
+                              icon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.white, size: 20),
+                              label: const Text('Chat on WhatsApp', style: TextStyle(fontWeight: FontWeight.bold)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF25D366),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                elevation: 0,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
             ),
-            SizedBox(height: 32),
+            SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: SizedBox(
                 width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
+                child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    'Close',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF5F5F5),
-                    foregroundColor: Colors.black87,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                  child: Text('Close', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Colors.grey.shade100,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
               ),

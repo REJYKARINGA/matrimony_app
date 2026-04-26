@@ -11,6 +11,7 @@ import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
 import '../services/api_service.dart';
 import '../utils/date_formatter.dart';
+import '../services/profile_share_service.dart';
 import 'family_details_screen.dart';
 import 'preferences_screen.dart';
 import 'profile_photos_screen.dart';
@@ -398,6 +399,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       iconTheme: const IconThemeData(color: Colors.white),
       actions: [
         IconButton(
+          icon: const Icon(Icons.share_outlined, color: Colors.white, size: 24),
+          onPressed: () {
+            if (_user != null) {
+              ProfileShareService.shareProfile(context, _user!);
+            }
+          },
+        ),
+        IconButton(
           icon: const Icon(Icons.edit_outlined, color: Colors.white, size: 24),
           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(user: _user))),
         ),
@@ -742,16 +751,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildActionButtons() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: _buildPrimaryButton(Icons.family_restroom, 'Family Details', const Color(0xFFF0E6FF), () async {
-              if (await Navigator.push(context, MaterialPageRoute(builder: (context) => const FamilyDetailsScreen())) == true) _loadProfile();
-            }, isOutlined: true),
+          Row(
+            children: [
+              Expanded(
+                child: _buildPrimaryButton(Icons.family_restroom, 'Family Details', const Color(0xFFF0E6FF), () async {
+                  if (await Navigator.push(context, MaterialPageRoute(builder: (context) => const FamilyDetailsScreen())) == true) _loadProfile();
+                }, isOutlined: true),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildPrimaryButton(Icons.settings, 'Preferences', const Color(0xFFF0E6FF), () => Navigator.pushNamed(context, '/preferences'), isOutlined: true),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildPrimaryButton(Icons.settings, 'Preferences', const Color(0xFFF0E6FF), () => Navigator.pushNamed(context, '/preferences'), isOutlined: true),
+          const SizedBox(height: 12),
+          _buildPrimaryButton(
+            Icons.share_outlined, 
+            'Share My Profile to Family', 
+            const Color(0xFF00BCD4), 
+            () {
+              if (_user != null) {
+                ProfileShareService.shareProfile(context, _user!);
+              }
+            }
           ),
         ],
       ),

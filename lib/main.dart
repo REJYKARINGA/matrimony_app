@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
@@ -14,6 +15,8 @@ import 'services/navigation_provider.dart';
 import 'utils/theme_provider.dart';
 import 'models/user_model.dart';
 import 'screens/blocked_screen.dart';
+import 'dart:io' as io;
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 void main() {
   runApp(const MatrimonyApp());
@@ -83,7 +86,22 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _animationController.forward();
     
+    // Global Screenshot & Screen Recording Protection (Android)
+    _enableScreenProtection();
+    
     _navigateToHome();
+  }
+
+  Future<void> _enableScreenProtection() async {
+    if (kIsWeb) return;
+    
+    try {
+      if (io.Platform.isAndroid) {
+        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+      }
+    } catch (e) {
+      debugPrint('Screen protection error: $e');
+    }
   }
 
   @override
