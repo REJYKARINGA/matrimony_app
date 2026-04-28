@@ -1,7 +1,9 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import 'contact_us_screen.dart';
+import '../utils/app_colors.dart';
 
 class BlockedScreen extends StatelessWidget {
   final String message;
@@ -11,7 +13,7 @@ class BlockedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       body: Stack(
         children: [
           // Background elegant gradient at top
@@ -21,7 +23,7 @@ class BlockedScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
+                colors: [AppColors.deepEmerald, AppColors.deepEmerald], // Turquoise to Deep Blue
               ),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(50),
@@ -39,11 +41,11 @@ class BlockedScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.cardDark,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.white70.withOpacity(0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -51,15 +53,14 @@ class BlockedScreen extends StatelessWidget {
                     ),
                     child: const Icon(
                       Icons.security_rounded,
-                      color: Color(0xFF0D47A1),
+                      color: AppColors.deepEmerald,
                       size: 60,
                     ),
                   ),
                   const SizedBox(height: 30),
                   const Text(
                     'Verification Required',
-                    style: TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(color: Colors.white,
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
@@ -68,8 +69,7 @@ class BlockedScreen extends StatelessWidget {
                   const SizedBox(height: 10),
                   Text(
                     'Matrimony Safety & Security',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                    style: TextStyle(color: Colors.white.withOpacity(0.9),
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -82,11 +82,11 @@ class BlockedScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.cardDark,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.white70.withOpacity(0.05),
                           blurRadius: 30,
                           offset: const Offset(0, 15),
                         ),
@@ -149,8 +149,8 @@ class BlockedScreen extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0D47A1),
-                            foregroundColor: Colors.white,
+                            backgroundColor: AppColors.deepEmerald,
+                            foregroundColor: AppColors.cardDark,
                             padding: const EdgeInsets.symmetric(vertical: 18),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -172,8 +172,8 @@ class BlockedScreen extends StatelessWidget {
                             }
                           },
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFF0D47A1)),
-                            foregroundColor: const Color(0xFF0D47A1),
+                            side: const BorderSide(color: AppColors.deepEmerald),
+                            foregroundColor: AppColors.deepEmerald,
                             padding: const EdgeInsets.symmetric(vertical: 18),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
@@ -206,3 +206,18 @@ class BlockedScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

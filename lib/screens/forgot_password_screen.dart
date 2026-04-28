@@ -1,6 +1,8 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
+import '../utils/app_colors.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
@@ -37,14 +39,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.midnightEmerald,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new,
-            color: Color(0xFF0D47A1),
+            color: AppColors.deepEmerald,
           ),
           onPressed: () {
             if (_currentStep > 0) {
@@ -69,7 +71,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D47A1),
+                  color: AppColors.deepEmerald,
                 ),
               ),
               const SizedBox(height: 8),
@@ -163,19 +165,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isActive ? Color(0xFF00BCD4) : Colors.grey.shade300,
+              color: isActive ? AppColors.deepEmerald : Colors.grey.shade300,
               border: Border.all(
-                color: isActive ? Color(0xFF00BCD4) : Colors.grey.shade400,
+                color: isActive ? AppColors.deepEmerald : Colors.grey.shade400,
                 width: 2,
               ),
             ),
             child: Center(
               child: isCompleted
-                  ? const Icon(Icons.check, color: Colors.white, size: 20)
+                  ? const Icon(Icons.check, color: AppColors.cardDark, size: 20)
                   : Text(
                       '${index + 1}',
                       style: TextStyle(
-                        color: isActive ? Colors.white : Colors.grey.shade600,
+                        color: isActive ? AppColors.cardDark : Colors.grey.shade600,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -200,7 +202,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: Container(
         height: 2,
         margin: const EdgeInsets.only(bottom: 30),
-        color: _currentStep > 0 ? Color(0xFF00BCD4) : Colors.grey.shade300,
+        color: _currentStep > 0 ? AppColors.deepEmerald : Colors.grey.shade300,
       ),
     );
   }
@@ -233,9 +235,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 onSelected: (val) {
                   if (val) setState(() => _isUsingEmail = true);
                 },
-                selectedColor: Color(0xFF00BCD4).withOpacity(0.2),
+                selectedColor: AppColors.deepEmerald.withOpacity(0.2),
                 labelStyle: TextStyle(
-                  color: _isUsingEmail ? Color(0xFF0D47A1) : Colors.grey,
+                  color: _isUsingEmail ? AppColors.deepEmerald : Colors.grey,
                   fontWeight: FontWeight.bold,
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -247,9 +249,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 onSelected: (val) {
                   if (val) setState(() => _isUsingEmail = false);
                 },
-                selectedColor: Color(0xFF00BCD4).withOpacity(0.2),
+                selectedColor: AppColors.deepEmerald.withOpacity(0.2),
                 labelStyle: TextStyle(
-                  color: !_isUsingEmail ? Color(0xFF0D47A1) : Colors.grey,
+                  color: !_isUsingEmail ? AppColors.deepEmerald : Colors.grey,
                   fontWeight: FontWeight.bold,
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -265,7 +267,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     labelText: 'Email Address',
                     hintText: 'Enter your registered email',
                     labelStyle: TextStyle(color: Colors.grey[600]),
-                    prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF00BCD4)),
+                    prefixIcon: Icon(Icons.email_outlined, color: AppColors.deepEmerald),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey.shade300),
@@ -276,10 +278,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                      borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
                     ),
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: AppColors.midnightEmerald,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -298,7 +300,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     labelText: 'Phone Number',
                     hintText: 'Enter your registered phone',
                     labelStyle: TextStyle(color: Colors.grey[600]),
-                    prefixIcon: Icon(Icons.phone_outlined, color: Color(0xFF00BCD4)),
+                    prefixIcon: Icon(Icons.phone_outlined, color: AppColors.deepEmerald),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey.shade300),
@@ -309,10 +311,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                      borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
                     ),
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: AppColors.midnightEmerald,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -329,12 +331,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                colors: [AppColors.deepEmerald, AppColors.deepEmerald],
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF00BCD4).withOpacity(0.3),
+                  color: AppColors.deepEmerald.withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -393,7 +395,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.cardDark,
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
@@ -436,7 +438,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               labelText: 'Verification Code',
               hintText: 'Enter 6-digit OTP',
               labelStyle: TextStyle(color: Colors.grey[600]),
-              prefixIcon: Icon(Icons.lock_outlined, color: Color(0xFF00BCD4)),
+              prefixIcon: Icon(Icons.lock_outlined, color: AppColors.deepEmerald),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: Colors.grey.shade300),
@@ -447,10 +449,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: AppColors.midnightEmerald,
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -472,12 +474,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                colors: [AppColors.deepEmerald, AppColors.deepEmerald],
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF00BCD4).withOpacity(0.3),
+                  color: AppColors.deepEmerald.withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -546,7 +548,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.cardDark,
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
@@ -626,7 +628,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Text(
                 'Resend OTP',
                 style: TextStyle(
-                  color: Color(0xFF00BCD4),
+                  color: AppColors.deepEmerald,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -650,7 +652,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               labelText: 'New Password',
               hintText: 'Enter your new password',
               labelStyle: TextStyle(color: Colors.grey[600]),
-              prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF00BCD4)),
+              prefixIcon: Icon(Icons.lock_outline, color: AppColors.deepEmerald),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureNewPassword
@@ -674,10 +676,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: AppColors.midnightEmerald,
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -697,7 +699,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               labelText: 'Confirm Password',
               hintText: 'Confirm your new password',
               labelStyle: TextStyle(color: Colors.grey[600]),
-              prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF00BCD4)),
+              prefixIcon: Icon(Icons.lock_outline, color: AppColors.deepEmerald),
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscureConfirmPassword
@@ -721,10 +723,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2),
+                borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: AppColors.midnightEmerald,
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -741,12 +743,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             height: 56,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                colors: [AppColors.deepEmerald, AppColors.deepEmerald],
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0xFF00BCD4).withOpacity(0.3),
+                  color: AppColors.deepEmerald.withOpacity(0.3),
                   blurRadius: 15,
                   offset: const Offset(0, 8),
                 ),
@@ -814,7 +816,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.cardDark,
                 elevation: 0,
                 shadowColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
@@ -853,3 +855,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

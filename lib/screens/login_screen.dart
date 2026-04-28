@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.cardDark,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                     border: Border.all(
-                      color: Colors.grey.shade200,
+                      color: AppColors.midnightEmerald,
                       width: 1,
                     ),
                   ),
@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.grey.shade50,
+                            fillColor: AppColors.midnightEmerald,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             filled: true,
-                            fillColor: Colors.grey.shade50,
+                            fillColor: AppColors.midnightEmerald,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -287,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.cardDark,
                               elevation: 0,
                               shadowColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
@@ -366,3 +366,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 }
+
+
+
+
+

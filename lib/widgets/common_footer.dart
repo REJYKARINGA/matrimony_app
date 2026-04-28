@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/navigation_provider.dart';
 import '../services/message_service.dart';
+import '../utils/app_colors.dart';
 import 'dart:convert';
 import 'dart:ui';
 
@@ -199,12 +200,12 @@ class _CommonFooterState extends State<CommonFooter> {
     Color activeColor;
     
     switch (selectedIndex) {
-      case 0: activeIcon = Icons.home; activeColor = const Color(0xFF00BCD4); break;
-      case 4: activeIcon = Icons.search_rounded; activeColor = const Color(0xFF00BCD4); break;
+      case 0: activeIcon = Icons.home; activeColor = AppColors.primaryGreen; break;
+      case 4: activeIcon = Icons.search_rounded; activeColor = AppColors.primaryGreen; break;
       case 1: activeIcon = Icons.favorite; activeColor = const Color(0xFFFF2D55); break;
-      case 2: activeIcon = Icons.chat_bubble; activeColor = const Color(0xFF00BCD4); break;
-      case 3: activeIcon = Icons.person; activeColor = const Color(0xFF00BCD4); break;
-      default: activeIcon = Icons.home; activeColor = const Color(0xFF00BCD4);
+      case 2: activeIcon = Icons.chat_bubble; activeColor = AppColors.primaryGreen; break;
+      case 3: activeIcon = Icons.person; activeColor = AppColors.primaryGreen; break;
+      default: activeIcon = Icons.home; activeColor = AppColors.primaryGreen;
     }
 
     return Transform.translate(

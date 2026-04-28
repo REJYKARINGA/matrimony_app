@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
@@ -16,6 +17,7 @@ import 'profile_photos_screen.dart';
 import 'photo_requests_screen.dart';
 import 'notification_settings_screen.dart';
 import 'wallet_transactions_screen.dart';
+import '../utils/app_colors.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -30,8 +32,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String? _error;
 
   // Updated colors to match the cyan header from the image
-  static const Color primaryCyan = Color(0xFF00D9E1);
-  static const Color accentGreen = Color(0xFF4CD9A6);
+  static const Color primaryCyan = AppColors.royalGold;
+  static const Color accentGreen = AppColors.royalGold;
 
   @override
   void initState() {
@@ -136,7 +138,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final unreadCount = _notifications.where((n) => n['is_read'] == false || n['is_read'] == 0).length;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       body: NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
           final navProvider = Provider.of<NavigationProvider>(context, listen: false);
@@ -156,7 +158,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.notifications_off_outlined, size: 80, color: Colors.grey.shade200),
+                          Icon(Icons.notifications_off_outlined, size: 80, color: AppColors.midnightEmerald),
                           const SizedBox(height: 16),
                           const Text('No notifications yet', style: TextStyle(color: Colors.grey, fontSize: 16)),
                         ],
@@ -171,10 +173,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             expandedHeight: 120.0,
                             floating: false,
                             pinned: true,
-                            backgroundColor: Colors.white,
+                            backgroundColor: AppColors.midnightEmerald,
                             elevation: 0,
                             leading: IconButton(
-                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
+                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70, size: 20),
                               onPressed: () => Navigator.pop(context),
                             ),
                             actions: [
@@ -191,7 +193,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             flexibleSpace: FlexibleSpaceBar(
                               centerTitle: false,
                               background: Container(
-                                color: Colors.white,
+                                color: AppColors.cardDark,
                                 padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                                 alignment: Alignment.bottomLeft,
                                 child: RichText(
@@ -218,7 +220,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   'Today',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white70),
                                 ),
                               ),
                             ),
@@ -239,7 +241,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: EdgeInsets.fromLTRB(20, 30, 20, 10),
                                 child: Text(
                                   'This Week',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white70),
                                 ),
                               ),
                             ),
@@ -293,12 +295,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
-                        Icon(Icons.settings_suggest_rounded, color: Colors.white, size: 20),
+                        Icon(Icons.settings_suggest_rounded, color: AppColors.cardDark, size: 20),
                         SizedBox(width: 8),
                         Text(
                           'Notification Settings',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                             letterSpacing: 0.2,
@@ -360,11 +361,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
         break;
       case 'photo_request':
         badgeIcon = Icons.photo_library_rounded;
-        badgeColor = const Color(0xFF00BCD4);
+        badgeColor = AppColors.deepEmerald;
         break;
       case 'photo_request_accepted':
         badgeIcon = Icons.lock_open_rounded;
-        badgeColor = const Color(0xFF4CD9A6);
+        badgeColor = AppColors.royalGold;
         break;
       case 'photo_request_rejected':
         badgeIcon = Icons.cancel_outlined;
@@ -373,7 +374,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       case 'wallet_transfer_otp':
       case 'wallet_transfer_received':
         badgeIcon = Icons.account_balance_wallet_rounded;
-        badgeColor = const Color(0xFF00BCD4);
+        badgeColor = AppColors.deepEmerald;
         break;
       case 'scam_alert':
         badgeIcon = Icons.gpp_bad_rounded;
@@ -487,15 +488,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   height: 55,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.shade100, width: 2),
+                    border: Border.all(color: AppColors.midnightEmerald, width: 2),
                   ),
                   child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster') || type == 'scam_alert')
                       ? CircleAvatar(
-                          backgroundColor: (type == 'scam_alert' ? Colors.red.shade50 : const Color(0xFF00BCD4).withOpacity(0.12)),
+                          backgroundColor: (type == 'scam_alert' ? Colors.red.shade50 : AppColors.deepEmerald.withOpacity(0.12)),
                           child: Icon(badgeIcon, color: badgeColor, size: 26),
                         )
                       : CircleAvatar(
-                          backgroundColor: Colors.grey.shade50,
+                          backgroundColor: AppColors.midnightEmerald,
                           backgroundImage: senderProfile != null && senderProfile['profile_picture'] != null
                               ? NetworkImage(ApiService.getImageUrl(senderProfile['profile_picture']))
                               : null,
@@ -510,9 +511,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.cardDark,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
+                      boxShadow: [BoxShadow(color: Colors.white70.withOpacity(0.1), blurRadius: 4)],
                     ),
                     child: Icon(badgeIcon, size: 10, color: badgeColor),
                   ),
@@ -528,7 +529,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      style: const TextStyle(color: Colors.black87, fontSize: 14, height: 1.4),
+                      style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
                       children: [
                         TextSpan(
                           text: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update')
@@ -582,3 +583,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../services/subscription_service.dart';
@@ -109,7 +110,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: theme.colorScheme.primary,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.cardDark,
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
@@ -129,7 +130,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: theme.brightness == Brightness.dark
-                          ? Colors.white
+                          ? AppColors.cardDark
                           : Colors.black87,
                     ),
                   ),
@@ -152,7 +153,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: theme.brightness == Brightness.dark
-                                      ? Colors.white
+                                      ? AppColors.cardDark
                                       : Colors.black87,
                                 ),
                               ),
@@ -167,8 +168,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                 ),
                                 child: Text(
                                   'Active',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: const TextStyle(color: Colors.white,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -214,7 +214,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: theme.brightness == Brightness.dark
-                          ? Colors.white
+                          ? AppColors.cardDark
                           : Colors.black87,
                     ),
                   ),
@@ -263,7 +263,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           _errorMessage!,
                           style: TextStyle(
                             color: theme.brightness == Brightness.dark
-                                ? Colors.white
+                                ? AppColors.cardDark
                                 : Colors.black87,
                           ),
                         ),
@@ -272,7 +272,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           onPressed: _loadData,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.cardDark,
                           ),
                           child: const Text('Retry'),
                         ),
@@ -351,7 +351,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 width: 150,
                 height: 150,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: AppColors.cardDark.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -373,14 +373,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               style: const TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: AppColors.cardDark,
                                 letterSpacing: 0.5,
                               ),
                             ),
                             const Text(
                               'Lifetime Access',
-                              style: TextStyle(
-                                color: Colors.white70,
+                              style: TextStyle(color: Colors.white70,
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -391,7 +390,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
+                          color: AppColors.cardDark.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.white24),
                         ),
@@ -400,7 +399,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           style: const TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.cardDark,
                           ),
                         ),
                       ),
@@ -417,11 +416,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.cardDark,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.1),
+                            color: Colors.white70.withValues(alpha: 0.1),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -458,14 +457,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: isEnabled 
-                ? (isDarkBackground ? Colors.white.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.1))
-                : (isDarkBackground ? Colors.white.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1)),
+                ? (isDarkBackground ? AppColors.cardDark.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.1))
+                : (isDarkBackground ? AppColors.cardDark.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1)),
               shape: BoxShape.circle,
             ),
             child: Icon(
               isEnabled ? Icons.check : Icons.close,
               color: isEnabled
-                  ? (isDarkBackground ? Colors.white : Colors.green[700])
+                  ? (isDarkBackground ? AppColors.cardDark : Colors.green[700])
                   : (isDarkBackground ? Colors.white54 : Colors.red[700]),
               size: 14,
             ),
@@ -478,7 +477,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 fontSize: 14,
                 fontWeight: isEnabled ? FontWeight.w500 : FontWeight.normal,
                 color: isEnabled
-                    ? (isDarkBackground ? Colors.white : Colors.black87)
+                    ? (isDarkBackground ? AppColors.cardDark : Colors.black87)
                     : (isDarkBackground ? Colors.white60 : Colors.grey[600]),
               ),
             ),
@@ -488,3 +487,18 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

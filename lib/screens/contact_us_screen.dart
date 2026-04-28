@@ -1,4 +1,6 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import '../utils/app_colors.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -16,13 +18,13 @@ class ContactUsScreen extends StatelessWidget {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
-                Color(0xFF00BCD4), // Turquoise
-                Color(0xFF0D47A1), // Deep blue
+                AppColors.deepEmerald, // Turquoise
+                AppColors.deepEmerald, // Deep blue
               ],
             ),
           ),
         ),
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.cardDark,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -33,7 +35,7 @@ class ContactUsScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Card(
                 elevation: 2,
-                color: Colors.white,
+                color: AppColors.cardDark,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -68,7 +70,7 @@ class ContactUsScreen extends StatelessWidget {
                 Icons.email,
                 'Email',
                 'rejykaring2000@gmail.com',
-                const Color(0xFF00BCD4),
+                AppColors.deepEmerald,
                 () {
                   _launchEmail(context, 'rejykaring2000@gmail.com');
                 },
@@ -79,7 +81,7 @@ class ContactUsScreen extends StatelessWidget {
                 Icons.phone,
                 'Phone',
                 '+91 7994870262',
-                const Color(0xFF0D47A1),
+                AppColors.deepEmerald,
                 () {
                   _launchPhone(context, '+91 7994870262');
                 },
@@ -90,7 +92,7 @@ class ContactUsScreen extends StatelessWidget {
                 Icons.message,
                 'WhatsApp',
                 '+91 7994870262',
-                const Color(0xFF00BCD4),
+                AppColors.deepEmerald,
                 () {
                   _launchWhatsApp(context, '+91 7994870262');
                 },
@@ -98,7 +100,7 @@ class ContactUsScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Card(
                 elevation: 2,
-                color: Colors.white,
+                color: AppColors.cardDark,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
@@ -111,7 +113,7 @@ class ContactUsScreen extends StatelessWidget {
                         children: const [
                           Icon(
                             Icons.access_time,
-                            color: Color(0xFF00BCD4),
+                            color: AppColors.deepEmerald,
                             size: 22,
                           ),
                           SizedBox(width: 8),
@@ -159,7 +161,7 @@ class ContactUsScreen extends StatelessWidget {
   ) {
     return Card(
       elevation: 2,
-      color: Colors.white,
+      color: AppColors.cardDark,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -188,7 +190,7 @@ class ContactUsScreen extends StatelessWidget {
       SnackBar(
         content: Text('Opening email client for $email'),
         duration: const Duration(seconds: 2),
-        backgroundColor: const Color(0xFF00BCD4),
+        backgroundColor: AppColors.deepEmerald,
       ),
     );
   }
@@ -198,7 +200,7 @@ class ContactUsScreen extends StatelessWidget {
       SnackBar(
         content: Text('Calling $phone'),
         duration: const Duration(seconds: 2),
-        backgroundColor: const Color(0xFF0D47A1),
+        backgroundColor: AppColors.deepEmerald,
       ),
     );
   }
@@ -208,8 +210,22 @@ class ContactUsScreen extends StatelessWidget {
       SnackBar(
         content: Text('Opening WhatsApp for $phone'),
         duration: const Duration(seconds: 2),
-        backgroundColor: const Color(0xFF00BCD4),
+        backgroundColor: AppColors.deepEmerald,
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

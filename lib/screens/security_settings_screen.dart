@@ -1,3 +1,4 @@
+import '../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../models/login_history_model.dart';
@@ -43,8 +44,8 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Security & Login History'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.midnightEmerald,
+        foregroundColor: Colors.white70,
         elevation: 0,
       ),
       backgroundColor: Colors.grey[50],
@@ -62,7 +63,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Colors.white70,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -88,11 +89,11 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.white70.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -102,12 +103,12 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: (isWeb ? Colors.blue[50] : Colors.green[50]),
+            color: (isWeb ? AppColors.primaryBlue : Colors.green[50]),
             shape: BoxShape.circle,
           ),
           child: Icon(
             isWeb ? Icons.laptop : Icons.phone_android,
-            color: (isWeb ? Colors.blue : Colors.green),
+            color: (isWeb ? AppColors.primaryBlue : Colors.green),
             size: 24,
           ),
         ),
@@ -128,13 +129,26 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
           ? Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.blue.shade50,
+                color: AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text('Current', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 10)),
+              child: const Text('Current', style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold, fontSize: 10)),
             )
           : null,
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

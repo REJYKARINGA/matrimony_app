@@ -1,6 +1,8 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../services/profile_service.dart';
+import '../utils/app_colors.dart';
 
 class FamilyDetailsScreen extends StatefulWidget {
   const FamilyDetailsScreen({Key? key}) : super(key: key);
@@ -194,22 +196,22 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   Widget build(BuildContext context) {
     if (_isDataLoading) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.midnightEmerald,
         appBar: AppBar(
           title: const Text('Family Details'),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: AppColors.midnightEmerald,
+          foregroundColor: Colors.white70,
           elevation: 0,
         ),
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(color: Color(0xFF00BCD4)),
+              CircularProgressIndicator(color: AppColors.deepEmerald),
               SizedBox(height: 16),
               Text(
                 'Loading family details...',
-                style: TextStyle(color: Colors.black87, fontSize: 16),
+                style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
             ],
           ),
@@ -219,11 +221,11 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.midnightEmerald,
         appBar: AppBar(
           title: const Text('Family Details'),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: AppColors.midnightEmerald,
+          foregroundColor: Colors.white70,
           elevation: 0,
         ),
         body: SafeArea(
@@ -237,7 +239,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -245,8 +247,8 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                 ElevatedButton(
                   onPressed: _loadFamilyDetails,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF00BCD4),
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.deepEmerald,
+                    foregroundColor: AppColors.cardDark,
                   ),
                   child: const Text('Retry'),
                 ),
@@ -258,11 +260,11 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       appBar: AppBar(
         title: const Text('Family Details'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.midnightEmerald,
+        foregroundColor: Colors.white70,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -277,13 +279,13 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Color(0xFF00BCD4),
+                      color: AppColors.deepEmerald,
                     ),
                   )
                 : const Text(
                     'Save',
                     style: TextStyle(
-                      color: Color(0xFF00BCD4),
+                      color: AppColors.deepEmerald,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -563,12 +565,12 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
+                              colors: [AppColors.deepEmerald, AppColors.deepEmerald], // Turquoise to Deep Blue
                             ),
                             borderRadius: BorderRadius.circular(15),
                             boxShadow: [
                               BoxShadow(
-                                color: Color(0xFF00BCD4).withOpacity(0.3),
+                                color: AppColors.deepEmerald.withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 4),
                               ),
@@ -578,7 +580,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                             onPressed: _isLoading ? null : _saveFamilyDetails,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.cardDark,
                               elevation: 0,
                               shadowColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
@@ -591,7 +593,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                                     width: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2.5,
-                                      color: Colors.white,
+                                      color: AppColors.cardDark,
                                     ),
                                   )
                                 : const Text(
@@ -622,10 +624,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Color(0xFF00BCD4).withOpacity(0.1), // Turquoise
+            color: AppColors.deepEmerald.withOpacity(0.1), // Turquoise
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, size: 20, color: Color(0xFF00BCD4)), // Turquoise
+          child: Icon(icon, size: 20, color: AppColors.deepEmerald), // Turquoise
         ),
         const SizedBox(width: 10),
         Text(
@@ -633,7 +635,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.black87,
+            color: Colors.white70,
           ),
         ),
       ],
@@ -652,7 +654,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF00BCD4)), // Turquoise
+        prefixIcon: Icon(icon, color: AppColors.deepEmerald), // Turquoise
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -663,10 +665,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2), // Turquoise
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2), // Turquoise
         ),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: AppColors.midnightEmerald,
       ),
       validator: validator,
     );
@@ -683,7 +685,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Color(0xFF00BCD4)), // Turquoise
+        prefixIcon: Icon(icon, color: AppColors.deepEmerald), // Turquoise
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -694,10 +696,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2), // Turquoise
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2), // Turquoise
         ),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: AppColors.midnightEmerald,
       ),
       items: items,
       onChanged: onChanged,
@@ -722,10 +724,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Color(0xFF00BCD4), width: 2), // Turquoise
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2), // Turquoise
         ),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: AppColors.midnightEmerald,
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<bool>(
@@ -757,3 +759,17 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     super.dispose();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

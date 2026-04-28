@@ -25,7 +25,7 @@ class WalletRechargePaywall extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 24, top: 10),
                 child: Column(
                   children: [
-                    const Icon(Icons.account_balance_wallet_rounded, size: 64, color: Color(0xFF00BCD4)),
+                    const Icon(Icons.account_balance_wallet_rounded, size: 64, color: Color(0xFF00A87D)),
                     const SizedBox(height: 16),
                     const Text(
                       'Recharge Required',
@@ -61,13 +61,13 @@ class WalletRechargePaywall extends StatelessWidget {
           gradient: LinearGradient(
             colors: isPopular 
                 ? [const Color(0xFFFF9800), const Color(0xFFF57C00)]
-                : [const Color(0xFF00BCD4), const Color(0xFF0D47A1)],
+                : [const Color(0xFF00A87D), const Color(0xFF00A87D)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           boxShadow: [
             BoxShadow(
-              color: (isPopular ? const Color(0xFFFF9800) : const Color(0xFF00BCD4)).withOpacity(0.3),
+              color: (isPopular ? const Color(0xFFFF9800) : const Color(0xFF00A87D)).withOpacity(0.3),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -156,7 +156,7 @@ class WalletRechargePaywall extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: isPopular ? const Color(0xFFF57C00) : const Color(0xFF0D47A1),
+                              color: isPopular ? const Color(0xFFF57C00) : const Color(0xFF00A87D),
                             ),
                           ),
                         ),
@@ -172,3 +172,7 @@ class WalletRechargePaywall extends StatelessWidget {
     );
   }
 }
+
+
+
+

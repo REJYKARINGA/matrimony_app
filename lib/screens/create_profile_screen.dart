@@ -441,7 +441,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.cardDark,
             ),
           ),
           trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
@@ -472,7 +472,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         builder: (_, scrollController) => StatefulBuilder(
           builder: (context, setModalState) => Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: AppColors.cardDark,
               borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
             ),
             child: Column(
@@ -496,7 +496,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1A1A1A),
+                          color: AppColors.cardDark,
                         ),
                       ),
                       IconButton(
@@ -511,7 +511,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Search $title...',
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF00BCD4)),
+                      prefixIcon: const Icon(Icons.search, color: AppColors.deepEmerald),
                       filled: true,
                       fillColor: Colors.grey[100],
                       border: OutlineInputBorder(
@@ -1027,7 +1027,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         },
                   icon: Icons.gps_fixed_rounded,
                   label: _isLocating ? '...' : 'Detect GPS',
-                  colors: [const Color(0xFF1565C0), const Color(0xFF0D47A1)],
+                  colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                 ),
               ),
             ],
@@ -1182,7 +1182,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             icon: Icons.edit_note,
             child: Text(
               _bioController.text,
-              style: const TextStyle(color: Colors.black87, height: 1.5),
+              style: const TextStyle(color: Colors.white70, height: 1.5),
             ),
           ),
           const SizedBox(height: 16),
@@ -1258,7 +1258,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.close, size: 14, color: Colors.white),
+                          child: const Icon(Icons.close, size: 14, color: AppColors.cardDark),
                         ),
                       ),
                     ),
@@ -1376,7 +1376,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.primaryCyan.withOpacity(0.1)),
         boxShadow: [
@@ -1424,7 +1424,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             child: Text(
               label,
               style: TextStyle(
-                color: Colors.grey.shade500,
+                color: AppColors.midnightEmerald,
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
               ),
@@ -1437,7 +1437,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               textAlign: TextAlign.right,
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.cardDark,
                 fontSize: 14,
               ),
             ),
@@ -1530,12 +1530,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 18, color: Colors.white),
+            Icon(icon, size: 18, color: AppColors.cardDark),
             const SizedBox(width: 8),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: const TextStyle(color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
                 letterSpacing: 0.5,
@@ -1547,3 +1546,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

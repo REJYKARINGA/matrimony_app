@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
@@ -7,6 +8,7 @@ import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
 import '../services/location_service.dart';
 import '../utils/date_formatter.dart';
+import '../utils/app_colors.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({Key? key}) : super(key: key);
@@ -20,8 +22,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   int _currentStep = 0;
 
   // Updated colors to match the cyan header from the image
-  static const Color primaryCyan = Color(0xFF00D9E1);
-  static const Color accentGreen = Color(0xFF4CD9A6);
+  static const Color primaryCyan = AppColors.royalGold;
+  static const Color accentGreen = AppColors.royalGold;
 
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
@@ -391,7 +393,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
         ),
@@ -407,7 +409,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
         ),
@@ -423,7 +425,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           readOnly: true,
           onTap: () async {
@@ -439,7 +441,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   data: Theme.of(context).copyWith(
                     colorScheme: const ColorScheme.light(
                       primary: primaryCyan,
-                      onPrimary: Colors.white,
+                      onPrimary: AppColors.cardDark,
                       onSurface: Colors.black,
                     ),
                   ),
@@ -469,7 +471,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: const [
             DropdownMenuItem(value: 'male', child: Text('Male')),
@@ -490,7 +492,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _heights.map((height) {
             return DropdownMenuItem(
@@ -513,7 +515,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _weights.map((weight) {
             return DropdownMenuItem(value: weight, child: Text(weight));
@@ -533,7 +535,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: const [
             DropdownMenuItem(
@@ -576,7 +578,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _religions.map((religion) {
             return DropdownMenuItem(value: religion, child: Text(religion));
@@ -595,7 +597,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -610,7 +612,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -625,7 +627,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _motherTongues.map((language) {
             return DropdownMenuItem(value: language, child: Text(language));
@@ -661,7 +663,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _educationOptions.map((education) {
             return DropdownMenuItem(value: education, child: Text(education));
@@ -683,7 +685,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 borderSide: const BorderSide(color: primaryCyan, width: 2),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: AppColors.midnightEmerald,
             ),
             validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
           ),
@@ -700,7 +702,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _occupationOptions.map((occupation) {
             return DropdownMenuItem(value: occupation, child: Text(occupation));
@@ -723,7 +725,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 borderSide: const BorderSide(color: primaryCyan, width: 2),
               ),
               filled: true,
-              fillColor: Colors.grey.shade50,
+              fillColor: AppColors.midnightEmerald,
             ),
             validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
           ),
@@ -740,7 +742,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _incomeRanges.map((income) {
             return DropdownMenuItem(value: income, child: Text(income));
@@ -789,7 +791,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -804,7 +806,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -819,7 +821,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -834,7 +836,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
           items: _keralaDistricts.map((district) {
             return DropdownMenuItem(value: district, child: Text(district));
@@ -850,7 +852,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             prefixIcon: const Icon(Icons.location_on_outlined, color: Colors.grey),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
-            fillColor: Colors.grey.shade200,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -862,7 +864,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             prefixIcon: const Icon(Icons.public, color: Colors.grey),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             filled: true,
-            fillColor: Colors.grey.shade200,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
         const SizedBox(height: 16),
@@ -882,7 +884,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               borderSide: const BorderSide(color: primaryCyan, width: 2),
             ),
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
           ),
         ),
       ],
@@ -907,10 +909,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.midnightEmerald,
         foregroundColor: primaryCyan,
         title: const Text('Create Profile'),
         centerTitle: true,
@@ -932,10 +934,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.shade200,
+                    color: AppColors.midnightEmerald,
                     blurRadius: 10,
                     offset: const Offset(0, -5),
                   ),
@@ -965,7 +967,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                       onPressed: _isLoading ? null : _nextStep,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryCyan,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.cardDark,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -978,7 +980,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               width: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Colors.white,
+                                color: AppColors.cardDark,
                               ),
                             )
                           : Text(
@@ -1019,3 +1021,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     super.dispose();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

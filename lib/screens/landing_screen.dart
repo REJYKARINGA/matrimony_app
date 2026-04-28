@@ -111,7 +111,7 @@ class LandingScreen extends StatelessWidget {
                       height: 100,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: AppColors.cardDark,
                         border: Border.all(
                           color: AppColors.primaryCyan, // Turquoise border
                           width: 3,
@@ -179,7 +179,7 @@ class LandingScreen extends StatelessWidget {
                     onPressed: () => Navigator.pushNamed(context, '/login'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.cardDark,
                       elevation: 0,
                       shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
@@ -222,3 +222,17 @@ class LandingScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

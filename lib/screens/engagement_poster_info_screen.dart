@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/auth_provider.dart';
+import '../utils/app_colors.dart';
 
 class EngagementPosterInfoScreen extends StatefulWidget {
   const EngagementPosterInfoScreen({super.key});
@@ -39,11 +41,11 @@ class _EngagementPosterInfoScreenState
   final ImagePicker _picker = ImagePicker();
 
   // Design Tokens - Matching the Gray-White premium theme
-  static const Color primaryCyan = Color(0xFF00BCD4);
-  static const Color backgroundGray = Color(0xFFF5F7F9);
-  static const Color cardGray = Color(0xFFF9FAFB);
-  static const Color textBlack = Color(0xFF1A1A1A);
-  static const Color accentGreen = Color(0xFF4CD9A6);
+  static const Color primaryCyan = AppColors.deepEmerald;
+  static const Color backgroundGray = AppColors.backgroundLight;
+  static const Color cardGray = AppColors.backgroundLight;
+  static const Color textBlack = AppColors.textDark;
+  static const Color accentGreen = AppColors.royalGold;
 
   @override
   void initState() {
@@ -139,7 +141,7 @@ class _EngagementPosterInfoScreenState
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: primaryCyan,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.cardDark,
               onSurface: Colors.black,
             ),
           ),
@@ -329,11 +331,11 @@ class _EngagementPosterInfoScreenState
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.white70.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -408,7 +410,7 @@ class _EngagementPosterInfoScreenState
         builder: (context, setModalState) => Container(
           height: MediaQuery.of(context).size.height * 0.9,
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.cardDark,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -496,7 +498,7 @@ class _EngagementPosterInfoScreenState
                                             child: IconButton(
                                               icon: const Icon(
                                                 Icons.edit,
-                                                color: Colors.white,
+                                                color: AppColors.cardDark,
                                                 size: 20,
                                               ),
                                               onPressed: () async {
@@ -531,7 +533,7 @@ class _EngagementPosterInfoScreenState
                                                 child: IconButton(
                                                   icon: const Icon(
                                                     Icons.edit,
-                                                    color: Colors.white,
+                                                    color: AppColors.cardDark,
                                                     size: 20,
                                                   ),
                                                   onPressed: () async {
@@ -547,7 +549,7 @@ class _EngagementPosterInfoScreenState
                                               child: Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.black54,
+                                                  color: Colors.white70,
                                                   borderRadius: BorderRadius.circular(6),
                                                 ),
                                                 child: const Text(
@@ -832,7 +834,7 @@ class _EngagementPosterInfoScreenState
                             onPressed: () => _submitForm(context),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.cardDark,
                               shadowColor: Colors.transparent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -914,10 +916,10 @@ class _EngagementPosterInfoScreenState
                     decoration: BoxDecoration(
                       color: cardGray,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey.shade100),
+                      border: Border.all(color: AppColors.midnightEmerald),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.white70.withOpacity(0.04),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -1009,10 +1011,10 @@ class _EngagementPosterInfoScreenState
                     decoration: BoxDecoration(
                       color: cardGray,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey.shade100),
+                      border: Border.all(color: AppColors.midnightEmerald),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.white70.withOpacity(0.04),
                           blurRadius: 15,
                           offset: const Offset(0, 8),
                         ),
@@ -1096,7 +1098,7 @@ class _EngagementPosterInfoScreenState
                         onPressed: _showUploadForm,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
-                          foregroundColor: Colors.white,
+                          foregroundColor: AppColors.cardDark,
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -1236,7 +1238,7 @@ class _EngagementPosterInfoScreenState
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4),
+                      border: Border.all(color: AppColors.cardDark, width: 4),
                       boxShadow: [
                         BoxShadow(
                           color: primaryCyan.withOpacity(0.3),
@@ -1259,7 +1261,7 @@ class _EngagementPosterInfoScreenState
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4),
+                      border: Border.all(color: AppColors.cardDark, width: 4),
                       boxShadow: [
                         BoxShadow(
                           color: primaryCyan.withOpacity(0.3),
@@ -1285,10 +1287,10 @@ class _EngagementPosterInfoScreenState
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 shape: BoxShape.circle,
                 boxShadow: [
-                  BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))
+                  BoxShadow(color: Colors.white70, blurRadius: 10, offset: Offset(0, 4))
                 ],
               ),
               child: const Icon(
@@ -1311,11 +1313,11 @@ class _EngagementPosterInfoScreenState
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.white70.withOpacity(0.04),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -1485,7 +1487,7 @@ class _EngagementPosterInfoScreenState
                       onPressed: _showUploadForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.cardDark,
                         shadowColor: Colors.transparent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -1519,7 +1521,7 @@ class _EngagementPosterInfoScreenState
                           onPressed: () => _respondToPoster('confirmed'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.cardDark,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -1590,3 +1592,17 @@ class _EngagementPosterInfoScreenState
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

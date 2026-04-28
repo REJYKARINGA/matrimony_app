@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -10,6 +11,7 @@ import '../services/api_service.dart';
 import '../services/profile_service.dart';
 import '../models/user_model.dart';
 import 'view_profile_screen.dart';
+import '../utils/app_colors.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({Key? key}) : super(key: key);
@@ -106,7 +108,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.offWhite,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,27 +124,28 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
+                      color: AppColors.darkGreen,
                       letterSpacing: -0.5,
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
+                      color: AppColors.softMint,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.search_rounded, color: Colors.black54, size: 26),
+                    child: const Icon(Icons.search_rounded, color: AppColors.darkGreen, size: 26),
                   ),
                 ],
               ),
             ),
 
             if (_isLoading && _conversations.isEmpty)
-              const Expanded(child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))))
+              const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.primaryGreen)))
             else
               Expanded(
                 child: RefreshIndicator(
-                  color: Color(0xFF00BCD4),
+                  color: AppColors.primaryGreen,
                   onRefresh: _loadAllData,
                   child: CustomScrollView(
                     slivers: [
@@ -161,20 +164,19 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
+                                      color: AppColors.bodyText,
                                     ),
                                   ),
                                   if (_matches.isNotEmpty)
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF00BCD4),
+                                      color: AppColors.deepEmerald,
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
                                       '${_matches.length}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      style: const TextStyle(color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12,
                                       ),
@@ -202,13 +204,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                               padding: const EdgeInsets.all(2),
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
-                                                border: Border.all(color: Colors.grey.shade200, width: 2),
+                                                border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3), width: 2),
                                               ),
                                               child: ClipRRect(
                                                 borderRadius: BorderRadius.circular(32),
                                                 child: CircleAvatar(
                                                   radius: 32,
-                                                  backgroundColor: Colors.grey.shade100,
+                                                  backgroundColor: AppColors.softMint,
                                                   child: Stack(
                                                     children: [
                                                       if (user.displayImage != null)
@@ -232,7 +234,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                               child: BackdropFilter(
                                                                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                                                                 child: Container(
-                                                                  color: Colors.black.withOpacity(0.2),
+                                                                  color: Colors.white70.withOpacity(0.2),
                                                                   child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 20),
                                                                 ),
                                                               ),
@@ -242,8 +244,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                         if (user.hasHiddenPhotos && !user.isContactUnlocked)
                                                           Positioned.fill(
                                                             child: Container(
-                                                              color: Colors.black.withOpacity(0.4),
-                                                              child: const Icon(Icons.lock_rounded, color: Colors.white, size: 20),
+                                                              color: Colors.white70.withOpacity(0.4),
+                                                              child: const Icon(Icons.lock_rounded, color: AppColors.cardDark, size: 20),
                                                             ),
                                                           ),
                                                       ],
@@ -259,7 +261,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                 width: 14,
                                                 height: 14,
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFF42D368),
+                                                  color: AppColors.primaryGreen,
                                                   shape: BoxShape.circle,
                                                   border: Border.all(color: Colors.white, width: 2.5),
                                                 ),
@@ -295,7 +297,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: AppColors.bodyText,
                             ),
                           ),
                         ),
@@ -332,115 +334,142 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                                  child: ListTile(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ChatScreen(
-                                            otherUserId: otherUser['id'],
-                                            otherUserName: otherUserName,
-                                            otherUserImage: profilePic,
-                                          ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.03),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
                                         ),
-                                      ).then((_) => _loadConversations());
-                                    },
-                                    leading: Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(30),
-                                          child: CircleAvatar(
-                                            radius: 30,
-                                            backgroundColor: Colors.grey.shade100,
-                                            child: Stack(
-                                              children: [
-                                                if (profilePic != null)
-                                                  Positioned.fill(
-                                                    child: Image.network(
-                                                      profilePic,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context, error, stackTrace) =>
-                                                          const Icon(Icons.person, color: Colors.grey),
-                                                    ),
-                                                  ),
-                                                if (profilePic == null)
-                                                  const Center(child: Icon(Icons.person, color: Colors.grey)),
-
-                                                // Visibility Overlays
-                                                if (profilePic != null) ...[
-                                                  // 1. Under Review (Blur)
-                                                  if (otherUserObj.isDisplayImageVerified != true)
-                                                    Positioned.fill(
-                                                      child: ClipRRect(
-                                                        child: BackdropFilter(
-                                                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                                          child: Container(
-                                                            color: Colors.black.withOpacity(0.2),
-                                                            child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 18),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  // 2. Locked (Private)
-                                                  if (otherUserObj.hasHiddenPhotos && !otherUserObj.isContactUnlocked)
-                                                    Positioned.fill(
-                                                      child: Container(
-                                                        color: Colors.black.withOpacity(0.4),
-                                                        child: const Icon(Icons.lock_rounded, color: Colors.white, size: 18),
-                                                      ),
-                                                    ),
-                                                ],
-                                              ],
+                                      ],
+                                    ),
+                                    child: ListTile(
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ChatScreen(
+                                              otherUserId: otherUser['id'],
+                                              otherUserName: otherUserName,
+                                              otherUserImage: profilePic,
                                             ),
                                           ),
-                                        ),
-                                        if (isUnread)
-                                          Positioned(
-                                            right: 0,
-                                            top: 0,
-                                            child: Container(
-                                              width: 12,
-                                              height: 12,
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFF00BCD4),
-                                                shape: BoxShape.circle,
-                                                border: Border.all(color: Colors.white, width: 2),
+                                        ).then((_) => _loadConversations());
+                                      },
+                                      leading: Stack(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: isUnread ? AppColors.primaryGreen : Colors.transparent,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(30),
+                                              child: CircleAvatar(
+                                                radius: 28,
+                                                backgroundColor: AppColors.softMint,
+                                                child: Stack(
+                                                  children: [
+                                                    if (profilePic != null)
+                                                      Positioned.fill(
+                                                        child: Image.network(
+                                                          profilePic,
+                                                          fit: BoxFit.cover,
+                                                          errorBuilder: (context, error, stackTrace) =>
+                                                              const Icon(Icons.person, color: Colors.grey),
+                                                        ),
+                                                      ),
+                                                    if (profilePic == null)
+                                                      const Center(child: Icon(Icons.person, color: Colors.grey)),
+
+                                                    // Visibility Overlays
+                                                    if (profilePic != null) ...[
+                                                      // 1. Under Review (Blur)
+                                                      if (otherUserObj.isDisplayImageVerified != true)
+                                                        Positioned.fill(
+                                                          child: ClipRRect(
+                                                            child: BackdropFilter(
+                                                              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                                              child: Container(
+                                                                color: Colors.white70.withOpacity(0.2),
+                                                                child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 18),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      // 2. Locked (Private)
+                                                      if (otherUserObj.hasHiddenPhotos && !otherUserObj.isContactUnlocked)
+                                                        Positioned.fill(
+                                                          child: Container(
+                                                            color: Colors.white70.withOpacity(0.4),
+                                                            child: const Icon(Icons.lock_rounded, color: AppColors.bodyText, size: 18),
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
                                           ),
-                                      ],
-                                    ),
-                                    title: Text(
-                                      otherUserName,
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                    ),
-                                    subtitle: Text(
-                                      chat['message'],
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: isUnread ? Colors.black87 : Colors.grey.shade500,
-                                        fontWeight: isUnread ? FontWeight.w600 : FontWeight.normal,
+                                          if (isUnread)
+                                            Positioned(
+                                              right: 2,
+                                              top: 2,
+                                              child: Container(
+                                                width: 12,
+                                                height: 12,
+                                                decoration: BoxDecoration(
+                                                  color: AppColors.primaryGreen,
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(color: Colors.white, width: 2),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
                                       ),
-                                    ),
-                                    trailing: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          _formatTime(DateTime.parse(chat['sent_at'])),
-                                          style: TextStyle(fontSize: 12, color: Colors.grey.shade400),
+                                      title: Text(
+                                        otherUserName,
+                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.bodyText),
+                                      ),
+                                      subtitle: Text(
+                                        chat['message'],
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: isUnread ? AppColors.bodyText : AppColors.mutedText,
+                                          fontWeight: isUnread ? FontWeight.w600 : FontWeight.normal,
                                         ),
-                                        const SizedBox(height: 5),
-                                        if (isUnread)
-                                          Container(
-                                            padding: const EdgeInsets.all(6),
-                                            decoration: const BoxDecoration(color: Color(0xFF00BCD4), shape: BoxShape.circle),
-                                            child: const Text('1', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                                          )
-                                        else if (isMe)
-                                           Icon(Icons.done_all_rounded, size: 18, color: chat['is_read'] ? const Color(0xFF00BCD4) : Colors.grey.shade300),
-                                      ],
+                                      ),
+                                      trailing: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            _formatTime(DateTime.parse(chat['sent_at'])),
+                                            style: const TextStyle(fontSize: 12, color: AppColors.mutedText),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          if (isUnread)
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.primaryGreen,
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: const Text('New', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                                            )
+                                          else if (isMe)
+                                             Icon(Icons.done_all_rounded, size: 18, color: chat['is_read'] ? AppColors.primaryGreen : AppColors.mutedText),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -592,7 +621,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00BCD4),
+                    backgroundColor: AppColors.primaryGreen,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -632,12 +662,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.offWhite,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.darkGreen, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         titleSpacing: 0,
@@ -650,7 +680,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(18),
                 child: CircleAvatar(
                   radius: 18,
-                  backgroundColor: Colors.grey.shade100,
+                  backgroundColor: AppColors.softMint,
                   child: Stack(
                     children: [
                       if (widget.otherUserImage != null)
@@ -674,7 +704,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               child: BackdropFilter(
                                 filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
                                 child: Container(
-                                  color: Colors.black.withOpacity(0.1),
+                                  color: Colors.white70.withOpacity(0.1),
                                   child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 14),
                                 ),
                               ),
@@ -684,8 +714,8 @@ class _ChatScreenState extends State<ChatScreen> {
                         if (_otherUser!.hasHiddenPhotos && !_otherUser!.isContactUnlocked)
                           Positioned.fill(
                             child: Container(
-                              color: Colors.black.withOpacity(0.3),
-                              child: const Icon(Icons.lock_rounded, color: Colors.white, size: 14),
+                              color: Colors.white70.withOpacity(0.3),
+                              child: const Icon(Icons.lock_rounded, color: AppColors.bodyText, size: 14),
                             ),
                           ),
                       ],
@@ -698,21 +728,21 @@ class _ChatScreenState extends State<ChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.otherUserName, style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.bold)),
-                const Text('Online', style: TextStyle(color: Color(0xFF42D368), fontSize: 12, fontWeight: FontWeight.w500)),
+                Text(widget.otherUserName, style: const TextStyle(color: AppColors.bodyText, fontSize: 16, fontWeight: FontWeight.bold)),
+                const Text('Online', style: TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight.w500)),
               ],
             ),
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.more_vert_rounded, color: Colors.black54), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.more_vert_rounded, color: AppColors.darkGreen), onPressed: () {}),
         ],
       ),
       body: Column(
         children: [
           Expanded(
             child: _isLoading 
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4)))
+              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
               : _messages.isEmpty 
                   ? _buildProfileCard()
                   : ListView.builder(
@@ -729,17 +759,24 @@ class _ChatScreenState extends State<ChatScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
-                          color: isMe ? const Color(0xFF00BCD4) : Colors.grey.shade100,
+                          color: isMe ? AppColors.primaryGreen : Colors.white,
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(20),
                             topRight: const Radius.circular(20),
                             bottomLeft: Radius.circular(isMe ? 20 : 0),
                             bottomRight: Radius.circular(isMe ? 0 : 20),
                           ),
+                          boxShadow: isMe ? [] : [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.03),
+                              blurRadius: 5,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                         child: Text(
                           msg['message'],
-                          style: TextStyle(color: isMe ? Colors.white : Colors.black87, fontSize: 15),
+                          style: TextStyle(color: isMe ? Colors.white : AppColors.bodyText, fontSize: 15),
                         ),
                       ),
                     );
@@ -748,19 +785,21 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Container(
             padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.of(context).padding.bottom),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.grey.shade100),
+              border: Border(top: BorderSide(color: AppColors.divider)),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(25)),
+                    decoration: BoxDecoration(color: AppColors.offWhite, borderRadius: BorderRadius.circular(25)),
                     child: TextField(
                       controller: _messageController,
+                      style: const TextStyle(color: AppColors.bodyText),
                       decoration: const InputDecoration(
                         hintText: 'Type a message...',
+                        hintStyle: TextStyle(color: AppColors.mutedText),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       ),
@@ -772,7 +811,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: _sendMessage,
                   child: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(color: Color(0xFF00BCD4), shape: BoxShape.circle),
+                    decoration: const BoxDecoration(color: AppColors.primaryGreen, shape: BoxShape.circle),
                     child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
                   ),
                 ),
@@ -800,12 +839,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.03),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
                 ],
-                border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.1)),
+                border: Border.all(color: AppColors.primaryGreen.withOpacity(0.1)),
               ),
               child: Column(
                 children: [
@@ -815,7 +854,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         borderRadius: BorderRadius.circular(50),
                         child: CircleAvatar(
                           radius: 50,
-                          backgroundColor: Colors.grey.shade100,
+                          backgroundColor: AppColors.softMint,
                           child: Stack(
                             children: [
                               if (widget.otherUserImage != null)
@@ -839,7 +878,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                       child: BackdropFilter(
                                         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                                         child: Container(
-                                          color: Colors.black.withOpacity(0.2),
+                                          color: Colors.white70.withOpacity(0.2),
                                           child: const Icon(Icons.pending_rounded, color: Colors.white70, size: 30),
                                         ),
                                       ),
@@ -849,8 +888,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                 if (_otherUser!.hasHiddenPhotos && !_otherUser!.isContactUnlocked)
                                   Positioned.fill(
                                     child: Container(
-                                      color: Colors.black.withOpacity(0.4),
-                                      child: const Icon(Icons.lock_rounded, color: Colors.white, size: 30),
+                                      color: Colors.white70.withOpacity(0.4),
+                                      child: const Icon(Icons.lock_rounded, color: AppColors.bodyText, size: 30),
                                     ),
                                   ),
                               ],
@@ -863,16 +902,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(height: 20),
                   Text(
                     widget.otherUserName,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.bodyText),
                   ),
                   const SizedBox(height: 8),
                   if (profile != null)
                     Text(
                       '${profile.age} yrs • ${profile.height} cm • ${profile.maritalStatus?.replaceAll('_', ' ').toUpperCase() ?? ''}',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 14, fontWeight: FontWeight.w500),
+                      style: const TextStyle(color: AppColors.mutedText, fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                   const SizedBox(height: 16),
-                  const Divider(),
+                  const Divider(color: AppColors.divider),
                   const SizedBox(height: 16),
                   _buildProfileCardRow(Icons.location_on_outlined, '${profile?.city ?? ''}, ${profile?.state ?? ''}'),
                   const SizedBox(height: 12),
@@ -890,8 +929,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF00BCD4).withOpacity(0.1),
-                      foregroundColor: const Color(0xFF00BCD4),
+                      backgroundColor: AppColors.softMint,
+                      foregroundColor: AppColors.darkGreen,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -903,8 +942,8 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             const SizedBox(height: 40),
             Text(
-              'No messages yet. Say hello!',
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 15, fontWeight: FontWeight.w500),
+              'No messages yet. Say hello! 👋',
+              style: const TextStyle(color: AppColors.mutedText, fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -916,17 +955,24 @@ class _ChatScreenState extends State<ChatScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 18, color: const Color(0xFF00BCD4)),
-        const SizedBox(width: 8),
-        Flexible(
-          child: Text(
-            text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 14, color: Colors.black87, fontWeight: FontWeight.w500),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        Icon(icon, size: 18, color: AppColors.primaryGreen),
+        const SizedBox(width: 10),
+        Text(text, style: const TextStyle(color: AppColors.bodyText, fontSize: 14)),
       ],
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

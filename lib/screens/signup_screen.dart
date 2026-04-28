@@ -163,11 +163,11 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                       // Form Card
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.cardDark,
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
+                              color: Colors.white70.withOpacity(0.08),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
@@ -520,7 +520,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                         },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
-                                    foregroundColor: Colors.white,
+                                    foregroundColor: AppColors.cardDark,
                                     elevation: 0,
                                     shadowColor: Colors.transparent,
                                     shape: RoundedRectangleBorder(
@@ -615,7 +615,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1A1A1A),
+            color: AppColors.cardDark,
           ),
         ),
         const SizedBox(height: 8),
@@ -641,7 +641,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: AppColors.midnightEmerald,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -649,7 +649,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
+              borderSide: BorderSide(color: AppColors.midnightEmerald, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -819,3 +819,17 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

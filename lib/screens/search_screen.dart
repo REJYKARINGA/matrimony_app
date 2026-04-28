@@ -17,6 +17,7 @@ import '../widgets/recharge_dialog.dart';
 import '../widgets/wallet_recharge_paywall.dart';
 import 'package:provider/provider.dart';
 import '../widgets/watermark_overlay.dart';
+import '../utils/app_colors.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -112,7 +113,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFBFF),
+      backgroundColor: AppColors.backgroundLight,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -122,7 +123,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             elevation: 0,
             backgroundColor: Colors.white,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
+              icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
               onPressed: () {
                 if (Navigator.of(context).canPop()) {
                   Navigator.of(context).pop();
@@ -135,7 +136,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             title: const Text(
               'Discover Matches',
               style: TextStyle(
-                color: Color(0xFF1A1A1A),
+                color: AppColors.textDark,
                 fontWeight: FontWeight.w800,
                 fontSize: 18,
               ),
@@ -148,7 +149,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      const Color(0xFF00BCD4).withOpacity(0.05),
+                      AppColors.deepEmerald.withOpacity(0.05),
                       Colors.white,
                     ],
                   ),
@@ -163,7 +164,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         height: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF00BCD4).withOpacity(0.05),
+                          color: AppColors.deepEmerald.withOpacity(0.05),
                         ),
                       ),
                     ),
@@ -175,7 +176,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                           const Text(
                             'Discover Matches',
                             style: TextStyle(
-                              color: Color(0xFF1A1A1A),
+                              color: AppColors.textDark,
                               fontWeight: FontWeight.w900,
                               fontSize: 32,
                               letterSpacing: -1.0,
@@ -226,10 +227,10 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         decoration: InputDecoration(
                           hintText: 'Search by Matrimony ID',
                           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                          prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00BCD4), size: 20),
+                          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryGreen, size: 20),
                           suffixIcon: _idSearchController.text.trim().isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.send_rounded, color: Color(0xFF00BCD4), size: 18),
+                                icon: const Icon(Icons.send_rounded, color: AppColors.primaryGreen, size: 18),
                                 onPressed: () {
                                   if (_idSearchController.text.trim().isNotEmpty) {
                                     _navigateToResults({
@@ -274,11 +275,11 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00BCD4),
+                        color: AppColors.primaryGreen,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF00BCD4).withOpacity(0.3),
+                            color: AppColors.primaryGreen.withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -317,7 +318,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                     ],
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
-                  labelColor: const Color(0xFF00BCD4),
+                  labelColor: AppColors.primaryGreen,
                   unselectedLabelColor: Colors.grey.shade600,
                   labelStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
@@ -338,7 +339,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           ),
           if (_isLoading)
             const SliverFillRemaining(
-              child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
+              child: Center(child: CircularProgressIndicator(color: AppColors.primaryGreen)),
             )
           else if (_error != null)
             WalletRechargePaywall(errorMessage: _error)
@@ -404,7 +405,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             // Shortlisted Tab
             _isLoadingShortlisted
               ? const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator(color: Color(0xFF00BCD4))),
+                  child: Center(child: CircularProgressIndicator(color: AppColors.deepEmerald)),
                 )
               : _shortlistedError != null
               ? SliverFillRemaining(
@@ -457,8 +458,8 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
     switch (category['field']) {
       case 'religion':
         iconData = Icons.church_rounded;
-        gradientColors = [const Color(0xFF6DD5FA), const Color(0xFF2980B9)];
-        iconBackgroundColor = const Color(0xFFE3F2FD);
+        gradientColors = [AppColors.deepEmerald, AppColors.primaryGreen];
+        iconBackgroundColor = AppColors.offWhite;
         break;
       case 'caste':
         iconData = Icons.groups_rounded;
@@ -723,12 +724,12 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
-                            color: Color(0xFF1A1A1A),
+                            color: AppColors.textDark,
                           ),
                         ),
                         if (user.userProfile?.isActiveVerified == true) ...[
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified, color: Color(0xFF00BCD4), size: 14),
+                          const Icon(Icons.verified, color: AppColors.primaryGreen, size: 14),
                         ],
                       ],
                     ),
@@ -779,18 +780,18 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00BCD4).withOpacity(0.1),
+                            color: AppColors.primaryGreen.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.2)),
+                            border: Border.all(color: AppColors.primaryGreen.withOpacity(0.2)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.near_me_rounded, color: Color(0xFF00BCD4), size: 8),
+                              const Icon(Icons.near_me_rounded, color: AppColors.primaryGreen, size: 8),
                               const SizedBox(width: 2),
                               Text(
                                 '${user.distance!.toStringAsFixed(1)} KM',
-                                style: const TextStyle(color: Color(0xFF00BCD4), fontSize: 9, fontWeight: FontWeight.bold),
+                                style: const TextStyle(color: AppColors.primaryGreen, fontSize: 9, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -913,7 +914,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           end: Alignment.bottomRight,
           colors: isFemale
               ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+              : [AppColors.offWhite, AppColors.creamGold],
         ),
       ),
       child: Center(
@@ -922,7 +923,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           size: size,
           color: isFemale
               ? const Color(0xFFFF2D55).withOpacity(0.3)
-              : const Color(0xFF5CB3FF).withOpacity(0.3),
+              : AppColors.primaryGreen.withOpacity(0.3),
         ),
       ),
     );
@@ -1236,7 +1237,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune_rounded, color: Color(0xFF00BCD4)),
+            icon: const Icon(Icons.tune_rounded, color: AppColors.primaryGreen),
             onPressed: () {
                Navigator.of(context).pushReplacementNamed('/preferences');
             },
@@ -1258,7 +1259,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
             return const Center(
               child: Padding(
                 padding: EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(color: AppColors.primaryGreen),
               ),
             );
           }
@@ -1384,7 +1385,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                     style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF00BCD4),
+                                    backgroundColor: AppColors.deepEmerald,
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     minimumSize: Size.zero,
@@ -1442,7 +1443,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       if (user.userProfile?.isActiveVerified == true)
                         const Icon(
                           Icons.verified_rounded,
-                          color: Color(0xFF00BCD4),
+                          color: AppColors.primaryGreen,
                           size: 18,
                         ),
                     ],
@@ -1521,7 +1522,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00BCD4).withOpacity(0.35),
+                            color: AppColors.deepEmerald.withOpacity(0.35),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: Colors.white.withOpacity(0.3),
@@ -1592,10 +1593,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     },
                     child: _buildFloatingButton(
                       icon: Icons.chat_bubble_rounded,
-                      color: const Color(0xFF00BCD4),
+                      color: AppColors.primaryGreen,
                       iconColor: Colors.white,
                       size: 50,
-                      shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                      shadowColor: AppColors.primaryGreen.withOpacity(0.3),
                     ),
                   ),
                   GestureDetector(
@@ -1622,10 +1623,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     onTap: () => _handleQuickInterest(user.id!),
                     child: _buildFloatingButton(
                       icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
-                      color: _sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
+                      color: _sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55),
                       iconColor: Colors.white,
                       size: 60,
-                      shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                      shadowColor: (_sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55)).withOpacity(0.4),
                     ),
                   ),
                 ],
@@ -1664,7 +1665,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           end: Alignment.bottomRight,
           colors: isFemale
               ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+              : [AppColors.offWhite, AppColors.creamGold],
         ),
       ),
       child: Center(
@@ -1673,7 +1674,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           size: size,
           color: isFemale
               ? const Color(0xFFFF2D55).withOpacity(0.3)
-              : const Color(0xFF5CB3FF).withOpacity(0.3),
+              : AppColors.primaryGreen.withOpacity(0.3),
         ),
       ),
     );
@@ -1730,3 +1731,5 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     }
   }
 }
+
+

@@ -29,3 +29,5 @@ class CurvedBottomPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
+
+

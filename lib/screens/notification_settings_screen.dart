@@ -1,7 +1,9 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import 'dart:convert';
+import '../utils/app_colors.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -132,7 +134,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: TextStyle(
               fontSize: 16,
               fontWeight: isMaster ? FontWeight.w600 : FontWeight.w500,
-              color: const Color(0xFF1A1A1A),
+              color: AppColors.textDark,
             ),
           ),
           subtitle: Text(
@@ -140,7 +142,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             style: TextStyle(fontSize: 13, color: Colors.grey[600]),
           ),
           value: value,
-          activeColor: const Color(0xFF00BCD4),
+          activeColor: AppColors.deepEmerald,
           onChanged: (newValue) {
             onChanged(newValue);
           },
@@ -159,27 +161,26 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
         title: const Text('Notification Settings'),
-        backgroundColor: const Color(0xFFF5F7F9),
+        backgroundColor: AppColors.backgroundLight,
         centerTitle: true,
         elevation: 0,
-        titleTextStyle: const TextStyle(
-          color: Color(0xFF1A1A1A),
+        titleTextStyle: const TextStyle(color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           letterSpacing: -0.5,
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+        iconTheme: const IconThemeData(color: AppColors.cardDark),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.5),
-          child: Container(color: Colors.grey.shade100, height: 1.5),
+          child: Container(color: AppColors.midnightEmerald, height: 1.5),
         ),
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF00BCD4)),
+              child: CircularProgressIndicator(color: AppColors.deepEmerald),
             )
           : ListView(
               children: [
@@ -187,11 +188,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.cardDark,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.white70.withOpacity(0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -220,11 +221,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.cardDark,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.white70.withOpacity(0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -285,11 +286,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.cardDark,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.white70.withOpacity(0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -319,3 +320,18 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

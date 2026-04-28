@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
@@ -21,6 +22,7 @@ import '../services/payment_service.dart';
 import 'wallet_transactions_screen.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import '../utils/app_colors.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -85,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color? textColor,
     bool showDivider = true,
   }) {
-    final gradientColor = iconColor ?? const Color(0xFF00BCD4); // Turquoise
+    final gradientColor = iconColor ?? AppColors.deepEmerald; // Turquoise
 
     return Column(
       children: [
@@ -133,21 +135,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final profile = user?.userProfile;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9),
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: const Color(0xFFF5F7F9),
+        backgroundColor: AppColors.backgroundLight,
         centerTitle: true,
         elevation: 0,
-        titleTextStyle: const TextStyle(
-          color: Color(0xFF1A1A1A),
+        titleTextStyle: const TextStyle(color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           letterSpacing: -0.5,
         ),
-        iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+        iconTheme: const IconThemeData(color: AppColors.cardDark),
         bottom: PreferredSize(
-          child: Container(color: Colors.grey.shade100, height: 1.5),
+          child: Container(color: AppColors.midnightEmerald, height: 1.5),
           preferredSize: const Size.fromHeight(1.5),
         ),
         actions: [
@@ -164,12 +165,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF00BCD4).withOpacity(0.1),
+                  color: AppColors.deepEmerald.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.account_balance_wallet_rounded, size: 18, color: Color(0xFF00BCD4)),
+                    const Icon(Icons.account_balance_wallet_rounded, size: 18, color: AppColors.deepEmerald),
                     const SizedBox(width: 6),
                     _isWalletLoading
                         ? const SizedBox(
@@ -177,13 +178,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             height: 12,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Color(0xFF00BCD4),
+                              color: AppColors.deepEmerald,
                             ),
                           )
                         : Text(
                             '₹${_walletBalance.toStringAsFixed(0)}',
                             style: const TextStyle(
-                              color: Color(0xFF00BCD4),
+                              color: AppColors.deepEmerald,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -207,12 +208,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               margin: const EdgeInsets.all(16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
+                color: AppColors.backgroundLight,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.grey.shade100),
+                border: Border.all(color: AppColors.midnightEmerald),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
+                    color: Colors.white70.withOpacity(0.03),
                     blurRadius: 15,
                     offset: const Offset(0, 8),
                   ),
@@ -223,11 +224,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.1), width: 2),
+                      border: Border.all(color: AppColors.deepEmerald.withOpacity(0.1), width: 2),
                     ),
                     child: CircleAvatar(
                       radius: 35,
-                      backgroundColor: Colors.white,
+                      backgroundColor: AppColors.midnightEmerald,
                       backgroundImage: user?.displayImage != null &&
                               user!.displayImage!.isNotEmpty
                           ? NetworkImage(
@@ -243,8 +244,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFF00BCD4), // Turquoise
-                                    Color(0xFF0D47A1), // Deep Blue
+                                    AppColors.deepEmerald, // Turquoise
+                                    AppColors.deepEmerald, // Deep Blue
                                   ],
                                 ),
                               ),
@@ -254,8 +255,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           ?.substring(0, 1)
                                           .toUpperCase() ??
                                       'U',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: const TextStyle(color: Colors.white,
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -275,7 +275,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A1A1A),
+                            color: AppColors.cardDark,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -305,13 +305,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF00BCD4).withOpacity(0.1),
+                                    color: AppColors.deepEmerald.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: const Icon(
                                     Icons.copy_rounded,
                                     size: 14,
-                                    color: Color(0xFF00BCD4),
+                                    color: AppColors.deepEmerald,
                                   ),
                                 ),
                               ),
@@ -321,7 +321,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  const Icon(Icons.verified_rounded, color: Color(0xFF4CD9A6), size: 24),
+                  const Icon(Icons.verified_rounded, color: AppColors.royalGold, size: 24),
                 ],
               ),
             ),
@@ -331,11 +331,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.white70.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -411,11 +411,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.white70.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -476,11 +476,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.white70.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -527,11 +527,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.white70.withOpacity(0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -577,7 +577,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.red.withOpacity(0.3)),
                 boxShadow: [
@@ -644,7 +644,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.cardDark,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -738,3 +738,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

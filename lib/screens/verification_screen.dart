@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,7 @@ import '../widgets/common_footer.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import '../services/navigation_provider.dart';
+import '../utils/app_colors.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({super.key});
@@ -117,13 +119,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       appBar: AppBar(
-        title: const Text('Verify Account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: const Text('Verify Account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
+        backgroundColor: AppColors.midnightEmerald,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -192,7 +194,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         text = 'Account Verified';
         break;
       case 'pending':
-        color = const Color(0xFF00BCD4); // Turquoise from main theme
+        color = AppColors.deepEmerald; // Turquoise from main theme
         icon = Icons.hourglass_empty_rounded;
         text = 'Verification Pending';
         break;
@@ -245,7 +247,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: AppColors.midnightEmerald,
               borderRadius: BorderRadius.circular(12),
             ),
             child: DropdownButtonHideUnderline(
@@ -267,7 +269,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
             decoration: InputDecoration(
               hintText: 'Enter ID Number',
               filled: true,
-              fillColor: Colors.grey.shade100,
+              fillColor: AppColors.midnightEmerald,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
             ),
           ),
@@ -286,12 +288,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
             child: ElevatedButton(
               onPressed: _isLoading ? null : _submit,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00BCD4), // Turquoise from main theme
+                backgroundColor: AppColors.deepEmerald, // Turquoise from main theme
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Submit Verification', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                  ? const CircularProgressIndicator(color: AppColors.cardDark)
+                  : const Text('Submit Verification', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.cardDark)),
             ),
           ),
         ],
@@ -311,7 +313,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
           child: Container(
             height: 120,
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: AppColors.midnightEmerald,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
             ),
@@ -328,7 +330,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     children: [
                       Icon(Icons.add_a_photo_outlined, color: Colors.grey.shade400, size: 32),
                       const SizedBox(height: 8),
-                      Text('Upload Photo', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                      Text('Upload Photo', style: TextStyle(color: AppColors.midnightEmerald, fontSize: 12)),
                     ],
                   ),
           ),
@@ -342,7 +344,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          Icon(Icons.access_time_filled_rounded, color: const Color(0xFF00BCD4).withOpacity(0.3), size: 100), // Turquoise from main theme
+          Icon(Icons.access_time_filled_rounded, color: AppColors.deepEmerald.withOpacity(0.3), size: 100), // Turquoise from main theme
           const SizedBox(height: 24),
           const Text('Checking Documents', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
@@ -375,3 +377,17 @@ class _VerificationScreenState extends State<VerificationScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

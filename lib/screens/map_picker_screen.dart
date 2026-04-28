@@ -1,7 +1,9 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/location_service.dart';
+import '../utils/app_colors.dart';
 
 class MapPickerScreen extends StatefulWidget {
   final double? initialLat;
@@ -122,13 +124,13 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF00ACC1), Color(0xFF00838F)],
+              colors: [AppColors.deepEmerald, AppColors.deepEmerald],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.cardDark,
         elevation: 4,
         actions: [
           if (_isSearching || _isReverseGeocoding)
@@ -138,7 +140,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 child: SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  child: CircularProgressIndicator(color: AppColors.cardDark, strokeWidth: 2),
                 ),
               ),
             ),
@@ -183,7 +185,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                         top: 10,
                         child: CircleAvatar(
                           radius: 8,
-                          backgroundColor: Colors.white,
+                          backgroundColor: AppColors.midnightEmerald,
                           child: CircleAvatar(radius: 5, backgroundColor: Colors.redAccent),
                         ),
                       ),
@@ -193,11 +195,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                     width: 12,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: Colors.black26,
+                      color: Colors.white24,
                       borderRadius: BorderRadius.all(Radius.elliptical(20, 10)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.white70.withOpacity(0.2),
                           blurRadius: 4,
                           spreadRadius: 1,
                         )
@@ -215,11 +217,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             right: 15,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(15),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.12),
+                    color: Colors.white70.withOpacity(0.12),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -230,10 +232,10 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   hintText: "Search city, area or country...",
-                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                  hintStyle: TextStyle(color: AppColors.midnightEmerald, fontSize: 14),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFF00ACC1)),
+                  prefixIcon: const Icon(Icons.search, color: AppColors.deepEmerald),
                   suffixIcon: _searchController.text.isNotEmpty 
                     ? IconButton(
                         icon: const Icon(Icons.cancel, size: 20, color: Colors.grey),
@@ -270,9 +272,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   );
                 }
               },
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.midnightEmerald,
               elevation: 4,
-              child: const Icon(Icons.my_location, color: Color(0xFF00ACC1)),
+              child: const Icon(Icons.my_location, color: AppColors.deepEmerald),
             ),
           ),
           // Bottom Actions
@@ -287,7 +289,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 gradient: _addressData == null 
                   ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
                   : const LinearGradient(
-                      colors: [Color(0xFF00ACC1), Color(0xFF00838F)],
+                      colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                     ),
@@ -295,7 +297,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 boxShadow: [
                   if (_addressData != null)
                     BoxShadow(
-                      color: const Color(0xFF00ACC1).withOpacity(0.4),
+                      color: AppColors.deepEmerald.withOpacity(0.4),
                       blurRadius: 10,
                       offset: const Offset(0, 5),
                     ),
@@ -315,7 +317,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 ),
                 child: const Text(
                   'Confirm Location',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.8),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.cardDark, letterSpacing: 0.8),
                 ),
               ),
             ),
@@ -325,3 +327,18 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

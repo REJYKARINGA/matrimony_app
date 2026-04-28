@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/foundation.dart'; // For kIsWeb
 import '../services/profile_service.dart';
 import '../services/api_service.dart';
 import '../widgets/watermark_overlay.dart';
+import '../utils/app_colors.dart';
 
 class ProfilePhotosScreen extends StatefulWidget {
   const ProfilePhotosScreen({Key? key}) : super(key: key);
@@ -274,7 +276,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
     if (_isLoading && _photos.isEmpty) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.midnightEmerald,
         body: SafeArea(
           child: Column(
             children: [
@@ -284,7 +286,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(color: Color(0xFF00BCD4)),
+                      CircularProgressIndicator(color: AppColors.deepEmerald),
                       const SizedBox(height: 16),
                       const Text('Loading profile photos...'),
                     ],
@@ -299,7 +301,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.midnightEmerald,
         body: SafeArea(
           child: Column(
             children: [
@@ -317,7 +319,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                           _errorMessage!,
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.black87,
+                            color: Colors.white70,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -325,7 +327,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                         Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                              colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -333,7 +335,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                             onPressed: _loadProfilePhotos,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColors.cardDark,
                               elevation: 0,
                               shadowColor: Colors.transparent,
                               padding: const EdgeInsets.symmetric(
@@ -359,7 +361,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.midnightEmerald,
       body: SafeArea(
         child: Column(
           children: [
@@ -367,7 +369,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadProfilePhotos,
-                color: Color(0xFF00BCD4),
+                color: AppColors.deepEmerald,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -385,7 +387,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                         height: 56,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                            colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                           ),
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -397,7 +399,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2.5,
-                                    color: Colors.white,
+                                    color: AppColors.cardDark,
                                   ),
                                 )
                               : const Icon(Icons.add_a_photo),
@@ -406,7 +408,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                               : const Text('Upload New Photo'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.cardDark,
                             elevation: 0,
                             shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
@@ -421,10 +423,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                       // Privacy Settings
                       Card(
                         elevation: 0,
-                        color: Colors.grey.shade50,
+                        color: AppColors.midnightEmerald,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
-                          side: BorderSide(color: Colors.grey.shade200),
+                          side: BorderSide(color: AppColors.midnightEmerald),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -433,12 +435,12 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF00BCD4).withOpacity(0.1),
+                                  color: AppColors.deepEmerald.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Icon(
                                   _hidePhotos ? Icons.visibility_off : Icons.visibility,
-                                  color: Color(0xFF00BCD4),
+                                  color: AppColors.deepEmerald,
                                 ),
                               ),
                               const SizedBox(width: 16),
@@ -473,7 +475,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                 Switch(
                                   value: _hidePhotos,
                                   onChanged: _toggleHidePhotos,
-                                  activeColor: Color(0xFF00BCD4),
+                                  activeColor: AppColors.deepEmerald,
                                 ),
                             ],
                           ),
@@ -500,11 +502,11 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
                               return Card(
                                 elevation: 2,
-                                color: Colors.white,
+                                color: AppColors.cardDark,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   side: BorderSide(
-                                    color: Colors.grey.shade200,
+                                    color: AppColors.midnightEmerald,
                                     width: 1,
                                   ),
                                 ),
@@ -534,7 +536,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                       Positioned.fill(
                                         child: Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.75),
+                                            color: Colors.white70.withOpacity(0.75),
                                             borderRadius: BorderRadius.circular(16),
                                           ),
                                           child: Column(
@@ -544,8 +546,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                               const SizedBox(height: 8),
                                               const Text(
                                                 'REJECTED',
-                                                style: TextStyle(
-                                                  color: Colors.white,
+                                                style: TextStyle(color: Colors.white,
                                                   fontWeight: FontWeight.w900,
                                                   fontSize: 14,
                                                   letterSpacing: 1.2,
@@ -556,8 +557,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 padding: const EdgeInsets.symmetric(horizontal: 12),
                                                 child: Text(
                                                   photo['rejection_reason'] ?? 'This photo does not meet our guidelines',
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
+                                                  style: const TextStyle(color: Colors.white70,
                                                     fontSize: 11,
                                                     fontStyle: FontStyle.italic,
                                                   ),
@@ -576,7 +576,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 child: const Text(
                                                   'Invisible to others',
                                                   style: TextStyle(
-                                                    color: Colors.black,
+                                                    color: Colors.white70,
                                                     fontSize: 9,
                                                     fontWeight: FontWeight.bold,
                                                   ),
@@ -602,12 +602,11 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: const [
-                                              Icon(Icons.hourglass_empty, color: Colors.white, size: 12),
+                                              Icon(Icons.hourglass_empty, color: AppColors.cardDark, size: 12),
                                               SizedBox(width: 4),
                                               Text(
                                                 'Pending',
-                                                style: TextStyle(
-                                                  color: Colors.white,
+                                                style: TextStyle(color: Colors.white,
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -629,8 +628,8 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: [
-                                                Color(0xFF00BCD4),
-                                                Color(0xFF0D47A1),
+                                                AppColors.deepEmerald,
+                                                AppColors.deepEmerald,
                                               ],
                                             ),
                                             borderRadius: BorderRadius.circular(
@@ -638,7 +637,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                             ),
                                             boxShadow: [
                                               BoxShadow(
-                                                color: Colors.black.withOpacity(
+                                                color: Colors.white70.withOpacity(
                                                   0.2,
                                                 ),
                                                 blurRadius: 4,
@@ -651,14 +650,13 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                             children: const [
                                               Icon(
                                                 Icons.star,
-                                                color: Colors.white,
+                                                color: AppColors.cardDark,
                                                 size: 14,
                                               ),
                                               SizedBox(width: 4),
                                               Text(
                                                 'Primary',
-                                                style: TextStyle(
-                                                  color: Colors.white,
+                                                style: TextStyle(color: Colors.white,
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -699,7 +697,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 Container(
                                                   decoration: BoxDecoration(
                                                     color: Color(
-                                                      0xFF00BCD4,
+                                                      0xFF00A87D,
                                                     ).withOpacity(0.9),
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -709,7 +707,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                   child: IconButton(
                                                     icon: const Icon(
                                                       Icons.star_border,
-                                                      color: Colors.white,
+                                                      color: AppColors.cardDark,
                                                       size: 20,
                                                     ),
                                                     tooltip: 'Set as Primary',
@@ -736,7 +734,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 child: IconButton(
                                                   icon: const Icon(
                                                     Icons.delete,
-                                                    color: Colors.white,
+                                                    color: AppColors.cardDark,
                                                     size: 20,
                                                   ),
                                                   tooltip: 'Delete',
@@ -773,8 +771,8 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Color(0xFF00BCD4).withOpacity(0.2),
-                                        Color(0xFF0D47A1).withOpacity(0.2),
+                                        AppColors.deepEmerald.withOpacity(0.2),
+                                        AppColors.deepEmerald.withOpacity(0.2),
                                       ],
                                     ),
                                     shape: BoxShape.circle,
@@ -782,7 +780,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   child: Icon(
                                     Icons.photo_library,
                                     size: 50,
-                                    color: Color(0xFF00BCD4),
+                                    color: AppColors.deepEmerald,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -791,7 +789,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
+                                    color: Colors.white70,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -848,7 +846,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                  colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                 ),
               ),
             ),
@@ -878,10 +876,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 3), // White border
+                  border: Border.all(color: AppColors.cardDark, width: 3), // White border
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.white70.withOpacity(0.3),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -906,13 +904,13 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: AppColors.cardDark,
                   letterSpacing: -0.5,
                   shadows: [
                     Shadow(
                       offset: Offset(0, 2),
                       blurRadius: 4,
-                      color: Colors.black45,
+                      color: Colors.white70,
                     ),
                   ],
                 ),
@@ -922,7 +920,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 'Show your best moments',
                 style: TextStyle(
                   fontSize: 15,
-                  color: Colors.white.withOpacity(0.9),
+                  color: AppColors.cardDark.withOpacity(0.9),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -934,9 +932,9 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
             top: 10,
             left: 10,
             child: CircleAvatar(
-              backgroundColor: Colors.black.withOpacity(0.2),
+              backgroundColor: Colors.white70.withOpacity(0.2),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(Icons.arrow_back, color: AppColors.cardDark),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ),
@@ -946,3 +944,17 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

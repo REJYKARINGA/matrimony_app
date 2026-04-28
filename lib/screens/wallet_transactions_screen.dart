@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -45,7 +46,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
-            Icon(Icons.security_rounded, color: Color(0xFF00BCD4)),
+            Icon(Icons.security_rounded, color: Color(0xFF0A3A2A)),
             SizedBox(width: 10),
             Text('Security Code'),
           ],
@@ -69,7 +70,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OKAY', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D47A1))),
+            child: const Text('OKAY', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0A3A2A))),
           ),
         ],
       ),
@@ -111,11 +112,11 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
+              colors: [Color(0xFF0A3A2A), Color(0xFF0A3A2A)], // Turquoise to Deep Blue
             ),
           ),
         ),
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.cardDark,
         elevation: 0,
       ),
       body: RefreshIndicator(
@@ -146,12 +147,12 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)], // Turquoise to Deep Blue
+          colors: [Color(0xFF0A3A2A), Color(0xFF0A3A2A)], // Turquoise to Deep Blue
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00BCD4).withOpacity(0.3),
+            color: const Color(0xFF0A3A2A).withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -173,8 +174,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                   const SizedBox(height: 8),
                   Text(
                     '₹${_walletBalance.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: const TextStyle(color: Colors.white,
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
                     ),
@@ -186,13 +186,13 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                 icon: const Icon(Icons.send_rounded, size: 18),
                 label: const Text('Transfer'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.2),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.midnightEmerald.withOpacity(0.2),
+                  foregroundColor: AppColors.cardDark,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: Colors.white30),
+                    side: BorderSide(color: AppColors.cardDark.withOpacity(0.3)),
                   ),
                 ),
               ),
@@ -265,10 +265,10 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade100,
+          color: isSelected ? const Color(0xFF0A3A2A) : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? const Color(0xFF00BCD4) : Colors.grey.shade200,
+            color: isSelected ? const Color(0xFF0A3A2A) : Colors.grey.shade200,
           ),
         ),
         child: Row(
@@ -277,7 +277,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
             Icon(
               icon,
               size: 14,
-              color: isSelected ? Colors.white : Colors.grey.shade600,
+              color: isSelected ? AppColors.cardDark : Colors.grey.shade600,
             ),
             const SizedBox(width: 6),
             Text(
@@ -285,7 +285,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : Colors.grey.shade700,
+                color: isSelected ? AppColors.cardDark : Colors.grey.shade700,
               ),
             ),
           ],
@@ -324,14 +324,14 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.cardDark,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.3)), // Turquoise border
+          border: Border.all(color: const Color(0xFF0A3A2A).withOpacity(0.3)), // Turquoise border
         ),
         child: Text(
           '₹$amount',
           style: const TextStyle(
-            color: Color(0xFF00BCD4), // Turquoise text
+            color: Color(0xFF0A3A2A), // Turquoise text
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -421,8 +421,8 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                   typeLabel = 'Usage Fee';
                 } else if (isContactUnlock) {
                   iconData = Icons.lock_open_rounded;
-                  iconBg = const Color(0xFF0D47A1).withOpacity(0.10);
-                  iconColor = const Color(0xFF0D47A1);
+                  iconBg = const Color(0xFF0A3A2A).withOpacity(0.10);
+                  iconColor = const Color(0xFF0A3A2A);
                   typeLabel = 'Contact Unlock';
                 } else if (isWalletTransfer) {
                   iconData = Icons.swap_horiz_rounded;
@@ -449,10 +449,10 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                 final card = Card(
                   margin: const EdgeInsets.only(bottom: 12),
                   elevation: 0,
-                  color: Colors.white,
+                  color: AppColors.cardDark,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.grey.shade100),
+                    side: BorderSide(color: AppColors.midnightEmerald),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -480,7 +480,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
-                                  color: Color(0xFF1A1A1A),
+                                  color: AppColors.cardDark,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -497,7 +497,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                         style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
-                                          color: Color(0xFF1A1A1A),
+                                          color: AppColors.cardDark,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -506,7 +506,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                     Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFF0D47A1).withOpacity(0.09),
+                                        color: const Color(0xFF0A3A2A).withOpacity(0.09),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -514,7 +514,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                         style: const TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w700,
-                                          color: Color(0xFF0D47A1),
+                                          color: Color(0xFF0A3A2A),
                                         ),
                                       ),
                                     ),
@@ -554,7 +554,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                         ? Colors.orange.shade800
                                         : isWalletTransfer
                                             ? Colors.purple.shade700
-                                            : const Color(0xFF0D47A1),
+                                            : const Color(0xFF0A3A2A),
                                 fontSize: 16,
                               ),
                             ),
@@ -818,8 +818,8 @@ class _TransferDialogState extends State<_TransferDialog> {
                 final user = _searchResults[index];
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: const Color(0xFF00BCD4).withOpacity(0.1),
-                    child: const Icon(Icons.person, color: Color(0xFF00BCD4)),
+                    backgroundColor: const Color(0xFF0A3A2A).withOpacity(0.1),
+                    child: const Icon(Icons.person, color: Color(0xFF0A3A2A)),
                   ),
                   title: Text(user['name']),
                   subtitle: Text(user['matrimony_id']),
@@ -865,7 +865,7 @@ class _TransferDialogState extends State<_TransferDialog> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.grey.shade50,
+            color: AppColors.midnightEmerald,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -885,13 +885,13 @@ class _TransferDialogState extends State<_TransferDialog> {
         ElevatedButton(
           onPressed: _amount >= 500 && !_isProcessing ? _requestOtp : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0D47A1),
-            foregroundColor: Colors.white,
+            backgroundColor: const Color(0xFF0A3A2A),
+            foregroundColor: AppColors.cardDark,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: _isProcessing 
-            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.cardDark, strokeWidth: 2))
             : const Text('Request Recipient OTP', style: TextStyle(fontWeight: FontWeight.bold)),
         ),
       ],
@@ -905,15 +905,15 @@ class _TransferDialogState extends State<_TransferDialog> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF00BCD4).withOpacity(0.05),
+            color: const Color(0xFF0A3A2A).withOpacity(0.05),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFF00BCD4).withOpacity(0.1)),
+            border: Border.all(color: const Color(0xFF0A3A2A).withOpacity(0.1)),
           ),
           child: Column(
             children: [
               Text(
                 'Transfer ₹${_amount.toStringAsFixed(0)} to ${_selectedUser!['name']}',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0D47A1)),
+                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0A3A2A)),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
@@ -928,7 +928,7 @@ class _TransferDialogState extends State<_TransferDialog> {
         const Text(
           'Enter the 6-digit security code provided by the recipient to confirm this transfer.',
           textAlign: TextAlign.center,
-          style: TextStyle(height: 1.5, fontSize: 13, color: Colors.black87),
+          style: TextStyle(height: 1.5, fontSize: 13, color: Colors.white70),
         ),
         const SizedBox(height: 24),
         TextField(
@@ -952,12 +952,12 @@ class _TransferDialogState extends State<_TransferDialog> {
           onPressed: _otpController.text.length == 6 && !_isProcessing ? _completeTransfer : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green.shade700,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.cardDark,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: _isProcessing 
-            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.cardDark, strokeWidth: 2))
             : const Text('Confirm Transfer', style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         TextButton(
@@ -1046,3 +1046,18 @@ class _TransferDialogState extends State<_TransferDialog> {
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

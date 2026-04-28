@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   Icon(
                     isSelected ? activeIcon : icon,
                     color: isSelected
-                        ? AppColors.primaryCyan // Turquoise
+                        ? AppColors.primaryGreen // Turquoise
                         : Colors.grey.shade600,
                     size: 24,
                   ),
@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     duration: const Duration(milliseconds: 300),
                     style: TextStyle(
                       color: isSelected
-                          ? AppColors.primaryCyan // Turquoise
+                          ? AppColors.primaryGreen // Turquoise
                           : Colors.grey.shade600,
                       fontSize: 10,
                       fontWeight: isSelected
@@ -548,8 +548,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                     colors: [
-                                      AppColors.primaryCyan.withOpacity(0.8),
-                                      AppColors.primaryBlue.withOpacity(0.8),
+                                      AppColors.primaryGreen.withOpacity(0.8),
+                                      AppColors.primaryGreen.withOpacity(0.8),
                                     ],
                                   ),
                                 ),
@@ -633,7 +633,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     ),
                                     const SizedBox(width: 8),
                                     if (profile?.isActiveVerified == true)
-                                      const Icon(Icons.verified, color: AppColors.primaryCyan, size: 18),
+                                      const Icon(Icons.verified, color: AppColors.primaryGreen, size: 18),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
@@ -902,7 +902,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Row(
           children: [
-            const Icon(Icons.celebration, color: AppColors.primaryCyan),
+            const Icon(Icons.celebration, color: AppColors.primaryGreen),
             const SizedBox(width: 10),
             Text(title),
           ],
@@ -930,7 +930,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryCyan,
+              backgroundColor: AppColors.primaryGreen,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
@@ -1296,7 +1296,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       backgroundColor: Colors.white,
       body: RefreshIndicator(
         onRefresh: () => _loadTabUsers(_tabController.index),
-        color: AppColors.primaryCyan,
+        color: AppColors.primaryGreen,
         child: Stack(
           children: [
             // Professional Background Design
@@ -1308,7 +1308,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AppColors.primaryCyan.withOpacity(0.08),
+                      AppColors.primaryGreen.withOpacity(0.08),
                       Colors.white,
                       AppColors.background,
                     ],
@@ -1327,8 +1327,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primaryCyan.withOpacity(0.12),
-                      AppColors.primaryCyan.withOpacity(0),
+                      AppColors.primaryGreen.withOpacity(0.12),
+                      AppColors.primaryGreen.withOpacity(0),
                     ],
                   ),
                 ),
@@ -1344,8 +1344,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      AppColors.primaryBlue.withOpacity(0.08),
-                      AppColors.primaryBlue.withOpacity(0),
+                      AppColors.primaryGreen.withOpacity(0.08),
+                      AppColors.primaryGreen.withOpacity(0),
                     ],
                   ),
                 ),
@@ -1379,7 +1379,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppColors.primaryCyan,
+                                  color: AppColors.primaryGreen,
                                   width: 1.5,
                                 ),
                               ),
@@ -1391,7 +1391,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                       )
                                     : null,
                                 child: user?.displayImage == null
-                                    ? const Icon(Icons.person, color: AppColors.primaryCyan, size: 18)
+                                    ? const Icon(Icons.person, color: AppColors.primaryGreen, size: 18)
                                     : null,
                               ),
                             ),
@@ -1422,7 +1422,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             IconButton(
                               icon: const Icon(
                                 Icons.tune_rounded,
-                                color: AppColors.primaryBlue,
+                                color: AppColors.primaryGreen,
                                 size: 22,
                               ),
                               onPressed: () async {
@@ -1443,7 +1443,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 children: [
                                   const Icon(
                                     Icons.notifications_none_rounded,
-                                    color: AppColors.primaryBlue,
+                                    color: AppColors.primaryGreen,
                                     size: 24,
                                   ),
                                   if (_unreadNotificationCount > 0)
@@ -1535,7 +1535,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             width: 4,
                             height: 20,
                             decoration: BoxDecoration(
-                              color: AppColors.primaryCyan,
+                              color: AppColors.primaryGreen,
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -1553,7 +1553,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryCyan.withOpacity(0.1),
+                              color: AppColors.primaryGreen.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
@@ -1561,7 +1561,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.primaryCyan,
+                                color: AppColors.primaryGreen,
                               ),
                             ),
                           ),
@@ -1599,7 +1599,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(
-                                        color: AppColors.primaryCyan.withOpacity(0.3),
+                                        color: AppColors.primaryGreen.withOpacity(0.3),
                                         width: 2,
                                       ),
                                     ),
@@ -1755,7 +1755,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 borderRadius: BorderRadius.circular(32),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryCyan.withOpacity(0.15),
+                    color: AppColors.primaryGreen.withOpacity(0.15),
                     blurRadius: 25,
                     offset: const Offset(0, 12),
                   ),
@@ -1783,7 +1783,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           child: Icon(
                             p['female'] == true ? Icons.face_3_rounded : Icons.face_6_rounded,
                             size: 200,
-                            color: AppColors.primaryCyan.withOpacity(0.35),
+                            color: AppColors.primaryGreen.withOpacity(0.35),
                           ),
                         ),
                       ),
@@ -1859,11 +1859,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryCyan,
+                          color: AppColors.primaryGreen,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primaryCyan.withOpacity(0.4),
+                              color: AppColors.primaryGreen.withOpacity(0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -1900,7 +1900,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected 
-              ? AppColors.primaryCyan 
+              ? AppColors.primaryGreen 
               : Colors.white.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
           border: isSelected 
@@ -1908,7 +1908,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               : Border.all(color: Colors.grey.shade300, width: 0.5),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: AppColors.primaryCyan.withOpacity(0.2),
+              color: AppColors.primaryGreen.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 3),
             )
@@ -1988,7 +1988,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF00BCD4).withOpacity(0.15), // Turquoise shadow
+              color: AppColors.primaryGreen.withOpacity(0.15), // Turquoise shadow
               blurRadius: 25,
               offset: const Offset(0, 12),
             ),
@@ -2064,7 +2064,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF00BCD4),
+                                    backgroundColor: AppColors.primaryGreen,
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     minimumSize: Size.zero,
@@ -2122,7 +2122,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       if (user.userProfile?.isActiveVerified == true)
                         const Icon(
                           Icons.verified_rounded,
-                          color: Color(0xFF00BCD4), // Turquoise
+                          color: AppColors.primaryGreen, // Turquoise
                           size: 18,
                         ),
                       const Spacer(),
@@ -2217,7 +2217,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00BCD4).withOpacity(0.35),
+                            color: AppColors.primaryGreen.withOpacity(0.35),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: Colors.white.withOpacity(0.3),
@@ -2290,10 +2290,10 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     },
                     child: _buildFloatingButton(
                       icon: Icons.chat_bubble_rounded,
-                      color: const Color(0xFF00BCD4), // Turquoise
+                      color: AppColors.primaryGreen, // Turquoise
                       iconColor: Colors.white,
                       size: 50,
-                      shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                      shadowColor: AppColors.primaryGreen.withOpacity(0.3),
                     ),
                   ),
 
@@ -2435,13 +2435,13 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF00BCD4).withOpacity(0.1),
+              color: AppColors.primaryGreen.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.done_all_rounded,
               size: 40,
-              color: Color(0xFF00BCD4),
+              color: AppColors.primaryGreen,
             ),
           ),
           const SizedBox(height: 24),
@@ -2466,11 +2466,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           const SizedBox(height: 24),
           TextButton.icon(
             onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadTabUsers(_tabController.index)),
-            icon: const Icon(Icons.tune_rounded, size: 18, color: Color(0xFF00BCD4)),
+            icon: const Icon(Icons.tune_rounded, size: 18, color: AppColors.primaryGreen),
             label: const Text(
               'Change Preferences',
               style: TextStyle(
-                color: Color(0xFF00BCD4),
+                color: AppColors.primaryGreen,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
@@ -2492,7 +2492,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: const Color(0xFF00BCD4).withOpacity(0.05),
+              color: AppColors.primaryGreen.withOpacity(0.05),
               shape: BoxShape.circle,
             ),
             child: Stack(
@@ -2501,7 +2501,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 const Icon(
                   Icons.person_search_rounded,
                   size: 64,
-                  color: Color(0xFF00BCD4),
+                  color: AppColors.primaryGreen,
                 ),
 
               ],
@@ -2539,11 +2539,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               gradient: const LinearGradient(
-                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                colors: [AppColors.primaryGreen, Color(0xFF0D47A1)],
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00BCD4).withOpacity(0.3),
+                  color: AppColors.primaryGreen.withOpacity(0.3),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -2606,7 +2606,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           size: size,
           color: isFemale
               ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
-              : const Color(0xFF00BCD4).withOpacity(0.3), // Turquoise
+              : AppColors.primaryGreen.withOpacity(0.3), // Turquoise
         ),
       ),
     );
@@ -2835,7 +2835,7 @@ class MatchCelebrationDialog extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF00BCD4).withOpacity(0.2), // Turquoise
+                  color: AppColors.primaryGreen.withOpacity(0.2), // Turquoise
                   blurRadius: 100,
                   spreadRadius: 20,
                 ),
@@ -2893,14 +2893,14 @@ class MatchCelebrationDialog extends StatelessWidget {
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [
-                            Color(0xFF00BCD4), // Turquoise
+                            AppColors.primaryGreen, // Turquoise
                             Color(0xFF0D47A1), // Deep blue
                           ],
                         ),
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF00BCD4).withOpacity(0.4),
+                            color: AppColors.primaryGreen.withOpacity(0.4),
                             blurRadius: 15,
                             offset: const Offset(0, 8),
                           ),
@@ -2957,10 +2957,10 @@ class MatchCelebrationDialog extends StatelessWidget {
           ),
           
           // Confetti-like bits (Static representation)
-          Positioned(top: 100, left: 40, child: _buildConfetti(const Color(0xFF00BCD4), 10)),
+          Positioned(top: 100, left: 40, child: _buildConfetti(AppColors.primaryGreen, 10)),
           Positioned(top: 150, right: 60, child: _buildConfetti(const Color(0xFF0D47A1), 12)),
           Positioned(bottom: 120, left: 80, child: _buildConfetti(Colors.yellowAccent, 8)),
-          Positioned(bottom: 180, right: 30, child: _buildConfetti(const Color(0xFF00BCD4), 10)),
+          Positioned(bottom: 180, right: 30, child: _buildConfetti(AppColors.primaryGreen, 10)),
         ],
       ),
     );

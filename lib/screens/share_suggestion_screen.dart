@@ -1,3 +1,4 @@
+import '../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
@@ -32,8 +33,8 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
     {'label': 'Other',          'icon': Icons.more_horiz_rounded},
   ];
 
-  static const _primaryColor = Color(0xFF00BCD4);
-  static const _deepBlue    = Color(0xFF0D47A1);
+  static const _primaryColor = AppColors.deepEmerald;
+  static const _deepBlue    = AppColors.deepEmerald;
 
   @override
   void dispose() {
@@ -100,7 +101,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
       length: 2,
       initialIndex: widget.initialIndex,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7F9),
+        backgroundColor: AppColors.backgroundLight,
         appBar: AppBar(
           title: const Text('Share a Suggestion'),
           flexibleSpace: Container(
@@ -112,20 +113,19 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               ),
             ),
           ),
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.cardDark,
           elevation: 0,
-          titleTextStyle: const TextStyle(
-            color: Colors.white,
+          titleTextStyle: const TextStyle(color: Colors.white,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
-          iconTheme: const IconThemeData(color: Colors.white),
+          iconTheme: const IconThemeData(color: AppColors.cardDark),
           bottom: const TabBar(
-            indicatorColor: Colors.white,
+            indicatorColor: AppColors.cardDark,
             indicatorWeight: 3,
             labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
             unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
-            labelColor: Colors.white,
+            labelColor: AppColors.cardDark,
             unselectedLabelColor: Colors.white70,
             tabs: [
               Tab(text: 'Submit Idea'),
@@ -169,7 +169,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                   ),
                 ],
               ),
-              child: const Icon(Icons.check_rounded, color: Colors.white, size: 52),
+              child: const Icon(Icons.check_rounded, color: AppColors.cardDark, size: 52),
             ),
             const SizedBox(height: 28),
             const Text(
@@ -177,7 +177,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.cardDark,
               ),
             ),
             const SizedBox(height: 12),
@@ -199,7 +199,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                 label: const Text('Back to Settings'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primaryColor,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.cardDark,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
@@ -259,10 +259,10 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: AppColors.cardDark.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(Icons.lightbulb_rounded, color: Colors.white, size: 30),
+                    child: const Icon(Icons.lightbulb_rounded, color: AppColors.cardDark, size: 30),
                   ),
                   const SizedBox(width: 16),
                   const Expanded(
@@ -271,8 +271,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                       children: [
                         Text(
                           'Got an idea?',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                           ),
@@ -280,8 +279,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                         SizedBox(height: 4),
                         Text(
                           'Help us build a better app.\nEvery suggestion is reviewed by our team.',
-                          style: TextStyle(
-                            color: Colors.white70,
+                          style: TextStyle(color: Colors.white70,
                             fontSize: 13,
                             height: 1.4,
                           ),
@@ -301,7 +299,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
+                color: AppColors.cardDark,
               ),
             ),
             const SizedBox(height: 10),
@@ -318,7 +316,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                       Icon(
                         cat['icon'] as IconData,
                         size: 15,
-                        color: isSelected ? Colors.white : Colors.grey.shade600,
+                        color: isSelected ? AppColors.cardDark : Colors.grey.shade600,
                       ),
                       const SizedBox(width: 5),
                       Text(cat['label'] as String),
@@ -328,9 +326,9 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                     _selectedCategory = isSelected ? null : cat['label'] as String;
                   }),
                   selectedColor: _primaryColor,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.midnightEmerald,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : Colors.grey.shade700,
+                    color: isSelected ? AppColors.cardDark : Colors.grey.shade700,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -392,7 +390,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                 onPressed: _isSubmitting ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primaryColor,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.cardDark,
                   disabledBackgroundColor: _primaryColor.withOpacity(0.5),
                   disabledForegroundColor: Colors.white70,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -407,7 +405,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                         width: 22,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          color: Colors.white,
+                          color: AppColors.cardDark,
                         ),
                       )
                     : const Row(
@@ -426,7 +424,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               child: Text(
                 'Your suggestion will be reviewed by our developer team.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald),
               ),
             ),
             const SizedBox(height: 32),
@@ -491,7 +489,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
 
             switch (statusStr) {
               case 'in_progress':
-                statusColor = Colors.blue;
+                statusColor = AppColors.primaryBlue;
                 statusIcon = Icons.engineering_rounded;
                 statusLabel = 'In Development';
                 break;
@@ -521,12 +519,12 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardDark,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.white70.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
                 ],
-                border: Border.all(color: Colors.grey.shade100),
+                border: Border.all(color: AppColors.midnightEmerald),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -544,7 +542,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                 margin: const EdgeInsets.only(bottom: 6),
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade100,
+                                  color: AppColors.midnightEmerald,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -561,7 +559,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF1A1A1A),
+                                color: AppColors.cardDark,
                               ),
                             ),
                           ],
@@ -608,7 +606,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                     const SizedBox(height: 12),
                     Text(
                       'Attached Screenshots',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey.shade500),
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.midnightEmerald),
                     ),
                     const SizedBox(height: 6),
                     SizedBox(
@@ -635,7 +633,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                       Positioned(
                                         top: 30, right: 20,
                                         child: IconButton(
-                                          icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                                          icon: const Icon(Icons.close, color: AppColors.cardDark, size: 30),
                                           onPressed: () => Navigator.pop(context),
                                         ),
                                       ),
@@ -652,7 +650,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                 height: 60,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) => Container(
-                                  width: 60, height: 60, color: Colors.grey.shade200, 
+                                  width: 60, height: 60, color: AppColors.midnightEmerald, 
                                   child: const Icon(Icons.broken_image, size: 20, color: Colors.grey),
                                 ),
                               ),
@@ -730,7 +728,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                         Positioned(
                                           top: 30, right: 20,
                                           child: IconButton(
-                                            icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                                            icon: const Icon(Icons.close, color: AppColors.cardDark, size: 30),
                                             onPressed: () => Navigator.pop(context),
                                           ),
                                         ),
@@ -747,7 +745,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) => Container(
-                                    height: 100, color: Colors.grey.shade200, 
+                                    height: 100, color: AppColors.midnightEmerald, 
                                     child: const Center(child: Icon(Icons.broken_image, color: Colors.grey)),
                                   ),
                                 ),
@@ -767,7 +765,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                         'Submitted $dateDisplay',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey.shade500,
+                          color: AppColors.midnightEmerald,
                         ),
                       ),
                     ],
@@ -787,7 +785,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
       style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF1A1A1A),
+        color: AppColors.cardDark,
       ),
     );
   }
@@ -837,10 +835,10 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                          child: Container(
                            padding: const EdgeInsets.all(2),
                            decoration: const BoxDecoration(
-                             color: Colors.black54,
+                             color: Colors.white70,
                              shape: BoxShape.circle,
                            ),
-                           child: const Icon(Icons.close, size: 16, color: Colors.white),
+                           child: const Icon(Icons.close, size: 16, color: AppColors.cardDark),
                          ),
                       ),
                     ),
@@ -883,14 +881,14 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
       hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
       prefixIcon: Icon(icon, color: _primaryColor, size: 20),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: AppColors.cardDark,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: BorderSide(color: AppColors.midnightEmerald),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey.shade200),
+        borderSide: BorderSide(color: AppColors.midnightEmerald),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -904,3 +902,19 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

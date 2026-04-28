@@ -18,3 +18,5 @@ class SubscriptionService {
     return await ApiService.makeRequest('${ApiService.baseUrl}/subscriptions/my');
   }
 }
+
+

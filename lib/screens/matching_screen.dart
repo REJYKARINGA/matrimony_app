@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:ui';
@@ -12,6 +13,7 @@ import '../services/auth_provider.dart';
 import '../services/navigation_provider.dart';
 import '../services/photo_request_service.dart';
 import '../widgets/watermark_overlay.dart';
+import '../utils/app_colors.dart';
 
 class MatchingScreen extends StatefulWidget {
   const MatchingScreen({Key? key}) : super(key: key);
@@ -32,10 +34,10 @@ class _MatchingScreenState extends State<MatchingScreen>
   bool _isLoading = true;
   String? _errorMessage;
 
-  // Updated gradient colors to match the cyan header in the image
-  static const Color gradientCyan = Color(0xFF00D9E1); // Bright cyan from image
-  static const Color gradientLightBlue = Color(0xFF64C3E8); // Light blue gradient
-  static const Color accentGreen = Color(0xFF4CD9A6);
+  // Theme accent colors (Islamic Green palette)
+  static const Color gradientCyan = AppColors.primaryGreen;
+  static const Color gradientLightBlue = AppColors.deepGreen;
+  static const Color accentGreen = AppColors.primaryGreen;
 
   int? _currentUserId;
 
@@ -178,8 +180,8 @@ class _MatchingScreenState extends State<MatchingScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF00BCD4).withOpacity(0.08),
-                    const Color(0xFF00BCD4).withOpacity(0.02),
+                    AppColors.deepEmerald.withOpacity(0.08),
+                    AppColors.deepEmerald.withOpacity(0.02),
                   ],
                 ),
               ),
@@ -193,7 +195,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                       height: 200,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF00BCD4).withOpacity(0.1),
+                        color: AppColors.deepEmerald.withOpacity(0.1),
                       ),
                     ),
                   ),
@@ -205,7 +207,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                       height: 150,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF00BCD4).withOpacity(0.05),
+                        color: AppColors.deepEmerald.withOpacity(0.05),
                       ),
                     ),
                   ),
@@ -221,17 +223,16 @@ class _MatchingScreenState extends State<MatchingScreen>
                   pinned: true,
                   elevation: 0,
                   scrolledUnderElevation: 0,
-                  backgroundColor: Colors.transparent,
+                  backgroundColor: Colors.white,
                   title: const Text(
                     'Matches & Interests',
-                    style: TextStyle(
-                      color: Color(0xFF1A1A1A),
+                    style: TextStyle(color: AppColors.darkGreen,
                       fontWeight: FontWeight.w800,
                       fontSize: 18,
                     ),
                   ),
                   centerTitle: true,
-                  iconTheme: const IconThemeData(color: Color(0xFF1A1A1A)),
+                  iconTheme: const IconThemeData(color: AppColors.darkGreen),
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     background: Container(),
@@ -243,12 +244,12 @@ class _MatchingScreenState extends State<MatchingScreen>
                       child: Container(
                         height: 46,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.65),
+                          color: AppColors.softMint,
                           borderRadius: BorderRadius.circular(25),
-                          border: Border.all(color: Colors.white.withOpacity(0.8), width: 1.5),
+                          border: Border.all(color: AppColors.divider, width: 1),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.03),
+                              color: Colors.black.withOpacity(0.04),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -258,18 +259,18 @@ class _MatchingScreenState extends State<MatchingScreen>
                           controller: _tabController,
                           indicator: BoxDecoration(
                             borderRadius: BorderRadius.circular(25),
-                            color: Colors.white,
+                            color: AppColors.primaryGreen,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: AppColors.primaryGreen.withOpacity(0.3),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
                           indicatorSize: TabBarIndicatorSize.tab,
-                          labelColor: const Color(0xFF00BCD4),
-                          unselectedLabelColor: Colors.grey.shade600,
+                          labelColor: Colors.white,
+                          unselectedLabelColor: AppColors.darkGreen,
                           labelStyle: const TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 13,
@@ -358,7 +359,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                 padding: const EdgeInsets.fromLTRB(12, 16, 12, 8),
                 child: Row(
                   children: [
-                    Icon(Icons.block_rounded, size: 16, color: Colors.grey.shade500),
+                    Icon(Icons.block_rounded, size: 16, color: AppColors.midnightEmerald),
                     const SizedBox(width: 6),
                     Text(
                       'Dismissed Profiles',
@@ -578,7 +579,7 @@ class _MatchingScreenState extends State<MatchingScreen>
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00BCD4).withOpacity(0.15),
+            color: AppColors.primaryGreen.withOpacity(0.15),
             blurRadius: 25,
             offset: const Offset(0, 12),
           ),
@@ -606,7 +607,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                       BackdropFilter(
                         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                         child: Container(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.white70.withOpacity(0.4),
                           child: Align(
                             alignment: const Alignment(0, -0.3),
                             child: Column(
@@ -622,7 +623,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                                             : (user.photoRequestPending == true 
                                                 ? Icons.pending_actions_rounded 
                                                 : Icons.lock_person_rounded))),
-                                  color: Colors.white,
+                                  color: AppColors.cardDark,
                                   size: 40,
                                 ),
                                 const SizedBox(height: 8),
@@ -636,8 +637,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                                             : (user.photoRequestPending == true 
                                                 ? 'Access Request Pending' 
                                                 : 'Photos are Private'))),
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: const TextStyle(color: Colors.white,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1,
@@ -655,8 +655,8 @@ class _MatchingScreenState extends State<MatchingScreen>
                                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                                     ),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF00BCD4),
-                                      foregroundColor: Colors.white,
+                                      backgroundColor: AppColors.deepEmerald,
+                                      foregroundColor: AppColors.cardDark,
                                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                       minimumSize: Size.zero,
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -709,7 +709,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.white70.withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -717,8 +717,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                   ),
                   child: Text(
                     status == 'blocked' ? 'DISMISSED' : status.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: const TextStyle(color: Colors.white,
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,
@@ -739,8 +738,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                     children: [
                       Text(
                         '${profile?.changedFields?.contains('first_name') == true ? 'Under Review' : user.matrimonyId ?? 'User'}${ageText.isNotEmpty ? ', $ageText' : ''}',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: const TextStyle(color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           letterSpacing: -0.5,
@@ -750,20 +748,19 @@ class _MatchingScreenState extends State<MatchingScreen>
                       if (user.userProfile?.isActiveVerified == true)
                         const Icon(
                           Icons.verified_rounded,
-                          color: Color(0xFF00BCD4),
+                          color: AppColors.deepEmerald,
                           size: 18,
                         ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.white70.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           user.lastActiveString,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: const TextStyle(color: Colors.white,
                             fontSize: 9,
                             fontWeight: FontWeight.bold,
                           ),
@@ -776,8 +773,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                   // Row 2: Height, Marital Status, Caste
                   Text(
                     '${profile?.height != null ? '${profile!.height} cm, ' : ''}$maritalStatus, ${profile?.caste ?? ''}',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                    style: TextStyle(color: Colors.white.withOpacity(0.9),
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
@@ -789,8 +785,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                   if ((profile?.education ?? '').isNotEmpty || (profile?.occupation ?? '').isNotEmpty)
                     Text(
                       '${profile?.education ?? ''}${profile?.education != null && (profile?.occupation ?? '').isNotEmpty ? ', ' : ''}${profile?.occupation ?? ''}',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
+                      style: TextStyle(color: Colors.white.withOpacity(0.85),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -806,7 +801,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                           children: [
                             Icon(
                               Icons.location_on_rounded,
-                              color: Colors.white.withOpacity(0.8),
+                              color: AppColors.cardDark.withOpacity(0.8),
                               size: 14,
                             ),
                             const SizedBox(width: 4),
@@ -816,8 +811,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                                 children: [
                                   Text(
                                     loc.isNotEmpty ? loc : 'Unknown Location',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.8),
+                                    style: TextStyle(color: Colors.white.withOpacity(0.8),
                                       fontSize: 13,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -827,8 +821,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                                       padding: const EdgeInsets.only(top: 2),
                                       child: Text(
                                         'Present: $currentLoc',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
+                                        style: TextStyle(color: Colors.white.withOpacity(0.9),
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
                                         ),
@@ -845,10 +838,10 @@ class _MatchingScreenState extends State<MatchingScreen>
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00BCD4).withOpacity(0.35),
+                            color: AppColors.deepEmerald.withOpacity(0.35),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
+                              color: AppColors.cardDark.withOpacity(0.3),
                               width: 0.5,
                             ),
                           ),
@@ -857,14 +850,13 @@ class _MatchingScreenState extends State<MatchingScreen>
                             children: [
                               const Icon(
                                 Icons.near_me_rounded,
-                                color: Colors.white,
+                                color: AppColors.cardDark,
                                 size: 10,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${user.distance!.toStringAsFixed(1)} KM',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: const TextStyle(color: Colors.white,
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -925,12 +917,11 @@ class _MatchingScreenState extends State<MatchingScreen>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.lock_open_rounded, color: Colors.white, size: 20),
+                              Icon(Icons.lock_open_rounded, color: AppColors.cardDark, size: 20),
                               SizedBox(width: 10),
                               Text(
                                 'UNBLOCK PROFILE',
-                                style: TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 1.2,
@@ -955,7 +946,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                     child: _buildFloatingButton(
                       icon: Icons.close_rounded,
                       color: Colors.white,
-                      iconColor: Colors.black54,
+                      iconColor: AppColors.bodyText,
                       size: 50,
                       shadowColor: Colors.black.withOpacity(0.1),
                     ),
@@ -980,18 +971,18 @@ class _MatchingScreenState extends State<MatchingScreen>
                             gradient: const LinearGradient(
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
-                              colors: [Color(0xFF42D368), Color(0xFF2E7D32)],
+                              colors: [AppColors.primaryGreen, AppColors.darkGreen],
                             ),
                             borderRadius: BorderRadius.circular(30),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF42D368).withOpacity(0.35),
+                                color: AppColors.primaryGreen.withOpacity(0.35),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
                             ],
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
+                              color: AppColors.primaryGreen.withOpacity(0.3),
                               width: 1.5,
                             ),
                           ),
@@ -999,12 +990,11 @@ class _MatchingScreenState extends State<MatchingScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.phone_iphone_rounded, color: Colors.white, size: 20),
+                                Icon(Icons.phone_iphone_rounded, color: AppColors.cardDark, size: 20),
                                 SizedBox(width: 10),
                                 Text(
                                   'VIEW PROFILE',
-                                  style: TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(color: Colors.white,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1.2,
@@ -1041,10 +1031,10 @@ class _MatchingScreenState extends State<MatchingScreen>
                             },
                             child: _buildFloatingButton(
                               icon: Icons.chat_bubble_rounded,
-                              color: const Color(0xFF00BCD4),
+                              color: AppColors.primaryGreen,
                               iconColor: Colors.white,
                               size: 50,
-                              shadowColor: const Color(0xFF00BCD4).withOpacity(0.3),
+                              shadowColor: AppColors.primaryGreen.withOpacity(0.3),
                             ),
                           ),
 
@@ -1091,10 +1081,10 @@ class _MatchingScreenState extends State<MatchingScreen>
                             },
                             child: _buildFloatingButton(
                               icon: (status == 'pending' && isSentByMe) ? Icons.done_all_rounded : (status == 'pending' && !isSentByMe ? Icons.check_circle_rounded : Icons.favorite),
-                              color: (status == 'pending' && isSentByMe) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55)),
+                              color: (status == 'pending' && isSentByMe) ? AppColors.mutedText : (status == 'pending' && !isSentByMe ? AppColors.primaryGreen : const Color(0xFFFF2D55)),
                               iconColor: Colors.white,
                               size: 60,
-                              shadowColor: ((status == 'pending' && isSentByMe) ? const Color(0xFF42D368) : (status == 'pending' && !isSentByMe ? const Color(0xFF00BCD4) : const Color(0xFFFF2D55))).withOpacity(0.4),
+                              shadowColor: ((status == 'pending' && isSentByMe) ? AppColors.mutedText : (status == 'pending' && !isSentByMe ? AppColors.primaryGreen : const Color(0xFFFF2D55))).withOpacity(0.4),
                             ),
                           ),
                         ],
@@ -1176,8 +1166,8 @@ class _MatchingScreenState extends State<MatchingScreen>
           Icons.face,
           size: 80,
           color: isFemale
-              ? const Color(0xFF0D47A1).withOpacity(0.3)
-              : const Color(0xFF00BCD4).withOpacity(0.3),
+              ? AppColors.deepEmerald.withOpacity(0.3)
+              : AppColors.deepEmerald.withOpacity(0.3),
         ),
       ),
     );
@@ -1304,13 +1294,13 @@ class _MatchingScreenState extends State<MatchingScreen>
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF00BCD4).withOpacity(0.05),
+              color: AppColors.softMint,
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
               size: 64,
-              color: const Color(0xFF00BCD4).withOpacity(0.8),
+              color: AppColors.primaryGreen,
             ),
           ),
           const SizedBox(height: 24),
@@ -1320,7 +1310,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
+              color: AppColors.bodyText,
               letterSpacing: -0.5,
             ),
           ),
@@ -1340,11 +1330,11 @@ class _MatchingScreenState extends State<MatchingScreen>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                  colors: [AppColors.primaryGreen, AppColors.darkGreen],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF00BCD4).withOpacity(0.2),
+                    color: AppColors.primaryGreen.withOpacity(0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -1362,8 +1352,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                 ),
                 child: Text(
                   actionLabel,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: const TextStyle(color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
@@ -1382,3 +1371,17 @@ class _MatchingScreenState extends State<MatchingScreen>
     super.dispose();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

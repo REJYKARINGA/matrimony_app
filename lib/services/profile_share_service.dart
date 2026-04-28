@@ -53,7 +53,7 @@ Check out this profile on Vivah Matrimony app!
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF00BCD4), Color(0xFF0D47A1)],
+                colors: [Color(0xFF00A87D), Color(0xFF00A87D)],
               ),
             ),
             child: Column(
@@ -230,3 +230,6 @@ Check out this profile on Vivah Matrimony app!
     );
   }
 }
+
+
+

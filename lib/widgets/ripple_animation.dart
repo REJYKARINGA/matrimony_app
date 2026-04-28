@@ -14,7 +14,7 @@ class RipplesAnimation extends StatefulWidget {
     this.child,
     this.profileImageUrl,
     this.size = 120.0,
-    this.color = const Color(0xFF00BCD4),
+    this.color = const Color(0xFF00A87D),
     this.loadingText,
   }) : super(key: key);
 
@@ -149,3 +149,7 @@ class CirclePainter extends CustomPainter {
   @override
   bool shouldRepaint(CirclePainter oldDelegate) => true;
 }
+
+
+
+

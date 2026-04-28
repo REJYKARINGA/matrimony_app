@@ -1,3 +1,4 @@
+import '../../../../../../utils/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../services/photo_request_service.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
 import 'view_profile_screen.dart';
 import '../widgets/common_footer.dart';
+import '../utils/app_colors.dart';
 
 class PhotoRequestsScreen extends StatefulWidget {
   const PhotoRequestsScreen({Key? key}) : super(key: key);
@@ -22,8 +24,8 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
   String? _error;
   late TabController _tabController;
 
-  static const Color _cyan = Color(0xFF00BCD4);
-  static const Color _green = Color(0xFF4CD9A6);
+  static const Color _cyan = AppColors.deepEmerald;
+  static const Color _green = AppColors.royalGold;
 
   @override
   void initState() {
@@ -100,7 +102,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade400,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.cardDark,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               elevation: 0,
             ),
@@ -170,15 +172,15 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
               expandedHeight: 210.0,
               floating: false,
               pinned: true,
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.midnightEmerald,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black87, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70, size: 20),
                 onPressed: () => Navigator.pop(context),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
-                  color: Colors.white,
+                  color: AppColors.cardDark,
                   padding: const EdgeInsets.only(left: 20, right: 20, bottom: 85),
                   alignment: Alignment.bottomLeft,
                   child: Row(
@@ -191,7 +193,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                           ),
                           borderRadius: BorderRadius.circular(14),
                         ),
-                        child: const Icon(Icons.photo_library_rounded, color: Colors.white, size: 24),
+                        child: const Icon(Icons.photo_library_rounded, color: AppColors.cardDark, size: 24),
                       ),
                       const SizedBox(width: 14),
                       Column(
@@ -203,7 +205,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF1A1A1A),
+                              color: AppColors.cardDark,
                               letterSpacing: -0.5,
                             ),
                           ),
@@ -211,7 +213,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                             pendingCount > 0
                                 ? '$pendingCount pending incoming request${pendingCount > 1 ? 's' : ''}'
                                 : 'Manage photo access permissions',
-                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 13, color: AppColors.midnightEmerald, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -223,8 +225,8 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                 preferredSize: const Size.fromHeight(56),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(bottom: BorderSide(color: Colors.grey.shade100, width: 1)),
+                    color: AppColors.cardDark,
+                    border: Border(bottom: BorderSide(color: AppColors.midnightEmerald, width: 1)),
                   ),
                   child: TabBar(
                     controller: _tabController,
@@ -275,13 +277,13 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                         children: [
                           Icon(Icons.error_outline, size: 60, color: Colors.grey.shade300),
                           const SizedBox(height: 16),
-                          Text(_error!, style: TextStyle(color: Colors.grey.shade500)),
+                          Text(_error!, style: TextStyle(color: AppColors.midnightEmerald)),
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
                             onPressed: _loadRequests,
                             icon: const Icon(Icons.refresh),
                             label: const Text('Retry'),
-                            style: ElevatedButton.styleFrom(backgroundColor: _cyan, foregroundColor: Colors.white),
+                            style: ElevatedButton.styleFrom(backgroundColor: _cyan, foregroundColor: AppColors.cardDark),
                           ),
                         ],
                       ),
@@ -335,18 +337,18 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
+                  color: AppColors.midnightEmerald,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 48, color: Colors.grey.shade300),
               ),
               const SizedBox(height: 20),
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A))),
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.cardDark)),
               const SizedBox(height: 8),
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade500, height: 1.5),
+                style: TextStyle(fontSize: 14, color: AppColors.midnightEmerald, height: 1.5),
               ),
             ],
           ),
@@ -400,11 +402,11 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.cardDark,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.white70.withOpacity(0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -444,10 +446,10 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                                 child: Image.network(
                                   ApiService.getImageUrl(profilePicture),
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white, size: 30),
+                                  errorBuilder: (_, __, ___) => const Icon(Icons.person, color: AppColors.cardDark, size: 30),
                                 ),
                               )
-                            : const Icon(Icons.person, color: Colors.white, size: 30),
+                            : const Icon(Icons.person, color: AppColors.cardDark, size: 30),
                       ),
                       Positioned(
                         bottom: 0,
@@ -457,9 +459,9 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                           decoration: BoxDecoration(
                             color: statusColor,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                            border: Border.all(color: AppColors.cardDark, width: 2),
                           ),
-                          child: Icon(statusIcon, size: 10, color: Colors.white),
+                          child: Icon(statusIcon, size: 10, color: AppColors.cardDark),
                         ),
                       ),
                     ],
@@ -475,7 +477,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                             Expanded(
                               child: Text(
                                 name,
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1A1A1A)),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.cardDark),
                               ),
                             ),
                             Container(
@@ -495,7 +497,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                         if (city != null || religion != null)
                           Text(
                             [city, religion].where((v) => v != null && v.isNotEmpty).join(' • '),
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                            style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -514,7 +516,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
           ),
           // Action Buttons (only for pending or rejected/declined)
           if (isPending || request['status'] == 'rejected') ...[
-            Divider(height: 1, color: Colors.grey.shade100),
+            Divider(height: 1, color: AppColors.midnightEmerald),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               child: Row(
@@ -546,7 +548,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _cyan,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.cardDark,
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -557,7 +559,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
               ),
             ),
           ] else if (isAccepted) ...[
-            Divider(height: 1, color: Colors.grey.shade100),
+            Divider(height: 1, color: AppColors.midnightEmerald),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
               child: Row(
@@ -577,3 +579,18 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
