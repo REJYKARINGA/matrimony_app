@@ -865,39 +865,66 @@ class _EngagementPosterInfoScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundGray,
-      body: CustomScrollView(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.6,
+              child: Image.asset(
+                'assets/images/engagement_bg.png',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 220,
             pinned: true,
-            backgroundColor: backgroundGray,
-            centerTitle: true,
+            backgroundColor: Colors.transparent,
             elevation: 0,
-            titleTextStyle: const TextStyle(
-              color: textBlack,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textDark),
+              onPressed: () => Navigator.pop(context),
             ),
-            iconTheme: const IconThemeData(color: textBlack),
             flexibleSpace: FlexibleSpaceBar(
-              title: const Text('Engagement Posters'),
               background: Container(
-                color: backgroundGray,
-                child: Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: primaryCyan.withOpacity(0.1),
-                      shape: BoxShape.circle,
+                color: Colors.transparent,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.deepEmerald.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.deepEmerald.withOpacity(0.05),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.celebration_rounded,
+                        size: 56,
+                        color: AppColors.deepEmerald,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.celebration_rounded,
-                      size: 48,
-                      color: primaryCyan,
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Engagement Posters',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textDark,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -910,18 +937,19 @@ class _EngagementPosterInfoScreenState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Introduction Card with gradient
+                  // Introduction Card with premium look
                   Container(
-                    padding: const EdgeInsets.all(24),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(28),
                     decoration: BoxDecoration(
-                      color: cardGray,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.midnightEmerald),
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.deepEmerald.withOpacity(0.2)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white70.withOpacity(0.04),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
@@ -931,19 +959,20 @@ class _EngagementPosterInfoScreenState
                           'Celebrate Your Love Story',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2D3142),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textDark,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         Text(
                           'Share the beautiful moment of your engagement with friends, family, and your community. Create lasting memories and announce your special journey together.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.grey[700],
-                            height: 1.5,
+                            height: 1.6,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -1009,14 +1038,14 @@ class _EngagementPosterInfoScreenState
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: cardGray,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.midnightEmerald),
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.deepEmerald.withOpacity(0.2)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.white70.withOpacity(0.04),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
                         ),
                       ],
                     ),
@@ -1127,8 +1156,10 @@ class _EngagementPosterInfoScreenState
           ),
         ],
       ),
-    );
-  }
+    ],
+  ),
+);
+}
 
   Widget _buildStep(
     int number,
@@ -1356,9 +1387,10 @@ class _EngagementPosterInfoScreenState
                 const SizedBox(height: 8),
                 Text(
                   _existingPoster?['announcement_message'] ?? '',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 15,
-                    color: Colors.grey[700],
+                    color: AppColors.textDark,
+                    height: 1.5,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -1371,7 +1403,7 @@ class _EngagementPosterInfoScreenState
                       'Partner ID:',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        color: AppColors.mutedText,
                       ),
                     ),
                     Row(
@@ -1403,7 +1435,7 @@ class _EngagementPosterInfoScreenState
                       'Partner Confirmation:',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        color: AppColors.mutedText,
                       ),
                     ),
                     Container(
@@ -1439,7 +1471,7 @@ class _EngagementPosterInfoScreenState
                       'Verification Status:',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey[800],
+                        color: AppColors.mutedText,
                       ),
                     ),
                     Container(

@@ -25,8 +25,22 @@ class _LoginScreenState extends State<LoginScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
+      backgroundColor: AppColors.backgroundLight,
+      body: Stack(
+        children: [
+          // Background subtle design
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.4,
+              child: Image.asset(
+                'assets/images/splash_bg.png',
+                fit: BoxFit.cover,
+                errorBuilder: (ctx, err, st) => Container(),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
@@ -115,7 +129,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             filled: true,
-                            fillColor: AppColors.midnightEmerald,
+                            fillColor: AppColors.deepEmerald.withOpacity(0.05),
+                            hintText: 'Enter your email',
+                            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -171,7 +187,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             filled: true,
-                            fillColor: AppColors.midnightEmerald,
+                            fillColor: AppColors.deepEmerald.withOpacity(0.05),
+                            hintText: 'Enter your password',
+                            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -356,8 +374,10 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
+    ],
+  ),
+);
+}
 
   @override
   void dispose() {

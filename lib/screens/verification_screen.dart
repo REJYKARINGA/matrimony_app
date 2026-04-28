@@ -119,55 +119,71 @@ class _VerificationScreenState extends State<VerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.midnightEmerald,
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('Verify Account', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white70)),
-        backgroundColor: AppColors.midnightEmerald,
+        title: const Text('Verify Account', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textDark, letterSpacing: -0.5)),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textDark),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          final navProvider = Provider.of<NavigationProvider>(context, listen: false);
-          if (notification.direction == ScrollDirection.reverse) {
-            navProvider.setFooterVisible(false);
-          } else if (notification.direction == ScrollDirection.forward) {
-            navProvider.setFooterVisible(true);
-          }
-          return true;
-        },
-        child: _isLoading && _verificationStatus == null
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStatusCard(),
-                  const SizedBox(height: 30),
-                  if (_verificationStatus == null || _verificationStatus!['status'] == 'rejected') ...[
-                    const Text(
-                      'Account Verification',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Upload your identity proof to verify your account and build trust with others.',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                    ),
-                    const SizedBox(height: 30),
-                    _buildForm(),
-                  ] else if (_verificationStatus!['status'] == 'pending') ...[
-                     _buildPendingView(),
-                  ] else if (_verificationStatus!['status'] == 'verified') ...[
-                     _buildVerifiedView(),
-                  ],
-                ],
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // Background Design
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.4,
+              child: Image.asset(
+                'assets/images/splash_bg.png',
+                fit: BoxFit.cover,
+                errorBuilder: (ctx, err, st) => Container(),
+              ),
             ),
-        ),
+          ),
+          NotificationListener<UserScrollNotification>(
+            onNotification: (notification) {
+              final navProvider = Provider.of<NavigationProvider>(context, listen: false);
+              if (notification.direction == ScrollDirection.reverse) {
+                navProvider.setFooterVisible(false);
+              } else if (notification.direction == ScrollDirection.forward) {
+                navProvider.setFooterVisible(true);
+              }
+              return true;
+            },
+            child: _isLoading && _verificationStatus == null
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 120, 24, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildStatusCard(),
+                      const SizedBox(height: 30),
+                      if (_verificationStatus == null || _verificationStatus!['status'] == 'rejected') ...[
+                        const Text(
+                          'Account Verification',
+                          style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.textDark, letterSpacing: -0.5),
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Upload your identity proof to verify your account and build trust with others in our community.',
+                          style: TextStyle(color: AppColors.mutedText, fontSize: 16, height: 1.5),
+                        ),
+                        const SizedBox(height: 30),
+                        _buildForm(),
+                      ] else if (_verificationStatus!['status'] == 'pending') ...[
+                         _buildPendingView(),
+                      ] else if (_verificationStatus!['status'] == 'verified') ...[
+                         _buildVerifiedView(),
+                      ],
+                    ],
+                ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: Consumer<NavigationProvider>(
         builder: (context, navProvider, child) => AnimatedSlide(
@@ -210,9 +226,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -242,18 +265,21 @@ class _VerificationScreenState extends State<VerificationScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Select ID Type', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+          const Text('Select ID Type', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.textDark)),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: AppColors.midnightEmerald,
+              color: AppColors.deepEmerald.withOpacity(0.05),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.deepEmerald.withOpacity(0.1)),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _selectedIdType,
                 isExpanded: true,
+                dropdownColor: Colors.white,
+                style: const TextStyle(color: AppColors.textDark, fontSize: 15),
                 items: _idTypes.map((type) {
                   return DropdownMenuItem(value: type, child: Text(type));
                 }).toList(),
@@ -262,15 +288,28 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          const Text('ID Number (Optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+          const Text('ID Number (Optional)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.textDark)),
           const SizedBox(height: 12),
           TextFormField(
             controller: _idNumberController,
+            style: const TextStyle(color: AppColors.textDark),
             decoration: InputDecoration(
               hintText: 'Enter ID Number',
+              hintStyle: const TextStyle(color: AppColors.mutedText),
               filled: true,
-              fillColor: AppColors.midnightEmerald,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              fillColor: AppColors.deepEmerald.withOpacity(0.05),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.deepEmerald.withOpacity(0.1)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.deepEmerald),
+              ),
             ),
           ),
           const SizedBox(height: 30),
@@ -285,15 +324,31 @@ class _VerificationScreenState extends State<VerificationScreen> {
           SizedBox(
             width: double.infinity,
             height: 56,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _submit,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.deepEmerald, // Turquoise from main theme
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  colors: [AppColors.primaryCyan, AppColors.primaryBlue],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryCyan.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: AppColors.cardDark)
-                  : const Text('Submit Verification', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.cardDark)),
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: AppColors.cardDark)
+                    : const Text('Submit Verification', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.cardDark)),
+              ),
             ),
           ),
         ],
@@ -306,16 +361,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(isFront ? 'Front Side' : 'Back Side', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+        Text(isFront ? 'Front Side' : 'Back Side', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.textDark)),
         const SizedBox(height: 10),
         GestureDetector(
           onTap: () => _pickImage(isFront),
           child: Container(
             height: 120,
             decoration: BoxDecoration(
-              color: AppColors.midnightEmerald,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+              border: Border.all(color: AppColors.divider.withOpacity(0.8), style: BorderStyle.solid),
             ),
             child: image != null
                 ? ClipRRect(
@@ -328,9 +383,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_a_photo_outlined, color: Colors.grey.shade400, size: 32),
+                      Icon(Icons.add_a_photo_outlined, color: AppColors.deepEmerald.withOpacity(0.5), size: 32),
                       const SizedBox(height: 8),
-                      Text('Upload Photo', style: TextStyle(color: AppColors.midnightEmerald, fontSize: 12)),
+                      const Text('Upload Photo', style: TextStyle(color: AppColors.deepEmerald, fontSize: 12, fontWeight: FontWeight.w500)),
                     ],
                   ),
           ),
@@ -344,14 +399,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
       child: Column(
         children: [
           const SizedBox(height: 40),
-          Icon(Icons.access_time_filled_rounded, color: AppColors.deepEmerald.withOpacity(0.3), size: 100), // Turquoise from main theme
+          Icon(Icons.access_time_filled_rounded, color: AppColors.deepEmerald.withOpacity(0.3), size: 100),
           const SizedBox(height: 24),
-          const Text('Checking Documents', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Checking Documents', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textDark)),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'We are reviewing your documents. This usually takes 24-48 hours. We will notify you once verified.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
+            style: TextStyle(color: AppColors.mutedText, fontSize: 15),
           ),
         ],
       ),
@@ -365,12 +420,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
           const SizedBox(height: 40),
           const Icon(Icons.verified_user_rounded, color: Colors.green, size: 100),
           const SizedBox(height: 24),
-          const Text('Verified Account', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Verified Account', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textDark)),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'Your account is verified. You now have a verification badge on your profile.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
+            style: TextStyle(color: AppColors.mutedText, fontSize: 15),
           ),
         ],
       ),

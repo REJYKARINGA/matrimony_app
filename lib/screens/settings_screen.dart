@@ -87,44 +87,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color? textColor,
     bool showDivider = true,
   }) {
-    final gradientColor = iconColor ?? AppColors.deepEmerald; // Turquoise
+    final primaryColor = iconColor ?? AppColors.deepEmerald;
 
-    return Column(
-      children: [
-        ListTile(
-          leading: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: gradientColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: primaryColor, size: 22),
+              ),
+              title: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: textColor ?? AppColors.textDark,
+                ),
+              ),
+              subtitle: subtitle != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                          height: 1.2,
+                        ),
+                      ),
+                    )
+                  : null,
+              trailing: Icon(Icons.chevron_right_rounded, color: Colors.grey[400], size: 20),
             ),
-            child: Icon(icon, color: gradientColor, size: 22),
           ),
-          title: Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: textColor,
+          if (showDivider)
+            Divider(
+              height: 1,
+              indent: 70,
+              endIndent: 20,
+              color: Colors.grey[100],
             ),
-          ),
-          subtitle: subtitle != null
-              ? Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                )
-              : null,
-          trailing: Icon(Icons.chevron_right, color: Colors.grey[400]),
-          onTap: onTap,
-        ),
-        if (showDivider)
-          Divider(
-            height: 1,
-            indent: 68,
-            endIndent: 16,
-            color: Colors.grey[200],
-          ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -141,16 +153,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: AppColors.backgroundLight,
         centerTitle: true,
         elevation: 0,
-        titleTextStyle: const TextStyle(color: Colors.white,
-          fontSize: 20,
+        titleTextStyle: const TextStyle(
+          color: AppColors.midnightEmerald,
+          fontSize: 22,
           fontWeight: FontWeight.bold,
           letterSpacing: -0.5,
         ),
-        iconTheme: const IconThemeData(color: AppColors.cardDark),
-        bottom: PreferredSize(
-          child: Container(color: AppColors.midnightEmerald, height: 1.5),
-          preferredSize: const Size.fromHeight(1.5),
-        ),
+        iconTheme: const IconThemeData(color: AppColors.midnightEmerald),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -165,8 +174,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.deepEmerald.withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.deepEmerald.withOpacity(0.1),
+                      AppColors.deepEmerald.withOpacity(0.05),
+                    ],
+                  ),
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.deepEmerald.withOpacity(0.2)),
                 ),
                 child: Row(
                   children: [
@@ -186,7 +201,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             style: const TextStyle(
                               color: AppColors.deepEmerald,
                               fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                              fontSize: 15,
                             ),
                           ),
                   ],
@@ -201,128 +216,179 @@ class _SettingsScreenState extends State<SettingsScreen> {
           await authProvider.loadCurrentUserWithProfile();
           await _loadWalletBalance();
         },
-        child: ListView(
-          children: [
-            // Enhanced Profile Section
-            Container(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                // Premium Profile Section
+                Container(
               margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.midnightEmerald),
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.midnightEmerald,
+                    AppColors.midnightEmerald.withBlue(100).withGreen(150),
+                  ],
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.03),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
+                    color: AppColors.midnightEmerald.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.deepEmerald.withOpacity(0.1), width: 2),
-                    ),
-                    child: CircleAvatar(
-                      radius: 35,
-                      backgroundColor: AppColors.midnightEmerald,
-                      backgroundImage: user?.displayImage != null &&
-                              user!.displayImage!.isNotEmpty
-                          ? NetworkImage(
-                              ApiService.getImageUrl(user.displayImage!),
-                            )
-                          : null,
-                      child: user?.displayImage == null ||
-                              user!.displayImage!.isEmpty
-                          ? Container(
-                              width: 70,
-                              height: 70,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: LinearGradient(
-                                  colors: [
-                                    AppColors.deepEmerald, // Turquoise
-                                    AppColors.deepEmerald, // Deep Blue
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  profile?.firstName
-                                          ?.substring(0, 1)
-                                          .toUpperCase() ??
-                                      'U',
-                                  style: const TextStyle(color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${profile?.firstName ?? 'User'} ${profile?.lastName ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.cardDark,
-                          ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  children: [
+                    // Decorative Circle 1
+                    Positioned(
+                      top: -20,
+                      right: -20,
+                      child: Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.05),
                         ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              user?.matrimonyId ?? 'ID: -',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    // Decorative Circle 2
+                    Positioned(
+                      bottom: -30,
+                      left: -10,
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.03),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          // Profile Image with ring
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.primaryGreen.withOpacity(0.5),
+                                width: 2,
                               ),
                             ),
-                            if (user?.matrimonyId != null) ...[
-                              const SizedBox(width: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(ClipboardData(text: user!.matrimonyId!));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Matrimony ID copied to clipboard'),
-                                      duration: Duration(seconds: 1),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
+                            child: CircleAvatar(
+                              radius: 38,
+                              backgroundColor: Colors.white24,
+                              backgroundImage: user?.displayImage != null &&
+                                      user!.displayImage!.isNotEmpty
+                                  ? NetworkImage(
+                                      ApiService.getImageUrl(user.displayImage!),
+                                    )
+                                  : null,
+                              child: user?.displayImage == null ||
+                                      user!.displayImage!.isEmpty
+                                  ? Text(
+                                      profile?.firstName
+                                              ?.substring(0, 1)
+                                              .toUpperCase() ??
+                                          'U',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${profile?.firstName ?? 'User'} ${profile?.lastName ?? ''}',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: 0.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: AppColors.deepEmerald.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.white.withOpacity(0.15),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: const Icon(
-                                    Icons.copy_rounded,
-                                    size: 14,
-                                    color: AppColors.deepEmerald,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        user?.matrimonyId ?? 'ID: -',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      if (user?.matrimonyId != null) ...[
+                                        const SizedBox(width: 8),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Clipboard.setData(ClipboardData(text: user!.matrimonyId!));
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('ID copied to clipboard'),
+                                                duration: Duration(seconds: 1),
+                                                behavior: SnackBarBehavior.floating,
+                                              ),
+                                            );
+                                          },
+                                          child: const Icon(
+                                            Icons.copy_rounded,
+                                            size: 14,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              const Icon(Icons.verified_rounded, color: AppColors.royalGold, size: 28),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Verified',
+                                style: TextStyle(
+                                  color: AppColors.royalGold.withOpacity(0.9),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const Icon(Icons.verified_rounded, color: AppColors.royalGold, size: 24),
-                ],
+                  ],
+                ),
               ),
             ),
 
@@ -735,8 +801,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  ),
+);
+}
 }
 
 

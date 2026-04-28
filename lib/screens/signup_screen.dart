@@ -75,8 +75,20 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundLight,
       body: Stack(
         children: [
+          // Background subtle design
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.3,
+              child: Image.asset(
+                'assets/images/splash_bg.png',
+                fit: BoxFit.cover,
+                errorBuilder: (ctx, err, st) => Container(),
+              ),
+            ),
+          ),
           // Decorative circles in background
           Positioned(
             top: -100,
@@ -582,20 +594,20 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                       ),
                       
                       const SizedBox(height: 40),
-                    ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-                );
-              },
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
-    );
-  }
+    ],
+  ),
+);
+}
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -614,8 +626,8 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
           label,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.cardDark,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textDark,
           ),
         ),
         const SizedBox(height: 8),
@@ -641,7 +653,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: AppColors.midnightEmerald,
+            fillColor: AppColors.deepEmerald.withOpacity(0.05),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -649,7 +661,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: AppColors.midnightEmerald, width: 1),
+              borderSide: BorderSide(color: AppColors.deepEmerald.withOpacity(0.1), width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

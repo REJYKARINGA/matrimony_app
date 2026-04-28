@@ -295,11 +295,12 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
 
             // Category chips
             const Text(
-              'Category (optional)',
+              'CATEGORY (OPTIONAL)',
               style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: AppColors.cardDark,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+                letterSpacing: 0.8,
               ),
             ),
             const SizedBox(height: 10),
@@ -310,33 +311,34 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                 final isSelected = _selectedCategory == cat['label'];
                 return FilterChip(
                   selected: isSelected,
+                  showCheckmark: false,
                   label: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         cat['icon'] as IconData,
                         size: 15,
-                        color: isSelected ? AppColors.cardDark : Colors.grey.shade600,
+                        color: isSelected ? Colors.white : AppColors.deepEmerald,
                       ),
-                      const SizedBox(width: 5),
+                      const SizedBox(width: 6),
                       Text(cat['label'] as String),
                     ],
                   ),
                   onSelected: (_) => setState(() {
                     _selectedCategory = isSelected ? null : cat['label'] as String;
                   }),
-                  selectedColor: _primaryColor,
-                  backgroundColor: AppColors.midnightEmerald,
+                  selectedColor: AppColors.deepEmerald,
+                  backgroundColor: AppColors.deepEmerald.withOpacity(0.08),
                   labelStyle: TextStyle(
-                    color: isSelected ? AppColors.cardDark : Colors.grey.shade700,
-                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : AppColors.deepEmerald,
+                    fontWeight: FontWeight.w700,
                     fontSize: 13,
                   ),
                   side: BorderSide(
-                    color: isSelected ? _primaryColor : Colors.grey.shade200,
+                    color: isSelected ? AppColors.deepEmerald : Colors.transparent,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 );
               }).toList(),
             ),
@@ -519,12 +521,12 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(color: Colors.white70.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
                 ],
-                border: Border.all(color: AppColors.midnightEmerald),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -537,20 +539,21 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (s['category'] != null)
+                            if (s['category'] != null && s['category'].toString().isNotEmpty)
                               Container(
                                 margin: const EdgeInsets.only(bottom: 6),
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: AppColors.midnightEmerald,
-                                  borderRadius: BorderRadius.circular(6),
+                                  color: AppColors.deepEmerald.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  s['category'],
-                                  style: TextStyle(
+                                  s['category'].toString().toUpperCase(),
+                                  style: const TextStyle(
                                     fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey.shade700,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.deepEmerald,
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
                               ),
@@ -559,7 +562,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.cardDark,
+                                color: AppColors.textDark,
                               ),
                             ),
                           ],
@@ -763,9 +766,10 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                     children: [
                       Text(
                         'Submitted $dateDisplay',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 11,
-                          color: AppColors.midnightEmerald,
+                          color: AppColors.mutedText,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -781,11 +785,12 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
 
   Widget _buildLabel(String text) {
     return Text(
-      text,
+      text.toUpperCase(),
       style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-        color: AppColors.cardDark,
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textDark,
+        letterSpacing: 0.8,
       ),
     );
   }
@@ -878,17 +883,17 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
   InputDecoration _inputDecoration({required String hint, required IconData icon}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-      prefixIcon: Icon(icon, color: _primaryColor, size: 20),
+      hintStyle: const TextStyle(color: AppColors.mutedText, fontSize: 14),
+      prefixIcon: Icon(icon, color: AppColors.deepEmerald, size: 20),
       filled: true,
-      fillColor: AppColors.cardDark,
+      fillColor: Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.midnightEmerald),
+        borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: AppColors.midnightEmerald),
+        borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),

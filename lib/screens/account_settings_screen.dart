@@ -31,23 +31,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final user = authProvider.user;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('Account Settings'),
+        title: const Text('Account Settings', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark)),
+        backgroundColor: AppColors.backgroundLight,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFF00A87D), // Turquoise
-                Color(0xFF00A87D), // Deep blue
-              ],
-            ),
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textDark),
+          onPressed: () => Navigator.pop(context),
         ),
-        foregroundColor: AppColors.cardDark,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -55,17 +47,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Profile Information Section
-            _buildSectionHeader('Profile Information', Icons.person_outline),
+            _buildSectionHeader('PROFILE INFORMATION', Icons.person_outline),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -105,17 +98,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             const SizedBox(height: 32),
 
             // Update Email and Phone Section
-            _buildSectionHeader('Contact Information', Icons.contacts_outlined),
+            _buildSectionHeader('CONTACT INFORMATION', Icons.contacts_outlined),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -130,32 +124,34 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white70,
+                          color: AppColors.textDark,
                         ),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: user?.email,
+                        style: const TextStyle(color: AppColors.textDark),
                         decoration: InputDecoration(
                           labelText: 'Email',
+                          labelStyle: const TextStyle(color: AppColors.mutedText),
                           prefixIcon: const Icon(
                             Icons.email_outlined,
-                            color: Color(0xFF00A87D),
+                            color: AppColors.deepEmerald,
                           ),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: AppColors.backgroundLight,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF00A87D),
+                              color: AppColors.deepEmerald,
                               width: 2,
                             ),
                           ),
@@ -167,26 +163,28 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         initialValue: user?.phone,
+                        style: const TextStyle(color: AppColors.textDark),
                         decoration: InputDecoration(
                           labelText: 'Phone',
+                          labelStyle: const TextStyle(color: AppColors.mutedText),
                           prefixIcon: const Icon(
                             Icons.phone_outlined,
-                            color: Color(0xFF00A87D),
+                            color: AppColors.deepEmerald,
                           ),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: AppColors.backgroundLight,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF00A87D),
+                              color: AppColors.deepEmerald,
                               width: 2,
                             ),
                           ),
@@ -202,7 +200,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF00A87D), Color(0xFF00A87D)],
+                              colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -247,17 +245,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             const SizedBox(height: 32),
 
             // Verification Section
-            _buildSectionHeader('Verification', Icons.verified_user_outlined),
+            _buildSectionHeader('VERIFICATION', Icons.verified_user_outlined),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -271,12 +270,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00A87D).withOpacity(0.1),
+                            color: AppColors.deepEmerald.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.verified,
-                            color: Color(0xFF00A87D),
+                            color: AppColors.deepEmerald,
                             size: 24,
                           ),
                         ),
@@ -287,7 +286,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white70,
+                              color: AppColors.textDark,
                             ),
                           ),
                         ),
@@ -321,9 +320,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       user?.verification?.status == 'verified'
                           ? 'Your account is fully verified. You have a verified badge on your profile.'
                           : 'Verify your account with a government ID to build trust and get a verified badge.',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[700],
+                        color: AppColors.mutedText,
                         height: 1.5,
                       ),
                     ),
@@ -339,9 +338,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           );
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF00A87D),
+                          foregroundColor: AppColors.deepEmerald,
                           side: const BorderSide(
-                            color: Color(0xFF00A87D),
+                            color: AppColors.deepEmerald,
                             width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(
@@ -365,17 +364,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             const SizedBox(height: 32),
 
             // Change Password Section
-            _buildSectionHeader('Security', Icons.lock_outline),
+            _buildSectionHeader('SECURITY', Icons.lock_outline),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -391,29 +391,31 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white70,
+                          color: AppColors.textDark,
                         ),
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _newPasswordController,
                         obscureText: _obscureNewPassword,
+                        style: const TextStyle(color: AppColors.textDark),
                         decoration: InputDecoration(
                           labelText: 'New Password',
+                          labelStyle: const TextStyle(color: AppColors.mutedText),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: AppColors.backgroundLight,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF00A87D),
+                              color: AppColors.deepEmerald,
                               width: 2,
                             ),
                           ),
@@ -445,22 +447,24 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       TextFormField(
                         controller: _confirmPasswordController,
                         obscureText: _obscureConfirmPassword,
+                        style: const TextStyle(color: AppColors.textDark),
                         decoration: InputDecoration(
                           labelText: 'Confirm New Password',
+                          labelStyle: const TextStyle(color: AppColors.mutedText),
                           filled: true,
-                          fillColor: Colors.grey[50],
+                          fillColor: AppColors.backgroundLight,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF00A87D),
+                              color: AppColors.deepEmerald,
                               width: 2,
                             ),
                           ),
@@ -493,7 +497,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF00A87D), Color(0xFF00A87D)],
+                              colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -540,13 +544,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             // Logout Button Section
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -576,7 +581,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white70,
+                              color: AppColors.textDark,
                             ),
                           ),
                         ),
@@ -625,14 +630,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
             // Delete Account Section
             _buildSectionHeader(
-              'Danger Zone',
+              'DANGER ZONE',
               Icons.warning_amber_outlined,
               color: Colors.red[700],
             ),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.red[100]!),
                 boxShadow: [
@@ -669,7 +674,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white70,
+                              color: AppColors.textDark,
                             ),
                           ),
                         ),
@@ -714,19 +719,20 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
 
             // Legal Section
             _buildSectionHeader(
-              'Legal',
+              'LEGAL',
               Icons.gavel_outlined,
             ),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white70.withOpacity(0.05),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
@@ -736,12 +742,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     leading: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00A87D).withOpacity(0.1),
+                        color: AppColors.deepEmerald.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.description_outlined,
-                        color: Color(0xFF00A87D),
+                        color: AppColors.deepEmerald,
                         size: 22,
                       ),
                     ),
@@ -750,6 +756,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textDark,
                       ),
                     ),
                     trailing: const Icon(
@@ -770,12 +777,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     leading: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00A87D).withOpacity(0.1),
+                        color: AppColors.deepEmerald.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.privacy_tip_outlined,
-                        color: Color(0xFF00A87D),
+                        color: AppColors.deepEmerald,
                         size: 22,
                       ),
                     ),
@@ -784,6 +791,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textDark,
                       ),
                     ),
                     trailing: const Icon(
@@ -812,14 +820,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   Widget _buildSectionHeader(String title, IconData icon, {Color? color}) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: color ?? Colors.grey[700]),
+        Icon(icon, size: 20, color: color ?? AppColors.deepEmerald),
         const SizedBox(width: 8),
         Text(
-          title,
+          title.toUpperCase(),
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 13,
             fontWeight: FontWeight.bold,
-            color: color ?? Colors.black87,
+            color: color ?? AppColors.textDark,
+            letterSpacing: 0.8,
           ),
         ),
       ],
@@ -832,10 +841,10 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.deepEmerald.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, size: 20, color: Colors.grey[700]),
+          child: Icon(icon, size: 20, color: AppColors.deepEmerald),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -844,20 +853,20 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             children: [
               Text(
                 label,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Colors.grey[600],
+                  color: AppColors.mutedText,
                   letterSpacing: 0.5,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                value.isEmpty ? 'Not provided' : value,
+                (value == null || value.trim().isEmpty) ? 'Not provided' : value,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white70,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textDark,
                 ),
               ),
             ],
@@ -1171,18 +1180,3 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     super.dispose();
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

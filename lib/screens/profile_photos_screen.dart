@@ -1,4 +1,3 @@
-import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
@@ -276,7 +275,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
     if (_isLoading && _photos.isEmpty) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
+        backgroundColor: AppColors.backgroundLight,
         body: SafeArea(
           child: Column(
             children: [
@@ -288,7 +287,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                     children: [
                       CircularProgressIndicator(color: AppColors.deepEmerald),
                       const SizedBox(height: 16),
-                      const Text('Loading profile photos...'),
+                      const Text(
+                        'Loading profile photos...',
+                        style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500),
+                      ),
                     ],
                   ),
                 ),
@@ -301,7 +303,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
+        backgroundColor: AppColors.backgroundLight,
         body: SafeArea(
           child: Column(
             children: [
@@ -319,7 +321,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                           _errorMessage!,
                           style: const TextStyle(
                             fontSize: 16,
-                            color: Colors.white70,
+                            color: AppColors.textDark,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -361,7 +363,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.midnightEmerald,
+      backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -377,7 +379,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                     children: [
                       const Text(
                         'Manage your profile photos',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                        style: TextStyle(fontSize: 16, color: AppColors.mutedText, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 16),
 
@@ -423,10 +425,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                       // Privacy Settings
                       Card(
                         elevation: 0,
-                        color: AppColors.midnightEmerald,
+                        color: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
-                          side: BorderSide(color: AppColors.midnightEmerald),
+                          side: BorderSide(color: AppColors.divider.withOpacity(0.5)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -453,6 +455,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        color: AppColors.textDark,
                                       ),
                                     ),
                                     Text(
@@ -489,11 +492,11 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                         Expanded(
                           child: GridView.builder(
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio: 1,
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 250,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                  childAspectRatio: 0.85,
                                 ),
                             itemCount: _photos.length,
                             itemBuilder: (context, index) {
@@ -506,7 +509,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   side: BorderSide(
-                                    color: AppColors.midnightEmerald,
+                                    color: AppColors.divider.withOpacity(0.5),
                                     width: 1,
                                   ),
                                 ),
@@ -526,7 +529,6 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                   },
                                                 )
                                               : const Icon(Icons.image, size: 50),
-                                          if (photo['photo_url'] != null || photo['full_photo_url'] != null) const WatermarkOverlay(),
                                         ],
                                       ),
                                     ),
@@ -789,7 +791,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.white70,
+                                    color: AppColors.textDark,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -797,7 +799,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   'Upload your first profile photo',
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: Colors.grey[600],
+                                    color: AppColors.mutedText,
                                   ),
                                 ),
                               ],
@@ -846,11 +848,10 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [AppColors.deepEmerald, AppColors.deepEmerald],
+                  colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
                 ),
               ),
             ),
-          if (primaryUrl != null) const WatermarkOverlay(),
             
           // Dark Gradient Overlay for readability
           Container(
@@ -886,16 +887,18 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                   ],
                 ),
                 child: ClipOval(
-                    child: Stack(
-                      children: [
-                        if (primaryUrl != null)
-                          Image.network(
-                            ApiService.getImageUrl(primaryUrl),
-                            fit: BoxFit.cover,
-                          ),
-                        if (primaryUrl != null) const WatermarkOverlay(),
-                      ],
-                    ),
+                  child: primaryUrl != null
+                      ? Image.network(
+                          ApiService.getImageUrl(primaryUrl),
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 100,
+                        )
+                      : const Icon(
+                          Icons.person,
+                          size: 60,
+                          color: AppColors.cardDark,
+                        ),
                 ),
               ),
               const SizedBox(height: 12),
