@@ -324,7 +324,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   Widget build(BuildContext context) {
     if (_isDataLoading) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
+        backgroundColor: AppColors.offWhite,
         appBar: _buildAppBar(),
         body: Center(
           child: Column(
@@ -332,7 +332,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             children: const [
               CircularProgressIndicator(color: AppColors.deepEmerald),
               SizedBox(height: 16),
-              Text('Loading preferences...', style: TextStyle(color: Colors.grey)),
+              Text('Loading preferences...', style: TextStyle(color: AppColors.mutedText)),
             ],
           ),
         ),
@@ -341,7 +341,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
+        backgroundColor: AppColors.offWhite,
         appBar: _buildAppBar(),
         body: Center(
           child: Padding(
@@ -353,7 +353,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage!,
-                  style: const TextStyle(fontSize: 16, color: Colors.white70),
+                  style: const TextStyle(fontSize: 16, color: AppColors.mutedText),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -361,7 +361,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   onPressed: _loadPreferences,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.deepEmerald,
-                    foregroundColor: AppColors.cardDark,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
@@ -375,7 +375,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.midnightEmerald,
+      backgroundColor: AppColors.offWhite,
       appBar: _buildAppBar(),
       body: NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
@@ -617,9 +617,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.cardDark,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: AppColors.midnightEmerald),
+                      border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.1)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.midnightEmerald.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -676,35 +683,52 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
+              Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: SizedBox(
               width: double.infinity,
               height: 54,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _savePreferences,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.deepEmerald,
-                  foregroundColor: AppColors.cardDark,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                  elevation: 2,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.deepEmerald.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(color: AppColors.cardDark, strokeWidth: 2),
-                      )
-                    : const Text(
-                        'Search',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _savePreferences,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Search',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                      ),
+                ),
               ),
             ),
           ),
@@ -723,9 +747,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: AppColors.midnightEmerald,
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white70, size: 20),
+        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Column(
@@ -733,15 +758,15 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           Text(
             'Preferences',
             style: TextStyle(
-              color: Colors.white70,
+              color: AppColors.midnightEmerald,
               fontSize: 20,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w900,
             ),
           ),
           Text(
             'Find your perfect match',
             style: TextStyle(
-              color: Colors.grey,
+              color: AppColors.mutedText,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -755,7 +780,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
         child: Container(
-          color: Colors.grey.withOpacity(0.1),
+          color: AppColors.midnightEmerald.withOpacity(0.08),
           height: 1,
         ),
       ),
@@ -844,8 +869,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           title,
           style: const TextStyle(
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white70,
+            fontWeight: FontWeight.w900,
+            color: AppColors.midnightEmerald,
+            letterSpacing: 0.2,
           ),
         ),
         const SizedBox(height: 12),
@@ -861,9 +887,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.midnightEmerald,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.midnightEmerald),
+        border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightEmerald.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -880,7 +913,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white70,
+                      color: AppColors.midnightEmerald,
                     ),
                   ),
                 ],
@@ -888,7 +921,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.deepEmerald.withOpacity(0.15),
+                  color: AppColors.deepEmerald.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -907,9 +940,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             data: SliderThemeData(
               activeTrackColor: AppColors.deepEmerald,
               inactiveTrackColor: AppColors.deepEmerald.withOpacity(0.1),
-              thumbColor: AppColors.cardDark,
+              thumbColor: Colors.white,
               overlayColor: AppColors.deepEmerald.withOpacity(0.1),
-              valueIndicatorColor: AppColors.deepEmerald,
+              valueIndicatorColor: AppColors.midnightEmerald,
               rangeThumbShape: const RoundRangeSliderThumbShape(
                 enabledThumbRadius: 10,
                 elevation: 4,
@@ -918,8 +951,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             child: RangeSlider(
               values: _incomeRange,
               min: 0,
-              max: 800, // 8 Lakhs per month
-              divisions: 160, // 5k increments
+              max: 800,
+              divisions: 160,
               labels: RangeLabels(
                 '₹${_formatSalary(_incomeRange.start)}',
                 '₹${_formatSalary(_incomeRange.end)}',
@@ -932,8 +965,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('₹0', style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald)),
-                Text('₹8L/mo', style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald)),
+                Text('₹0', style: TextStyle(fontSize: 12, color: AppColors.mutedText)),
+                Text('₹8L/mo', style: TextStyle(fontSize: 12, color: AppColors.mutedText)),
               ],
             ),
           ),
@@ -961,9 +994,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.midnightEmerald,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.midnightEmerald),
+        border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightEmerald.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -977,7 +1017,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white70,
+                  color: AppColors.midnightEmerald,
                 ),
               ),
             ],
@@ -987,11 +1027,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             data: SliderThemeData(
               activeTrackColor: AppColors.deepEmerald,
               inactiveTrackColor: AppColors.deepEmerald.withOpacity(0.1),
-              thumbColor: AppColors.cardDark,
+              thumbColor: Colors.white,
               overlayColor: AppColors.deepEmerald.withOpacity(0.1),
               activeTickMarkColor: Colors.transparent,
               inactiveTickMarkColor: Colors.transparent,
-              valueIndicatorColor: AppColors.deepEmerald,
+              valueIndicatorColor: AppColors.midnightEmerald,
               rangeThumbShape: const RoundRangeSliderThumbShape(
                 enabledThumbRadius: 10,
                 elevation: 4,
@@ -1014,8 +1054,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${min.round()}', style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald)),
-                Text('${max.round()}', style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald)),
+                Text('${min.round()}', style: const TextStyle(fontSize: 12, color: AppColors.mutedText)),
+                Text('${max.round()}', style: const TextStyle(fontSize: 12, color: AppColors.mutedText)),
               ],
             ),
           ),
@@ -1035,9 +1075,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.midnightEmerald,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.midnightEmerald),
+        border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightEmerald.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1051,7 +1098,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white70,
+                  color: AppColors.midnightEmerald,
                 ),
               ),
             ],
@@ -1061,9 +1108,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             data: SliderThemeData(
               activeTrackColor: AppColors.deepEmerald,
               inactiveTrackColor: AppColors.deepEmerald.withOpacity(0.1),
-              thumbColor: AppColors.cardDark,
+              thumbColor: Colors.white,
               overlayColor: AppColors.deepEmerald.withOpacity(0.1),
-              valueIndicatorColor: AppColors.deepEmerald,
+              valueIndicatorColor: AppColors.midnightEmerald,
               activeTickMarkColor: Colors.transparent,
               inactiveTickMarkColor: Colors.transparent,
             ),
@@ -1081,8 +1128,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${min.round()} km', style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald)),
-                Text('${max.round()} km', style: TextStyle(fontSize: 12, color: AppColors.midnightEmerald)),
+                Text('${min.round()} km', style: const TextStyle(fontSize: 12, color: AppColors.mutedText)),
+                Text('${max.round()} km', style: const TextStyle(fontSize: 12, color: AppColors.mutedText)),
               ],
             ),
           ),
@@ -1181,6 +1228,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       controller: controller,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       maxLines: maxLines,
+      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
@@ -1199,7 +1247,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
-        fillColor: AppColors.midnightEmerald,
+        fillColor: Colors.white,
       ),
       validator: validator,
     );
@@ -1231,7 +1279,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
-        fillColor: AppColors.midnightEmerald,
+        fillColor: Colors.white,
       ),
       items: items.map((item) {
         String displayText = formatLabel
@@ -1243,6 +1291,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         return DropdownMenuItem(value: item, child: Text(displayText));
       }).toList(),
       onChanged: onChanged,
+      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      dropdownColor: Colors.white,
     );
   }
 
@@ -1400,9 +1450,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.midnightEmerald,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: AppColors.midnightEmerald),
+          border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.1)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.midnightEmerald.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1422,7 +1479,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white70,
+                            color: AppColors.midnightEmerald,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1478,7 +1535,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: !isAscending ? AppColors.cardDark : Colors.transparent,
+                                  color: !isAscending ? AppColors.offWhite : Colors.transparent,
                                   borderRadius: BorderRadius.circular(15),
                                   boxShadow: !isAscending
                                       ? [
@@ -1513,7 +1570,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: isAscending ? AppColors.cardDark : Colors.transparent,
+                                  color: isAscending ? AppColors.offWhite : Colors.transparent,
                                   borderRadius: BorderRadius.circular(15),
                                   boxShadow: isAscending
                                       ? [
@@ -1567,13 +1624,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.cardDark,
+                  color: AppColors.offWhite,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey.shade300),
                 ),
                 child: TextField(
                   controller: controller,
                   onChanged: onSearchChanged,
+                  style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Search $label...',
                     hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
@@ -1634,9 +1692,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       onSelected: (selected) {
                         onChanged(option['id'], selected);
                       },
-                      selectedColor: AppColors.deepEmerald.withOpacity(0.3),
+                      selectedColor: AppColors.deepEmerald.withOpacity(0.1),
                       checkmarkColor: AppColors.deepEmerald,
-                      backgroundColor: AppColors.midnightEmerald,
+                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                         side: BorderSide(
@@ -1681,9 +1739,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.midnightEmerald,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.midnightEmerald),
+        border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.1)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightEmerald.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1697,7 +1762,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white70,
+                  color: AppColors.midnightEmerald,
                 ),
               ),
             ],
@@ -1720,7 +1785,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 onSelected: (selected) => onSelected(option, selected),
                 selectedColor: AppColors.deepEmerald.withOpacity(0.1),
                 checkmarkColor: AppColors.deepEmerald,
-                backgroundColor: AppColors.midnightEmerald,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                   side: BorderSide(
@@ -1742,7 +1807,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.deepEmerald.withOpacity(0.05) : AppColors.cardDark,
+          color: isSelected ? AppColors.deepEmerald.withOpacity(0.05) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.deepEmerald : Colors.grey.shade300,

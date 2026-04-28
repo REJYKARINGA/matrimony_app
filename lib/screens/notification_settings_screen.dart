@@ -1,4 +1,3 @@
-import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
@@ -31,7 +30,6 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   Future<void> _loadSettings() async {
     try {
-      // 1. Try to load from backend first
       final response = await ApiService.getNotificationSettings();
       if (response.statusCode == 200) {
         final settingsData = jsonDecode(response.body)['data'];
@@ -46,7 +44,6 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             _emailNotifications = _parseBool(settingsData['notify_email'], true);
           });
           
-          // Sync local storage with backend data
           final localPrefs = await SharedPreferences.getInstance();
           await localPrefs.setBool('pref_push_notifications', _pushNotifications);
           await localPrefs.setBool('pref_new_matches', _newMatches);
@@ -60,7 +57,6 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         }
       }
 
-      // 2. Fallback to local SharedPreferences if backend fails or doesn't have data
       final prefs = await SharedPreferences.getInstance();
       setState(() {
         _pushNotifications = prefs.getBool('pref_push_notifications') ?? true;
@@ -86,18 +82,15 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   Future<void> _updateSetting(String localKey, String backendKey, bool value) async {
     try {
-      // 1. Update local storage immediately for responsive UI
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(localKey, value);
 
-      // 2. Sync with backend
       final response = await ApiService.updatePreferences({
         backendKey: value,
       });
 
       if (response.statusCode != 200) {
         debugPrint('Failed to sync notification setting to backend: ${response.body}');
-        // Optionally show a subtle warning to the user
       }
     } catch (e) {
       debugPrint('Error syncing to backend: $e');
@@ -106,14 +99,14 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
       child: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: Colors.grey[600],
-          letterSpacing: 0.5,
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          color: AppColors.midnightEmerald,
+          letterSpacing: 0.8,
         ),
       ),
     );
@@ -133,13 +126,13 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             title,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: isMaster ? FontWeight.w600 : FontWeight.w500,
-              color: AppColors.textDark,
+              fontWeight: isMaster ? FontWeight.w700 : FontWeight.w600,
+              color: AppColors.midnightEmerald,
             ),
           ),
           subtitle: Text(
             subtitle,
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            style: const TextStyle(fontSize: 12, color: AppColors.mutedText),
           ),
           value: value,
           activeColor: AppColors.deepEmerald,
@@ -152,7 +145,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             height: 1,
             indent: 16,
             endIndent: 16,
-            color: Colors.grey[200],
+            color: AppColors.midnightEmerald.withOpacity(0.05),
           ),
       ],
     );
@@ -161,21 +154,30 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: AppColors.offWhite,
       appBar: AppBar(
-        title: const Text('Notification Settings'),
-        backgroundColor: AppColors.backgroundLight,
-        centerTitle: true,
         elevation: 0,
-        titleTextStyle: const TextStyle(color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          letterSpacing: -0.5,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        iconTheme: const IconThemeData(color: AppColors.cardDark),
+        title: const Text(
+          'Notification Settings',
+          style: TextStyle(
+            color: AppColors.midnightEmerald,
+            fontSize: 20,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1.5),
-          child: Container(color: AppColors.midnightEmerald, height: 1.5),
+          preferredSize: const Size.fromHeight(1),
+          child: Container(
+            color: AppColors.midnightEmerald.withOpacity(0.08),
+            height: 1,
+          ),
         ),
       ),
       body: _isLoading
@@ -183,155 +185,110 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               child: CircularProgressIndicator(color: AppColors.deepEmerald),
             )
           : ListView(
+              padding: const EdgeInsets.only(bottom: 40),
               children: [
                 _buildSectionHeader('PUSH NOTIFICATIONS'),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardDark,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white70.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                _buildCardContainer([
+                  _buildSwitchItem(
+                    title: 'Allow Push Notifications',
+                    subtitle: 'Enable or disable all push notifications',
+                    value: _pushNotifications,
+                    isMaster: true,
+                    onChanged: (val) {
+                      setState(() {
+                        _pushNotifications = val;
+                        _updateSetting('pref_push_notifications', 'notify_push', val);
+                      });
+                    },
                   ),
-                  child: Column(
-                    children: [
-                      _buildSwitchItem(
-                        title: 'Allow Push Notifications',
-                        subtitle: 'Enable or disable all push notifications',
-                        value: _pushNotifications,
-                        isMaster: true,
-                        onChanged: (val) {
-                          setState(() {
-                            _pushNotifications = val;
-                            _updateSetting('pref_push_notifications', 'notify_push', val);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                ]),
 
                 if (_pushNotifications) ...[
                   _buildSectionHeader('NOTIFICATION TYPES'),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.cardDark,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white70.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                  _buildCardContainer([
+                    _buildSwitchItem(
+                      title: 'New Matches',
+                      subtitle: 'Get notified when we find a new match',
+                      value: _newMatches,
+                      onChanged: (val) {
+                        setState(() {
+                          _newMatches = val;
+                          _updateSetting('pref_new_matches', 'notify_matches', val);
+                        });
+                      },
                     ),
-                    child: Column(
-                      children: [
-                        _buildSwitchItem(
-                          title: 'New Matches',
-                          subtitle: 'Get notified when we find a new match',
-                          value: _newMatches,
-                          onChanged: (val) {
-                            setState(() {
-                              _newMatches = val;
-                              _updateSetting('pref_new_matches', 'notify_matches', val);
-                            });
-                          },
-                        ),
-                        _buildSwitchItem(
-                          title: 'Messages',
-                          subtitle: 'Get notified when you receive a new message',
-                          value: _messages,
-                          onChanged: (val) {
-                            setState(() {
-                              _messages = val;
-                              _updateSetting('pref_messages', 'notify_messages', val);
-                            });
-                          },
-                        ),
-                        _buildSwitchItem(
-                          title: 'Profile Views',
-                          subtitle: 'Know when someone visits your profile',
-                          value: _profileViews,
-                          onChanged: (val) {
-                            setState(() {
-                              _profileViews = val;
-                              _updateSetting('pref_profile_views', 'notify_profile_views', val);
-                            });
-                          },
-                        ),
-                        _buildSwitchItem(
-                          title: 'Interest Requests',
-                          subtitle: 'Alerts for new or accepted interests',
-                          value: _interestRequests,
-                          onChanged: (val) {
-                            setState(() {
-                              _interestRequests = val;
-                              _updateSetting('pref_interest_requests', 'notify_interests', val);
-                            });
-                          },
-                        ),
-                      ],
+                    _buildSwitchItem(
+                      title: 'Messages',
+                      subtitle: 'Get notified when you receive a new message',
+                      value: _messages,
+                      onChanged: (val) {
+                        setState(() {
+                          _messages = val;
+                          _updateSetting('pref_messages', 'notify_messages', val);
+                        });
+                      },
                     ),
-                  ),
+                    _buildSwitchItem(
+                      title: 'Profile Views',
+                      subtitle: 'Know when someone visits your profile',
+                      value: _profileViews,
+                      onChanged: (val) {
+                        setState(() {
+                          _profileViews = val;
+                          _updateSetting('pref_profile_views', 'notify_profile_views', val);
+                        });
+                      },
+                    ),
+                    _buildSwitchItem(
+                      title: 'Interest Requests',
+                      subtitle: 'Alerts for new or accepted interests',
+                      value: _interestRequests,
+                      onChanged: (val) {
+                        setState(() {
+                          _interestRequests = val;
+                          _updateSetting('pref_interest_requests', 'notify_interests', val);
+                        });
+                      },
+                    ),
+                  ]),
                 ],
 
                 _buildSectionHeader('EMAIL SETTINGS'),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardDark,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.white70.withOpacity(0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
+                _buildCardContainer([
+                  _buildSwitchItem(
+                    title: 'Email Notifications',
+                    subtitle: 'Receive updates and recommendations via email',
+                    value: _emailNotifications,
+                    isMaster: true,
+                    onChanged: (val) {
+                      setState(() {
+                        _emailNotifications = val;
+                        _updateSetting('pref_email_notifications', 'notify_email', val);
+                      });
+                    },
                   ),
-                  child: Column(
-                    children: [
-                      _buildSwitchItem(
-                        title: 'Email Notifications',
-                        subtitle: 'Receive updates and recommendations via email',
-                        value: _emailNotifications,
-                        isMaster: true,
-                        onChanged: (val) {
-                          setState(() {
-                            _emailNotifications = val;
-                            _updateSetting('pref_email_notifications', 'notify_email', val);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                
-                const SizedBox(height: 32),
+                ]),
               ],
             ),
     );
   }
+
+  Widget _buildCardContainer(List<Widget> children) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: AppColors.midnightEmerald.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.midnightEmerald.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

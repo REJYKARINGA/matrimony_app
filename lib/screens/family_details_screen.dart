@@ -1,4 +1,3 @@
-import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../services/profile_service.dart';
@@ -170,7 +169,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Family details updated successfully!'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.deepEmerald,
           ),
         );
         Navigator.of(context).pop(true);
@@ -196,13 +195,8 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   Widget build(BuildContext context) {
     if (_isDataLoading) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
-        appBar: AppBar(
-          title: const Text('Family Details'),
-          backgroundColor: AppColors.midnightEmerald,
-          foregroundColor: Colors.white70,
-          elevation: 0,
-        ),
+        backgroundColor: AppColors.offWhite,
+        appBar: _buildAppBar(),
         body: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -211,7 +205,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
               SizedBox(height: 16),
               Text(
                 'Loading family details...',
-                style: TextStyle(color: Colors.white70, fontSize: 16),
+                style: TextStyle(color: AppColors.mutedText, fontSize: 16),
               ),
             ],
           ),
@@ -221,13 +215,8 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
-        appBar: AppBar(
-          title: const Text('Family Details'),
-          backgroundColor: AppColors.midnightEmerald,
-          foregroundColor: Colors.white70,
-          elevation: 0,
-        ),
+        backgroundColor: AppColors.offWhite,
+        appBar: _buildAppBar(),
         body: SafeArea(
           child: Center(
             child: Column(
@@ -239,7 +228,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 32.0),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(fontSize: 16, color: Colors.white70),
+                    style: const TextStyle(fontSize: 16, color: AppColors.mutedText),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -248,7 +237,8 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                   onPressed: _loadFamilyDetails,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.deepEmerald,
-                    foregroundColor: AppColors.cardDark,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text('Retry'),
                 ),
@@ -260,44 +250,11 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.midnightEmerald,
-      appBar: AppBar(
-        title: const Text('Family Details'),
-        backgroundColor: AppColors.midnightEmerald,
-        foregroundColor: Colors.white70,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          TextButton(
-            onPressed: _isLoading ? null : _saveFamilyDetails,
-            child: _isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.deepEmerald,
-                    ),
-                  )
-                : const Text(
-                    'Save',
-                    style: TextStyle(
-                      color: AppColors.deepEmerald,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      backgroundColor: AppColors.offWhite,
+      appBar: _buildAppBar(),
       body: SafeArea(
         child: Column(
           children: [
-            // Form content
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -331,10 +288,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                         const SizedBox(height: 24),
 
                         // Mother's Information
-                        _buildSectionTitle(
-                          Icons.woman,
-                          'Mother\'s Information',
-                        ),
+                        _buildSectionTitle(Icons.woman, 'Mother\'s Information'),
                         const SizedBox(height: 12),
                         _buildTextField(
                           controller: _motherNameController,
@@ -383,17 +337,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                           label: 'Family Type',
                           icon: Icons.home_outlined,
                           items: const [
-                            DropdownMenuItem(
-                              value: 'joint',
-                              child: Text('Joint Family'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'nuclear',
-                              child: Text('Nuclear Family'),
-                            ),
+                            DropdownMenuItem(value: 'joint', child: Text('Joint Family')),
+                            DropdownMenuItem(value: 'nuclear', child: Text('Nuclear Family')),
                           ],
-                          onChanged: (value) =>
-                              setState(() => _familyType = value),
+                          onChanged: (value) => setState(() => _familyType = value),
                         ),
                         const SizedBox(height: 12),
                         _buildDropdown(
@@ -401,21 +348,11 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                           label: 'Family Status',
                           icon: Icons.star,
                           items: const [
-                            DropdownMenuItem(
-                              value: 'middle_class',
-                              child: Text('Middle Class'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'upper_middle_class',
-                              child: Text('Upper Middle Class'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'rich',
-                              child: Text('Rich'),
-                            ),
+                            DropdownMenuItem(value: 'middle_class', child: Text('Middle Class')),
+                            DropdownMenuItem(value: 'upper_middle_class', child: Text('Upper Middle Class')),
+                            DropdownMenuItem(value: 'rich', child: Text('Rich')),
                           ],
-                          onChanged: (value) =>
-                              setState(() => _familyStatus = value),
+                          onChanged: (value) => setState(() => _familyStatus = value),
                         ),
                         const SizedBox(height: 12),
                         _buildTextField(
@@ -512,10 +449,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                         const SizedBox(height: 24),
 
                         // Additional Information
-                        _buildSectionTitle(
-                          Icons.info,
-                          'Additional Information',
-                        ),
+                        _buildSectionTitle(Icons.info, 'Additional Information'),
                         const SizedBox(height: 12),
                         Row(
                           children: [
@@ -523,8 +457,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                               child: _buildBoolDropdown(
                                 value: _fatherAlive,
                                 label: 'Father Alive',
-                                onChanged: (value) =>
-                                    setState(() => _fatherAlive = value),
+                                onChanged: (value) => setState(() => _fatherAlive = value),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -532,8 +465,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                               child: _buildBoolDropdown(
                                 value: _motherAlive,
                                 label: 'Mother Alive',
-                                onChanged: (value) =>
-                                    setState(() => _motherAlive = value),
+                                onChanged: (value) => setState(() => _motherAlive = value),
                               ),
                             ),
                           ],
@@ -557,55 +489,51 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                           onChanged: (value) => setState(() => _show = value),
                         ),
 
-                        const SizedBox(height: 30),
+                        const SizedBox(height: 40),
 
                         // Save Button
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           height: 56,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [AppColors.deepEmerald, AppColors.deepEmerald], // Turquoise to Deep Blue
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.deepEmerald.withOpacity(0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _saveFamilyDetails,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              foregroundColor: AppColors.cardDark,
-                              elevation: 0,
-                              shadowColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
+                              borderRadius: BorderRadius.circular(15),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.deepEmerald.withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
                             ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.5,
-                                      color: AppColors.cardDark,
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _saveFamilyDetails,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                    )
+                                  : const Text(
+                                      'Update Family Details',
+                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                                     ),
-                                  )
-                                : const Text(
-                                    'Update Family Details',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 40),
                       ],
                     ),
                   ),
@@ -618,27 +546,47 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     );
   }
 
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.white,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      title: const Text(
+        'Family Details',
+        style: TextStyle(color: AppColors.midnightEmerald, fontSize: 20, fontWeight: FontWeight.w900),
+      ),
+      centerTitle: true,
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(color: AppColors.midnightEmerald.withOpacity(0.08), height: 1),
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(IconData icon, String title) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColors.deepEmerald.withOpacity(0.1), // Turquoise
-            borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.deepEmerald.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 20, color: AppColors.deepEmerald),
           ),
-          child: Icon(icon, size: 20, color: AppColors.deepEmerald), // Turquoise
-        ),
-        const SizedBox(width: 10),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Colors.white70,
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.midnightEmerald, letterSpacing: 0.2),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -652,23 +600,25 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.deepEmerald), // Turquoise
+        labelStyle: const TextStyle(color: AppColors.mutedText),
+        prefixIcon: Icon(icon, color: AppColors.deepEmerald),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2), // Turquoise
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
-        fillColor: AppColors.midnightEmerald,
+        fillColor: Colors.white,
       ),
       validator: validator,
     );
@@ -683,23 +633,26 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   }) {
     return DropdownButtonFormField<String>(
       value: value,
+      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      dropdownColor: Colors.white,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.deepEmerald), // Turquoise
+        labelStyle: const TextStyle(color: AppColors.mutedText),
+        prefixIcon: Icon(icon, color: AppColors.deepEmerald),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2), // Turquoise
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
-        fillColor: AppColors.midnightEmerald,
+        fillColor: Colors.white,
       ),
       items: items,
       onChanged: onChanged,
@@ -711,35 +664,33 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     required String label,
     required void Function(bool?) onChanged,
   }) {
-    return InputDecorator(
+    return DropdownButtonFormField<bool>(
+      value: value,
+      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      dropdownColor: Colors.white,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(color: AppColors.mutedText),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(15),
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2), // Turquoise
+          borderRadius: BorderRadius.circular(15),
+          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
-        fillColor: AppColors.midnightEmerald,
+        fillColor: Colors.white,
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<bool>(
-          isExpanded: true,
-          value: value,
-          onChanged: onChanged,
-          items: const [
-            DropdownMenuItem(value: true, child: Text('Yes')),
-            DropdownMenuItem(value: false, child: Text('No')),
-          ],
-        ),
-      ),
+      items: const [
+        DropdownMenuItem(value: true, child: Text('Yes')),
+        DropdownMenuItem(value: false, child: Text('No')),
+      ],
+      onChanged: onChanged,
     );
   }
 
@@ -759,17 +710,3 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     super.dispose();
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

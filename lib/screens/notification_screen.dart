@@ -31,9 +31,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
   bool _isLoading = true;
   String? _error;
 
-  // Updated colors to match the cyan header from the image
-  static const Color primaryCyan = AppColors.royalGold;
-  static const Color accentGreen = AppColors.royalGold;
+  // Brand colors from Islamic Matrimonial palette
+  static const Color primaryCyan = AppColors.deepEmerald;
+  static const Color accentGreen = AppColors.primaryGreen;
 
   @override
   void initState() {
@@ -138,7 +138,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final unreadCount = _notifications.where((n) => n['is_read'] == false || n['is_read'] == 0).length;
 
     return Scaffold(
-      backgroundColor: AppColors.midnightEmerald,
+      backgroundColor: AppColors.offWhite,
       body: NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
           final navProvider = Provider.of<NavigationProvider>(context, listen: false);
@@ -173,10 +173,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             expandedHeight: 120.0,
                             floating: false,
                             pinned: true,
-                            backgroundColor: AppColors.midnightEmerald,
+                            backgroundColor: Colors.white,
                             elevation: 0,
                             leading: IconButton(
-                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white70, size: 20),
+                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.midnightEmerald, size: 20),
                               onPressed: () => Navigator.pop(context),
                             ),
                             actions: [
@@ -193,12 +193,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             flexibleSpace: FlexibleSpaceBar(
                               centerTitle: false,
                               background: Container(
-                                color: AppColors.cardDark,
+                                color: AppColors.offWhite,
                                 padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                                 alignment: Alignment.bottomLeft,
                                 child: RichText(
                                   text: TextSpan(
-                                    style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                                    style: TextStyle(color: AppColors.mutedText, fontSize: 12),
                                     children: [
                                       const TextSpan(text: 'You have '),
                                       TextSpan(
@@ -279,14 +279,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [primaryCyan, Color(0xFF00B8D4)],
+                        colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: primaryCyan.withOpacity(0.3),
+                          color: AppColors.deepEmerald.withOpacity(0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -488,7 +488,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   height: 55,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.midnightEmerald, width: 2),
+                    border: Border.all(color: AppColors.mintTint, width: 2),
                   ),
                   child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster') || type == 'scam_alert')
                       ? CircleAvatar(
@@ -529,7 +529,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+                      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 14, height: 1.4),
                       children: [
                         TextSpan(
                           text: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update')
@@ -544,7 +544,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   const SizedBox(height: 4),
                   Text(
                     _getTimeAgo(notification['created_at']),
-                    style: TextStyle(color: Colors.grey.shade400, fontSize: 12),
+                    style: TextStyle(color: AppColors.mutedText, fontSize: 12),
                   ),
                 ],
               ),

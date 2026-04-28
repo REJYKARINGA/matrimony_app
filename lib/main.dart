@@ -15,8 +15,8 @@ import 'services/navigation_provider.dart';
 import 'utils/theme_provider.dart';
 import 'models/user_model.dart';
 import 'screens/blocked_screen.dart';
-import 'dart:io' as io;
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
+
 
 void main() {
   runApp(const MatrimonyApp());
@@ -96,9 +96,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     if (kIsWeb) return;
     
     try {
-      if (io.Platform.isAndroid) {
-        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-      }
+      // FLAG_SECURE prevents screenshots and screen recording (Android only)
+      await FlutterWindowManagerPlus.addFlags(FlutterWindowManagerPlus.FLAG_SECURE);
     } catch (e) {
       debugPrint('Screen protection error: $e');
     }
