@@ -138,6 +138,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             _religions = data['data']['religions'] ?? [];
             _educations = data['data']['educations'] ?? [];
             _occupations = data['data']['occupations'] ?? [];
+
+            // Auto-select Muslim ID if available
+            final muslim = _religions.firstWhere(
+              (r) => r['name'].toString().toLowerCase() == 'muslim',
+              orElse: () => null,
+            );
+            if (muslim != null) {
+              _selectedReligionId = muslim['id'];
+              // Force Muslim if not already set or different
+              _religionController.text = 'Muslim';
+              _updateAvailableCastes('Muslim');
+            }
           });
           
           _updateAvailableCastes(_religionController.text);
@@ -185,7 +197,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _dateOfBirthController = TextEditingController();
-    _religionController = TextEditingController();
+    _religionController = TextEditingController(text: 'Muslim');
     _casteController = TextEditingController();
     _subCasteController = TextEditingController();
     _motherTongueController = TextEditingController();
@@ -441,7 +453,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: AppColors.cardDark,
+              color: AppColors.midnightEmerald,
             ),
           ),
           trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
@@ -496,7 +508,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.cardDark,
+                          color: AppColors.midnightEmerald,
                         ),
                       ),
                       IconButton(
@@ -800,22 +812,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             label: 'Religion',
             icon: Icons.church,
             readOnly: true,
-            onTap: () => _openSearchablePicker(
-              title: 'Religion',
-              items: _religions,
-              controller: _religionController,
-              onSelected: (item) {
-                setState(() {
-                  _selectedReligionId = item['id'];
-                  _casteController.clear();
-                  _selectedCasteId = null;
-                  _subCasteController.clear();
-                  _selectedSubCasteId = null;
-                  _updateAvailableCastes(_religionController.text);
-                  _availableSubCastes = [];
-                });
-              },
-            ),
+            onTap: null, // Disabled as per requirement
           ),
           const SizedBox(height: 16),
           _buildTextField(
@@ -1437,7 +1434,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               textAlign: TextAlign.right,
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
-                color: AppColors.cardDark,
+                color: AppColors.midnightEmerald,
                 fontSize: 14,
               ),
             ),

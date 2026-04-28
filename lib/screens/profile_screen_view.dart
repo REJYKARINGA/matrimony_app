@@ -1033,6 +1033,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             _interests = data['data']['interests'] ?? [];
           });
           
+          // Auto-select Muslim ID if available
+          final muslim = _religions.firstWhere(
+            (r) => r['name'].toString().toLowerCase() == 'muslim',
+            orElse: () => null,
+          );
+          if (muslim != null) {
+            _selectedReligionId = muslim['id'];
+            _religionController.text = 'Muslim';
+          }
+          
           // Initialize available castes/sub-castes based on current values
           _updateAvailableCastes(_religionController.text);
           _updateAvailableSubCastes(_casteController.text);
@@ -1115,7 +1125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
     _selectedMaritalStatus = widget.user?.userProfile?.maritalStatus;
     _religionController = TextEditingController(
-      text: widget.user?.userProfile?.religion ?? '',
+      text: 'Muslim',
     );
     _selectedReligionId = widget.user?.userProfile?.religionId;
     _casteController = TextEditingController(
@@ -1709,8 +1719,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: _buildModernInputDecoration(
                         label: 'Religion',
                         icon: Icons.auto_awesome_rounded,
-                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
+                        suffixIcon: null, // No dropdown for disabled field
                       ),
+                      enabled: false, // Disabled as per requirement
                     ),
                     const SizedBox(height: 16),
                     

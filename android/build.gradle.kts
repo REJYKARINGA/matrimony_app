@@ -8,7 +8,7 @@ allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
-                useVersion("2.0.21")
+                useVersion("2.1.0")
                 because("Force Kotlin stdlib version to match plugin to avoid metadata mismatch")
             }
         }
