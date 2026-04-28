@@ -78,6 +78,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Logo
+                  Center(
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 30),
+                      width: size.width * 0.4,
+                      height: 100,
+                      child: Image.asset(
+                        'assets/images/app_logo_v2.png',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+
                   // Header
                   const Text(
                     'Reset Password',

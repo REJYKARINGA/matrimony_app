@@ -160,6 +160,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Logo
+                      Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 100,
+                          child: Image.asset(
+                            'assets/images/app_logo_v2.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                      
                       _buildStatusCard(),
                       const SizedBox(height: 30),
                       if (_verificationStatus == null || _verificationStatus!['status'] == 'rejected') ...[

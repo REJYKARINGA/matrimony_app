@@ -135,6 +135,17 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                     children: [
                       const SizedBox(height: 20),
                       
+                      // Logo
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 20),
+                        width: size.width * 0.4,
+                        height: 100,
+                        child: Image.asset(
+                          'assets/images/app_logo_v2.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      
                       // Title
                       Column(
                         children: [
