@@ -617,77 +617,99 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     return Screenshot(
       controller: ProfileShareService.screenshotController,
       child: Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
-        body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.cardDark,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        backgroundColor: AppColors.backgroundLight,
+        body: Stack(
+          children: [
+            // Background subtle design
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.3,
+                child: Image.asset(
+                  'assets/images/splash_bg.png',
+                  fit: BoxFit.cover,
+                  errorBuilder: (ctx, err, st) => Container(),
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_user?.status == 'blocked')
-                    Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: Colors.red.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.gpp_bad, color: Colors.red.shade800, size: 28),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                _buildSliverAppBar(),
+                SliverToBoxAdapter(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (_user?.status == 'blocked')
+                          Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.red.shade200),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.red.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
+                            ),
+                            child: Row(
                               children: [
-                                Text(
-                                  'SCAM ALERT',
-                                  style: TextStyle(
-                                    color: Colors.red.shade900,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'This profile has been blocked by Admin for: ${_user?.blockReason ?? 'Suspicious Activity'}. If you have contacted them on WhatsApp, please exercise extreme caution and block them there too.',
-                                  style: TextStyle(
-                                    color: Colors.red.shade800,
-                                    fontSize: 13,
-                                    height: 1.3,
+                                Icon(Icons.gpp_bad, color: Colors.red.shade800, size: 28),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'SCAM ALERT',
+                                        style: TextStyle(
+                                          color: Colors.red.shade900,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 14,
+                                          letterSpacing: 1.2,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'This profile has been blocked by Admin for: ${_user?.blockReason ?? 'Suspicious Activity'}. If you have contacted them on WhatsApp, please exercise extreme caution.',
+                                        style: TextStyle(
+                                          color: Colors.red.shade800,
+                                          fontSize: 13,
+                                          height: 1.3,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        if (_user?.hasHiddenPhotos != true || (!_user!.photoRequestPending && !_user!.photoRequestRejected)) 
+                          _buildPhotoGallery(),
+                        _buildProfileDetails(),
+                        _buildFooter(),
+                        const SizedBox(height: 120), // Space for sticky bottom bar
+                      ],
                     ),
-                  if (_user?.hasHiddenPhotos != true || (!_user!.photoRequestPending && !_user!.photoRequestRejected)) 
-                    _buildPhotoGallery(),
-                  _buildProfileDetails(),
-                  _buildFooter(),
-                  const SizedBox(height: 100), // Space for sticky bottom bar
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
+        bottomNavigationBar: _buildStickyBottomActions(),
+        extendBody: true,
       ),
-      bottomNavigationBar: _buildStickyBottomActions(),
-      extendBody: true,
-    ));
+    );
   }
 
   Widget _buildAppBar({bool lightBackground = false}) {
@@ -885,17 +907,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       expandedHeight: 420.0,
       floating: false,
       pinned: true,
-      backgroundColor: AppColors.midnightEmerald,
-      elevation: _isCollapsed ? 1 : 0,
+      backgroundColor: _isCollapsed ? Colors.white : AppColors.deepEmerald,
+      elevation: _isCollapsed ? 2 : 0,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
         child: CircleAvatar(
-          backgroundColor: _isCollapsed ? Colors.transparent : Colors.black38,
+          backgroundColor: _isCollapsed ? Colors.transparent : Colors.black26,
           child: IconButton(
             icon: Icon(
-              Icons.arrow_back, 
-              color: _isCollapsed ? Colors.black87 : AppColors.cardDark, 
-              size: 20
+              Icons.arrow_back_ios_new_rounded, 
+              color: _isCollapsed ? Colors.black87 : Colors.white, 
+              size: 18
             ),
             onPressed: () => Navigator.pop(context),
           ),
@@ -906,11 +928,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: CircleAvatar(
-            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black38,
+            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black26,
             child: IconButton(
               icon: Icon(
                 Icons.report_gmailerrorred_rounded, 
-                color: _isCollapsed ? Colors.black87 : AppColors.cardDark, 
+                color: _isCollapsed ? Colors.black87 : Colors.white, 
                 size: 20
               ),
               tooltip: 'Report Profile',
@@ -922,11 +944,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: CircleAvatar(
-            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black38,
+            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black26,
             child: IconButton(
               icon: Icon(
                 Icons.share_rounded, 
-                color: _isCollapsed ? Colors.black87 : AppColors.cardDark, 
+                color: _isCollapsed ? Colors.black87 : Colors.white, 
                 size: 20
               ),
               tooltip: 'Share Profile',
@@ -953,25 +975,27 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             },
             borderRadius: BorderRadius.circular(20),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: _isCollapsed ? Colors.transparent : Colors.black38,
-                borderRadius: BorderRadius.circular(20),
+                color: _isCollapsed ? AppColors.deepEmerald.withOpacity(0.1) : Colors.black26,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: _isCollapsed ? AppColors.deepEmerald.withOpacity(0.2) : Colors.white24),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.account_balance_wallet, 
-                    color: _isCollapsed ? const Color(0xFF0A3A2A) : const Color(0xFF0A3A2A), 
+                    Icons.account_balance_wallet_rounded, 
+                    color: _isCollapsed ? AppColors.deepEmerald : Colors.white, 
                     size: 16
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 6),
                   Text(
-                    '\u20B9${_walletBalance.toStringAsFixed(0)}',
+                    '₹${_walletBalance.toStringAsFixed(0)}',
                     style: TextStyle(
-                      color: _isCollapsed ? Colors.black87 : AppColors.cardDark,
-                      fontWeight: FontWeight.bold,
+                      color: _isCollapsed ? AppColors.deepEmerald : Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -984,7 +1008,6 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // Background blur/image
              if (displayImage != null) ...[
                Stack(
                  fit: StackFit.expand,
@@ -1158,27 +1181,38 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                               _contactUnlocked 
                                 ? '${_isHidden('first_name') ? 'Reviewing' : _user?.userProfile?.firstName ?? ''} ${_isHidden('last_name') ? '' : _user?.userProfile?.lastName ?? ''}'.trim()
                                 : '${_isHidden('first_name') ? 'Under' : _maskName(_user?.userProfile?.firstName)} ${_isHidden('last_name') ? 'Review' : _maskName(_user?.userProfile?.lastName)}',
-                              style: const TextStyle(color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
                                 letterSpacing: -0.5,
                               ),
                             ),
+                            const SizedBox(height: 4),
                             Text(
                               '${_user?.matrimonyId ?? 'User'}${_user?.userProfile?.age != null ? ', ${_user!.userProfile!.age} yrs' : ''}',
-                              style: TextStyle(color: Colors.white.withOpacity(0.9),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
                       ),
                       if (_user?.userProfile?.isActiveVerified == true)
-                        const Icon(
-                          Icons.verified_rounded,
-                          color: Color(0xFF0A3A2A), // Turquoise
-                          size: 24,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white.withOpacity(0.3)),
+                          ),
+                          child: const Icon(
+                            Icons.verified_rounded,
+                            color: AppColors.primaryGreen, // Branded Green
+                            size: 28,
+                          ),
                         ),
                     ],
                   ),
@@ -1187,21 +1221,21 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   // Row 2: Height, Marital Status, Caste
                   Text(
                     '${_user?.userProfile?.height != null ? '${_user!.userProfile!.height} cm, ' : ''}${_user?.userProfile?.maritalStatus?.toLowerCase() == 'never_married' ? 'Single' : (_user?.userProfile?.maritalStatus ?? '').replaceAll('_', ' ').split(' ').map((word) => word.isNotEmpty ? word[0].toUpperCase() + word.substring(1).toLowerCase() : word).join(' ')}, ${_user?.userProfile?.caste ?? ''}',
-                    style: TextStyle(color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.95),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.2,
                     ),
                   ),
-                  const SizedBox(height: 4),
-
-                  // Row 3: Education, Occupation
+                  const SizedBox(height: 6),
                   if ((_user?.userProfile?.education ?? '').isNotEmpty || (_user?.userProfile?.occupation ?? '').isNotEmpty)
                     Text(
                       '${_user?.userProfile?.education ?? ''}${(_user?.userProfile?.education != null && (_user?.userProfile?.occupation ?? '').isNotEmpty) ? ', ' : ''}${_user?.userProfile?.occupation ?? ''}',
-                      style: TextStyle(color: Colors.white.withOpacity(0.85),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   const SizedBox(height: 4),
@@ -1249,27 +1283,39 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
 
   Widget _buildBadge(IconData icon, String text, {bool isDistance = false, bool isCompatibility = false, bool isReported = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: isReported 
-            ? Colors.orange.withOpacity(0.9)
+            ? Colors.red.shade700
             : (isCompatibility
                 ? const Color(0xFFD4AF37)
                 : (isDistance
-                    ? const Color(0xFF0A3A2A).withOpacity(0.4)
-                    : AppColors.cardDark.withOpacity(0.2))),
-        borderRadius: BorderRadius.circular(12),
+                    ? AppColors.deepEmerald.withOpacity(0.6)
+                    : Colors.white.withOpacity(0.2))),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: AppColors.cardDark, size: 12),
-          const SizedBox(width: 4),
+          Icon(icon, color: Colors.white, size: 14),
+          const SizedBox(width: 6),
           Text(
             text,
-            style: const TextStyle(color: Colors.white, 
-              fontSize: 12, 
-              fontWeight: FontWeight.bold,
+            style: const TextStyle(
+              color: Colors.white, 
+              fontSize: 13, 
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -1434,9 +1480,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             onTap: () => Navigator.pop(context),
             child: _buildFloatingButton(
               icon: Icons.close_rounded,
-              color: AppColors.cardDark,
-              iconColor: Colors.grey.shade600,
-              size: 50,
+              color: Colors.white,
+              iconColor: Colors.grey.shade400,
+              size: 54,
+              shadowColor: Colors.black.withOpacity(0.05),
             ),
           ),
           
@@ -1503,10 +1550,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               },
               child: _buildFloatingButton(
                 icon: Icons.chat_bubble_rounded,
-                color: const Color(0xFF0A3A2A),
-                iconColor: AppColors.cardDark,
-                size: 50,
-                shadowColor: const Color(0xFF0A3A2A).withOpacity(0.3),
+                color: AppColors.deepEmerald,
+                iconColor: Colors.white,
+                size: 54,
+                shadowColor: AppColors.deepEmerald.withOpacity(0.3),
               ),
             ),
 
@@ -1549,10 +1596,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               },
               child: _buildFloatingButton(
                 icon: _shortlistedUserIds.contains(_user!.id) ? Icons.star_rounded : Icons.star_outline_rounded,
-                color: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700) : AppColors.cardDark,
-                iconColor: _shortlistedUserIds.contains(_user!.id) ? AppColors.cardDark : const Color(0xFFFFD700),
-                size: 50,
-                shadowColor: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+                color: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700) : Colors.white,
+                iconColor: _shortlistedUserIds.contains(_user!.id) ? Colors.white : const Color(0xFFFFD700),
+                size: 54,
+                shadowColor: _shortlistedUserIds.contains(_user!.id) ? const Color(0xFFFFD700).withOpacity(0.3) : Colors.black.withOpacity(0.05),
               ),
             ),
 
@@ -1565,9 +1612,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               },
               child: _buildFloatingButton(
                 icon: Icons.share_rounded,
-                color: AppColors.cardDark,
-                iconColor: const Color(0xFF0A3A2A),
-                size: 50,
+                color: Colors.white,
+                iconColor: AppColors.deepEmerald,
+                size: 54,
+                shadowColor: Colors.black.withOpacity(0.05),
               ),
             ),
 
@@ -1591,10 +1639,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               },
               child: _buildFloatingButton(
                 icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : Icons.favorite_rounded),
-                color: (isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? const Color(0xFF0A3A2A) : const Color(0xFFFF2D55)),
-                iconColor: AppColors.cardDark,
-                size: 60,
-                shadowColor: ((isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? const Color(0xFF0A3A2A) : const Color(0xFFFF2D55))).withOpacity(0.4),
+                color: (isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? AppColors.deepEmerald : const Color(0xFFFF2D55)),
+                iconColor: Colors.white,
+                size: 64,
+                shadowColor: ((isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? AppColors.deepEmerald : const Color(0xFFFF2D55))).withOpacity(0.3),
               ),
             ),
           ],
@@ -1671,16 +1719,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     children: [
                       Icon(
                         Icons.info_outline,
-                        color: Color(0xFF0A3A2A),
-                        size: 20,
+                        color: AppColors.midnightEmerald,
+                        size: 22,
                       ),
-                      SizedBox(width: 8),
-                      Text(
+                      const SizedBox(width: 10),
+                      const Text(
                         'About',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white70,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.midnightEmerald,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
@@ -1838,25 +1887,21 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          const Color(0xFF0A3A2A).withOpacity(0.2),
-                          const Color(0xFF0A3A2A).withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.deepEmerald.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(icon, color: const Color(0xFF0A3A2A), size: 20),
+                    child: Icon(icon, color: AppColors.midnightEmerald, size: 22),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white70,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.midnightEmerald,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
@@ -2058,25 +2103,21 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(0xFF0A3A2A).withOpacity(0.2),
-                          Color(0xFF0A3A2A).withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.deepEmerald.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(icon, color: Color(0xFF0A3A2A), size: 20),
+                    child: Icon(icon, color: AppColors.midnightEmerald, size: 22),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 14),
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white70,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.midnightEmerald,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
@@ -2120,10 +2161,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             flex: 3,
             child: Text(
               formattedValue,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
-                color: Colors.white70,
-                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ),
@@ -2140,25 +2181,21 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           Row(
             children: [
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color(0xFF0A3A2A).withOpacity(0.2),
-                      Color(0xFFD4AF37).withOpacity(0.2),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(10),
+                  color: AppColors.deepEmerald.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.phone, color: Color(0xFF0A3A2A), size: 20),
+                child: Icon(Icons.phone, color: AppColors.midnightEmerald, size: 22),
               ),
-              SizedBox(width: 12),
+              SizedBox(width: 14),
               Text(
                 'Contact Information',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.midnightEmerald,
+                  letterSpacing: 0.3,
                 ),
               ),
               if (_contactUnlocked) ...[
@@ -2197,14 +2234,19 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               height: 54,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Color(0xFFD4AF37), Color(0xFF0A3A2A)],
+                  colors: [
+                    AppColors.deepEmerald,
+                    AppColors.midnightEmerald,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0xFFD4AF37).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: Offset(0, 6),
+                    color: AppColors.deepEmerald.withOpacity(0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
@@ -2253,24 +2295,30 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           ] else ...[
             // Locked state - show masked phone
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.midnightEmerald,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                color: AppColors.deepEmerald,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.deepEmerald.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  Icon(Icons.lock, color: AppColors.midnightEmerald),
-                  SizedBox(width: 12),
+                  const Icon(Icons.lock_rounded, color: Colors.white70, size: 20),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Text(
                       _maskPhone(_user?.phone),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade600,
-                        letterSpacing: 1,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: 2,
                       ),
                     ),
                   ),
@@ -2285,18 +2333,20 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
+                      gradient: const LinearGradient(
                         colors: [
                           Color(0xFFD4AF37),
-                          Color(0xFFD4AF37).withOpacity(0.8),
+                          Color(0xFFB8860B), // Darker Gold
                         ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFFD4AF37).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
+                          color: const Color(0xFFD4AF37).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
@@ -2324,15 +2374,20 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   child: Container(
                     height: 48,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF0A3A2A), Color(0xFF0A3A2A)],
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFF004D40), // Very Dark Teal
+                          Color(0xFF0A3A2A), // Deep Emerald
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       boxShadow: [
                         BoxShadow(
-                          color: Color(0xFF0A3A2A).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: Offset(0, 4),
+                          color: const Color(0xFF0A3A2A).withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
@@ -2602,71 +2657,91 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   Widget _buildFooter() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-      color: AppColors.midnightEmerald,
+      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+      decoration: BoxDecoration(
+        color: AppColors.offWhite,
+        border: Border(
+          top: BorderSide(color: AppColors.midnightEmerald.withOpacity(0.1), width: 1),
+        ),
+      ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF0A3A2A).withOpacity(0.1),
+              color: AppColors.midnightEmerald.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.favorite_rounded,
-              color: Color(0xFF0A3A2A),
-              size: 30,
+              color: AppColors.midnightEmerald,
+              size: 32,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           const Text(
             'Vivah4Ever',
             style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: AppColors.cardDark,
-              letterSpacing: 1,
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+              color: AppColors.midnightEmerald,
+              letterSpacing: 1.5,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 6),
+          const Text(
             'Trusted Kerala Matrimony Services',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
+              color: AppColors.mutedText,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildFooterSocialIcon(Icons.facebook),
-              const SizedBox(width: 20),
-              _buildFooterSocialIcon(Icons.camera_alt_outlined),
-              const SizedBox(width: 20),
-              _buildFooterSocialIcon(Icons.language),
+              _buildFooterSocialIcon(Icons.facebook_rounded),
+              const SizedBox(width: 24),
+              _buildFooterSocialIcon(Icons.camera_alt_rounded),
+              const SizedBox(width: 24),
+              _buildFooterSocialIcon(Icons.language_rounded),
             ],
           ),
-          const SizedBox(height: 30),
-          Divider(color: Colors.grey.shade300),
-          const SizedBox(height: 20),
-          Text(
-            '© 2026 Vivah4Ever. All Rights Reserved.',
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColors.midnightEmerald,
-              fontWeight: FontWeight.w400,
+          const SizedBox(height: 40),
+          Container(
+            width: 60,
+            height: 2,
+            decoration: BoxDecoration(
+              color: AppColors.midnightEmerald.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(1),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Made with ❤️ in Kerala',
+          const SizedBox(height: 30),
+          const Text(
+            '© 2026 Vivah4Ever. All Rights Reserved.',
             style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey.shade400,
-              fontStyle: FontStyle.italic,
+              fontSize: 13,
+              color: AppColors.midnightEmerald,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.2,
             ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Made with ',
+                style: TextStyle(fontSize: 12, color: AppColors.mutedText),
+              ),
+              const Icon(Icons.favorite, color: Colors.redAccent, size: 14),
+              Text(
+                ' in Kerala',
+                style: TextStyle(fontSize: 12, color: AppColors.mutedText),
+              ),
+            ],
           ),
         ],
       ),
@@ -2675,35 +2750,38 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
 
   Widget _buildFooterSocialIcon(IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: Colors.white,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.midnightEmerald),
         boxShadow: [
           BoxShadow(
-            color: Colors.white70.withOpacity(0.02),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
+            color: AppColors.midnightEmerald.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Icon(icon, color: Colors.grey.shade700, size: 20),
+      child: Icon(icon, color: AppColors.midnightEmerald, size: 22),
     );
   }
 
   Widget _buildModernCard({required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: AppColors.deepEmerald.withOpacity(0.08),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.white70.withOpacity(0.04),
-            blurRadius: 10,
-            offset: Offset(0, 2),
+            color: AppColors.deepEmerald.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -3176,7 +3254,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       'description': 'Payment',
       'order_id': orderData['order_id'],
       'prefill': {'contact': _user?.phone ?? '', 'email': _user?.email ?? ''},
-      'theme': {'color': '#00BCD4'},
+      'theme': {'color': '#00C897'},
     };
 
     _razorpay.open(options);
@@ -3478,9 +3556,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               const Text(
                 'Recommended Profiles',
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.cardDark,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.deepEmerald,
+                  letterSpacing: 0.5,
                 ),
               ),
               if (_isLoadingRecommended)
@@ -3684,7 +3763,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           end: Alignment.bottomRight,
           colors: isFemale
               ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-              : [const Color(0xFFE3F2FD), const Color(0xFFBBDEFB)],
+              : [const Color(0xFFE0F2F1), const Color(0xFFB2DFDB)],
         ),
       ),
       child: Center(
@@ -3693,7 +3772,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           size: size,
           color: isFemale
               ? const Color(0xFFFF2D55).withOpacity(0.3)
-              : const Color(0xFF5CB3FF).withOpacity(0.3),
+              : const Color(0xFF009688).withOpacity(0.3),
         ),
       ),
     );
