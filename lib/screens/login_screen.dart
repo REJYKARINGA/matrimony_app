@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: size.width * 0.6,
                   height: 150,
                   child: Image.asset(
-                    'assets/images/vivah_logo.png',
+                    'assets/images/app_logo_v2.png',
                     fit: BoxFit.contain,
                   ),
                 ),

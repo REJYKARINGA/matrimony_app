@@ -188,7 +188,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 width: 200,
                 height: 200,
                 child: Image.asset(
-                  'assets/images/vivah_logo.png',
+                  'assets/images/app_logo_v2.png',
                   fit: BoxFit.contain,
                 ),
               ),
