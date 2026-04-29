@@ -1268,6 +1268,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _countryController.text = data['country'] ?? '';
           _countyController.text = data['county'] ?? '';
           _postalCodeController.text = data['postal_code'] ?? '';
+          
+          // Auto-fill present location if empty or matches detected city
+          if (_presentCityController.text.isEmpty || _presentCityController.text == _cityController.text) {
+             _presentCityController.text = _cityController.text;
+          }
+          if (_presentCountryController.text.isEmpty || _presentCountryController.text == _countryController.text) {
+             _presentCountryController.text = _countryController.text;
+          }
 
           String? detDistrict = data['district'];
           if (detDistrict != null) {
@@ -1882,6 +1890,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     _countyController.text = (address['county'] ?? '').toString();
                                     _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
                                     
+                                    // Auto-fill present location
+                                    _presentCityController.text = _cityController.text;
+                                    _presentCountryController.text = _countryController.text;
+                                    
                                     String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
                                     if (detDistrict != null && detDistrict.isNotEmpty) {
                                       detDistrict = detDistrict.replaceAll(' District', '').trim();
@@ -1922,6 +1934,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         _countryController.text = (address['country'] ?? '').toString();
                                         _countyController.text = (address['county'] ?? '').toString();
                                         _postalCodeController.text = (address['postcode'] ?? address['postal_code'] ?? '').toString();
+                                        
+                                        // Auto-fill present location
+                                        _presentCityController.text = _cityController.text;
+                                        _presentCountryController.text = _countryController.text;
                                         
                                         String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
                                         if (detDistrict != null && detDistrict.isNotEmpty) {
