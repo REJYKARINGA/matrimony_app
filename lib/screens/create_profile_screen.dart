@@ -951,10 +951,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         _stateController.text = (address['state'] ?? address['province'] ?? 'Kerala').toString();
                         _countryController.text = (address['country'] ?? 'India').toString();
                         
-                        // Auto-fill present location
-                        _presentCityController.text = _cityController.text;
-                        _presentCountryController.text = _countryController.text;
-                        
                         String? detDistrict = (address['state_district'] ?? address['district'] ?? address['county'] ?? '').toString();
                         if (detDistrict != null && detDistrict.isNotEmpty) {
                           detDistrict = detDistrict.replaceAll(' District', '').trim();
@@ -998,13 +994,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                               setState(() {
                                 _latitude = position.latitude;
                                 _longitude = position.longitude;
-                                _cityController.text = (addressInfo['city'] ?? addressInfo['town'] ?? addressInfo['village'] ?? addressInfo['suburb'] ?? '').toString();
                                 _stateController.text = (addressInfo['state'] ?? addressInfo['province'] ?? 'Kerala').toString();
                                 _countryController.text = (addressInfo['country'] ?? 'India').toString();
-
-                                // Auto-fill present location
-                                _presentCityController.text = _cityController.text;
-                                _presentCountryController.text = _countryController.text;
 
                                 final matchedDistrict = _keralaDistricts.firstWhere(
                                   (d) => addressInfo['district']?.toLowerCase().contains(d.toLowerCase()) ?? false,
