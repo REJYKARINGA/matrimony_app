@@ -1,4 +1,3 @@
-import '../../../../../../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -10,6 +9,7 @@ import '../services/matching_service.dart';
 import '../services/api_service.dart';
 import '../services/profile_service.dart';
 import '../models/user_model.dart';
+import '../services/search_service.dart';
 import 'view_profile_screen.dart';
 import '../utils/app_colors.dart';
 
@@ -57,29 +57,26 @@ class _MessagesScreenState extends State<MessagesScreen> {
 
   Future<void> _loadMatches() async {
     try {
-      final response = await MatchingService.getMatches();
+      final response = await SearchService.searchProfiles(field: 'online');
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final List<dynamic> matchesData = data['matches']['data'] ?? [];
+        final List<dynamic> profilesData = data['profiles'] != null 
+            ? (data['profiles']['data'] ?? []) 
+            : (data['data'] ?? []);
         
-        final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        final currentUserId = authProvider.user?.id;
-
-        List<User> matchedUsers = [];
-        for (var m in matchesData) {
-           final u1 = User.fromJson(m['user1']);
-           final u2 = User.fromJson(m['user2']);
-           matchedUsers.add(u1.id == currentUserId ? u2 : u1);
+        List<User> onlineUsers = [];
+        for (var p in profilesData) {
+           onlineUsers.add(User.fromJson(p));
         }
 
         if (mounted) {
           setState(() {
-            _matches = matchedUsers;
+            _matches = onlineUsers;
           });
         }
       }
     } catch (e) {
-      print('Error loading matches for horizontal list: $e');
+      print('Error loading online users: $e');
     }
   }
 
@@ -127,14 +124,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       color: AppColors.darkGreen,
                       letterSpacing: -0.5,
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.softMint,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.search_rounded, color: AppColors.darkGreen, size: 26),
                   ),
                 ],
               ),
@@ -194,10 +183,21 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                 itemBuilder: (context, index) {
                                   final user = _matches[index];
                                   final profile = user.userProfile;
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                    child: Column(
-                                      children: [
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (user.id != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ViewProfileScreen(userId: user.id!),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                                      child: Column(
+                                        children: [
                                         Stack(
                                           children: [
                                             Container(
@@ -280,7 +280,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         ),
                                       ],
                                     ),
-                                  );
+                                  ),
+                                );
                                 },
                               ),
                             ),

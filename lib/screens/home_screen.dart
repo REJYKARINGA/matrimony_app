@@ -2199,7 +2199,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               size: 18,
                             ),
                           const Spacer(),
-                          Container(
+                          /* Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.black.withOpacity(0.3),
@@ -2213,7 +2213,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
+                          ), */
                         ],
                       ),
                       const SizedBox(height: 6),

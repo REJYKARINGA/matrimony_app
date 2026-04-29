@@ -96,8 +96,8 @@ class User {
       status: json['status']?.toString(),
       emailVerified: json['email_verified'] == 1 || json['email_verified'] == true,
       phoneVerified: json['phone_verified'] == 1 || json['phone_verified'] == true,
-      lastLogin: json['last_login'] != null ? DateTime.parse(json['last_login']) : null,
-      lastActiveAt: json['last_active_at'] != null ? DateTime.parse(json['last_active_at']) : null,
+      lastLogin: json['last_login'] != null ? (json['last_login'].toString().contains('Z') || json['last_login'].toString().contains('+') ? DateTime.parse(json['last_login']) : DateTime.parse('${json['last_login']}Z')).toLocal() : null,
+      lastActiveAt: json['last_active_at'] != null ? (json['last_active_at'].toString().contains('Z') || json['last_active_at'].toString().contains('+') ? DateTime.parse(json['last_active_at']) : DateTime.parse('${json['last_active_at']}Z')).toLocal() : null,
       userProfile: json['user_profile'] != null 
           ? UserProfile.fromJson(json['user_profile']) 
           : (json['profile_picture'] != null || json['age'] != null ? UserProfile.fromCardJson(json) : null),
@@ -175,7 +175,7 @@ class User {
     final now = DateTime.now();
     final difference = now.difference(lastActiveAt!);
 
-    if (difference.inMinutes < 1) return 'Active now';
+    if (difference.inSeconds < 30) return 'Active now';
     if (difference.inMinutes < 60) return 'Active ${difference.inMinutes}m ago';
     if (difference.inHours < 24) return 'Active ${difference.inHours}h ago';
     if (difference.inDays < 7) return 'Active ${difference.inDays}d ago';

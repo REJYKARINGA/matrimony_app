@@ -915,7 +915,10 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           end: Alignment.bottomRight,
           colors: isFemale
               ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-              : [AppColors.offWhite, AppColors.creamGold],
+              : [
+                  const Color(0xFFE0F7FA), // Light turquoise
+                  const Color(0xFFB2EBF2)  // Lighter turquoise
+                ],
         ),
       ),
       child: Center(
@@ -923,8 +926,8 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           Icons.person_rounded,
           size: size,
           color: isFemale
-              ? const Color(0xFFFF2D55).withOpacity(0.3)
-              : AppColors.primaryGreen.withOpacity(0.3),
+              ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
+              : AppColors.primaryGreen.withOpacity(0.3), // Turquoise
         ),
       ),
     );
@@ -1382,7 +1385,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: AppColors.primaryGreen.withOpacity(0.15), // Turquoise shadow
             blurRadius: 25,
             offset: const Offset(0, 12),
           ),
@@ -1754,7 +1757,10 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           end: Alignment.bottomRight,
           colors: isFemale
               ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-              : [AppColors.offWhite, AppColors.creamGold],
+              : [
+                  const Color(0xFFE0F7FA), // Light turquoise
+                  const Color(0xFFB2EBF2)  // Lighter turquoise
+                ],
         ),
       ),
       child: Center(
@@ -1762,8 +1768,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           Icons.person_rounded,
           size: size,
           color: isFemale
-              ? const Color(0xFFFF2D55).withOpacity(0.3)
-              : AppColors.primaryGreen.withOpacity(0.3),
+              ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
+              : AppColors.primaryGreen.withOpacity(0.3), // Turquoise
         ),
       ),
     );
