@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../services/search_service.dart';
@@ -951,9 +952,11 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   int _currentPage = 1;
   bool _hasMore = true;
   final ScrollController _scrollController = ScrollController();
+  Set<int> _shortlistedUserIds = {};
   Set<int> _sentInterests = {};
   Set<int> _matchedUserIds = {};
-  Set<int> _shortlistedUserIds = {};
+  Map<int, Timer?> _interestTimers = {};
+  Map<int, int> _interestCountdown = {};
 
   @override
   void initState() {
@@ -1029,21 +1032,83 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   Future<void> _handleQuickInterest(int userId) async {
-    try {
-      final response = await MatchingService.sendInterest(userId);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        setState(() => _sentInterests.add(userId));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Interest sent!'), backgroundColor: Colors.green),
-        );
-      }
-    } catch (e) {
-      print(e);
+    // If already sent, do nothing
+    if (_sentInterests.contains(userId)) return;
+
+    // If a countdown is active, cancel it (Undo)
+    if (_interestTimers.containsKey(userId)) {
+      _interestTimers[userId]?.cancel();
+      setState(() {
+        _interestTimers.remove(userId);
+        _interestCountdown.remove(userId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Interest cancelled'),
+          duration: Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
     }
+
+    // Start new countdown
+    setState(() {
+      _interestCountdown[userId] = 3;
+    });
+
+    _interestTimers[userId] = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_interestCountdown[userId]! > 1) {
+        setState(() {
+          _interestCountdown[userId] = _interestCountdown[userId]! - 1;
+        });
+      } else {
+        timer.cancel();
+        final finalUserId = userId;
+        
+        setState(() {
+          _interestTimers.remove(finalUserId);
+          _interestCountdown.remove(finalUserId);
+        });
+
+        try {
+          final response = await MatchingService.sendInterest(finalUserId);
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            if (!mounted) return;
+            setState(() {
+              _sentInterests.add(finalUserId);
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Interest sent!'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to send interest'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        } catch (e) {
+          print(e);
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _interestTimers.forEach((key, timer) => timer?.cancel());
     _scrollController.dispose();
     super.dispose();
   }
@@ -1090,6 +1155,14 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   void _onScroll() {
+    if (_interestTimers.isNotEmpty) {
+      setState(() {
+        _interestTimers.forEach((key, timer) => timer?.cancel());
+        _interestTimers.clear();
+        _interestCountdown.clear();
+      });
+    }
+
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200 &&
         !_isLoading &&
@@ -1621,12 +1694,28 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                   ),
                   GestureDetector(
                     onTap: () => _handleQuickInterest(user.id!),
-                    child: _buildFloatingButton(
-                      icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
-                      color: _sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55),
-                      iconColor: Colors.white,
-                      size: 60,
-                      shadowColor: (_sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55)).withOpacity(0.4),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        _buildFloatingButton(
+                          icon: _sentInterests.contains(user.id) 
+                            ? Icons.done_all_rounded 
+                            : (_interestCountdown.containsKey(user.id) ? null : Icons.favorite),
+                          color: _sentInterests.contains(user.id) ? AppColors.mutedText : (_interestCountdown.containsKey(user.id) ? Colors.white : const Color(0xFFFF2D55)),
+                          iconColor: _sentInterests.contains(user.id) ? Colors.white : (_interestCountdown.containsKey(user.id) ? const Color(0xFFFF2D55) : Colors.white),
+                          size: 60,
+                          shadowColor: (_sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55)).withOpacity(0.4),
+                        ),
+                        if (_interestCountdown.containsKey(user.id))
+                          Text(
+                            '${_interestCountdown[user.id]}',
+                            style: const TextStyle(
+                              color: Color(0xFFFF2D55),
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
@@ -1681,7 +1770,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   }
 
   Widget _buildFloatingButton({
-    required IconData icon,
+    required IconData? icon,
     required Color color,
     required Color iconColor,
     required double size,
@@ -1702,7 +1791,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         ],
       ),
       child: Center(
-        child: Icon(icon, color: iconColor, size: size * 0.5),
+        child: icon != null ? Icon(icon, color: iconColor, size: size * 0.5) : const SizedBox(),
       ),
     );
   }

@@ -1,4 +1,5 @@
-import '../../../../../../utils/app_colors.dart';
+import 'dart:async';
+import '../utils/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -67,6 +68,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   bool _isCompatibilityExpanded = false;
   List<User> _recommendedProfiles = [];
   bool _isLoadingRecommended = false;
+  Timer? _interestTimer;
+  int _interestCountdown = 0;
 
   bool _isHidden(String field) {
     if (_user?.userProfile?.changedFields?.contains(field) == true) {
@@ -96,6 +99,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
 
     _scrollController.addListener(() {
+      if (_interestTimer != null) {
+        setState(() {
+          _interestTimer?.cancel();
+          _interestTimer = null;
+          _interestCountdown = 0;
+        });
+      }
       if (_scrollController.hasClients) {
         final isCollapsed = _scrollController.offset > (420.0 - kToolbarHeight - 20);
         if (isCollapsed != _isCollapsed) {
@@ -270,11 +280,46 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   Future<void> _handleSendInterest() async {
     if (_user?.id == null) return;
 
+    if (_interestTimer != null) {
+      // Undo
+      _interestTimer?.cancel();
+      setState(() {
+        _interestTimer = null;
+        _interestCountdown = 0;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Interest cancelled'),
+          duration: Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     setState(() {
-      _isActionLoading = true;
+      _interestCountdown = 3;
     });
 
-    try {
+    _interestTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_interestCountdown > 1) {
+        setState(() {
+          _interestCountdown--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          _interestTimer = null;
+          _interestCountdown = 0;
+          _isActionLoading = true;
+        });
+
+        try {
       final response = await MatchingService.sendInterest(_user!.id!);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
@@ -293,24 +338,21 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ),
           ),
         );
-      } else {
-        if (!mounted) return;
-        setState(() {
-          _isActionLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to send interest')),
-        );
+          } else {
+            if (!mounted) return;
+            setState(() {
+              _isActionLoading = false;
+            });
+          }
+        } catch (e) {
+          if (!mounted) return;
+          setState(() {
+            _isActionLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
       }
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _isActionLoading = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
-    }
+    });
   }
 
   void _calculateCompatibility() {
@@ -1637,12 +1679,26 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   _handleSendInterest();
                 }
               },
-              child: _buildFloatingButton(
-                icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : Icons.favorite_rounded),
-                color: (isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? AppColors.deepEmerald : const Color(0xFFFF2D55)),
-                iconColor: Colors.white,
-                size: 64,
-                shadowColor: ((isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? AppColors.deepEmerald : const Color(0xFFFF2D55))).withOpacity(0.3),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  _buildFloatingButton(
+                    icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : (_interestCountdown > 0 ? null : Icons.favorite_rounded)),
+                    color: (isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? AppColors.deepEmerald : (_interestCountdown > 0 ? Colors.white : const Color(0xFFFF2D55))),
+                    iconColor: Colors.white,
+                    size: 64,
+                    shadowColor: ((isMatched || isSent) ? const Color(0xFFD4AF37) : (isPending ? AppColors.deepEmerald : const Color(0xFFFF2D55))).withOpacity(0.3),
+                  ),
+                  if (_interestCountdown > 0)
+                    Text(
+                      '$_interestCountdown',
+                      style: const TextStyle(
+                        color: Color(0xFFFF2D55),
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
               ),
             ),
           ],
@@ -1678,7 +1734,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   Widget _buildFloatingButton({
-    required IconData icon,
+    required IconData? icon,
     required Color color,
     required Color iconColor,
     required double size,
@@ -1699,7 +1755,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         ],
       ),
       child: Center(
-        child: Icon(icon, color: iconColor, size: size * 0.5),
+        child: icon != null ? Icon(icon, color: iconColor, size: size * 0.5) : const SizedBox(),
       ),
     );
   }
@@ -3549,6 +3605,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
 
   @override
   void dispose() {
+    _interestTimer?.cancel();
     _razorpay.clear();
     _animationController.dispose();
     _scrollController.dispose();

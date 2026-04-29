@@ -307,6 +307,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   bool _hasInitialized = false;
   User? _dailyTopPick;
   bool _isLoadingPick = true;
+  final ScrollController _scrollController = ScrollController();
   
   @override
   void initState() {
@@ -322,6 +323,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         _loadTabUsers(_tabController.index);
       }
     });
+
+    _scrollController.addListener(_onScroll);
     
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_hasInitialized) return;
@@ -348,8 +351,22 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     });
   }
 
+  void _onScroll() {
+    if (_interestTimers.isNotEmpty) {
+      setState(() {
+        _interestTimers.forEach((key, timer) => timer?.cancel());
+        _interestTimers.clear();
+        _interestCountdown.clear();
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _interestTimers.forEach((key, timer) => timer?.cancel());
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    _idSearchController.dispose();
     _tabController.dispose();
     super.dispose();
   }
@@ -1058,30 +1075,78 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   }
 
   Future<void> _handleQuickInterest(int userId) async {
-    try {
-      final response = await MatchingService.sendInterest(userId);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (!mounted) return;
-        setState(() {
-          _sentInterests.add(userId);
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Interest sent successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to send interest'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      print(e);
+    // If already sent, do nothing
+    if (_sentInterests.contains(userId)) return;
+
+    // If a countdown is active, cancel it (Undo)
+    if (_interestTimers.containsKey(userId)) {
+      _interestTimers[userId]?.cancel();
+      setState(() {
+        _interestTimers.remove(userId);
+        _interestCountdown.remove(userId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Interest cancelled'),
+          duration: Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
     }
+
+    // Start new countdown
+    setState(() {
+      _interestCountdown[userId] = 3;
+    });
+
+    _interestTimers[userId] = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
+      if (_interestCountdown[userId]! > 1) {
+        setState(() {
+          _interestCountdown[userId] = _interestCountdown[userId]! - 1;
+        });
+      } else {
+        timer.cancel();
+        final finalUserId = userId;
+        
+        setState(() {
+          _interestTimers.remove(finalUserId);
+          _interestCountdown.remove(finalUserId);
+        });
+
+        try {
+          final response = await MatchingService.sendInterest(finalUserId);
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            if (!mounted) return;
+            setState(() {
+              _sentInterests.add(finalUserId);
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Interest sent successfully!'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to send interest'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        } catch (e) {
+          print(e);
+        }
+      }
+    });
   }
 
   Future<void> _loadTabUsers(int index) async {
@@ -1352,6 +1417,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               ),
             ),
           CustomScrollView(
+            controller: _scrollController,
         slivers: [
           // Personal Greeting Header - Now Sticky
                 SliverAppBar(
@@ -2362,12 +2428,30 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       // Like (Heart/Check)
                       GestureDetector(
                         onTap: () => _handleQuickInterest(user.id!),
-                        child: _buildFloatingButton(
-                          icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
-                          color: _sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
-                          iconColor: Colors.white,
-                          size: 60,
-                          shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            _buildFloatingButton(
+                              icon: _sentInterests.contains(user.id) 
+                                ? Icons.done_all_rounded 
+                                : (_interestCountdown.containsKey(user.id) ? null : Icons.favorite),
+                              color: _sentInterests.contains(user.id) 
+                                ? const Color(0xFF42D368) 
+                                : (_interestCountdown.containsKey(user.id) ? Colors.white : const Color(0xFFFF2D55)),
+                              iconColor: _sentInterests.contains(user.id) ? Colors.white : Colors.white,
+                              size: 60,
+                              shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                            ),
+                            if (_interestCountdown.containsKey(user.id))
+                              Text(
+                                '${_interestCountdown[user.id]}',
+                                style: const TextStyle(
+                                  color: Color(0xFFFF2D55),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],
@@ -2621,7 +2705,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   }
 
   Widget _buildFloatingButton({
-    required IconData icon,
+    required IconData? icon,
     required Color color,
     required Color iconColor,
     required double size,
@@ -2642,7 +2726,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         ],
       ),
       child: Center(
-        child: Icon(icon, color: iconColor, size: size * 0.5),
+        child: icon != null ? Icon(icon, color: iconColor, size: size * 0.5) : const SizedBox(),
       ),
     );
   }
