@@ -954,7 +954,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               tooltip: 'Share Profile',
               onPressed: () {
                 if (_user != null) {
-                  ProfileShareService.shareProfile(context, _user!);
+                  if (_contactUnlocked || (_user?.contactInfo?.isContactUnlocked ?? false)) { ProfileShareService.shareProfile(context, _user!); } else { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Unlock contact to share profile!"), backgroundColor: Colors.orange, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); }
                 }
               },
             ),
@@ -1607,7 +1607,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             GestureDetector(
               onTap: () {
                 if (_user != null) {
-                  ProfileShareService.shareProfile(context, _user!);
+                  if (_contactUnlocked || (_user?.contactInfo?.isContactUnlocked ?? false)) { ProfileShareService.shareProfile(context, _user!); } else { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Unlock contact to share profile!"), backgroundColor: Colors.orange, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); }
                 }
               },
               child: _buildFloatingButton(
@@ -3364,12 +3364,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     bool isCustom = false;
 
     final reasons = [
-      'No response on WhatsApp/Call (after contact-unlock)',
+      if (_contactUnlocked) 'No response on WhatsApp/Call (after contact-unlock)',
       'False Pref (Caste/Distance is "matter" now)',
       'Fake Profile / Photo mismatch',
       'Scammer / Asking for money / Business',
       'Suspected Fake for Referral Bonus',
-      'Already Married / Not Single',
+      if (_contactUnlocked) 'Already Married / Not Single',
       'Other',
     ];
 
@@ -3431,16 +3431,27 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   child: TextField(
                     controller: customController,
                     autofocus: true,
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
                     decoration: InputDecoration(
                       hintText: 'Describe the issue...',
+                      hintStyle: TextStyle(color: Colors.grey.shade400),
                       filled: true,
-                      fillColor: AppColors.midnightEmerald,
+                      fillColor: Colors.grey.shade50,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey.shade200),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF0A3A2A), width: 1.5),
                       ),
                     ),
-                    maxLines: 2,
+                    maxLines: 3,
                   ),
                 ),
               const SizedBox(height: 10),

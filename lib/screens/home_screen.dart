@@ -1374,49 +1374,60 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         ),
                         child: Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.primaryGreen,
-                                  width: 1.5,
-                                ),
+                            GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ProfileScreen()),
                               ),
-                              child: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: user?.displayImage != null
-                                    ? NetworkImage(
-                                        ApiService.getImageUrl(user!.displayImage!),
-                                      )
-                                    : null,
-                                child: user?.displayImage == null
-                                    ? const Icon(Icons.person, color: AppColors.primaryGreen, size: 18)
-                                    : null,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: AppColors.primaryGreen,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: user?.displayImage != null
+                                          ? NetworkImage(
+                                              ApiService.getImageUrl(user!.displayImage!),
+                                            )
+                                          : null,
+                                      child: user?.displayImage == null
+                                          ? const Icon(Icons.person, color: AppColors.primaryGreen, size: 18)
+                                          : null,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Hey, ${profile?.firstName ?? 'User'}!',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      const Text(
+                                        "Let's Find A Match",
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1A1A1A),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Hey, ${profile?.firstName ?? 'User'}!',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                                const Text(
-                                  "Let's Find A Match",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1A1A1A),
-                                  ),
-                                ),
-                              ],
                             ),
                             const Spacer(),
                             IconButton(
