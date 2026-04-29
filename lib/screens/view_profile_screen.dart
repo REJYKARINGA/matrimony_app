@@ -270,6 +270,209 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     }
   }
 
+  Future<void> _handleRejectInterest() async {
+    if (_interestReceived == null) return;
+
+    setState(() {
+      _isActionLoading = true;
+    });
+
+    try {
+      final response = await MatchingService.rejectInterest(
+        _interestReceived['id'],
+      );
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+        setState(() {
+          _interestReceived = null; // Remove the received interest
+          _isActionLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Interest declined.'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        setState(() {
+          _isActionLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to decline interest')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isActionLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  Widget _buildInterestActionBar() {
+    if (_user == null) return const SizedBox.shrink();
+
+    bool isMatched =
+        (_interestReceived != null &&
+            _interestReceived['status'] == 'accepted') ||
+        (_interestSent != null && _interestSent['status'] == 'accepted');
+    bool isPending =
+        _interestReceived != null && _interestReceived['status'] == 'pending';
+    bool isSent = _interestSent != null && !isMatched;
+
+    if (!isPending && !isMatched && !isSent) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.95),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: Colors.white.withOpacity(0.5)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isPending) ...[
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGreen.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.favorite, color: AppColors.primaryGreen, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Sent you an interest request',
+                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.midnightEmerald),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _handleRejectInterest,
+                        icon: const Icon(Icons.close_rounded, size: 18),
+                        label: const Text('Decline'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade50,
+                          foregroundColor: Colors.redAccent,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _handleAcceptInterest,
+                        icon: const Icon(Icons.check_rounded, size: 18),
+                        label: const Text('Accept'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryGreen,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else if (isMatched) ...[
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryGreen,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'You are Matched!',
+                            style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.primaryGreen, fontSize: 16),
+                          ),
+                          Text('You can now message each other.', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: _handleRejectInterest,
+                      icon: const Icon(Icons.close, size: 14),
+                      label: const Text('Decline Match'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else if (isSent) ...[
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.hourglass_top_rounded, color: Colors.orange, size: 18),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Interest Sent',
+                            style: TextStyle(fontWeight: FontWeight.w800, color: Colors.orange, fontSize: 14),
+                          ),
+                          Text('Waiting for their response...', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleSendInterest() async {
     if (_user?.id == null) return;
 
@@ -741,7 +944,13 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ),
           ],
         ),
-        bottomNavigationBar: _buildStickyBottomActions(),
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildInterestActionBar(),
+            _buildStickyBottomActions(),
+          ],
+        ),
         extendBody: true,
       ),
     );
@@ -1519,15 +1728,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // Pass (Close)
+          // Pass (Close) or Decline if pending
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap: isPending ? _handleRejectInterest : () => Navigator.pop(context),
             child: _buildFloatingButton(
               icon: Icons.close_rounded,
-              color: Colors.white,
-              iconColor: Colors.grey.shade400,
+              color: isPending ? Colors.red.shade50 : Colors.white,
+              iconColor: isPending ? Colors.redAccent : Colors.grey.shade400,
               size: 54,
-              shadowColor: Colors.black.withOpacity(0.05),
+              shadowColor: isPending ? Colors.redAccent.withOpacity(0.2) : Colors.black.withOpacity(0.05),
             ),
           ),
           
@@ -1582,7 +1791,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Purchase contact to message!'),
+                      content: const Text('Unlock contact to message!'),
                       backgroundColor: Colors.orange,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
@@ -1663,46 +1872,35 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               ),
             ),
 
-            // Like (Heart/Check)
-            GestureDetector(
-              onTap: () {
-                if (_isActionLoading) return;
-                if (isMatched) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('You are already matched!')),
-                  );
-                } else if (isPending) {
-                  _handleAcceptInterest();
-                } else if (isSent) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Interest already sent!')),
-                  );
-                } else {
+            // Like (Heart/Check) - Hide if we have an active interest state handled by the new action bar
+            if (!isMatched && !isPending && !isSent)
+              GestureDetector(
+                onTap: () {
+                  if (_isActionLoading) return;
                   _handleSendInterest();
-                }
-              },
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  _buildFloatingButton(
-                    icon: (isMatched || isSent) ? Icons.done_all_rounded : (isPending ? Icons.check_circle_rounded : (_interestCountdown > 0 ? null : Icons.favorite_rounded)),
-                    color: (isMatched || isSent) ? AppColors.primaryGreen : (isPending ? AppColors.deepEmerald : (_interestCountdown > 0 ? Colors.white : const Color(0xFFFF2D55))),
-                    iconColor: Colors.white,
-                    size: 64,
-                    shadowColor: ((isMatched || isSent) ? AppColors.primaryGreen : (isPending ? AppColors.deepEmerald : const Color(0xFFFF2D55))).withOpacity(0.3),
-                  ),
-                  if (_interestCountdown > 0)
-                    Text(
-                      '$_interestCountdown',
-                      style: const TextStyle(
-                        color: Color(0xFFFF2D55),
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _buildFloatingButton(
+                      icon: _interestCountdown > 0 ? null : Icons.favorite_rounded,
+                      color: _interestCountdown > 0 ? Colors.white : const Color(0xFFFF2D55),
+                      iconColor: Colors.white,
+                      size: 64,
+                      shadowColor: (const Color(0xFFFF2D55)).withOpacity(0.3),
                     ),
-                ],
+                    if (_interestCountdown > 0)
+                      Text(
+                        '$_interestCountdown',
+                        style: const TextStyle(
+                          color: Color(0xFFFF2D55),
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
           ],
         ],
       ),

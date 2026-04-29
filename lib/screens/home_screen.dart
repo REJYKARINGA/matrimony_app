@@ -1049,7 +1049,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
       if (sentResponse.statusCode == 403) {
         final data = json.decode(sentResponse.body);
-        if (data['required_recharge'] == true) {
+        if (data['required_recharge'] == true && mounted) {
           RechargeRequiredDialog.show(context, data['message'] ?? '');
           setState(() => _isRechargeRequired = true);
         }
@@ -1057,7 +1057,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
       if (receivedResponse.statusCode == 403) {
         final data = json.decode(receivedResponse.body);
-        if (data['required_recharge'] == true) {
+        if (data['required_recharge'] == true && mounted) {
           RechargeRequiredDialog.show(context, data['message'] ?? '');
           setState(() => _isRechargeRequired = true);
         }
@@ -1278,9 +1278,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       } else if (response.statusCode == 403) {
         if (!mounted) return;
         final data = json.decode(response.body);
-        if (data['required_recharge'] == true) {
+        if (data['required_recharge'] == true && mounted) {
           RechargeRequiredDialog.show(context, data['message'] ?? '');
-          _isRechargeRequired = true;
+          setState(() {
+            _isRechargeRequired = true;
+          });
           _loadSubscriptionPlans();
         }
         setState(() {
@@ -1503,6 +1505,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 size: 22,
                               ),
                               onPressed: () async {
+                                if (!mounted) return;
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -2198,22 +2201,6 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               color: AppColors.primaryGreen, // Turquoise
                               size: 18,
                             ),
-                          const Spacer(),
-                          /* Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              user.lastActiveString,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ), */
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -2880,8 +2867,10 @@ class MatchCelebrationDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildPulseAvatar(currentUser?.displayImage, -1),
-                  const SizedBox(width: -20), // Overlap
-                  _buildPulseAvatar(otherUser.displayImage, 1),
+                  Transform.translate(
+                    offset: const Offset(-40, 0), // Safe overlap without negative constraints
+                    child: _buildPulseAvatar(otherUser.displayImage, 1),
+                  ),
                 ],
               ),
               
