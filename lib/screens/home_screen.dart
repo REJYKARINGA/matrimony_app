@@ -2618,7 +2618,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               gradient: const LinearGradient(
-                colors: [AppColors.primaryGreen, Color(0xFF0D47A1)],
+                colors: [AppColors.primaryGreen, AppColors.deepGreen],
               ),
               boxShadow: [
                 BoxShadow(
@@ -2649,11 +2649,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           const SizedBox(height: 16),
           TextButton.icon(
             onPressed: () => Navigator.pushNamed(context, '/preferences').then((_) => _loadTabUsers(_tabController.index)),
-            icon: const Icon(Icons.tune_rounded, size: 18, color: Color(0xFF0D47A1)),
+            icon: const Icon(Icons.tune_rounded, size: 18, color: AppColors.primaryGreen),
             label: const Text(
               'Refine Preferences',
               style: TextStyle(
-                color: Color(0xFF0D47A1),
+                color: AppColors.primaryGreen,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
@@ -2684,8 +2684,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           Icons.person_rounded,
           size: size,
           color: isFemale
-              ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
-              : AppColors.primaryGreen.withOpacity(0.3), // Turquoise
+              ? AppColors.primaryGreen.withOpacity(0.3)
+              : AppColors.primaryGreen.withOpacity(0.3),
         ),
       ),
     );
@@ -2888,7 +2888,7 @@ class MatchCelebrationDialog extends StatelessWidget {
                         gradient: const LinearGradient(
                           colors: [
                             AppColors.primaryGreen, // Turquoise
-                            Color(0xFF0D47A1), // Deep blue
+                            AppColors.deepGreen, // Deep green
                           ],
                         ),
                         borderRadius: BorderRadius.circular(30),
@@ -2952,8 +2952,8 @@ class MatchCelebrationDialog extends StatelessWidget {
           
           // Confetti-like bits (Static representation)
           Positioned(top: 100, left: 40, child: _buildConfetti(AppColors.primaryGreen, 10)),
-          Positioned(top: 150, right: 60, child: _buildConfetti(const Color(0xFF0D47A1), 12)),
-          Positioned(bottom: 120, left: 80, child: _buildConfetti(Colors.yellowAccent, 8)),
+          Positioned(top: 150, right: 60, child: _buildConfetti(AppColors.deepGreen, 12)),
+          Positioned(bottom: 120, left: 80, child: _buildConfetti(AppColors.creamGold, 8)),
           Positioned(bottom: 180, right: 30, child: _buildConfetti(AppColors.primaryGreen, 10)),
         ],
       ),

@@ -1768,8 +1768,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           Icons.person_rounded,
           size: size,
           color: isFemale
-              ? const Color(0xFF0D47A1).withOpacity(0.3) // Deep blue
-              : AppColors.primaryGreen.withOpacity(0.3), // Turquoise
+              ? AppColors.primaryGreen.withOpacity(0.3)
+              : AppColors.primaryGreen.withOpacity(0.3),
         ),
       ),
     );
