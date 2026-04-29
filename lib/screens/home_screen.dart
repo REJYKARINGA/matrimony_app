@@ -1752,141 +1752,146 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       delegate: SliverChildBuilderDelegate(
         (context, index) {
           final p = placeholders[index % placeholders.length];
-          return GestureDetector(
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) => RechargeRequiredDialog(
-                message: _recommendedError ?? 'Please recharge your wallet to continue viewing profiles and purchasing contacts.',
-              ),
-            ),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              height: 480,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryGreen.withOpacity(0.15),
-                    blurRadius: 25,
-                    offset: const Offset(0, 12),
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: GestureDetector(
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (_) => RechargeRequiredDialog(
+                    message: _recommendedError ?? 'Please recharge your wallet to continue viewing profiles and purchasing contacts.',
                   ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(32),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    // ---- Blurred photo/silhouette area only ----
-                    ImageFiltered(
-                      imageFilter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: p['female'] == true
-                                ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
-                                : [const Color(0xFFE0F7FA), const Color(0xFFB2EBF2)],
-                          ),
-                        ),
-                        child: Center(
-                          child: Icon(
-                            p['female'] == true ? Icons.face_3_rounded : Icons.face_6_rounded,
-                            size: 200,
-                            color: AppColors.primaryGreen.withOpacity(0.35),
-                          ),
-                        ),
+                ),
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  height: 480,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGreen.withOpacity(0.15),
+                        blurRadius: 25,
+                        offset: const Offset(0, 12),
                       ),
-                    ),
-                    // ---- Sharp gradient overlay at bottom (not blurred) ----
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.transparent,
-                              Colors.black.withOpacity(0.55),
-                              Colors.black.withOpacity(0.92),
-                            ],
-                            stops: const [0.0, 0.45, 0.72, 1.0],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // ---- Lock icon overlay in center ----
-                    Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.35),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white38, width: 1.5),
-                        ),
-                        child: const Icon(Icons.lock_rounded, color: Colors.white, size: 32),
-                      ),
-                    ),
-                    // ---- Blurred text info at bottom ----
-                    Positioned(
-                      left: 24,
-                      right: 24,
-                      bottom: 32,
-                      child: ImageFiltered(
-                        imageFilter: ui.ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${p['name']}, ${p['age']}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: -0.5,
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(32),
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // ---- Blurred photo/silhouette area only ----
+                        ImageFiltered(
+                          imageFilter: ui.ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: p['female'] == true
+                                    ? [const Color(0xFFFFEBF0), const Color(0xFFFFD1DC)]
+                                    : [const Color(0xFFE0F7FA), const Color(0xFFB2EBF2)],
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Row(
+                            child: Center(
+                              child: Icon(
+                                p['female'] == true ? Icons.face_3_rounded : Icons.face_6_rounded,
+                                size: 200,
+                                color: AppColors.primaryGreen.withOpacity(0.35),
+                              ),
+                            ),
+                          ),
+                        ),
+                        // ---- Sharp gradient overlay at bottom (not blurred) ----
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.55),
+                                  Colors.black.withOpacity(0.92),
+                                ],
+                                stops: const [0.0, 0.45, 0.72, 1.0],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // ---- Lock icon overlay in center ----
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.35),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white38, width: 1.5),
+                            ),
+                            child: const Icon(Icons.lock_rounded, color: Colors.white, size: 32),
+                          ),
+                        ),
+                        // ---- Blurred text info at bottom ----
+                        Positioned(
+                          left: 24,
+                          right: 24,
+                          bottom: 32,
+                          child: ImageFiltered(
+                            imageFilter: ui.ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.location_on_rounded, color: Colors.white70, size: 14),
-                                const SizedBox(width: 4),
                                 Text(
-                                  p['location'],
-                                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                  '${p['name']}, ${p['age']}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on_rounded, color: Colors.white70, size: 14),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      p['location'],
+                                      style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    // ---- Sharp "Recharge to View" chip at bottom right ----
-                    Positioned(
-                      right: 24,
-                      bottom: 32,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryGreen,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.primaryGreen.withOpacity(0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
+                        // ---- Sharp "Recharge to View" chip at bottom right ----
+                        Positioned(
+                          right: 24,
+                          bottom: 32,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryGreen,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primaryGreen.withOpacity(0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
-                          ],
+                            child: const Text(
+                              'Recharge to View',
+                              style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                            ),
+                          ),
                         ),
-                        child: const Text(
-                          'Recharge to View',
-                          style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -1979,427 +1984,419 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       profile?.presentCountry,
     ].where((e) => e != null && e.isNotEmpty).join(', ');
 
-    return SwipeCard(
-      onSwipeRight: () {
-        _handleQuickInterest(user.id!);
-        setState(() {
-          _recommendedUsers.removeWhere((u) => u.id == user.id);
-        });
-      },
-      onSwipeLeft: () {
-        setState(() {
-          _recommendedUsers.removeWhere((u) => u.id == user.id);
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        height: 480,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryGreen.withOpacity(0.15), // Turquoise shadow
-              blurRadius: 25,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: Stack(
-          children: [
-            Positioned.fill(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  user.displayImage != null
-                      ? Image.network(
-                          ApiService.getImageUrl(user.displayImage!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _buildPlaceholderBackground(profile?.gender),
-                        )
-                      : _buildPlaceholderBackground(profile?.gender),
-                  if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
-                  if ((user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified)) || (user.displayImage == null))
-                    BackdropFilter(
-                      filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                      child: Container(
-                        color: Colors.black.withOpacity(0.4),
-                        child: Align(
-                          alignment: const Alignment(0, -0.3),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                (user.displayImage == null)
-                                  ? Icons.no_photography_rounded
-                                  : (user.isDisplayImageVerified != true 
-                                      ? Icons.pending_actions_rounded 
-                                      : (user.photoRequestRejected == true 
-                                          ? Icons.block_rounded 
-                                          : (user.photoRequestPending == true 
-                                              ? Icons.pending_actions_rounded 
-                                              : Icons.lock_person_rounded))),
-                                color: Colors.white,
-                                size: 48,
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                (user.displayImage == null)
-                                  ? 'No Photos Uploaded'
-                                  : (user.isDisplayImageVerified != true 
-                                      ? 'Photo in Verification' 
-                                      : (user.photoRequestRejected == true 
-                                          ? 'ACCESS DECLINED' 
-                                          : (user.photoRequestPending == true 
-                                              ? 'Access Request Pending' 
-                                              : 'Photos are Private'))),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                              if (((user.displayImage == null) || (user.isDisplayImageVerified == true && user.hasHiddenPhotos == true)) && 
-                                  !(user.photoRequestPending ?? false) && 
-                                  !(user.photoRequestRejected ?? false)) ...[
-                                const SizedBox(height: 16),
-                                ElevatedButton.icon(
-                                  onPressed: () => _handlePhotoRequest(user),
-                                  icon: const Icon(Icons.key_rounded, size: 14),
-                                  label: Text(
-                                    (user.displayImage == null) ? 'Request Photo' : 'Request Access',
-                                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryGreen,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.1),
-                      Colors.black.withOpacity(0.45),
-                      Colors.black.withOpacity(0.85),
-                    ],
-                    stops: const [0.0, 0.45, 0.7, 1.0],
-                  ),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            height: 480,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryGreen.withOpacity(0.15), // Turquoise shadow
+                  blurRadius: 25,
+                  offset: const Offset(0, 12),
                 ),
-              ),
+              ],
             ),
-            Positioned(
-              left: 24,
-              right: 24,
-              bottom: 100,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Row 1: Matrimony ID & Age
-                  Row(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Text(
-                        '${user.matrimonyId ?? 'User'}, $ageText',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      if (user.userProfile?.isActiveVerified == true)
-                        const Icon(
-                          Icons.verified_rounded,
-                          color: AppColors.primaryGreen, // Turquoise
-                          size: 18,
-                        ),
-                      const Spacer(),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          user.lastActiveString,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  
-                  // Row 2: Height, Marital Status, Caste
-                  Text(
-                    '${profile?.height != null ? '${profile!.height} cm, ' : ''}$maritalStatus, ${profile?.caste ?? ''}',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Row 3: Education, Occupation
-                  if ((profile?.education ?? '').isNotEmpty || (profile?.occupation ?? '').isNotEmpty)
-                    Text(
-                      '${profile?.education ?? ''}${profile?.education != null && (profile?.occupation ?? '').isNotEmpty ? ', ' : ''}${profile?.occupation ?? ''}',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  const SizedBox(height: 8),
-
-                  // Row 4: Location & Distance
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.location_on_rounded,
-                              color: Colors.white.withOpacity(0.8),
-                              size: 14,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
+                      user.displayImage != null
+                          ? Image.network(
+                              ApiService.getImageUrl(user.displayImage!),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildPlaceholderBackground(profile?.gender),
+                            )
+                          : _buildPlaceholderBackground(profile?.gender),
+                      if (user.displayImage != null && user.displayImage!.trim().isNotEmpty && user.displayImage != 'null') const WatermarkOverlay(),
+                      if ((user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified)) || (user.displayImage == null))
+                        BackdropFilter(
+                          filter: ui.ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                          child: Container(
+                            color: Colors.black.withOpacity(0.4),
+                            child: Align(
+                              alignment: const Alignment(0, -0.3),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    loc.isNotEmpty ? loc : 'Unknown Location',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.8),
-                                      fontSize: 13,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                  Icon(
+                                    (user.displayImage == null)
+                                      ? Icons.no_photography_rounded
+                                      : (user.isDisplayImageVerified != true 
+                                          ? Icons.pending_actions_rounded 
+                                          : (user.photoRequestRejected == true 
+                                              ? Icons.block_rounded 
+                                              : (user.photoRequestPending == true 
+                                                  ? Icons.pending_actions_rounded 
+                                                  : Icons.lock_person_rounded))),
+                                    color: Colors.white,
+                                    size: 48,
                                   ),
-                                  if (currentLoc.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2),
-                                      child: Text(
-                                        'Present: $currentLoc',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.9),
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    (user.displayImage == null)
+                                      ? 'No Photos Uploaded'
+                                      : (user.isDisplayImageVerified != true 
+                                          ? 'Photo in Verification' 
+                                          : (user.photoRequestRejected == true 
+                                              ? 'ACCESS DECLINED' 
+                                              : (user.photoRequestPending == true 
+                                                  ? 'Access Request Pending' 
+                                                  : 'Photos are Private'))),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                  if (((user.displayImage == null) || (user.isDisplayImageVerified == true && user.hasHiddenPhotos == true)) && 
+                                      !(user.photoRequestPending ?? false) && 
+                                      !(user.photoRequestRejected ?? false)) ...[
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: () => _handlePhotoRequest(user),
+                                      icon: const Icon(Icons.key_rounded, size: 14),
+                                      label: Text(
+                                        (user.displayImage == null) ? 'Request Photo' : 'Request Access',
+                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primaryGreen,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                       ),
                                     ),
+                                  ],
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      if (user.distance != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryGreen.withOpacity(0.35),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.3),
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.near_me_rounded,
-                                color: Colors.white,
-                                size: 10,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${user.distance!.toStringAsFixed(1)} KM',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            // Floating Action Buttons Row
-            Positioned(
-              bottom: 24,
-              left: 20,
-              right: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Pass (Close)
-                  GestureDetector(
-                    onTap: () {
-                      _dismissProfile(user.id!);
-                    },
-                    child: _buildFloatingButton(
-                      icon: Icons.close_rounded,
-                      color: Colors.white,
-                      iconColor: Colors.grey.shade600,
-                      size: 50,
-                    ),
-                  ),
-
-                  // Chat
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (c) => ChatScreen(
-                            otherUserId: user.id!,
-                            otherUserName: '${user.matrimonyId ?? 'User'}',
-                            otherUserImage: user.displayImage != null
-                                ? ApiService.getImageUrl(user.displayImage!)
-                                : null,
-                            isMatched: _matchedUserIds.contains(user.id),
-                            isInterestSent: _sentInterests.contains(user.id),
-                          ),
-                        ),
-                      );
-                    },
-                    child: _buildFloatingButton(
-                      icon: Icons.chat_bubble_rounded,
-                      color: AppColors.primaryGreen, // Turquoise
-                      iconColor: Colors.white,
-                      size: 50,
-                      shadowColor: AppColors.primaryGreen.withOpacity(0.3),
-                    ),
-                  ),
-
-                  // Star (Save)
-                  GestureDetector(
-                    onTap: () async {
-                      try {
-                        if (_shortlistedUserIds.contains(user.id!)) {
-                          final response = await ShortlistService.removeFromShortlist(user.id!);
-                          print('Remove shortlist response: ${response.statusCode}');
-                          if (response.statusCode == 200) {
-                            setState(() {
-                              _shortlistedUserIds.remove(user.id!);
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Removed from shortlist'),
-                                backgroundColor: Colors.orange,
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }
-                        } else {
-                          final response = await ShortlistService.addToShortlist(user.id!);
-                          print('Add shortlist response: ${response.statusCode}');
-                          print('Add shortlist body: ${response.body}');
-                          if (response.statusCode == 200 || response.statusCode == 201) {
-                            setState(() {
-                              _shortlistedUserIds.add(user.id!);
-                            });
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Added to shortlist'),
-                                backgroundColor: Colors.green,
-                                duration: Duration(seconds: 1),
-                              ),
-                            );
-                          }
-                        }
-                      } catch (e) {
-                        print('Error toggling shortlist: $e');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    child: _buildFloatingButton(
-                      icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
-                      color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
-                      iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
-                      size: 50,
-                      shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
-                    ),
-                  ),
-
-                  // Like (Heart/Check)
-                  GestureDetector(
-                    onTap: () => _handleQuickInterest(user.id!),
-                    child: _buildFloatingButton(
-                      icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
-                      color: _sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
-                      iconColor: Colors.white,
-                      size: 60,
-                      shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Clickable area for card - positioned to avoid button areas
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 140, // Leave space for buttons at bottom
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (c) => ViewProfileScreen(userId: user.id!),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.1),
+                          Colors.black.withOpacity(0.45),
+                          Colors.black.withOpacity(0.85),
+                        ],
+                        stops: const [0.0, 0.45, 0.7, 1.0],
+                      ),
                     ),
                   ),
                 ),
-              ),
+                Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 100,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Row 1: Matrimony ID & Age
+                      Row(
+                        children: [
+                          Text(
+                            '${user.matrimonyId ?? 'User'}, $ageText',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                               fontWeight: FontWeight.bold,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (user.userProfile?.isActiveVerified == true)
+                            const Icon(
+                              Icons.verified_rounded,
+                              color: AppColors.primaryGreen, // Turquoise
+                              size: 18,
+                            ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              user.lastActiveString,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      
+                      // Row 2: Height, Marital Status, Caste
+                      Text(
+                        '${profile?.height != null ? '${profile!.height} cm, ' : ''}$maritalStatus, ${profile?.caste ?? ''}',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+    
+                      // Row 3: Education, Occupation
+                      if ((profile?.education ?? '').isNotEmpty || (profile?.occupation ?? '').isNotEmpty)
+                        Text(
+                          '${profile?.education ?? ''}${profile?.education != null && (profile?.occupation ?? '').isNotEmpty ? ', ' : ''}${profile?.occupation ?? ''}',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.85),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+    
+                      // Row 4: Location & Distance
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_rounded,
+                                  color: Colors.white.withOpacity(0.8),
+                                  size: 14,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        loc.isNotEmpty ? loc : 'Unknown Location',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.8),
+                                          fontSize: 13,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (currentLoc.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 2),
+                                          child: Text(
+                                            'Present: $currentLoc',
+                                            style: TextStyle(
+                                              color: Colors.white.withOpacity(0.9),
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (user.distance != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryGreen.withOpacity(0.35),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.near_me_rounded,
+                                    color: Colors.white,
+                                    size: 10,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${user.distance!.toStringAsFixed(1)} KM',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // Floating Action Buttons Row
+                Positioned(
+                  bottom: 24,
+                  left: 20,
+                  right: 20,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Pass (Close)
+                      GestureDetector(
+                        onTap: () {
+                          _dismissProfile(user.id!);
+                        },
+                        child: _buildFloatingButton(
+                          icon: Icons.close_rounded,
+                          color: Colors.white,
+                          iconColor: Colors.grey.shade600,
+                          size: 50,
+                        ),
+                      ),
+    
+                      // Chat
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (c) => ChatScreen(
+                                otherUserId: user.id!,
+                                otherUserName: '${user.matrimonyId ?? 'User'}',
+                                otherUserImage: user.displayImage != null
+                                    ? ApiService.getImageUrl(user.displayImage!)
+                                    : null,
+                                isMatched: _matchedUserIds.contains(user.id),
+                                isInterestSent: _sentInterests.contains(user.id),
+                              ),
+                            ),
+                          );
+                        },
+                        child: _buildFloatingButton(
+                          icon: Icons.chat_bubble_rounded,
+                          color: AppColors.primaryGreen, // Turquoise
+                          iconColor: Colors.white,
+                          size: 50,
+                          shadowColor: AppColors.primaryGreen.withOpacity(0.3),
+                        ),
+                      ),
+    
+                      // Star (Save)
+                      GestureDetector(
+                        onTap: () async {
+                          try {
+                            if (_shortlistedUserIds.contains(user.id!)) {
+                              final response = await ShortlistService.removeFromShortlist(user.id!);
+                              print('Remove shortlist response: ${response.statusCode}');
+                              if (response.statusCode == 200) {
+                                setState(() {
+                                  _shortlistedUserIds.remove(user.id!);
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Removed from shortlist'),
+                                    backgroundColor: Colors.orange,
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              }
+                            } else {
+                              final response = await ShortlistService.addToShortlist(user.id!);
+                              print('Add shortlist response: ${response.statusCode}');
+                              print('Add shortlist body: ${response.body}');
+                              if (response.statusCode == 200 || response.statusCode == 201) {
+                                setState(() {
+                                  _shortlistedUserIds.add(user.id!);
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Added to shortlist'),
+                                    backgroundColor: Colors.green,
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            print('Error toggling shortlist: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        child: _buildFloatingButton(
+                          icon: _shortlistedUserIds.contains(user.id!) ? Icons.star_rounded : Icons.star_outline_rounded,
+                          color: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700) : Colors.white,
+                          iconColor: _shortlistedUserIds.contains(user.id!) ? Colors.white : const Color(0xFFFFD700),
+                          size: 50,
+                          shadowColor: _shortlistedUserIds.contains(user.id!) ? const Color(0xFFFFD700).withOpacity(0.4) : null,
+                        ),
+                      ),
+    
+                      // Like (Heart/Check)
+                      GestureDetector(
+                        onTap: () => _handleQuickInterest(user.id!),
+                        child: _buildFloatingButton(
+                          icon: _sentInterests.contains(user.id) ? Icons.done_all_rounded : Icons.favorite,
+                          color: _sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55),
+                          iconColor: Colors.white,
+                          size: 60,
+                          shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Clickable area for card - positioned to avoid button areas
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 140, // Leave space for buttons at bottom
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (c) => ViewProfileScreen(userId: user.id!),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  );
+    );
 }
 
   Future<void> _dismissProfile(int userId) async {
@@ -2731,94 +2728,7 @@ class DashedCirclePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class SwipeCard extends StatefulWidget {
-  final Widget child;
-  final VoidCallback onSwipeRight;
-  final VoidCallback onSwipeLeft;
 
-  const SwipeCard({
-    Key? key,
-    required this.child,
-    required this.onSwipeRight,
-    required this.onSwipeLeft,
-  }) : super(key: key);
-
-  @override
-  State<SwipeCard> createState() => _SwipeCardState();
-}
-
-class _SwipeCardState extends State<SwipeCard> {
-  Offset _offset = Offset.zero;
-  double _angle = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return GestureDetector(
-          onPanUpdate: (details) {
-            setState(() {
-              _offset += details.delta;
-              _angle = 0.1 * (_offset.dx / 150);
-            });
-          },
-          onPanEnd: (details) {
-            if (_offset.dx > 100) {
-              widget.onSwipeRight();
-            } else if (_offset.dx < -100) {
-              widget.onSwipeLeft();
-            }
-            setState(() {
-              _offset = Offset.zero;
-              _angle = 0;
-            });
-          },
-          child: Stack(
-            children: [
-              Transform.translate(
-                offset: _offset,
-                child: Transform.rotate(
-                  angle: _angle,
-                  child: widget.child,
-                ),
-              ),
-              if (_offset.dx.abs() > 20)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: Center(
-                      child: Opacity(
-                        opacity: (_offset.dx.abs() / 150).clamp(0.0, 1.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: (_offset.dx > 0 
-                                ? const Color(0xFF42D368) 
-                                : const Color(0xFFFF4B4B)).withOpacity(0.9),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 20,
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            _offset.dx > 0 ? Icons.favorite_rounded : Icons.close_rounded,
-                            color: Colors.white,
-                            size: 50,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
 
 class MatchCelebrationDialog extends StatelessWidget {
   final User otherUser;
