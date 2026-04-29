@@ -1701,13 +1701,23 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       alignment: Alignment.center,
                       children: [
                         _buildFloatingButton(
-                          icon: _sentInterests.contains(user.id) 
-                            ? Icons.done_all_rounded 
-                            : (_interestCountdown.containsKey(user.id) ? null : Icons.favorite),
-                          color: _sentInterests.contains(user.id) ? AppColors.mutedText : (_interestCountdown.containsKey(user.id) ? Colors.white : const Color(0xFFFF2D55)),
-                          iconColor: _sentInterests.contains(user.id) ? Colors.white : (_interestCountdown.containsKey(user.id) ? const Color(0xFFFF2D55) : Colors.white),
+                          icon: _matchedUserIds.contains(user.id)
+                            ? Icons.favorite_rounded
+                            : (_sentInterests.contains(user.id) 
+                                ? Icons.done_all_rounded 
+                                : (_interestCountdown.containsKey(user.id) ? null : Icons.favorite)),
+                          color: _matchedUserIds.contains(user.id)
+                            ? AppColors.primaryGreen
+                            : (_sentInterests.contains(user.id) 
+                                ? AppColors.mutedText 
+                                : (_interestCountdown.containsKey(user.id) ? Colors.white : const Color(0xFFFF2D55))),
+                          iconColor: _matchedUserIds.contains(user.id)
+                            ? Colors.white
+                            : (_sentInterests.contains(user.id) ? Colors.white : (_interestCountdown.containsKey(user.id) ? const Color(0xFFFF2D55) : Colors.white)),
                           size: 60,
-                          shadowColor: (_sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55)).withOpacity(0.4),
+                          shadowColor: (_matchedUserIds.contains(user.id) 
+                            ? AppColors.primaryGreen 
+                            : (_sentInterests.contains(user.id) ? AppColors.mutedText : const Color(0xFFFF2D55))).withOpacity(0.4),
                         ),
                         if (_interestCountdown.containsKey(user.id))
                           Text(

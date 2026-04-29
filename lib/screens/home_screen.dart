@@ -290,8 +290,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   List<User> _recommendedUsers = [];
   bool _isLoadingRecommended = true;
   String? _recommendedError;
-  late Set<int> _sentInterests;
-  late Set<int> _matchedUserIds;
+  Set<int> _sentInterests = {};
+  Set<int> _matchedUserIds = {};
   bool _isLoadingInterests = false;
   late Map<int, Timer?> _interestTimers;
   late Map<int, int> _interestCountdown;
@@ -313,6 +313,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   void initState() {
     super.initState();
     _sentInterests = {};
+    _matchedUserIds = {};
     _interestTimers = {};
     _interestCountdown = {};
     _shortlistedUserIds = {};
@@ -2419,15 +2420,21 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           alignment: Alignment.center,
                           children: [
                             _buildFloatingButton(
-                              icon: _sentInterests.contains(user.id) 
-                                ? Icons.done_all_rounded 
-                                : (_interestCountdown.containsKey(user.id) ? null : Icons.favorite),
-                              color: _sentInterests.contains(user.id) 
-                                ? const Color(0xFF42D368) 
-                                : (_interestCountdown.containsKey(user.id) ? Colors.white : const Color(0xFFFF2D55)),
-                              iconColor: _sentInterests.contains(user.id) ? Colors.white : Colors.white,
+                              icon: _matchedUserIds.contains(user.id)
+                                ? Icons.favorite_rounded
+                                : (_sentInterests.contains(user.id) 
+                                    ? Icons.done_all_rounded 
+                                    : (_interestCountdown.containsKey(user.id) ? null : Icons.favorite)),
+                              color: _matchedUserIds.contains(user.id)
+                                ? AppColors.primaryGreen
+                                : (_sentInterests.contains(user.id) 
+                                    ? const Color(0xFF42D368) 
+                                    : (_interestCountdown.containsKey(user.id) ? Colors.white : const Color(0xFFFF2D55))),
+                              iconColor: Colors.white,
                               size: 60,
-                              shadowColor: (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55)).withOpacity(0.4),
+                              shadowColor: (_matchedUserIds.contains(user.id) 
+                                ? AppColors.primaryGreen 
+                                : (_sentInterests.contains(user.id) ? const Color(0xFF42D368) : const Color(0xFFFF2D55))).withOpacity(0.4),
                             ),
                             if (_interestCountdown.containsKey(user.id))
                               Text(
