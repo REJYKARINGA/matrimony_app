@@ -48,6 +48,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
   // Location preferences
   List<String> _preferredLocations = [];
+  List<Map<String, dynamic>> _preferredCities = [];
   double _maxDistance = 50.0;
   final TextEditingController _locationSearchController = TextEditingController();
 
@@ -131,7 +132,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         final userReligionId = profile?['religion_id'];
 
         if (preferences != null) {
-          _initializeControllersWithData(preferences, userReligion, userReligionId);
+          _initializeControllersWithData(data, preferences, userReligion, userReligionId);
         } else {
           _initializeEmptyControllers(userReligion, userReligionId);
         }
@@ -171,6 +172,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _selectedOccupationIds = [];
     _incomeRange = const RangeValues(0, 30);
     _preferredLocations = [];
+    _preferredCities = [];
     _maxDistance = 50.0;
     _locationSearchController.text = '';
     _selectedDrugAddiction = 'any';
@@ -181,7 +183,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _sortBy = 'recent_login';
   }
 
-  void _initializeControllersWithData(Map<String, dynamic> preferences, String? userReligion, int? userReligionId) {
+  void _initializeControllersWithData(Map<String, dynamic> data, Map<String, dynamic> preferences, String? userReligion, int? userReligionId) {
     double ageStart = double.tryParse(preferences['min_age']?.toString() ?? '18') ?? 18;
     double ageEnd = double.tryParse(preferences['max_age']?.toString() ?? '50') ?? 50;
     _ageRange = RangeValues(
@@ -239,6 +241,16 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _preferredLocations = preferences['preferred_locations'] != null && preferences['preferred_locations'] is List
         ? (preferences['preferred_locations'] as List).map((e) => e.toString()).toList()
         : [];
+    
+    // Load cities from the user object (it's a relationship now)
+    final userCities = data['user']['preferred_cities'];
+    _preferredCities = userCities != null && userCities is List
+        ? (userCities as List).map((c) => {
+            'name': c['name'],
+            'lat': double.tryParse(c['latitude'].toString()) ?? 0.0,
+            'lon': double.tryParse(c['longitude'].toString()) ?? 0.0,
+          }).toList()
+        : [];
     _maxDistance = double.tryParse(preferences['max_distance']?.toString() ?? '50') ?? 50.0;
     _locationSearchController.text = '';
 
@@ -284,6 +296,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         maxIncome: (_incomeRange.end * 12 / 100),
         maxDistance: _maxDistance.round(),
         preferredLocations: _preferredLocations,
+        preferredCities: _preferredCities,
         drugAddiction: _selectedDrugAddiction,
         smoke: _selectedSmoke,
         alcohol: _selectedAlcohol,
@@ -1144,7 +1157,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       children: [
         _buildTextField(
           _locationSearchController,
-          'Add Preferred District/City',
+          'Search District/City',
           Icons.location_city_rounded,
           hint: 'Type a place and tap search icon',
           suffixIcon: IconButton(
@@ -1157,20 +1170,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               try {
                 final data = await LocationService.searchAddressByCity(query);
                 if (data != null && mounted) {
-                  String? district = data['district'];
-                  if (district != null) {
-                    district = district.replaceAll(' District', '').trim();
-                    if (!_preferredLocations.contains(district)) {
-                      setState(() {
-                        _preferredLocations.add(district!);
-                        _locationSearchController.clear();
-                      });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('District already in list')),
-                      );
-                    }
-                  }
+                  _showLocationSelectionDialog(data);
                 } else if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Could not find location')),
@@ -1184,8 +1184,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             },
           ),
         ),
+        
+        // Districts Section
         if (_preferredLocations.isNotEmpty) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          const Text(
+            'Preferred Districts (Broad Area Match)',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.midnightEmerald,
+            ),
+          ),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -1193,10 +1204,10 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               return Chip(
                 label: Text(
                   location,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12),
                 ),
                 backgroundColor: AppColors.deepEmerald,
-                deleteIcon: const Icon(Icons.close, size: 16, color: AppColors.cardDark),
+                deleteIcon: const Icon(Icons.close, size: 14, color: Colors.white70),
                 onDeleted: () {
                   setState(() {
                     _preferredLocations.remove(location);
@@ -1210,7 +1221,144 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             }).toList(),
           ),
         ],
+
+        // Cities Section
+        if (_preferredCities.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          const Text(
+            'Preferred Cities (Coordinate Distance Match)',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.midnightEmerald,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _preferredCities.map((city) {
+              return Chip(
+                label: Text(
+                  city['name'] ?? '',
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12),
+                ),
+                backgroundColor: AppColors.primaryGreen,
+                deleteIcon: const Icon(Icons.close, size: 14, color: Colors.white70),
+                onDeleted: () {
+                  setState(() {
+                    _preferredCities.remove(city);
+                  });
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide.none,
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ],
+    );
+  }
+
+  void _showLocationSelectionDialog(Map<String, dynamic> data) {
+    String? city = data['city'];
+    String? district = data['district'];
+    if (district != null) district = district.replaceAll(' District', '').trim();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Add Location'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Choose how you want to add this location:', style: TextStyle(color: AppColors.mutedText)),
+            const SizedBox(height: 20),
+            if (city != null && city.isNotEmpty)
+              _buildLocationDialogOption(
+                title: 'Add as City: $city',
+                subtitle: 'Filters based on accurate distance from this city center.',
+                icon: Icons.location_city,
+                onTap: () {
+                  bool exists = _preferredCities.any((c) => c['name'] == city);
+                  if (!exists) {
+                    setState(() {
+                      _preferredCities.add({
+                        'name': city,
+                        'lat': data['lat'],
+                        'lon': data['lon'],
+                      });
+                      _locationSearchController.clear();
+                    });
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            if (district != null && district.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _buildLocationDialogOption(
+                title: 'Add as District: $district',
+                subtitle: 'Filters everyone belonging to this entire district.',
+                icon: Icons.map_outlined,
+                onTap: () {
+                  if (!_preferredLocations.contains(district)) {
+                    setState(() {
+                      _preferredLocations.add(district!);
+                      _locationSearchController.clear();
+                    });
+                  }
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.mutedText)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationDialogOption({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade200),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppColors.deepEmerald),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.mutedText)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

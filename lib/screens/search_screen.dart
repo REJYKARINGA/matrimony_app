@@ -492,6 +492,11 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
         gradientColors = [const Color(0xFF00B4DB), const Color(0xFF0083B0)];
         iconBackgroundColor = const Color(0xFFE1F5FE);
         break;
+      case 'city_match':
+        iconData = Icons.location_city_rounded;
+        gradientColors = [const Color(0xFF654ea3), const Color(0xFFeaafc8)];
+        iconBackgroundColor = const Color(0xFFF3E5F5);
+        break;
       case 'near_me':
       case 'near_me_gps':
         iconData = Icons.near_me_rounded;
