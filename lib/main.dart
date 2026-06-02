@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
@@ -15,7 +16,9 @@ import 'services/navigation_provider.dart';
 import 'utils/theme_provider.dart';
 import 'models/user_model.dart';
 import 'screens/blocked_screen.dart';
+import 'screens/force_update_screen.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
+import 'services/version_check_service.dart';
 import 'widgets/network_overlay.dart';
 
 
@@ -117,6 +120,23 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 2), () {});
+
+    final versionInfo = await VersionCheckService.fetchVersionInfo();
+    if (versionInfo != null) {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = packageInfo.version;
+      final needsUpdate = VersionCheckService.compareVersions(currentVersion, versionInfo.minimumVersion) < 0;
+      if (needsUpdate) {
+        if (context.mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => ForceUpdateScreen(versionInfo: versionInfo),
+            ),
+          );
+        }
+        return;
+      }
+    }
 
     // Check if user is already logged in
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
