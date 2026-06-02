@@ -36,6 +36,8 @@ import '../widgets/wallet_recharge_paywall.dart';
 import '../widgets/interest_notification_dialog.dart';
 import 'engagement_poster_info_screen.dart';
 import '../widgets/watermark_overlay.dart';
+import '../widgets/network_overlay.dart'; // For SkeletonProfileCard
+import '../widgets/network_error_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -1762,10 +1764,11 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               : _isRechargeRequired
               ? _buildBlurredPaywallCards()
               : _recommendedError != null
-              ? SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(_recommendedError!),
+              ? SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: NetworkErrorWidget(
+                    error: _recommendedError,
+                    onRetry: () => _loadTabUsers(_tabController.index),
                   ),
                 )
               : _recommendedUsers.isEmpty

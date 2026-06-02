@@ -14,6 +14,8 @@ import '../services/navigation_provider.dart';
 import '../services/photo_request_service.dart';
 import '../widgets/watermark_overlay.dart';
 import '../utils/app_colors.dart';
+import '../widgets/network_overlay.dart'; // For SkeletonProfileCard
+import '../widgets/network_error_widget.dart';
 
 class MatchingScreen extends StatefulWidget {
   const MatchingScreen({Key? key}) : super(key: key);
@@ -311,10 +313,20 @@ class _MatchingScreenState extends State<MatchingScreen>
 
   Widget _buildDeclinedInterestsTab() {
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
-        ),
+      return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        children: const [
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+        ],
+      );
+    }
+    
+    if (_errorMessage != null) {
+      return NetworkErrorWidget(
+        error: _errorMessage,
+        onRetry: _loadInitialData,
       );
     }
 
@@ -393,10 +405,20 @@ class _MatchingScreenState extends State<MatchingScreen>
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
-        ),
+      return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        children: const [
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+        ],
+      );
+    }
+
+    if (_errorMessage != null) {
+      return NetworkErrorWidget(
+        error: _errorMessage,
+        onRetry: _loadInitialData,
       );
     }
 
@@ -451,10 +473,20 @@ class _MatchingScreenState extends State<MatchingScreen>
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
-        ),
+      return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        children: const [
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+        ],
+      );
+    }
+
+    if (_errorMessage != null) {
+      return NetworkErrorWidget(
+        error: _errorMessage,
+        onRetry: _loadInitialData,
       );
     }
 
@@ -497,10 +529,20 @@ class _MatchingScreenState extends State<MatchingScreen>
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(gradientCyan),
-        ),
+      return ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        children: const [
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+          SkeletonProfileCard(),
+        ],
+      );
+    }
+
+    if (_errorMessage != null) {
+      return NetworkErrorWidget(
+        error: _errorMessage,
+        onRetry: _loadInitialData,
       );
     }
 
