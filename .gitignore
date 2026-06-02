@@ -43,3 +43,17 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android Gradle build output (includes Gradle problem reports, caches, etc.)
+android/build/
+android/.gradle/
+android/app/build/
+
+# iOS build output
+ios/build/
+ios/.symlinks/
+ios/Pods/
+
+# macOS build output
+macos/build/
+macos/.symlinks/
