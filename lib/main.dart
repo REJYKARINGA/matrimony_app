@@ -16,6 +16,7 @@ import 'utils/theme_provider.dart';
 import 'models/user_model.dart';
 import 'screens/blocked_screen.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
+import 'widgets/network_overlay.dart';
 
 
 void main() {
@@ -39,6 +40,11 @@ class MatrimonyApp extends StatelessWidget {
             title: 'Matrimony App',
             debugShowCheckedModeBanner: false,
             theme: themeProvider.themeData,
+            builder: (context, child) {
+              return NetworkOverlay(
+                child: child!,
+              );
+            },
             initialRoute: '/',
             routes: {
               '/': (context) => const SplashScreen(),
