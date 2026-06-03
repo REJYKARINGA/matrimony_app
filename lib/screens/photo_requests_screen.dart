@@ -204,7 +204,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                             'Photo Requests',
                             style: TextStyle(
                               fontSize: 24,
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w500,
                               color: AppColors.cardDark,
                               letterSpacing: -0.5,
                             ),
@@ -213,7 +213,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                             pendingCount > 0
                                 ? '$pendingCount pending incoming request${pendingCount > 1 ? 's' : ''}'
                                 : 'Manage photo access permissions',
-                            style: TextStyle(fontSize: 13, color: AppColors.midnightEmerald, fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 13, color: AppColors.midnightEmerald, fontWeight: FontWeight(600)),
                           ),
                         ],
                       ),
@@ -234,8 +234,8 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                     indicatorWeight: 3,
                     labelColor: _cyan,
                     unselectedLabelColor: Colors.grey.shade400,
-                    labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
-                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                    labelStyle: const TextStyle(fontWeight: FontWeight(600), fontSize: 13),
+                    unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
                     indicatorSize: TabBarIndicatorSize.label,
                     tabs: [
                       Tab(
@@ -253,7 +253,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                                 ),
                                 child: Text(
                                   '$pendingCount',
-                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight(600)),
                                 ),
                               ),
                             ],
@@ -343,7 +343,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                 child: Icon(icon, size: 48, color: Colors.grey.shade300),
               ),
               const SizedBox(height: 20),
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.cardDark)),
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: AppColors.cardDark)),
               const SizedBox(height: 8),
               Text(
                 subtitle,
@@ -477,7 +477,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                             Expanded(
                               child: Text(
                                 name,
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.cardDark),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight(600), color: AppColors.cardDark),
                               ),
                             ),
                             Container(
@@ -488,7 +488,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                               ),
                               child: Text(
                                 statusLabel,
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
+                                style: TextStyle(fontSize: 11, fontWeight: FontWeight(600), color: statusColor),
                               ),
                             ),
                           ],
@@ -526,7 +526,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                       child: OutlinedButton.icon(
                         onPressed: () => _handleReject(request),
                         icon: const Icon(Icons.close_rounded, size: 16),
-                        label: const Text('Decline', style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: const Text('Decline', style: TextStyle(fontWeight: FontWeight(600))),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.grey.shade700,
                           side: BorderSide(color: Colors.grey.shade300),
@@ -544,7 +544,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                       icon: const Icon(Icons.check_rounded, size: 16),
                       label: Text(
                         request['status'] == 'rejected' ? 'Give Access' : 'Allow Access',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontWeight: FontWeight(600)),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _cyan,

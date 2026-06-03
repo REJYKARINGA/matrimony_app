@@ -96,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     'Reset Password',
                     style: TextStyle(
                       fontSize: 34,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight(600),
                       color: AppColors.textDark,
                       letterSpacing: -1.0,
                     ),
@@ -148,7 +148,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               style: TextStyle(
                                 color: Colors.red.shade700,
                                 fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight(600),
                               ),
                             ),
                           ),
@@ -216,7 +216,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       '${index + 1}',
                       style: TextStyle(
                         color: isActive ? Colors.white : Colors.grey.shade400,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight(600),
                         fontSize: 16,
                       ),
                     ),
@@ -228,7 +228,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             style: TextStyle(
               fontSize: 12,
               color: isActive ? Colors.black87 : Colors.grey.shade500,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              fontWeight: isActive ? FontWeight(600) : FontWeight.normal,
             ),
           ),
         ],
@@ -285,7 +285,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 backgroundColor: Colors.white,
                 labelStyle: TextStyle(
                   color: _isUsingEmail ? AppColors.deepEmerald : Colors.grey.shade600,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight(600),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(
@@ -306,7 +306,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 backgroundColor: Colors.white,
                 labelStyle: TextStyle(
                   color: !_isUsingEmail ? AppColors.deepEmerald : Colors.grey.shade600,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight(600),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(
@@ -467,14 +467,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       'Sending OTP...',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     )
                   : const Text(
                       'Send OTP',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
             ),
@@ -620,14 +620,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       'Verifying OTP...',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     )
                   : const Text(
                       'Verify OTP',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
             ),
@@ -689,7 +689,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 'Resend OTP',
                 style: TextStyle(
                   color: AppColors.deepEmerald,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -888,14 +888,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       'Resetting Password...',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     )
                   : const Text(
                       'Reset Password',
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
             ),

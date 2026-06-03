@@ -46,7 +46,7 @@ class _WatermarkPainter extends CustomPainter {
     final textStyle = TextStyle(
       color: Colors.grey.shade700.withOpacity(0.4), // Darker grey with higher opacity
       fontSize: 18,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight(600),
       shadows: [
         Shadow(
           blurRadius: 2,

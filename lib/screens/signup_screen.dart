@@ -154,7 +154,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             style: TextStyle(
                               fontSize: 26,
                               color: AppColors.primaryCyan,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight(600),
                             ),
                           ),
                           const Text(
@@ -162,7 +162,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             style: TextStyle(
                               fontSize: 34,
                               color: AppColors.primaryBlue,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight(600),
                               letterSpacing: -1.0,
                             ),
                           ),
@@ -177,7 +177,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w400,
+                          fontWeight: FontWeight(600),
                         ),
                       ),
                       
@@ -237,7 +237,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                             height: 16,
                                             child: CircularProgressIndicator(strokeWidth: 2),
                                           )
-                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
+                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight(600), color: AppColors.primaryCyan)),
                                   ),
                                 ),
                               ],
@@ -279,7 +279,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                             height: 16,
                                             child: CircularProgressIndicator(strokeWidth: 2),
                                           )
-                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryCyan)),
+                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight(600), color: AppColors.primaryCyan)),
                                   ),
                                 ),
                               ],
@@ -382,14 +382,14 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: Colors.grey.shade700,
-                                          fontWeight: FontWeight.w400,
+                                          fontWeight: FontWeight(600),
                                         ),
                                         children: [
                                           TextSpan(
                                             text: 'Terms and Conditions',
                                             style: const TextStyle(
                                               color: AppColors.primaryCyan,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight(600),
                                             ),
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () {
@@ -438,7 +438,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                           style: TextStyle(
                                             color: Colors.red.shade700,
                                             fontSize: 13,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight(600),
                                           ),
                                         ),
                                       ),
@@ -555,7 +555,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                           'Signing Up...',
                                           style: TextStyle(
                                             fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight(600),
                                             letterSpacing: 0.5,
                                           ),
                                         )
@@ -563,7 +563,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                           'Create Account',
                                           style: TextStyle(
                                             fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                            fontWeight: FontWeight(600),
                                             letterSpacing: 0.5,
                                           ),
                                         ),
@@ -585,7 +585,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontSize: 15,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight(600),
                             ),
                           ),
                           GestureDetector(
@@ -597,7 +597,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                               style: TextStyle(
                                 color: AppColors.primaryCyan,
                                 fontSize: 15,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                               ),
                             ),
                           ),
@@ -637,7 +637,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
           label,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight(600),
             color: AppColors.textDark,
           ),
         ),
@@ -648,14 +648,14 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
           obscureText: obscureText,
           style: const TextStyle(
             fontSize: 15,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight(600),
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
               color: Colors.grey.shade400,
               fontSize: 14,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight(600),
             ),
             prefixIcon: Icon(
               icon,
@@ -691,7 +691,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             errorStyle: const TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight(600),
             ),
           ),
           validator: validator,

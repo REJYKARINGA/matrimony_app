@@ -130,7 +130,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                     style: TextStyle(
                       color: Colors.white, // painted by shader
                       fontSize: 22,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w500,
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -169,7 +169,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                         style: TextStyle(
                           color: AppColors.primaryBlue,
                           fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -201,7 +201,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                         'VIEW NOW',
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w500,
                           fontSize: 15,
                           letterSpacing: 1.1,
                         ),
@@ -227,7 +227,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                     style: TextStyle(
                       color: Color(0xFFAAAAAA),
                       fontSize: 12,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight(600),
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -304,7 +304,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight(600),
                   letterSpacing: 0.2,
                 ),
               ),

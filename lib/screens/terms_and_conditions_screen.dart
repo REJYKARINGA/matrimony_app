@@ -245,7 +245,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
             'Terms & Conditions',
             style: TextStyle(
               fontSize: 24,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight(600),
               color: AppColors.cardDark,
             ),
           ),
@@ -307,7 +307,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                     color: AppColors.cardDark,
                   ),
                 ),
@@ -371,7 +371,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
               'By using this Platform, you acknowledge that you have read these Terms and Conditions in full and agree to be bound by them.',
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: AppColors.deepEmerald,
                 height: 1.5,
               ),

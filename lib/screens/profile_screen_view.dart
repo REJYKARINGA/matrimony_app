@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 16),
                  Text(
                    _errorMessage!,
-                   style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w500),
+                   style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight(600)),
                    textAlign: TextAlign.center,
                  ),
                 const SizedBox(height: 24),
@@ -205,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     elevation: 10,
                     shadowColor: AppColors.deepEmerald.withOpacity(0.3),
                   ),
-                  child: const Text('Retry', style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: const Text('Retry', style: TextStyle(fontWeight: FontWeight(600))),
                 ),
               ],
             ),
@@ -318,7 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if ((_user?.userProfile?.bio ?? '').isNotEmpty) ...[
                         Text(
                           _user!.userProfile!.bio!,
-                          style: const TextStyle(fontSize: 15, color: Color(0xFF757575), height: 1.6, fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontSize: 15, color: Color(0xFF757575), height: 1.6, fontWeight: FontWeight(600)),
                         ),
                         const SizedBox(height: 16),
                         const Divider(),
@@ -350,7 +350,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), shape: BoxShape.circle),
                           child: const Icon(Icons.verified_user_outlined, color: Colors.green, size: 20),
                         ),
-                        title: const Text('Account Verification', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        title: const Text('Account Verification', style: TextStyle(fontSize: 15, fontWeight: FontWeight(600))),
                         subtitle: const Text('Verify your identity to get a verification badge', style: TextStyle(fontSize: 12)),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationScreen())),
@@ -366,7 +366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           child: const Icon(Icons.photo_library_rounded, color: AppColors.deepEmerald, size: 20),
                         ),
-                        title: const Text('Photo Requests', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        title: const Text('Photo Requests', style: TextStyle(fontSize: 15, fontWeight: FontWeight(600))),
                         subtitle: const Text('Manage who can access your photos', style: TextStyle(fontSize: 12)),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PhotoRequestsScreen())),
@@ -499,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                    Text(
                      '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
-                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black87, letterSpacing: 0.5),
+                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight(600), color: Colors.black87, letterSpacing: 0.5),
                    ),
                   const SizedBox(height: 4),
                   Row(
@@ -564,7 +564,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.bodyText),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.bodyText),
         ),
       ],
     );
@@ -586,7 +586,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title,
               style: const TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight(600),
                 color: AppColors.bodyText,
                 letterSpacing: 0.3,
               ),
@@ -663,7 +663,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(
                   fontSize: 11,
                   color: Colors.grey[500],
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 2),
@@ -671,7 +671,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 formattedValue,
                 style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: AppColors.bodyText,
                 ),
                 maxLines: 2,
@@ -696,7 +696,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title,
               style: const TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight(600),
                 color: AppColors.bodyText,
                 letterSpacing: 0.3,
               ),
@@ -736,7 +736,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.deepEmerald,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 );
@@ -802,7 +802,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 20, color: isOutlined ? AppColors.deepEmerald : AppColors.cardDark),
-        label: Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: isOutlined ? AppColors.deepEmerald : AppColors.cardDark)),
+        label: Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight(600), color: isOutlined ? AppColors.deepEmerald : AppColors.cardDark)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           foregroundColor: isOutlined ? AppColors.deepEmerald : AppColors.cardDark,
@@ -841,10 +841,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Profile Photos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.bodyText)),
+              const Text('Profile Photos', style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: AppColors.bodyText)),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
-                child: const Text('Manage', style: TextStyle(color: AppColors.deepEmerald, fontWeight: FontWeight.w800)),
+                child: const Text('Manage', style: TextStyle(color: AppColors.deepEmerald, fontWeight: FontWeight(600))),
               ),
             ],
           ),
@@ -1342,7 +1342,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         title,
                         style: const TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight(600),
                           color: AppColors.cardDark,
                         ),
                       ),
@@ -1436,7 +1436,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             name,
             style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight(600),
               color: AppColors.bodyText,
             ),
           ),
@@ -1465,12 +1465,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       suffixIcon: suffixIcon,
       labelStyle: TextStyle(
         color: Colors.grey.shade700,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight(600),
         fontSize: 14,
       ),
       floatingLabelStyle: const TextStyle(
         color: AppColors.deepEmerald,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
@@ -1509,7 +1509,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               title,
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 color: AppColors.bodyText,
                 letterSpacing: -0.5,
               ),
@@ -1565,7 +1565,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     textAlign: TextAlign.center,
                      style: TextStyle(color: Colors.black87,
                        fontSize: 20,
-                       fontWeight: FontWeight.bold,
+                       fontWeight: FontWeight(600),
                        letterSpacing: -0.5,
                     ),
                   ),
@@ -2080,7 +2080,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: SwitchListTile(
                         title: const Text(
                           'Drug Addiction',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                         subtitle: const Text(
                           'Includes any substance abuse beyond tobacco/alcohol',
@@ -2232,7 +2232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       'Update Profile',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight(600),
                         color: Colors.white,
                         letterSpacing: 0.5,
                       ),
@@ -2277,7 +2277,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           label,
           style: const TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight(600),
             color: Colors.white,
           ),
         ),
@@ -2312,7 +2312,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   p['personality_name'].toString(),
                   style: TextStyle(
                     color: isSelected ? AppColors.deepEmerald : Colors.black87,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight(600) : FontWeight.normal,
                   ),
                 ),
                 selected: isSelected,
@@ -2365,7 +2365,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   i['interest_name'].toString(),
                   style: TextStyle(
                     color: isSelected ? AppColors.deepEmerald : Colors.black87,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight(600) : FontWeight.normal,
                   ),
                 ),
                 selected: isSelected,
@@ -2431,7 +2431,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 fontSize: 13,
                 letterSpacing: 0.5,
               ),

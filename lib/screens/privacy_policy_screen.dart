@@ -282,7 +282,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             'Privacy Policy',
             style: TextStyle(
               fontSize: 24,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight(600),
               color: AppColors.cardDark,
             ),
           ),
@@ -344,7 +344,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                     color: AppColors.cardDark,
                   ),
                 ),
@@ -408,7 +408,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               'This Privacy Policy is effective as of the last updated date. By using our Platform, you acknowledge that you have read and understood this Privacy Policy.',
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: AppColors.deepEmerald,
                 height: 1.5,
               ),

@@ -27,7 +27,7 @@ class ProgressIndicatorRow extends StatelessWidget {
             Text(
               '${currentStep + 1}/$totalSteps',
               style: const TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 color: Colors.grey,
               ),
             ),
@@ -86,7 +86,7 @@ class StepHeader extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 28,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight(600),
               color: Colors.black,
             ),
           ),
@@ -182,7 +182,7 @@ class GenderCard extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight(600),
                       color: isSelected ? AppColors.primaryBlue : Colors.grey.shade600,
                     ),
                   ),
@@ -250,7 +250,7 @@ class _CustomRulerPickerState extends State<CustomRulerPicker> {
             _currentValue.round().toString(),
             style: const TextStyle(
               fontSize: 60,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight(600),
               color: Colors.black87,
             ),
           ),
@@ -331,7 +331,7 @@ class _CustomRulerPickerState extends State<CustomRulerPicker> {
           ),
           Text(
             widget.unit,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            style: const TextStyle(fontWeight: FontWeight(600), color: Colors.grey),
           ),
         ],
       ),
@@ -378,7 +378,7 @@ class StepNavigationButtons extends StatelessWidget {
                     style: TextStyle(
                       color: AppColors.primaryBlue,
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight(600),
                     ),
                   ),
                 ),
@@ -418,7 +418,7 @@ class StepNavigationButtons extends StatelessWidget {
                           nextText,
                           style: const TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight(600),
                           ),
                         ),
                 ),
@@ -479,7 +479,7 @@ class CustomDatePickerField extends StatelessWidget {
               controller.text.isEmpty ? 'Select Date' : controller.text,
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 color: controller.text.isEmpty ? Colors.grey : Colors.black87,
               ),
             ),
@@ -541,7 +541,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
                 'SET BIRTHDAY',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight(600),
                   letterSpacing: 1.2,
                   color: AppColors.primaryBlue,
                 ),
@@ -646,7 +646,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
                 ),
                 child: const Text(
                   'SUBMIT',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(fontWeight: FontWeight(600), fontSize: 16),
                 ),
               ),
             ),
@@ -674,7 +674,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
                 items[index],
                 style: const TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight(600),
                   color: Colors.black87,
                 ),
               ),

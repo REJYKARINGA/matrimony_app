@@ -374,7 +374,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       children: [
         const Text(
           'Personal Information',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight(600)),
         ),
         const SizedBox(height: 8),
         Text(
@@ -559,7 +559,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       children: [
         const Text(
           'Religion & Community',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight(600)),
         ),
         const SizedBox(height: 8),
         Text(
@@ -644,7 +644,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       children: [
         const Text(
           'Education & Career',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight(600)),
         ),
         const SizedBox(height: 8),
         Text(
@@ -762,14 +762,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           children: [
             const Text(
               'Location & About',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight(600)),
             ),
             TextButton.icon(
               onPressed: _isLoading ? null : _detectLocation,
               icon: const Icon(Icons.my_location, color: primaryCyan, size: 18),
               label: const Text(
                 'Detect GPS',
-                style: TextStyle(color: primaryCyan, fontWeight: FontWeight.bold),
+                style: TextStyle(color: primaryCyan, fontWeight: FontWeight(600)),
               ),
             ),
           ],
@@ -989,7 +989,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                                   : 'Continue',
                               style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                     ),

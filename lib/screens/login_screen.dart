@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Welcome Back!',
                   style: TextStyle(
                     fontSize: 32,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                     color: AppColors.primaryBlue,
                   ),
                 ),
@@ -220,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               'Forgot Password?',
                               style: TextStyle(
                                 color: AppColors.primaryCyan,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                                 fontSize: 14,
                               ),
                             ),
@@ -317,14 +317,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     'Signing In...',
                                     style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   )
                                 : const Text(
                                     'Sign In',
                                     style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                           ),
@@ -361,7 +361,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           color: AppColors.primaryCyan,
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight(600),
                         ),
                       ),
                     ),

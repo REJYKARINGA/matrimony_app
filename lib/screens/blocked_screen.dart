@@ -62,7 +62,7 @@ class BlockedScreen extends StatelessWidget {
                     'Verification Required',
                     style: TextStyle(color: Colors.white,
                       fontSize: 26,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight(600),
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -71,7 +71,7 @@ class BlockedScreen extends StatelessWidget {
                     'Matrimony Safety & Security',
                     style: TextStyle(color: Colors.white.withOpacity(0.9),
                       fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight(600),
                     ),
                   ),
                   
@@ -99,7 +99,7 @@ class BlockedScreen extends StatelessWidget {
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 11,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w500,
                             letterSpacing: 2,
                           ),
                         ),
@@ -113,7 +113,7 @@ class BlockedScreen extends StatelessWidget {
                             color: Color(0xFF2D3142),
                             fontSize: 16,
                             height: 1.6,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight(600),
                           ),
                         ),
                         const SizedBox(height: 30),
@@ -146,7 +146,7 @@ class BlockedScreen extends StatelessWidget {
                           icon: const Icon(Icons.support_agent_rounded, size: 20),
                           label: const Text(
                             'CONTACT SUPPORT TEAM',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            style: TextStyle(fontWeight: FontWeight(600), fontSize: 15),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.deepEmerald,
@@ -181,7 +181,7 @@ class BlockedScreen extends StatelessWidget {
                           ),
                           child: const Text(
                             'RETURN TO LOGIN',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            style: TextStyle(fontWeight: FontWeight(600), fontSize: 15),
                           ),
                         ),
                       ),

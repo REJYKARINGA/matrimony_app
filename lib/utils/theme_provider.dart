@@ -17,6 +17,25 @@ class ThemeProvider extends ChangeNotifier {
   static const Color darkSecondary = Color(0xFF64B5F6); 
   static const Color darkAccent = Color(0xFFBA68C8); 
 
+
+  static const _textTheme = TextTheme(
+    displayLarge: TextStyle(fontWeight: FontWeight.w400),
+    displayMedium: TextStyle(fontWeight: FontWeight.w400),
+    displaySmall: TextStyle(fontWeight: FontWeight.w400),
+    headlineLarge: TextStyle(fontWeight: FontWeight.w400),
+    headlineMedium: TextStyle(fontWeight: FontWeight.w400),
+    headlineSmall: TextStyle(fontWeight: FontWeight.w400),
+    titleLarge: TextStyle(fontWeight: FontWeight.w400),
+    titleMedium: TextStyle(fontWeight: FontWeight.w500),
+    titleSmall: TextStyle(fontWeight: FontWeight.w500),
+    bodyLarge: TextStyle(fontWeight: FontWeight.w400),
+    bodyMedium: TextStyle(fontWeight: FontWeight.w400),
+    bodySmall: TextStyle(fontWeight: FontWeight.w400),
+    labelLarge: TextStyle(fontWeight: FontWeight.w500),
+    labelMedium: TextStyle(fontWeight: FontWeight.w500),
+    labelSmall: TextStyle(fontWeight: FontWeight.w500),
+  );
+
   ThemeData get themeData {
     if (_isDarkMode) {
       return ThemeData(
@@ -28,6 +47,7 @@ class ThemeProvider extends ChangeNotifier {
           secondary: darkSecondary,
         ),
         useMaterial3: true,
+        textTheme: _textTheme,
       );
     } else {
       return ThemeData(
@@ -41,6 +61,7 @@ class ThemeProvider extends ChangeNotifier {
           surface: Colors.white,
         ),
         useMaterial3: true,
+        textTheme: _textTheme,
         appBarTheme: const AppBarTheme(
           backgroundColor: lightPrimary,
           foregroundColor: Colors.white,

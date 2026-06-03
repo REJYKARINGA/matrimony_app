@@ -70,7 +70,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OKAY', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0A3A2A))),
+            child: const Text('OKAY', style: TextStyle(fontWeight: FontWeight(600), color: Color(0xFF0A3A2A))),
           ),
         ],
       ),
@@ -176,7 +176,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                     '₹${_walletBalance.toStringAsFixed(2)}',
                     style: const TextStyle(color: Colors.white,
                       fontSize: 36,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight(600),
                     ),
                   ),
                 ],
@@ -236,7 +236,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                 Text(
                   'Auto-deducted Usage Fees',
                   style: TextStyle(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight(600),
                     fontSize: 13,
                     color: Colors.orange.shade900,
                   ),
@@ -284,7 +284,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
               label,
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: isSelected ? AppColors.cardDark : Colors.grey.shade700,
               ),
             ),
@@ -302,7 +302,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         children: [
           const Text(
             'Quick Recharge',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
           ),
           const SizedBox(height: 12),
           Row(
@@ -332,7 +332,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
           '₹$amount',
           style: const TextStyle(
             color: Color(0xFF0A3A2A), // Turquoise text
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight(600),
           ),
         ),
       ),
@@ -354,7 +354,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         children: [
           const Text(
             'Transaction History',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
           ),
           const SizedBox(height: 12),
           // Filter chips — only show if data exists for that type
@@ -478,7 +478,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                               Text(
                                 typeLabel,
                                 style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight(600),
                                   fontSize: 14,
                                   color: AppColors.cardDark,
                                 ),
@@ -496,7 +496,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                         ].where((e) => e != null && e.toString().isNotEmpty).join(' '),
                                         style: const TextStyle(
                                           fontSize: 13,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.w500,
                                           color: AppColors.cardDark,
                                         ),
                                         overflow: TextOverflow.ellipsis,
@@ -513,7 +513,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                         unlockedUser['matrimony_id']?.toString() ?? '',
                                         style: const TextStyle(
                                           fontSize: 11,
-                                          fontWeight: FontWeight.w700,
+                                          fontWeight: FontWeight(600),
                                           color: Color(0xFF0A3A2A),
                                         ),
                                       ),
@@ -547,7 +547,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                             Text(
                               '${isCredit ? '+' : '-'}₹$amount',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                                 color: isCredit
                                     ? Colors.green.shade700
                                     : isUsageFee
@@ -571,7 +571,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                 status.toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 10,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w500,
                                   color: status == 'success'
                                       ? Colors.green.shade700
                                       : Colors.orange.shade800,
@@ -756,7 +756,7 @@ class _TransferDialogState extends State<_TransferDialog> {
               children: [
                 Text(
                   _step == 1 ? 'Transfer Cash' : _step == 2 ? 'Enter Amount' : 'Verify Transfer',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight(600)),
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -892,7 +892,7 @@ class _TransferDialogState extends State<_TransferDialog> {
           ),
           child: _isProcessing 
             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.cardDark, strokeWidth: 2))
-            : const Text('Request Recipient OTP', style: TextStyle(fontWeight: FontWeight.bold)),
+            : const Text('Request Recipient OTP', style: TextStyle(fontWeight: FontWeight(600))),
         ),
       ],
     );
@@ -913,7 +913,7 @@ class _TransferDialogState extends State<_TransferDialog> {
             children: [
               Text(
                 'Transfer ₹${_amount.toStringAsFixed(0)} to ${_selectedUser!['name']}',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0A3A2A)),
+                style: const TextStyle(fontWeight: FontWeight(600), color: Color(0xFF0A3A2A)),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
@@ -937,7 +937,7 @@ class _TransferDialogState extends State<_TransferDialog> {
           maxLength: 6,
           autofocus: true,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight(600)),
           decoration: InputDecoration(
             counterText: '',
             hintText: '------',
@@ -958,7 +958,7 @@ class _TransferDialogState extends State<_TransferDialog> {
           ),
           child: _isProcessing 
             ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: AppColors.cardDark, strokeWidth: 2))
-            : const Text('Confirm Transfer', style: TextStyle(fontWeight: FontWeight.bold)),
+            : const Text('Confirm Transfer', style: TextStyle(fontWeight: FontWeight(600))),
         ),
         TextButton(
           onPressed: () => setState(() => _step = 2),
@@ -972,8 +972,8 @@ class _TransferDialogState extends State<_TransferDialog> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: isBold ? Colors.black : Colors.grey.shade600, fontWeight: isBold ? FontWeight.bold : FontWeight.normal, fontSize: 13)),
-        Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.w600, fontSize: isBold ? 15 : 13)),
+        Text(label, style: TextStyle(color: isBold ? Colors.black : Colors.grey.shade600, fontWeight: FontWeight(600), fontSize: 13)),
+        Text(value, style: TextStyle(fontWeight: FontWeight(600), fontSize: 13)),
       ],
     );
   }

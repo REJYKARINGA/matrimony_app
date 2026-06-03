@@ -27,7 +27,7 @@ class LandingScreen extends StatelessWidget {
                       style: TextStyle(
                         color: AppColors.primaryCyan, // Turquoise from logo
                         fontSize: 28,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight(600),
                       ),
                     ),
                     Text(
@@ -35,7 +35,7 @@ class LandingScreen extends StatelessWidget {
                       style: TextStyle(
                         color: AppColors.primaryBlue, // Deep blue from logo
                         fontSize: 36,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight(600),
                         letterSpacing: -1.0,
                       ),
                     ),
@@ -190,7 +190,7 @@ class LandingScreen extends StatelessWidget {
                       "Explore Now",
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight(600),
                       ),
                     ),
                   ),

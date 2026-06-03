@@ -64,7 +64,7 @@ class RechargeRequiredDialog extends StatelessWidget {
               'Recharge Required',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 color: Color(0xFF1A1A1A),
               ),
             ),
@@ -104,7 +104,7 @@ class RechargeRequiredDialog extends StatelessWidget {
                   'Recharge Now',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                   ),
                 ),
               ),
@@ -116,7 +116,7 @@ class RechargeRequiredDialog extends StatelessWidget {
                 'Later',
                 style: TextStyle(
                   color: Colors.grey.shade500,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),

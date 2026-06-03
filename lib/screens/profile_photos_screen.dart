@@ -289,7 +289,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                       const SizedBox(height: 16),
                       const Text(
                         'Loading profile photos...',
-                        style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight(600)),
                       ),
                     ],
                   ),
@@ -379,7 +379,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                     children: [
                       const Text(
                         'Manage your profile photos',
-                        style: TextStyle(fontSize: 16, color: AppColors.mutedText, fontWeight: FontWeight.w500),
+                        style: TextStyle(fontSize: 16, color: AppColors.mutedText, fontWeight: FontWeight(600)),
                       ),
                       const SizedBox(height: 16),
 
@@ -454,7 +454,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                       'Hide My Photos',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight(600),
                                         color: AppColors.textDark,
                                       ),
                                     ),
@@ -549,7 +549,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                               const Text(
                                                 'REJECTED',
                                                 style: TextStyle(color: Colors.white,
-                                                  fontWeight: FontWeight.w900,
+                                                  fontWeight: FontWeight.w500,
                                                   fontSize: 14,
                                                   letterSpacing: 1.2,
                                                 ),
@@ -580,7 +580,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                   style: TextStyle(
                                                     color: Colors.white70,
                                                     fontSize: 9,
-                                                    fontWeight: FontWeight.bold,
+                                                    fontWeight: FontWeight(600),
                                                   ),
                                                 ),
                                               ),
@@ -610,7 +610,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 'Pending',
                                                 style: TextStyle(color: Colors.white,
                                                   fontSize: 10,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontWeight: FontWeight(600),
                                                 ),
                                               ),
                                             ],
@@ -660,7 +660,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 'Primary',
                                                 style: TextStyle(color: Colors.white,
                                                   fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
+                                                  fontWeight: FontWeight(600),
                                                 ),
                                               ),
                                             ],
@@ -790,7 +790,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                   'No photos uploaded yet',
                                   style: TextStyle(
                                     fontSize: 18,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                     color: AppColors.textDark,
                                   ),
                                 ),
@@ -906,7 +906,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 'Profile Photos',
                 style: TextStyle(
                   fontSize: 28,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight(600),
                   color: AppColors.cardDark,
                   letterSpacing: -0.5,
                   shadows: [
@@ -924,7 +924,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 style: TextStyle(
                   fontSize: 15,
                   color: AppColors.cardDark.withOpacity(0.9),
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight(600),
                 ),
               ),
             ],

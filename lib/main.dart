@@ -223,7 +223,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 'Vivah4Ever',
                 style: TextStyle(
                   fontSize: 32,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight(600),
                   color: Color(0xFF00A87D), // Turquoise from logo
                   letterSpacing: -0.5,
                 ),
@@ -233,7 +233,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 'Kerala Matrimony',
                 style: TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight(600),
                   color: Color(0xFF00A87D), // Deep blue from logo
                 ),
               ),

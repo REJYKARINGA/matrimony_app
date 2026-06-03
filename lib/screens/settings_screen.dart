@@ -69,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title,
         style: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           color: Colors.grey[600],
           letterSpacing: 0.5,
         ),
@@ -108,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: textColor ?? AppColors.textDark,
                 ),
               ),
@@ -156,7 +156,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         titleTextStyle: const TextStyle(
           color: AppColors.midnightEmerald,
           fontSize: 22,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight(600),
           letterSpacing: -0.5,
         ),
         iconTheme: const IconThemeData(color: AppColors.midnightEmerald),
@@ -200,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             '₹${_walletBalance.toStringAsFixed(0)}',
                             style: const TextStyle(
                               color: AppColors.deepEmerald,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight(600),
                               fontSize: 15,
                             ),
                           ),
@@ -306,7 +306,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 32,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight(600),
                                       ),
                                     )
                                   : null,
@@ -321,7 +321,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   '${profile?.firstName ?? 'User'} ${profile?.lastName ?? ''}',
                                   style: const TextStyle(
                                     fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight(600),
                                     color: Colors.white,
                                     letterSpacing: 0.2,
                                   ),
@@ -341,7 +341,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                         style: const TextStyle(
                                           fontSize: 12,
                                           color: Colors.white,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                       if (user?.matrimonyId != null) ...[
@@ -379,7 +379,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 style: TextStyle(
                                   color: AppColors.royalGold.withOpacity(0.9),
                                   fontSize: 10,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight(600),
                                 ),
                               ),
                             ],
@@ -691,7 +691,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               style: TextStyle(
                                 color: Colors.grey[600],
                                 fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -723,7 +723,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               'Logout',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                               ),
                             ),
                           ),

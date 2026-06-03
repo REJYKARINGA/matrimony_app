@@ -62,7 +62,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                         'Recent Sessions',
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight(600),
                           color: Colors.white70,
                         ),
                       ),
@@ -114,7 +114,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
         ),
         title: Text(
           session.ipAddress ?? 'Unknown IP',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight(600)),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +132,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                 color: AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text('Current', style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.bold, fontSize: 10)),
+              child: const Text('Current', style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight(600), fontSize: 10)),
             )
           : null,
       ),

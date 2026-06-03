@@ -105,7 +105,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       appBar: AppBar(
         title: const Text(
           'Premium Plans',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.8),
+          style: TextStyle(fontWeight: FontWeight(600), letterSpacing: 0.8),
         ),
         centerTitle: true,
         elevation: 0,
@@ -128,7 +128,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     'Your Current Plan',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight(600),
                       color: theme.brightness == Brightness.dark
                           ? AppColors.cardDark
                           : Colors.black87,
@@ -151,7 +151,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                 _currentSubscription['plan']?['name'] ?? 'Unknown Plan',
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight(600),
                                   color: theme.brightness == Brightness.dark
                                       ? AppColors.cardDark
                                       : Colors.black87,
@@ -189,7 +189,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             Text(
                               'No Expiry (Lifetime)',
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                                 color: Colors.green[700],
                               ),
                             ),
@@ -198,7 +198,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             '₹${_currentSubscription['plan']?['price'] ?? '0.00'}',
                             style: TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight(600),
                               color: theme.colorScheme.primary,
                             ),
                           ),
@@ -212,7 +212,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     'Your Current Plan',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight(600),
                       color: theme.brightness == Brightness.dark
                           ? AppColors.cardDark
                           : Colors.black87,
@@ -244,7 +244,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   'Available Plans',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -372,7 +372,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               plan['name'],
                               style: const TextStyle(
                                 fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                                 color: AppColors.cardDark,
                                 letterSpacing: 0.5,
                               ),
@@ -381,7 +381,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               'Lifetime Access',
                               style: TextStyle(color: Colors.white70,
                                 fontSize: 13,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight(600),
                               ),
                             ),
                           ],
@@ -398,7 +398,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           '₹${plan['price'].toString().replaceAll('.00', '')}',
                           style: const TextStyle(
                             fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight(600),
                             color: AppColors.cardDark,
                           ),
                         ),
@@ -431,7 +431,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                           'Upgrade to ${plan['name']}',
                           style: TextStyle(
                             color: gradientColors[0],
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight(600),
                             fontSize: 16,
                           ),
                         ),
@@ -475,7 +475,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               feature.replaceFirst(RegExp(r'^[✗✓]\s*'), ''),
               style: TextStyle(
                 fontSize: 14,
-                fontWeight: isEnabled ? FontWeight.w500 : FontWeight.normal,
+                fontWeight: isEnabled ? FontWeight(600) : FontWeight.normal,
                 color: isEnabled
                     ? (isDarkBackground ? AppColors.cardDark : Colors.black87)
                     : (isDarkBackground ? Colors.white60 : Colors.grey[600]),

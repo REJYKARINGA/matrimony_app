@@ -69,7 +69,7 @@ Check out this profile on Vivah Matrimony app!
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w500,
                         letterSpacing: 2,
                         decoration: TextDecoration.none,
                       ),
@@ -116,7 +116,7 @@ Check out this profile on Vivah Matrimony app!
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight(600),
                               decoration: TextDecoration.none,
                             ),
                           ),
@@ -132,7 +132,7 @@ Check out this profile on Vivah Matrimony app!
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                                 decoration: TextDecoration.none,
                               ),
                             ),
@@ -207,7 +207,7 @@ Check out this profile on Vivah Matrimony app!
                   style: const TextStyle(
                     color: Colors.white60, 
                     fontSize: 10, 
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                     decoration: TextDecoration.none,
                   ),
                 ),
@@ -216,7 +216,7 @@ Check out this profile on Vivah Matrimony app!
                   style: const TextStyle(
                     color: Colors.white, 
                     fontSize: 14, 
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight(600),
                     decoration: TextDecoration.none,
                   ),
                   maxLines: 1,

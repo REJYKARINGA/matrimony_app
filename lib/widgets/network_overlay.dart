@@ -246,7 +246,7 @@ class _Banner extends StatelessWidget {
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight(600),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -256,7 +256,7 @@ class _Banner extends StatelessWidget {
                     style: TextStyle(
                       color: Colors.white.withAlpha(220),
                       fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight(600),
                     ),
                   ),
                 ],
@@ -290,7 +290,7 @@ class _Banner extends StatelessWidget {
                   'Retry',
                   style: TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                     fontSize: 12,
                   ),
                 ),

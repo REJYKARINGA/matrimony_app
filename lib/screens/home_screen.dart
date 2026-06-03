@@ -184,8 +184,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           : Colors.grey.shade600,
                       fontSize: 10,
                       fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                          ? FontWeight(600)
+                          : FontWeight(600),
                     ),
                     child: Text(label),
                   ),
@@ -486,7 +486,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                   "Exclusive Today's Pick",
                   style: TextStyle(
                     fontSize: 17,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight(600),
                     color: Color(0xFF1F1F1F),
                     letterSpacing: -0.3,
                   ),
@@ -517,7 +517,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 9,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w500,
                             letterSpacing: 0.5),
                       ),
                     ],
@@ -597,7 +597,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 10,
-                                        fontWeight: FontWeight.w900,
+                                        fontWeight: FontWeight.w500,
                                         letterSpacing: 1.5,
                                       ),
                                     ),
@@ -647,7 +647,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight(600),
                                         letterSpacing: -0.5,
                                       ),
                                     ),
@@ -672,7 +672,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                         style: TextStyle(
                                           color: Colors.white.withOpacity(0.95),
                                           fontSize: 11,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight(600),
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -683,7 +683,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                   style: TextStyle(
                                     color: Colors.white.withOpacity(0.8),
                                     fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight(600),
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -704,7 +704,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               style: TextStyle(
                                 color: Color(0xFF1F1F1F),
                                 fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -736,7 +736,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 11,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -1483,7 +1483,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                         'Hey, ${profile?.firstName ?? 'User'}!',
                                         style: TextStyle(
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight(600),
                                           color: Colors.grey.shade600,
                                         ),
                                       ),
@@ -1491,7 +1491,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                         "Let's Find A Match",
                                         style: TextStyle(
                                           fontSize: 15,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight(600),
                                           color: Color(0xFF1A1A1A),
                                         ),
                                       ),
@@ -1627,7 +1627,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             'Recent Visitors',
                             style: TextStyle(
                               fontSize: 17,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight(600),
                               color: Color(0xFF1F1F1F),
                               letterSpacing: -0.3,
                             ),
@@ -1643,7 +1643,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               '${_visitors.length}',
                               style: const TextStyle(
                                 fontSize: 11,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight(600),
                                 color: AppColors.primaryGreen,
                               ),
                             ),
@@ -1726,7 +1726,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: Colors.grey.shade600,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight(600),
                                     ),
                                   ),
                                 ],
@@ -1920,7 +1920,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 22,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight(600),
                                     letterSpacing: -0.5,
                                   ),
                                 ),
@@ -1958,7 +1958,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             ),
                             child: const Text(
                               'Recharge to View',
-                              style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight(600)),
                             ),
                           ),
                         ),
@@ -2013,7 +2013,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           text,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            fontWeight: isSelected ? FontWeight(600) : FontWeight(600),
             color: isSelected ? Colors.white : Colors.grey.shade800,
             letterSpacing: -0.2,
           ),
@@ -2128,7 +2128,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
-                                      fontWeight: FontWeight.w900,
+                                      fontWeight: FontWeight.w500,
                                       letterSpacing: 1,
                                     ),
                                   ),
@@ -2141,7 +2141,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                       icon: const Icon(Icons.key_rounded, size: 14),
                                       label: Text(
                                         (user.displayImage == null) ? 'Request Photo' : 'Request Access',
-                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight(600)),
                                       ),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppColors.primaryGreen,
@@ -2194,7 +2194,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
-                               fontWeight: FontWeight.bold,
+                               fontWeight: FontWeight(600),
                               letterSpacing: -0.5,
                             ),
                           ),
@@ -2215,7 +2215,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 13,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight(600),
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -2228,7 +2228,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.85),
                             fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       const SizedBox(height: 8),
@@ -2266,7 +2266,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                             style: TextStyle(
                                               color: Colors.white.withOpacity(0.9),
                                               fontSize: 11,
-                                              fontWeight: FontWeight.bold,
+                                              fontWeight: FontWeight(600),
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -2302,7 +2302,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 10,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight(600),
                                     ),
                                   ),
                                 ],
@@ -2445,7 +2445,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 style: const TextStyle(
                                   color: Color(0xFFFF2D55),
                                   fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight(600),
                                 ),
                               ),
                           ],
@@ -2538,7 +2538,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             "You've Scrolled All Matches",
             style: TextStyle(
               fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight(600),
               color: Color(0xFF1F1F1F),
             ),
           ),
@@ -2560,7 +2560,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               'Change Preferences',
               style: TextStyle(
                 color: AppColors.primaryGreen,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 fontSize: 15,
               ),
             ),
@@ -2604,7 +2604,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 22,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight(600),
               color: Color(0xFF1A1A1A),
               letterSpacing: -0.5,
             ),
@@ -2645,7 +2645,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 'Refresh Suggestions',
                 style: TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight(600),
                   fontSize: 16,
                 ),
               ),
@@ -2664,7 +2664,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               'Refine Preferences',
               style: TextStyle(
                 color: AppColors.primaryGreen,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight(600),
                 fontSize: 15,
               ),
             ),
@@ -2752,7 +2752,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -2853,7 +2853,7 @@ class MatchCelebrationDialog extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 48,
                   fontFamily: 'Pacifico', // Fallback to normal if not available
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight(600),
                   color: Colors.white,
                   shadows: [
                     Shadow(blurRadius: 10, color: Colors.black45, offset: Offset(0, 4)),
@@ -2867,7 +2867,7 @@ class MatchCelebrationDialog extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white.withOpacity(0.9),
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight(600),
                 ),
               ),
               const SizedBox(height: 40),
@@ -2937,7 +2937,7 @@ class MatchCelebrationDialog extends StatelessWidget {
                         ),
                         child: const Text(
                           "SEND A MESSAGE",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight(600), letterSpacing: 1.2),
                         ),
                       ),
                     ),
@@ -2949,7 +2949,7 @@ class MatchCelebrationDialog extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.8),
                           fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight(600),
                           letterSpacing: 1.2,
                         ),
                       ),
