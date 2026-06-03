@@ -365,7 +365,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     const Expanded(
                       child: Text(
                         'Sent you an interest request',
-                        style: TextStyle(fontWeight: FontWeight(600), fontSize: 14, color: AppColors.midnightEmerald),
+                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: AppColors.midnightEmerald),
                       ),
                     ),
                   ],
@@ -424,7 +424,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                             'You are Matched!',
                             style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryGreen, fontSize: 16),
                           ),
-                          Text('You can now message each other.', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight(600))),
+                          Text('You can now message each other.', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
@@ -457,9 +457,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         children: [
                           Text(
                             'Interest Sent',
-                            style: TextStyle(fontWeight: FontWeight(600), color: Colors.orange, fontSize: 14),
+                            style: TextStyle(fontWeight: FontWeight.w500, color: Colors.orange, fontSize: 14),
                           ),
-                          Text('Waiting for their response...', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight(600))),
+                          Text('Waiting for their response...', style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
@@ -805,7 +805,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                             'Oops!',
                             style: TextStyle(
                               fontSize: 24,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: Colors.white70,
                             ),
                           ),
@@ -979,7 +979,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             style: TextStyle(
               color: fgColor,
               fontSize: 22,
-              fontWeight: FontWeight(600),
+              fontWeight: FontWeight.w500,
               letterSpacing: 0.5,
             ),
           ),
@@ -1048,7 +1048,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         children: [
           const Text(
             'Photo Gallery',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight(600), color: AppColors.cardDark),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.cardDark),
           ),
           const SizedBox(height: 16),
           Container(
@@ -1101,7 +1101,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                            const SizedBox(height: 16),
                            Text(
                              isRejected ? "Access Request Declined" : (isPending ? "Access Request Pending" : title),
-                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight(600), color: AppColors.cardDark, letterSpacing: 0.5),
+                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.cardDark, letterSpacing: 0.5),
                            ),
                            const SizedBox(height: 8),
                            Padding(
@@ -1122,7 +1122,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                                icon: const Icon(Icons.key_rounded, size: 18),
                                label: Text(
                                  title == 'No Photos Uploaded' ? 'Request Photo' : 'Request Access',
-                                 style: const TextStyle(fontWeight: FontWeight(600)),
+                                 style: const TextStyle(fontWeight: FontWeight.w500),
                                ),
                                style: ElevatedButton.styleFrom(
                                  backgroundColor: const Color(0xFF0A3A2A),
@@ -1297,7 +1297,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                                                 : "Photos are Private"))),
                                   style: const TextStyle(color: Colors.white,
                                     fontSize: 16,
-                                    fontWeight: FontWeight(600),
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 if (((_user?.displayImage == null) || (_user?.isDisplayImageVerified == true && _user?.hasHiddenPhotos == true)) && 
@@ -1311,7 +1311,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                                     icon: const Icon(Icons.key_rounded, size: 18),
                                     label: Text(
                                       (_user?.displayImage == null) ? 'Request Photo' : 'Request Access',
-                                      style: const TextStyle(fontWeight: FontWeight(600)),
+                                      style: const TextStyle(fontWeight: FontWeight.w500),
                                     ),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF0A3A2A),
@@ -1374,7 +1374,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       const SizedBox(height: 16),
                       const Text(
                         "No Photos Uploaded",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight(600), color: AppColors.cardDark, letterSpacing: 0.5),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.cardDark, letterSpacing: 0.5),
                       ),
                       const SizedBox(height: 8),
                       Padding(
@@ -1392,7 +1392,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                               ? (_user?.isReportedByMe == true ? _showReportedWarning : null) 
                               : _handlePhotoRequest,
                           icon: const Icon(Icons.key_rounded, size: 18),
-                          label: const Text('Request Photo', style: TextStyle(fontWeight: FontWeight(600))),
+                          label: const Text('Request Photo', style: TextStyle(fontWeight: FontWeight.w500)),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.midnightEmerald.withOpacity(0.2),
                             foregroundColor: AppColors.cardDark,
@@ -1447,7 +1447,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.7),
                                 fontSize: 12,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -1477,7 +1477,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.95),
                       fontSize: 15,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       letterSpacing: 0.2,
                     ),
                   ),
@@ -1488,7 +1488,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                         fontSize: 14,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   const SizedBox(height: 4),
@@ -1501,7 +1501,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         'Present: ${_user?.userProfile?.presentCity ?? ''}${(_user?.userProfile?.presentCity != null && (_user?.userProfile?.presentCountry ?? '').isNotEmpty) ? ', ' : ''}${_user?.userProfile?.presentCountry ?? ''}',
                         style: TextStyle(color: Colors.white.withOpacity(0.95),
                           fontSize: 14,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                           letterSpacing: 0.3,
                         ),
                       ),
@@ -1600,7 +1600,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           padding: EdgeInsets.fromLTRB(20, 30, 20, 15),
           child: Text(
             'Photo Gallery',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight(600), color: AppColors.cardDark),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.cardDark),
           ),
         ),
         SizedBox(
@@ -1680,7 +1680,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                                 child: const Center(
                                   child: Text(
                                     "Verification Pending",
-                                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight(600)),
+                                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w500),
                                   ),
                                 ),
                               ),
@@ -1762,7 +1762,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           'Profile Reported',
                           style: TextStyle(
                             color: Colors.orange.shade900,
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -1895,7 +1895,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         style: const TextStyle(
                           color: Color(0xFFFF2D55),
                           fontSize: 28,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                   ],
@@ -1926,7 +1926,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('I Understand', style: TextStyle(fontWeight: FontWeight(600), color: Color(0xFF0A3A2A))),
+            child: const Text('I Understand', style: TextStyle(fontWeight: FontWeight.w500, color: Color(0xFF0A3A2A))),
           ),
         ],
       ),
@@ -2240,11 +2240,11 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     children: [
                       const Text(
                         'Match Compatibility',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: Colors.white70),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white70),
                       ),
                       Text(
                         'Based on their preferences',
-                        style: TextStyle(fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight(600)),
+                        style: TextStyle(fontSize: 13, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -2254,7 +2254,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   children: [
                     Text(
                       '${(_compatibilityScore * 100).toInt()}%',
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight(600), color: AppColors.primaryGreen),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w500, color: AppColors.primaryGreen),
                     ),
                     Icon(
                       _isCompatibilityExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
@@ -2319,7 +2319,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         style: TextStyle(
                           fontSize: 14,
                           color: isMatch ? Colors.black87 : Colors.grey.shade500,
-                          fontWeight: isMatch ? FontWeight(600) : FontWeight.normal,
+                          fontWeight: isMatch ? FontWeight.w500 : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -2327,7 +2327,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       isMatch ? 'Match' : 'No Match',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         color: isMatch ? AppColors.primaryGreen : Colors.grey.shade400,
                       ),
                     ),
@@ -2409,7 +2409,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -2420,7 +2420,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               style: const TextStyle(
                 fontSize: 15,
                 color: Colors.black87,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -2472,7 +2472,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         style: TextStyle(
                           fontSize: 11,
                           color: AppColors.primaryGreen,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -2513,7 +2513,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   'View Contact Details',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -2538,7 +2538,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   icon: const Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF25D366)),
                   label: const Text(
                     'Chat on WhatsApp',
-                    style: TextStyle(color: Color(0xFF25D366), fontWeight: FontWeight(600)),
+                    style: TextStyle(color: Color(0xFF25D366), fontWeight: FontWeight.w500),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFF25D366), width: 1.5),
@@ -2611,7 +2611,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       icon: Icon(Icons.account_balance_wallet, size: 18),
                       label: Text(
                         'Wallet',
-                        style: TextStyle(fontWeight: FontWeight(600)),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
@@ -2652,7 +2652,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                       icon: Icon(Icons.payment, size: 18),
                       label: Text(
                         'Pay Now',
-                        style: TextStyle(fontWeight: FontWeight(600)),
+                        style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
@@ -2711,7 +2711,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   value,
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     color: Colors.white70,
                     letterSpacing: 0.3,
                   ),
@@ -2808,7 +2808,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               'Contact Details',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
                 color: Colors.white70,
               ),
             ),
@@ -2867,7 +2867,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                             child: ElevatedButton.icon(
                               onPressed: () => _launchWhatsApp(_unlockedPhone!),
                               icon: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.cardDark, size: 20),
-                              label: const Text('Chat on WhatsApp', style: TextStyle(fontWeight: FontWeight(600))),
+                              label: const Text('Chat on WhatsApp', style: TextStyle(fontWeight: FontWeight.w500)),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF25D366),
                                 foregroundColor: AppColors.cardDark,
@@ -2980,7 +2980,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             style: TextStyle(
               fontSize: 13,
               color: AppColors.midnightEmerald,
-              fontWeight: FontWeight(600),
+              fontWeight: FontWeight.w500,
               letterSpacing: 0.2,
             ),
           ),
@@ -3144,7 +3144,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             Expanded(
               child: Text(
                 'High Report Alert',
-                style: TextStyle(color: Colors.orange.shade800, fontWeight: FontWeight(600), fontSize: 18),
+                style: TextStyle(color: Colors.orange.shade800, fontWeight: FontWeight.w500, fontSize: 18),
               ),
             ),
           ],
@@ -3155,7 +3155,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           children: [
             Text(
               'Caution: This profile has been reported ${_user?.reportsCount} times.',
-              style: TextStyle(fontWeight: FontWeight(600), fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
             ),
             SizedBox(height: 12),
             Text(
@@ -3181,7 +3181,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               side: BorderSide(color: Colors.orange.withOpacity(0.3)),
             ),
-            child: Text('Proceed Anyway', style: TextStyle(fontWeight: FontWeight(600))),
+            child: Text('Proceed Anyway', style: TextStyle(fontWeight: FontWeight.w500)),
           ),
         ],
       ),
@@ -3434,7 +3434,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Recharge Wallet',
-          style: TextStyle(fontWeight: FontWeight(600)),
+          style: TextStyle(fontWeight: FontWeight.w500),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -3484,7 +3484,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         leading: Icon(Icons.account_balance_wallet, color: Color(0xFF0A3A2A)),
         title: Text(
           '₹${amount.toStringAsFixed(0)}',
-          style: TextStyle(fontWeight: FontWeight(600), fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
@@ -3657,7 +3657,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               const SizedBox(height: 20),
               const Text(
                 'Report Profile',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight(600)),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               Padding(
@@ -3741,7 +3741,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                                 Navigator.pop(context);
                                 _submitReport(finalReason!);
                               },
-                        child: const Text('Submit Report', style: TextStyle(fontWeight: FontWeight(600))),
+                        child: const Text('Submit Report', style: TextStyle(fontWeight: FontWeight.w500)),
                       ),
                     ),
                   ],
@@ -3936,7 +3936,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         Text(
                           user.matrimonyId ?? 'User',
                           style: const TextStyle(
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                             fontSize: 16,
                             color: AppColors.cardDark,
                           ),
@@ -3982,7 +3982,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
                           'Present: ${profile?.presentCity ?? ''}${profile?.presentCity != null && (profile?.presentCountry ?? '').isNotEmpty ? ', ' : ''}${profile?.presentCountry ?? ''}',
-                          style: TextStyle(color: Colors.grey.shade800, fontSize: 10, fontWeight: FontWeight(600)),
+                          style: TextStyle(color: Colors.grey.shade800, fontSize: 10, fontWeight: FontWeight.w500),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -4005,7 +4005,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                               const SizedBox(width: 2),
                               Text(
                                 '${user.distance!.toStringAsFixed(1)} KM',
-                                style: const TextStyle(color: Color(0xFF0A3A2A), fontSize: 9, fontWeight: FontWeight(600)),
+                                style: const TextStyle(color: Color(0xFF0A3A2A), fontSize: 9, fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),

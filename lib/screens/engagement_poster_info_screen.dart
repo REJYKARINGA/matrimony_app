@@ -361,7 +361,7 @@ class _EngagementPosterInfoScreenState
                   title,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -437,7 +437,7 @@ class _EngagementPosterInfoScreenState
                       isUpdate ? 'Update Engagement Poster' : 'Upload Engagement Poster',
                       style: const TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const Spacer(),
@@ -844,7 +844,7 @@ class _EngagementPosterInfoScreenState
                               isUpdate ? 'Update Engagement Poster' : 'Upload Engagement Poster',
                               style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -919,7 +919,7 @@ class _EngagementPosterInfoScreenState
                       'Engagement Posters',
                       style: TextStyle(
                         fontSize: 28,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textDark,
                         letterSpacing: -0.5,
                       ),
@@ -960,7 +960,7 @@ class _EngagementPosterInfoScreenState
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 24,
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                             color: AppColors.textDark,
                           ),
                         ),
@@ -972,7 +972,7 @@ class _EngagementPosterInfoScreenState
                             fontSize: 15,
                             color: Colors.grey[700],
                             height: 1.6,
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -985,7 +985,7 @@ class _EngagementPosterInfoScreenState
                     'Why Add an Engagement Poster?',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       color: Colors.grey[800],
                     ),
                   ),
@@ -1029,7 +1029,7 @@ class _EngagementPosterInfoScreenState
                     'How It Works',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       color: Colors.grey[800],
                     ),
                   ),
@@ -1083,7 +1083,7 @@ class _EngagementPosterInfoScreenState
                     'Poster Features',
                     style: TextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       color: Colors.grey[800],
                     ),
                   ),
@@ -1142,7 +1142,7 @@ class _EngagementPosterInfoScreenState
                               'Upload Engagement Poster',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -1185,7 +1185,7 @@ class _EngagementPosterInfoScreenState
                   '$number',
                   style: const TextStyle(
                     color: primaryCyan,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     fontSize: 16,
                   ),
                 ),
@@ -1200,7 +1200,7 @@ class _EngagementPosterInfoScreenState
                     title,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -1381,7 +1381,7 @@ class _EngagementPosterInfoScreenState
                   _existingPoster?['announcement_title'] ?? 'Engagement Announcement',
                   style: const TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1419,7 +1419,7 @@ class _EngagementPosterInfoScreenState
                         Text(
                           partnerId,
                           style: const TextStyle(
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                             color: primaryCyan,
                           ),
                         ),
@@ -1452,7 +1452,7 @@ class _EngagementPosterInfoScreenState
                         partnerStatus.toUpperCase(),
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                           color: partnerStatus == 'confirmed'
                               ? Colors.green[800]
                               : partnerStatus == 'rejected'
@@ -1493,7 +1493,7 @@ class _EngagementPosterInfoScreenState
                             (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1) ? 'VERIFIED' : 'PENDING',
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
                                   ? primaryCyan
                                   : Colors.orange[800],
@@ -1534,7 +1534,7 @@ class _EngagementPosterInfoScreenState
                             partnerStatus == 'rejected' ? 'Re-upload Poster' : 'Update Poster',
                             style: const TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -1559,7 +1559,7 @@ class _EngagementPosterInfoScreenState
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('Accept Engagement', style: TextStyle(fontWeight: FontWeight(600))),
+                          child: const Text('Accept Engagement', style: TextStyle(fontWeight: FontWeight.w500)),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -1574,7 +1574,7 @@ class _EngagementPosterInfoScreenState
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: const Text('Reject', style: TextStyle(fontWeight: FontWeight(600))),
+                          child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.w500)),
                         ),
                       ),
                     ],

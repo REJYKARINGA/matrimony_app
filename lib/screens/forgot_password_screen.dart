@@ -96,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     'Reset Password',
                     style: TextStyle(
                       fontSize: 34,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       color: AppColors.textDark,
                       letterSpacing: -1.0,
                     ),
@@ -148,7 +148,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               style: TextStyle(
                                 color: Colors.red.shade700,
                                 fontSize: 14,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -216,7 +216,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       '${index + 1}',
                       style: TextStyle(
                         color: isActive ? Colors.white : Colors.grey.shade400,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         fontSize: 16,
                       ),
                     ),
@@ -228,7 +228,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             style: TextStyle(
               fontSize: 12,
               color: isActive ? Colors.black87 : Colors.grey.shade500,
-              fontWeight: isActive ? FontWeight(600) : FontWeight.normal,
+              fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
             ),
           ),
         ],
@@ -285,7 +285,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 backgroundColor: Colors.white,
                 labelStyle: TextStyle(
                   color: _isUsingEmail ? AppColors.deepEmerald : Colors.grey.shade600,
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(
@@ -306,7 +306,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 backgroundColor: Colors.white,
                 labelStyle: TextStyle(
                   color: !_isUsingEmail ? AppColors.deepEmerald : Colors.grey.shade600,
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 shape: RoundedRectangleBorder(

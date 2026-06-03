@@ -89,7 +89,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 26,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -99,7 +99,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
                         fontSize: 14,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -165,7 +165,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                         icon: const Icon(Icons.system_update_rounded, size: 20),
                         label: const Text(
                           'UPDATE NOW',
-                          style: TextStyle(fontWeight: FontWeight(600), fontSize: 15),
+                          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.deepEmerald,
@@ -194,7 +194,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                           ),
                           child: const Text(
                             'LATER',
-                            style: TextStyle(fontWeight: FontWeight(600), fontSize: 15),
+                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
                           ),
                         ),
                       ),
@@ -227,7 +227,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
           style: const TextStyle(
             color: Colors.grey,
             fontSize: 14,
-            fontWeight: FontWeight(600),
+            fontWeight: FontWeight.w500,
           ),
         ),
         Text(
@@ -235,7 +235,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
           style: const TextStyle(
             color: Color(0xFF2D3142),
             fontSize: 16,
-            fontWeight: FontWeight(600),
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

@@ -227,7 +227,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                     style: TextStyle(
                       color: Color(0xFFAAAAAA),
                       fontSize: 12,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -304,7 +304,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                   letterSpacing: 0.2,
                 ),
               ),

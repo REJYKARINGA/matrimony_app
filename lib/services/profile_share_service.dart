@@ -116,7 +116,7 @@ Check out this profile on Vivah Matrimony app!
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 22,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               decoration: TextDecoration.none,
                             ),
                           ),
@@ -132,7 +132,7 @@ Check out this profile on Vivah Matrimony app!
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                                 decoration: TextDecoration.none,
                               ),
                             ),
@@ -207,7 +207,7 @@ Check out this profile on Vivah Matrimony app!
                   style: const TextStyle(
                     color: Colors.white60, 
                     fontSize: 10, 
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     decoration: TextDecoration.none,
                   ),
                 ),
@@ -216,7 +216,7 @@ Check out this profile on Vivah Matrimony app!
                   style: const TextStyle(
                     color: Colors.white, 
                     fontSize: 14, 
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     decoration: TextDecoration.none,
                   ),
                   maxLines: 1,

@@ -289,7 +289,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                       const SizedBox(height: 16),
                       const Text(
                         'Loading profile photos...',
-                        style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight(600)),
+                        style: TextStyle(color: AppColors.textDark, fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -379,7 +379,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                     children: [
                       const Text(
                         'Manage your profile photos',
-                        style: TextStyle(fontSize: 16, color: AppColors.mutedText, fontWeight: FontWeight(600)),
+                        style: TextStyle(fontSize: 16, color: AppColors.mutedText, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 16),
 
@@ -454,7 +454,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                       'Hide My Photos',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight(600),
+                                        fontWeight: FontWeight.w500,
                                         color: AppColors.textDark,
                                       ),
                                     ),
@@ -580,7 +580,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                   style: TextStyle(
                                                     color: Colors.white70,
                                                     fontSize: 9,
-                                                    fontWeight: FontWeight(600),
+                                                    fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
                                               ),
@@ -610,7 +610,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 'Pending',
                                                 style: TextStyle(color: Colors.white,
                                                   fontSize: 10,
-                                                  fontWeight: FontWeight(600),
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                               ),
                                             ],
@@ -660,7 +660,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                                                 'Primary',
                                                 style: TextStyle(color: Colors.white,
                                                   fontSize: 12,
-                                                  fontWeight: FontWeight(600),
+                                                  fontWeight: FontWeight.w500,
                                                 ),
                                               ),
                                             ],
@@ -906,7 +906,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 'Profile Photos',
                 style: TextStyle(
                   fontSize: 28,
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                   color: AppColors.cardDark,
                   letterSpacing: -0.5,
                   shadows: [
@@ -924,7 +924,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 style: TextStyle(
                   fontSize: 15,
                   color: AppColors.cardDark.withOpacity(0.9),
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

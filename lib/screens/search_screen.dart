@@ -138,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
               'Discover Matches',
               style: TextStyle(
                 color: AppColors.textDark,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
                 fontSize: 18,
               ),
             ),
@@ -190,7 +190,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                               color: Colors.grey.shade600,
                               fontSize: 15,
                               height: 1.4,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -322,11 +322,11 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                   labelColor: AppColors.primaryGreen,
                   unselectedLabelColor: Colors.grey.shade600,
                   labelStyle: const TextStyle(
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     fontSize: 13,
                   ),
                   unselectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     fontSize: 13,
                   ),
                   dividerColor: Colors.transparent,
@@ -354,7 +354,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                     SizedBox(height: 16),
                     Text(
                       'No preference cards available',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     ),
                     SizedBox(height: 8),
                     Text(
@@ -378,7 +378,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         SizedBox(height: 16),
                         Text(
                           'No preference cards available',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight(600)),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                         ),
                       ],
                     ),
@@ -422,7 +422,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         SizedBox(height: 16),
                         Text(
                           'No shortlisted profiles',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: Colors.grey),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey),
                         ),
                         SizedBox(height: 8),
                         Text(
@@ -585,7 +585,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                     Text(
                       category['title'],
                       style: const TextStyle(
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         fontSize: 15,
                         color: Color(0xFF2D2D2D),
                         letterSpacing: -0.2,
@@ -606,7 +606,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: Colors.grey.shade600,
                             ),
                           ),
@@ -629,7 +629,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                             category['count'].toString(),
                             style: const TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: Colors.white,
                             ),
                           ),
@@ -728,7 +728,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         Text(
                           user.matrimonyId ?? 'User',
                           style: const TextStyle(
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                             fontSize: 15,
                             color: AppColors.textDark,
                           ),
@@ -774,7 +774,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
                           'Present: ${profile?.presentCity ?? ''}${profile?.presentCity != null && (profile?.presentCountry ?? '').isNotEmpty ? ', ' : ''}${profile?.presentCountry ?? ''}',
-                          style: TextStyle(color: Colors.grey.shade800, fontSize: 10, fontWeight: FontWeight(600)),
+                          style: TextStyle(color: Colors.grey.shade800, fontSize: 10, fontWeight: FontWeight.w500),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -797,7 +797,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                               const SizedBox(width: 2),
                               Text(
                                 '${user.distance!.toStringAsFixed(1)} KM',
-                                style: const TextStyle(color: AppColors.primaryGreen, fontSize: 9, fontWeight: FontWeight(600)),
+                                style: const TextStyle(color: AppColors.primaryGreen, fontSize: 9, fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),
@@ -1463,7 +1463,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                   icon: const Icon(Icons.key_rounded, size: 14),
                                   label: Text(
                                     (user.displayImage == null) ? 'Request Photo' : 'Request Access',
-                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight(600)),
+                                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
                                   ),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.deepEmerald,
@@ -1516,7 +1516,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -1537,7 +1537,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       fontSize: 13,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -1588,7 +1588,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                         style: TextStyle(
                                           color: Colors.white.withOpacity(0.9),
                                           fontSize: 11,
-                                          fontWeight: FontWeight(600),
+                                          fontWeight: FontWeight.w500,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -1624,7 +1624,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
-                                  fontWeight: FontWeight(600),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -1730,7 +1730,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                             style: const TextStyle(
                               color: Color(0xFFFF2D55),
                               fontSize: 24,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                       ],

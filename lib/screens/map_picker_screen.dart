@@ -120,7 +120,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pick Location', style: TextStyle(fontWeight: FontWeight(600), letterSpacing: 0.5)),
+        title: const Text('Pick Location', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 0.5)),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -229,7 +229,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               ),
               child: TextField(
                 controller: _searchController,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight(600)),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   hintText: "Search city, area or country...",
                   hintStyle: TextStyle(color: AppColors.midnightEmerald, fontSize: 14),
@@ -317,7 +317,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 ),
                 child: const Text(
                   'Confirm Location',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: AppColors.cardDark, letterSpacing: 0.8),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.cardDark, letterSpacing: 0.8),
                 ),
               ),
             ),

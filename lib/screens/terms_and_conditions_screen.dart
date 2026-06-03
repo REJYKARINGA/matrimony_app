@@ -245,7 +245,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
             'Terms & Conditions',
             style: TextStyle(
               fontSize: 24,
-              fontWeight: FontWeight(600),
+              fontWeight: FontWeight.w500,
               color: AppColors.cardDark,
             ),
           ),
@@ -307,7 +307,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
                   title,
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     color: AppColors.cardDark,
                   ),
                 ),

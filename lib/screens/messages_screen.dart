@@ -120,7 +120,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     'Chats',
                     style: TextStyle(
                       fontSize: 32,
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       color: AppColors.darkGreen,
                       letterSpacing: -0.5,
                     ),
@@ -152,7 +152,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     'Online Now',
                                     style: TextStyle(
                                       fontSize: 18,
-                                      fontWeight: FontWeight(600),
+                                      fontWeight: FontWeight.w500,
                                       color: AppColors.bodyText,
                                     ),
                                   ),
@@ -166,7 +166,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                     child: Text(
                                       '${_matches.length}',
                                       style: const TextStyle(color: Colors.white,
-                                        fontWeight: FontWeight(600),
+                                        fontWeight: FontWeight.w500,
                                         fontSize: 12,
                                       ),
                                     ),
@@ -275,7 +275,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey.shade700,
-                                            fontWeight: FontWeight(600),
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       ],
@@ -297,7 +297,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             'Recent',
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: AppColors.bodyText,
                             ),
                           ),
@@ -438,7 +438,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                       ),
                                       title: Text(
                                         otherUserName,
-                                        style: const TextStyle(fontWeight: FontWeight(600), fontSize: 16, color: AppColors.bodyText),
+                                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: AppColors.bodyText),
                                       ),
                                       subtitle: Text(
                                         chat['message'],
@@ -446,7 +446,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           color: isUnread ? AppColors.bodyText : AppColors.mutedText,
-                                          fontWeight: isUnread ? FontWeight(600) : FontWeight.normal,
+                                          fontWeight: isUnread ? FontWeight.w500 : FontWeight.normal,
                                         ),
                                       ),
                                       trailing: Column(
@@ -465,7 +465,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                                 color: AppColors.primaryGreen,
                                                 borderRadius: BorderRadius.circular(10),
                                               ),
-                                              child: const Text('New', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight(600))),
+                                              child: const Text('New', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500)),
                                             )
                                           else if (isMe)
                                              Icon(Icons.done_all_rounded, size: 18, color: chat['is_read'] ? AppColors.primaryGreen : AppColors.mutedText),
@@ -729,8 +729,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.otherUserName, style: const TextStyle(color: AppColors.bodyText, fontSize: 16, fontWeight: FontWeight(600))),
-                const Text('Online', style: TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight(600))),
+                Text(widget.otherUserName, style: const TextStyle(color: AppColors.bodyText, fontSize: 16, fontWeight: FontWeight.w500)),
+                const Text('Online', style: TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight.w500)),
               ],
             ),
           ],
@@ -903,13 +903,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   const SizedBox(height: 20),
                   Text(
                     widget.otherUserName,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight(600), color: AppColors.bodyText),
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: AppColors.bodyText),
                   ),
                   const SizedBox(height: 8),
                   if (profile != null)
                     Text(
                       '${profile.age} yrs • ${profile.height} cm • ${profile.maritalStatus?.replaceAll('_', ' ').toUpperCase() ?? ''}',
-                      style: const TextStyle(color: AppColors.mutedText, fontSize: 14, fontWeight: FontWeight(600)),
+                      style: const TextStyle(color: AppColors.mutedText, fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                   const SizedBox(height: 16),
                   const Divider(color: AppColors.divider),
@@ -936,7 +936,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     ),
-                    child: const Text('View Full Profile', style: TextStyle(fontWeight: FontWeight(600))),
+                    child: const Text('View Full Profile', style: TextStyle(fontWeight: FontWeight.w500)),
                   ),
                 ],
               ),
@@ -944,7 +944,7 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(height: 40),
             Text(
               'No messages yet. Say hello! 👋',
-              style: const TextStyle(color: AppColors.mutedText, fontSize: 15, fontWeight: FontWeight(600)),
+              style: const TextStyle(color: AppColors.mutedText, fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ],
         ),

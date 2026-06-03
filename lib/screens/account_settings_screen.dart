@@ -33,7 +33,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('Account Settings', style: TextStyle(fontWeight: FontWeight(600), color: AppColors.textDark)),
+        title: const Text('Account Settings', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.textDark)),
         backgroundColor: AppColors.backgroundLight,
         elevation: 0,
         leading: IconButton(
@@ -306,7 +306,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                                   'VERIFIED',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    fontWeight: FontWeight(600),
+                                    fontWeight: FontWeight.w500,
                                     color: Colors.green[700],
                                   ),
                                 ),
@@ -755,7 +755,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       'Terms and Conditions',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textDark,
                       ),
                     ),
@@ -790,7 +790,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       'Privacy Policy',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight(600),
+                        fontWeight: FontWeight.w500,
                         color: AppColors.textDark,
                       ),
                     ),
@@ -826,7 +826,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           title.toUpperCase(),
           style: TextStyle(
             fontSize: 13,
-            fontWeight: FontWeight(600),
+            fontWeight: FontWeight.w500,
             color: color ?? AppColors.textDark,
             letterSpacing: 0.8,
           ),
@@ -855,7 +855,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 label,
                 style: const TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                   color: AppColors.mutedText,
                   letterSpacing: 0.5,
                 ),

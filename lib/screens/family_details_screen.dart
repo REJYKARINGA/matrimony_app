@@ -528,7 +528,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                                     )
                                   : const Text(
                                       'Update Family Details',
-                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), letterSpacing: 0.5),
+                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, letterSpacing: 0.5),
                                     ),
                             ),
                           ),
@@ -583,7 +583,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
           const SizedBox(width: 10),
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight(600), color: AppColors.midnightEmerald, letterSpacing: 0.2),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.midnightEmerald, letterSpacing: 0.2),
           ),
         ],
       ),

@@ -644,7 +644,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Don`t Show', style: TextStyle(fontSize: 14, fontWeight: FontWeight(600), color: Colors.brown)),
+                        const Text('Don`t Show', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.brown)),
                         const SizedBox(height: 12),
                         Wrap(
                           spacing: 10,
@@ -663,7 +663,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Text('Sort By', style: TextStyle(fontSize: 14, fontWeight: FontWeight(600), color: Colors.brown)),
+                        const Text('Sort By', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.brown)),
                         const SizedBox(height: 12),
                         Wrap(
                           spacing: 10,
@@ -737,7 +737,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           'Search',
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -781,7 +781,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             style: TextStyle(
               color: AppColors.mutedText,
               fontSize: 12,
-              fontWeight: FontWeight(600),
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -852,7 +852,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               return Chip(
                 label: Text(
                   item,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight(600)),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                 ),
                 backgroundColor: AppColors.deepEmerald,
                 deleteIcon: const Icon(Icons.close, size: 16, color: AppColors.cardDark),
@@ -941,7 +941,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   'Annual: ${minAnnual.toStringAsFixed(1)} - ${maxAnnual.toStringAsFixed(1)} L',
                   style: const TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     color: AppColors.deepEmerald,
                   ),
                 ),
@@ -1204,7 +1204,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               return Chip(
                 label: Text(
                   location,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight(600), fontSize: 12),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12),
                 ),
                 backgroundColor: AppColors.deepEmerald,
                 deleteIcon: const Icon(Icons.close, size: 14, color: Colors.white70),
@@ -1241,7 +1241,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               return Chip(
                 label: Text(
                   city['name'] ?? '',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight(600), fontSize: 12),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12),
                 ),
                 backgroundColor: AppColors.primaryGreen,
                 deleteIcon: const Icon(Icons.close, size: 14, color: Colors.white70),
@@ -1350,7 +1350,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight(600), fontSize: 14)),
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
                   const SizedBox(height: 2),
                   Text(subtitle, style: const TextStyle(fontSize: 11, color: AppColors.mutedText)),
                 ],
@@ -1644,7 +1644,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             '${selectedIds.length}',
                             style: const TextStyle(
                               fontSize: 11,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: AppColors.deepEmerald,
                             ),
                           ),
@@ -1707,7 +1707,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                       'Trending',
                                       style: TextStyle(
                                         fontSize: 11,
-                                        fontWeight: FontWeight(600),
+                                        fontWeight: FontWeight.w500,
                                         color: !isAscending ? AppColors.deepEmerald : Colors.grey.shade600,
                                       ),
                                     ),
@@ -1742,7 +1742,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                       'A-Z',
                                       style: TextStyle(
                                         fontSize: 11,
-                                        fontWeight: FontWeight(600),
+                                        fontWeight: FontWeight.w500,
                                         color: isAscending ? AppColors.deepEmerald : Colors.grey.shade600,
                                       ),
                                     ),
@@ -1852,7 +1852,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       ),
                       labelStyle: TextStyle(
                         color: isSelected ? AppColors.deepEmerald : Colors.black87,
-                        fontWeight: isSelected ? FontWeight(600) : FontWeight.normal,
+                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                       ),
                     );
                   }).toList(),
@@ -1926,7 +1926,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                   option[0].toUpperCase() + option.substring(1),
                   style: TextStyle(
                     color: isSelected ? AppColors.deepEmerald : Colors.black87,
-                    fontWeight: isSelected ? FontWeight(600) : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                   ),
                 ),
                 selected: isSelected,
@@ -1973,7 +1973,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               label,
               style: TextStyle(
                 color: isSelected ? AppColors.deepEmerald : Colors.black87,
-                fontWeight: isSelected ? FontWeight(600) : FontWeight(600),
+                fontWeight: isSelected ? FontWeight.w500 : FontWeight.w500,
                 fontSize: 13,
               ),
             ),

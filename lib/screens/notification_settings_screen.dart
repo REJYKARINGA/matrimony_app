@@ -104,7 +104,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         title,
         style: const TextStyle(
           fontSize: 13,
-          fontWeight: FontWeight(600),
+          fontWeight: FontWeight.w500,
           color: AppColors.midnightEmerald,
           letterSpacing: 0.8,
         ),
@@ -126,7 +126,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             title,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight(600),
+              fontWeight: FontWeight.w500,
               color: AppColors.midnightEmerald,
             ),
           ),

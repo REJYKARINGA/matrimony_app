@@ -184,7 +184,7 @@ class _CommonFooterState extends State<CommonFooter> {
                   style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 10,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],

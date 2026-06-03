@@ -117,14 +117,14 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
           elevation: 0,
           titleTextStyle: const TextStyle(color: Colors.white,
             fontSize: 18,
-            fontWeight: FontWeight(600),
+            fontWeight: FontWeight.w500,
           ),
           iconTheme: const IconThemeData(color: AppColors.cardDark),
           bottom: const TabBar(
             indicatorColor: AppColors.cardDark,
             indicatorWeight: 3,
-            labelStyle: TextStyle(fontWeight: FontWeight(600), fontSize: 14),
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight(600), fontSize: 14),
+            labelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             labelColor: AppColors.cardDark,
             unselectedLabelColor: Colors.white70,
             tabs: [
@@ -176,7 +176,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               'Thank you! 🎉',
               style: TextStyle(
                 fontSize: 26,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
                 color: AppColors.cardDark,
               ),
             ),
@@ -202,7 +202,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                   foregroundColor: AppColors.cardDark,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight(600)),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
@@ -273,7 +273,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                           'Got an idea?',
                           style: TextStyle(color: Colors.white,
                             fontSize: 18,
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                         SizedBox(height: 4),
@@ -298,7 +298,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               'CATEGORY (OPTIONAL)',
               style: TextStyle(
                 fontSize: 13,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
                 color: AppColors.textDark,
                 letterSpacing: 0.8,
               ),
@@ -331,7 +331,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                   backgroundColor: AppColors.deepEmerald.withOpacity(0.08),
                   labelStyle: TextStyle(
                     color: isSelected ? Colors.white : AppColors.deepEmerald,
-                    fontWeight: FontWeight(600),
+                    fontWeight: FontWeight.w500,
                     fontSize: 13,
                   ),
                   side: BorderSide(
@@ -399,7 +399,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   elevation: 4,
                   shadowColor: _primaryColor.withOpacity(0.3),
-                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight(600)),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 child: _isSubmitting
                     ? const SizedBox(
@@ -551,7 +551,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                   s['category'].toString().toUpperCase(),
                                   style: const TextStyle(
                                     fontSize: 10,
-                                    fontWeight: FontWeight(600),
+                                    fontWeight: FontWeight.w500,
                                     color: AppColors.deepEmerald,
                                     letterSpacing: 0.5,
                                   ),
@@ -561,7 +561,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                               s['title'] ?? 'Untitled',
                               style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                                 color: AppColors.textDark,
                               ),
                             ),
@@ -585,7 +585,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                               statusLabel,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                                 color: statusColor,
                               ),
                             ),
@@ -609,7 +609,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                     const SizedBox(height: 12),
                     Text(
                       'Attached Screenshots',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight(600), color: AppColors.midnightEmerald),
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.midnightEmerald),
                     ),
                     const SizedBox(height: 6),
                     SizedBox(
@@ -689,7 +689,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                     'Developer Response',
                                     style: TextStyle(
                                       fontSize: 11,
-                                      fontWeight: FontWeight(600),
+                                      fontWeight: FontWeight.w500,
                                       color: _primaryColor,
                                     ),
                                   ),
@@ -769,7 +769,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                         style: const TextStyle(
                           fontSize: 11,
                           color: AppColors.mutedText,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -788,7 +788,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
       text.toUpperCase(),
       style: const TextStyle(
         fontSize: 12,
-        fontWeight: FontWeight(600),
+        fontWeight: FontWeight.w500,
         color: AppColors.textDark,
         letterSpacing: 0.8,
       ),

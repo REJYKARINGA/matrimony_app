@@ -452,7 +452,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             name,
             style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight(600),
+              fontWeight: FontWeight.w500,
               color: AppColors.midnightEmerald,
             ),
           ),
@@ -507,7 +507,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         title,
                         style: const TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                           color: AppColors.midnightEmerald,
                         ),
                       ),
@@ -635,7 +635,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 const SizedBox(height: 12),
                 Text(
                   state.errorText!,
-                  style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight(600), fontSize: 13),
+                  style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w500, fontSize: 13),
                 ),
               ],
             ],
@@ -714,7 +714,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   state.errorText!,
                   style: const TextStyle(
                     color: AppColors.primaryBlue, 
-                    fontWeight: FontWeight(600), 
+                    fontWeight: FontWeight.w500, 
                     fontSize: 13,
                   ),
                 ),
@@ -1283,12 +1283,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           if (_selectedPhotos.length < 3)
             Text(
               'Upload ${3 - _selectedPhotos.length} more photos to continue',
-              style: const TextStyle(color: Colors.orange, fontWeight: FontWeight(600)),
+              style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w500),
             )
           else
             Text(
               '${_selectedPhotos.length} photos uploaded',
-              style: const TextStyle(color: Colors.green, fontWeight: FontWeight(600)),
+              style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w500),
             ),
           const SizedBox(height: 20),
           // Hide My Photos toggle
@@ -1308,7 +1308,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   const Text(
                     'Hide My Photos',
                     style: TextStyle(
-                      fontWeight: FontWeight(600),
+                      fontWeight: FontWeight.w500,
                       color: Color(0xFF1A1A2E),
                       fontSize: 15,
                     ),
@@ -1395,7 +1395,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 title,
                 style: const TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight(600),
+                  fontWeight: FontWeight.w500,
                   color: AppColors.primaryBlue,
                 ),
               ),
@@ -1423,7 +1423,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               style: TextStyle(
                 color: AppColors.midnightEmerald,
                 fontSize: 13,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -1532,7 +1532,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             Text(
               label,
               style: const TextStyle(color: Colors.white,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
                 fontSize: 13,
                 letterSpacing: 0.5,
               ),

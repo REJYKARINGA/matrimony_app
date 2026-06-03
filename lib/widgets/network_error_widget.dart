@@ -76,7 +76,7 @@ class _NetworkErrorWidgetState extends State<NetworkErrorWidget>
               'Oops! No Connection',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight(600),
+                fontWeight: FontWeight.w500,
                 color: Color(0xFF1F1F1F),
               ),
             ),

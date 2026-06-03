@@ -121,7 +121,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('Verify Account', style: TextStyle(fontWeight: FontWeight(600), color: AppColors.textDark, letterSpacing: -0.5)),
+        title: const Text('Verify Account', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.textDark, letterSpacing: -0.5)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -178,7 +178,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                       if (_verificationStatus == null || _verificationStatus!['status'] == 'rejected') ...[
                         const Text(
                           'Account Verification',
-                          style: TextStyle(fontSize: 26, fontWeight: FontWeight(600), color: AppColors.textDark, letterSpacing: -0.5),
+                          style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500, color: AppColors.textDark, letterSpacing: -0.5),
                         ),
                         const SizedBox(height: 12),
                         const Text(
@@ -258,7 +258,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(text, style: TextStyle(color: color, fontWeight: FontWeight(600), fontSize: 16)),
+                Text(text, style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 16)),
                 if (status == 'rejected' && _verificationStatus!['rejection_reason'] != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -360,7 +360,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: AppColors.cardDark)
-                    : const Text('Submit Verification', style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: AppColors.cardDark)),
+                    : const Text('Submit Verification', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.cardDark)),
               ),
             ),
           ),
@@ -398,7 +398,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     children: [
                       Icon(Icons.add_a_photo_outlined, color: AppColors.deepEmerald.withOpacity(0.5), size: 32),
                       const SizedBox(height: 8),
-                      const Text('Upload Photo', style: TextStyle(color: AppColors.deepEmerald, fontSize: 12, fontWeight: FontWeight(600))),
+                      const Text('Upload Photo', style: TextStyle(color: AppColors.deepEmerald, fontSize: 12, fontWeight: FontWeight.w500)),
                     ],
                   ),
           ),
@@ -414,7 +414,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
           const SizedBox(height: 40),
           Icon(Icons.access_time_filled_rounded, color: AppColors.deepEmerald.withOpacity(0.3), size: 100),
           const SizedBox(height: 24),
-          const Text('Checking Documents', style: TextStyle(fontSize: 20, fontWeight: FontWeight(600), color: AppColors.textDark)),
+          const Text('Checking Documents', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.textDark)),
           const SizedBox(height: 12),
           const Text(
             'We are reviewing your documents. This usually takes 24-48 hours. We will notify you once verified.',
@@ -433,7 +433,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
           const SizedBox(height: 40),
           const Icon(Icons.verified_user_rounded, color: Colors.green, size: 100),
           const SizedBox(height: 24),
-          const Text('Verified Account', style: TextStyle(fontSize: 20, fontWeight: FontWeight(600), color: AppColors.textDark)),
+          const Text('Verified Account', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.textDark)),
           const SizedBox(height: 12),
           const Text(
             'Your account is verified. You now have a verification badge on your profile.',

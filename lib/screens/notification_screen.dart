@@ -203,7 +203,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       const TextSpan(text: 'You have '),
                                       TextSpan(
                                         text: '$unreadCount Notifications',
-                                        style: const TextStyle(color: primaryCyan, fontWeight: FontWeight(600)),
+                                        style: const TextStyle(color: primaryCyan, fontWeight: FontWeight.w500),
                                       ),
                                       const TextSpan(text: ' today.'),
                                     ],
@@ -220,7 +220,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   'Today',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: Colors.white70),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white70),
                                 ),
                               ),
                             ),
@@ -241,7 +241,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: EdgeInsets.fromLTRB(20, 30, 20, 10),
                                 child: Text(
                                   'This Week',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight(600), color: Colors.white70),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white70),
                                 ),
                               ),
                             ),
@@ -300,7 +300,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         Text(
                           'Notification Settings',
                           style: TextStyle(color: Colors.white,
-                            fontWeight: FontWeight(600),
+                            fontWeight: FontWeight.w500,
                             fontSize: 14,
                             letterSpacing: 0.2,
                           ),
@@ -535,7 +535,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           text: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update')
                               ? 'System Update: ' 
                               : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone '),
-                          style: const TextStyle(fontWeight: FontWeight(600), color: primaryCyan),
+                          style: const TextStyle(fontWeight: FontWeight.w500, color: primaryCyan),
                         ),
                         TextSpan(text: notification['message'] ?? 'sent you a notification'),
                       ],

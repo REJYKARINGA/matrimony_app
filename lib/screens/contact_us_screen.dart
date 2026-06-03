@@ -48,7 +48,7 @@ class ContactUsScreen extends StatelessWidget {
                         'Need Help?',
                         style: TextStyle(
                           fontSize: 22,
-                          fontWeight: FontWeight(600),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -121,7 +121,7 @@ class ContactUsScreen extends StatelessWidget {
                             'Our Support Hours',
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],

@@ -94,7 +94,7 @@ class WalletRechargePaywall extends StatelessWidget {
                                 '$contacts Contacts',
                                 style: const TextStyle(
                                   fontSize: 22,
-                                  fontWeight: FontWeight(600),
+                                  fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                   letterSpacing: 0.5,
                                 ),
@@ -107,7 +107,7 @@ class WalletRechargePaywall extends StatelessWidget {
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -130,7 +130,7 @@ class WalletRechargePaywall extends StatelessWidget {
                               'MOST POPULAR',
                               style: TextStyle(
                                 fontSize: 9,
-                                fontWeight: FontWeight(600),
+                                fontWeight: FontWeight.w500,
                                 color: Color(0xFFF57C00),
                                 letterSpacing: 0.3,
                               ),
@@ -155,7 +155,7 @@ class WalletRechargePaywall extends StatelessWidget {
                             '₹$amount',
                             style: TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight(600),
+                              fontWeight: FontWeight.w500,
                               color: isPopular ? const Color(0xFFF57C00) : const Color(0xFF00A87D),
                             ),
                           ),
