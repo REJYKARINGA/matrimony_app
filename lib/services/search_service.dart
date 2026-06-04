@@ -19,6 +19,15 @@ class SearchService {
     String? location,
     String? field,
     String? matrimonyId,
+    double? minIncome,
+    double? maxIncome,
+    int? maxDistance,
+    String? drugAddiction,
+    String? smoke,
+    String? alcohol,
+    bool? hideViewed,
+    bool? hideInterested,
+    String? sortBy,
     int page = 1,
   }) async {
     Map<String, String> queryParams = {'page': page.toString()};
@@ -34,6 +43,15 @@ class SearchService {
     if (maxHeight != null) queryParams['max_height'] = maxHeight.toString();
     if (location != null) queryParams['location'] = location;
     if (field != null) queryParams['field'] = field;
+    if (minIncome != null) queryParams['min_income'] = minIncome.toString();
+    if (maxIncome != null) queryParams['max_income'] = maxIncome.toString();
+    if (maxDistance != null) queryParams['max_distance'] = maxDistance.toString();
+    if (drugAddiction != null) queryParams['drug_addiction'] = drugAddiction;
+    if (smoke != null) queryParams['smoke'] = smoke;
+    if (alcohol != null) queryParams['alcohol'] = alcohol;
+    if (hideViewed != null) queryParams['hide_viewed'] = hideViewed ? '1' : '0';
+    if (hideInterested != null) queryParams['hide_interested'] = hideInterested ? '1' : '0';
+    if (sortBy != null) queryParams['sort_by'] = sortBy;
 
     String queryString = Uri(queryParameters: queryParams).query;
     return await ApiService.makeRequest('${ApiService.baseUrl}/search?$queryString');

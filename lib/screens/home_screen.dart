@@ -310,6 +310,22 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   User? _dailyTopPick;
   bool _isLoadingPick = true;
   final ScrollController _scrollController = ScrollController();
+  bool _applyAgeFilter = true;
+  bool _applyHeightFilter = true;
+  bool _applyMaritalStatusFilter = true;
+  bool _applyCasteFilter = true;
+  bool _applyEducationFilter = true;
+  bool _applyOccupationFilter = true;
+  bool _applyLocationFilter = true;
+  bool _applyDistanceFilter = true;
+  bool _applyIncomeFilter = true;
+  bool _applyDrugFilter = true;
+  bool _applyDrinkFilter = true;
+  bool _applySmokeFilter = true;
+  bool _applyHideViewedFilter = true;
+  bool _applyHideInterestedFilter = true;
+  bool _applyRecentLoginFilter = false;
+  bool _applyRecentRegistrationFilter = false;
   
   @override
   void initState() {
@@ -429,6 +445,286 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     } catch (e) {
       print('Error loading unread count: $e');
     }
+  }
+
+  void _showInstantSearchOptions() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final myProfile = authProvider.user?.userProfile;
+    final isMale = myProfile?.gender?.toLowerCase() == 'male';
+    final myAge = myProfile?.age ?? 25;
+
+    int minAgeToShow;
+    int maxAgeToShow;
+    if (isMale) {
+      minAgeToShow = (myAge - 10 < 18) ? 18 : myAge - 10;
+      maxAgeToShow = myAge;
+    } else {
+      if (myAge < 21) {
+        minAgeToShow = 21;
+        maxAgeToShow = 31;
+      } else {
+        minAgeToShow = myAge;
+        maxAgeToShow = myAge + 10;
+      }
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.6,
+              minChildSize: 0.4,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (context, scrollController) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Quick Filters',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Uncheck an option to broaden your search and override preferences for that field.',
+                        style: TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                      const Divider(height: 30),
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          children: [
+                            CheckboxListTile(
+                              title: const Text('Age Preference'),
+                              subtitle: !_applyAgeFilter 
+                                  ? Text(
+                                      isMale 
+                                          ? 'Finding female matches of age $minAgeToShow-$maxAgeToShow (up to 10 years younger)'
+                                          : 'Finding male matches of age $minAgeToShow-$maxAgeToShow (up to 10 years older)',
+                                      style: const TextStyle(fontSize: 12, color: Colors.orange),
+                                    ) 
+                                  : null,
+                              value: _applyAgeFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyAgeFilter = value ?? true);
+                                setState(() => _applyAgeFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Height Preference'),
+                              subtitle: !_applyHeightFilter ? const Text('Height preference is ignored (showing profiles of all heights)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyHeightFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyHeightFilter = value ?? true);
+                                setState(() => _applyHeightFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Marital Status'),
+                              subtitle: !_applyMaritalStatusFilter ? const Text('Marital status preference is ignored (showing all marital statuses)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyMaritalStatusFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyMaritalStatusFilter = value ?? true);
+                                setState(() => _applyMaritalStatusFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Caste'),
+                              subtitle: !_applyCasteFilter ? const Text('Caste preference is ignored (showing all castes)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyCasteFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyCasteFilter = value ?? true);
+                                setState(() => _applyCasteFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Education'),
+                              subtitle: !_applyEducationFilter ? const Text('Education preference is ignored (showing all educational backgrounds)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyEducationFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyEducationFilter = value ?? true);
+                                setState(() => _applyEducationFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Occupation'),
+                              subtitle: !_applyOccupationFilter ? const Text('Occupation preference is ignored (showing all occupation types)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyOccupationFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyOccupationFilter = value ?? true);
+                                setState(() => _applyOccupationFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Location/District'),
+                              subtitle: !_applyLocationFilter ? const Text('Location preference is ignored (showing profiles from all locations)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyLocationFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyLocationFilter = value ?? true);
+                                setState(() => _applyLocationFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Distance Limit'),
+                              subtitle: !_applyDistanceFilter ? const Text('Distance limit is ignored (showing profiles regardless of distance)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyDistanceFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyDistanceFilter = value ?? true);
+                                setState(() => _applyDistanceFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Income'),
+                              subtitle: !_applyIncomeFilter ? const Text('Income preference is ignored (showing profiles of any income level)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyIncomeFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyIncomeFilter = value ?? true);
+                                setState(() => _applyIncomeFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Drug Addiction'),
+                              subtitle: !_applyDrugFilter ? const Text('Drug addiction preference is ignored (showing all profiles, including users with drug habits)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyDrugFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyDrugFilter = value ?? true);
+                                setState(() => _applyDrugFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Drinking Habit'),
+                              subtitle: !_applyDrinkFilter ? const Text('Drinking habit preference is ignored (showing all profiles, including users with drinking habits)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyDrinkFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyDrinkFilter = value ?? true);
+                                setState(() => _applyDrinkFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Smoking Habit'),
+                              subtitle: !_applySmokeFilter ? const Text('Smoking habit preference is ignored (showing all profiles, including users with smoking habits)', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applySmokeFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applySmokeFilter = value ?? true);
+                                setState(() => _applySmokeFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Hide Viewed Profiles'),
+                              subtitle: !_applyHideViewedFilter ? const Text('Showing profiles you have already viewed', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyHideViewedFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyHideViewedFilter = value ?? true);
+                                setState(() => _applyHideViewedFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Hide Interested Profiles'),
+                              subtitle: !_applyHideInterestedFilter ? const Text('Showing profiles you have already sent interest to', style: TextStyle(fontSize: 12, color: Colors.orange)) : null,
+                              value: _applyHideInterestedFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() => _applyHideInterestedFilter = value ?? true);
+                                setState(() => _applyHideInterestedFilter = value ?? true);
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Sort by Recent Login'),
+                              subtitle: _applyRecentLoginFilter ? const Text('Sorting by most recently active first', style: TextStyle(fontSize: 12, color: AppColors.primaryGreen)) : null,
+                              value: _applyRecentLoginFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() {
+                                  _applyRecentLoginFilter = value ?? false;
+                                  if (_applyRecentLoginFilter) _applyRecentRegistrationFilter = false;
+                                });
+                                setState(() {
+                                  _applyRecentLoginFilter = value ?? false;
+                                  if (_applyRecentLoginFilter) _applyRecentRegistrationFilter = false;
+                                });
+                              },
+                            ),
+                            CheckboxListTile(
+                              title: const Text('Sort by Recent Registration'),
+                              subtitle: _applyRecentRegistrationFilter ? const Text('Sorting by newly joined members first', style: TextStyle(fontSize: 12, color: AppColors.primaryGreen)) : null,
+                              value: _applyRecentRegistrationFilter,
+                              activeColor: AppColors.primaryGreen,
+                              onChanged: (bool? value) {
+                                setModalState(() {
+                                  _applyRecentRegistrationFilter = value ?? false;
+                                  if (_applyRecentRegistrationFilter) _applyRecentLoginFilter = false;
+                                });
+                                setState(() {
+                                  _applyRecentRegistrationFilter = value ?? false;
+                                  if (_applyRecentRegistrationFilter) _applyRecentLoginFilter = false;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _loadTabUsers(_tabController.index);
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryGreen,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('Apply Filters', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _loadDailyPick() async {
@@ -1162,48 +1458,142 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       });
 
       http.Response response;
+
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final myProfile = authProvider.user?.userProfile;
+      final prefs = authProvider.user?.preferences;
+      final isMale = myProfile?.gender?.toLowerCase() == 'male';
+      final myAge = myProfile?.age ?? 25;
+      final myHeight = myProfile?.height ?? 160;
+
+      int? finalMinAge;
+      int? finalMaxAge;
+
+      if (!_applyAgeFilter) {
+        if (isMale) {
+          finalMinAge = (myAge - 10 < 18) ? 18 : myAge - 10;
+          finalMaxAge = myAge;
+        } else {
+          if (myAge < 21) {
+            finalMinAge = 21;
+            finalMaxAge = 31;
+          } else {
+            finalMinAge = myAge;
+            finalMaxAge = myAge + 10;
+          }
+        }
+      } else {
+        finalMinAge = prefs?.minAge;
+        finalMaxAge = prefs?.maxAge;
+      }
+
+      int? finalMinHeight = _applyHeightFilter ? prefs?.minHeight : null;
+      int? finalMaxHeight = _applyHeightFilter ? prefs?.maxHeight : null;
+      
+      String? finalMaritalStatus = _applyMaritalStatusFilter ? prefs?.maritalStatus : null;
+      String? finalCaste = _applyCasteFilter ? prefs?.caste?.join(',') : null;
+      String? finalEducation = _applyEducationFilter ? (prefs?.education is List ? prefs?.education.join(',') : prefs?.education?.toString()) : null;
+      String? finalOccupation = _applyOccupationFilter ? (prefs?.occupation is List ? prefs?.occupation.join(',') : prefs?.occupation?.toString()) : null;
+      String? finalLocation = _applyLocationFilter ? prefs?.preferredLocations?.join(',') : null;
+      int? finalMaxDistance = _applyDistanceFilter ? prefs?.maxDistance : null;
+      double? finalMinIncome = _applyIncomeFilter ? prefs?.minIncome : null;
+      double? finalMaxIncome = _applyIncomeFilter ? prefs?.maxIncome : null;
+      String? finalDrugAddiction = _applyDrugFilter ? prefs?.drugAddiction : null;
+      String? finalSmoke = _applySmokeFilter ? prefs?.smoke?.join(',') : null;
+      String? finalAlcohol = _applyDrinkFilter ? prefs?.alcohol?.join(',') : null;
+      bool? finalHideViewed = _applyHideViewedFilter ? prefs?.hideViewed : null;
+      bool? finalHideInterested = _applyHideInterestedFilter ? prefs?.hideInterested : null;
+      String? finalSortBy;
+      if (_applyRecentRegistrationFilter) {
+        finalSortBy = 'recent_registration';
+      } else if (_applyRecentLoginFilter) {
+        finalSortBy = 'recent_login';
+      } else {
+        finalSortBy = prefs?.sortBy;
+      }
+
       switch (index) {
         case 0: // My Search
-          response = await MatchingService.getSuggestions();
+          if (!_applyAgeFilter || !_applyHeightFilter || !_applyMaritalStatusFilter || !_applyCasteFilter || !_applyEducationFilter || !_applyOccupationFilter || 
+              !_applyLocationFilter || !_applyDistanceFilter || !_applyIncomeFilter || !_applyDrugFilter || !_applyDrinkFilter || !_applySmokeFilter || 
+              !_applyHideViewedFilter || !_applyHideInterestedFilter || _applyRecentLoginFilter || _applyRecentRegistrationFilter) {
+            response = await SearchService.searchProfiles(
+              minAge: finalMinAge, maxAge: finalMaxAge,
+              minHeight: finalMinHeight, maxHeight: finalMaxHeight,
+              maritalStatus: finalMaritalStatus, caste: finalCaste,
+              education: finalEducation, occupation: finalOccupation,
+              location: finalLocation, maxDistance: finalMaxDistance,
+              minIncome: finalMinIncome, maxIncome: finalMaxIncome,
+              drugAddiction: finalDrugAddiction, smoke: finalSmoke, alcohol: finalAlcohol,
+              hideViewed: finalHideViewed, hideInterested: finalHideInterested, sortBy: finalSortBy,
+            );
+          } else {
+            response = await MatchingService.getSuggestions();
+          }
           break;
         case 1: // My Match
-          final authProvider = Provider.of<AuthProvider>(context, listen: false);
-          final myProfile = authProvider.user?.userProfile;
-          final isMale = myProfile?.gender?.toLowerCase() == 'male';
-          final myAge = myProfile?.age ?? 25;
-          final myHeight = myProfile?.height ?? 160;
+          int minAge = finalMinAge ?? 18;
+          int maxAge = finalMaxAge ?? 99;
+          int? minHeight = finalMinHeight;
+          int? maxHeight = finalMaxHeight;
 
-          int minAge = 18;
-          int maxAge = 99;
-          int? minHeight;
-          int? maxHeight;
-
-          if (isMale) {
-            // Men usually look for younger and shorter women
-            maxAge = myAge - 1;
-            maxHeight = myHeight - 1;
-            if (maxAge < 18) maxAge = 18; // Safety check
-          } else {
-            // Women usually look for older and taller men
-            minAge = myAge + 1;
-            minHeight = myHeight + 1;
+          if (_applyAgeFilter) {
+            if (isMale) {
+              // Men usually look for younger and shorter women
+              maxAge = myAge - 1;
+              if (maxAge < 18) maxAge = 18; // Safety check
+            } else {
+              // Women usually look for older and taller men
+              minAge = myAge + 1;
+            }
+          }
+          if (_applyHeightFilter && prefs?.minHeight == null && prefs?.maxHeight == null) {
+            if (isMale) {
+              maxHeight = myHeight - 1;
+            } else {
+              minHeight = myHeight + 1;
+            }
           }
 
           response = await SearchService.searchProfiles(
-            minAge: minAge, 
-            maxAge: maxAge,
-            minHeight: minHeight,
-            maxHeight: maxHeight,
+            minAge: minAge, maxAge: maxAge,
+            minHeight: minHeight, maxHeight: maxHeight,
+            maritalStatus: finalMaritalStatus, caste: finalCaste,
+            education: finalEducation, occupation: finalOccupation,
+            location: finalLocation, maxDistance: finalMaxDistance,
+            minIncome: finalMinIncome, maxIncome: finalMaxIncome,
+            drugAddiction: finalDrugAddiction, smoke: finalSmoke, alcohol: finalAlcohol,
+            hideViewed: finalHideViewed, hideInterested: finalHideInterested, sortBy: finalSortBy,
           );
           break;
         case 2: // New Match
-          response = await SearchService.searchProfiles(field: 'new_members');
+          response = await SearchService.searchProfiles(
+            field: 'new_members', 
+            minAge: finalMinAge, maxAge: finalMaxAge,
+            minHeight: finalMinHeight, maxHeight: finalMaxHeight,
+            maritalStatus: finalMaritalStatus, caste: finalCaste,
+            education: finalEducation, occupation: finalOccupation,
+            location: finalLocation, maxDistance: finalMaxDistance,
+            minIncome: finalMinIncome, maxIncome: finalMaxIncome,
+            drugAddiction: finalDrugAddiction, smoke: finalSmoke, alcohol: finalAlcohol,
+            hideViewed: finalHideViewed, hideInterested: finalHideInterested, sortBy: finalSortBy,
+          );
           break;
         case 3: // Near Me
           response = await SearchService.getNearbyProfiles();
           break;
         case 4: // Online
-          response = await SearchService.searchProfiles(field: 'online');
+          response = await SearchService.searchProfiles(
+            field: 'online', 
+            minAge: finalMinAge, maxAge: finalMaxAge,
+            minHeight: finalMinHeight, maxHeight: finalMaxHeight,
+            maritalStatus: finalMaritalStatus, caste: finalCaste,
+            education: finalEducation, occupation: finalOccupation,
+            location: finalLocation, maxDistance: finalMaxDistance,
+            minIncome: finalMinIncome, maxIncome: finalMaxIncome,
+            drugAddiction: finalDrugAddiction, smoke: finalSmoke, alcohol: finalAlcohol,
+            hideViewed: finalHideViewed, hideInterested: finalHideInterested, sortBy: finalSortBy,
+          );
           break;
         case 5: // Shortlist
           response = await ShortlistService.getShortlistedProfiles();
@@ -1218,7 +1608,17 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           response = await ProfileViewService.getVisitors();
           break;
         case 9: // Matching Me
-          response = await SearchService.searchProfiles(field: 'matching_me');
+          response = await SearchService.searchProfiles(
+            field: 'matching_me', 
+            minAge: finalMinAge, maxAge: finalMaxAge,
+            minHeight: finalMinHeight, maxHeight: finalMaxHeight,
+            maritalStatus: finalMaritalStatus, caste: finalCaste,
+            education: finalEducation, occupation: finalOccupation,
+            location: finalLocation, maxDistance: finalMaxDistance,
+            minIncome: finalMinIncome, maxIncome: finalMaxIncome,
+            drugAddiction: finalDrugAddiction, smoke: finalSmoke, alcohol: finalAlcohol,
+            hideViewed: finalHideViewed, hideInterested: finalHideInterested, sortBy: finalSortBy,
+          );
           break;
         default:
           response = await MatchingService.getSuggestions();
@@ -1501,6 +1901,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                               ),
                             ),
                             const Spacer(),
+                            // IconButton(
+                            //   icon: const Icon(
+                            //     Icons.filter_list_rounded,
+                            //     color: AppColors.primaryGreen,
+                            //     size: 22,
+                            //   ),
+                            //   onPressed: _showInstantSearchOptions,
+                            // ),
                             IconButton(
                               icon: const Icon(
                                 Icons.tune_rounded,
