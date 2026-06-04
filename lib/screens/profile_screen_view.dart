@@ -12,6 +12,7 @@ import '../services/profile_service.dart';
 import '../services/auth_provider.dart';
 import '../services/api_service.dart';
 import '../utils/date_formatter.dart';
+import '../utils/image_crop_helper.dart';
 import '../services/profile_share_service.dart';
 import 'family_details_screen.dart';
 import 'preferences_screen.dart';
@@ -124,8 +125,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() => _isLoading = true);
       
       try {
+        final XFile? cropped = await cropImage(image, context);
+        if (cropped == null) {
+          // User cancelled the crop — do not upload
+          if (mounted) setState(() => _isLoading = false);
+          return;
+        }
+
         // 1. Upload photo via ProfileService
-        final response = await ProfileService.uploadProfilePhoto(image);
+        final response = await ProfileService.uploadProfilePhoto(cropped);
         
         if (response.statusCode == 200 || response.statusCode == 201) {
           final uploadData = json.decode(response.body);
@@ -499,7 +507,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                    Text(
                      '${_user?.userProfile?.firstName ?? ''} ${_user?.userProfile?.lastName ?? ''}',
-                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Colors.black87, letterSpacing: 0.5),
+                     style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500, color: Colors.white, letterSpacing: 0.5),
                    ),
                   const SizedBox(height: 4),
                   Row(
@@ -511,7 +519,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                        Text(
                          _user?.matrimonyId != null ? 'ID: ${_user!.matrimonyId}' : '',
-                         style: TextStyle(color: Colors.black87.withOpacity(0.9), fontSize: 13),
+                         style: const TextStyle(color: Colors.white70, fontSize: 13),
                        ),
                     ],
                   ),

@@ -2194,7 +2194,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
-                               fontWeight: FontWeight.w500,
+                               fontWeight: FontWeight.bold,
                               letterSpacing: -0.5,
                             ),
                           ),
@@ -2215,7 +2215,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 13,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -2228,7 +2228,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.85),
                             fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       const SizedBox(height: 8),
@@ -2266,7 +2266,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                             style: TextStyle(
                                               color: Colors.white.withOpacity(0.9),
                                               fontSize: 11,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),

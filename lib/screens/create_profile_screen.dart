@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io' show File;
 import '../utils/app_colors.dart';
+import '../utils/image_crop_helper.dart';
 import '../widgets/profile_creation_widgets.dart';
 import '../services/location_service.dart';
 import 'package:geolocator/geolocator.dart';
@@ -1362,8 +1363,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         return;
       }
 
+      final XFile? cropped = await cropImage(image, context);
+      if (cropped == null) {
+        // User cancelled the crop — do not add photo
+        return;
+      }
+
       setState(() {
-        _selectedPhotos.add(image);
+        _selectedPhotos.add(cropped);
       });
     }
   }

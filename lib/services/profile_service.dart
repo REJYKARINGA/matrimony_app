@@ -230,11 +230,15 @@ class ProfileService {
 
     if (kIsWeb) {
       List<int> imageBytes = await image.readAsBytes();
+      String fileName = image.name;
+      if (fileName.isEmpty || !fileName.contains('.')) {
+        fileName = 'photo_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      }
       request.files.add(
         http.MultipartFile.fromBytes(
           'photo',
           imageBytes,
-          filename: image.name,
+          filename: fileName,
         ),
       );
     } else {

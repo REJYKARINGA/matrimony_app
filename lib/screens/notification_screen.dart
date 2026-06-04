@@ -220,7 +220,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                 child: Text(
                                   'Today',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white70),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white70),
                                 ),
                               ),
                             ),
@@ -241,7 +241,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: EdgeInsets.fromLTRB(20, 30, 20, 10),
                                 child: Text(
                                   'This Week',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white70),
+                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white70),
                                 ),
                               ),
                             ),

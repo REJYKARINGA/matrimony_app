@@ -7,6 +7,7 @@ import '../services/profile_service.dart';
 import '../services/api_service.dart';
 import '../widgets/watermark_overlay.dart';
 import '../utils/app_colors.dart';
+import '../utils/image_crop_helper.dart';
 
 class ProfilePhotosScreen extends StatefulWidget {
   const ProfilePhotosScreen({Key? key}) : super(key: key);
@@ -96,7 +97,14 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
       });
 
       try {
-        final response = await ProfileService.uploadProfilePhoto(image);
+        final XFile? cropped = await cropImage(image, context);
+        if (cropped == null) {
+          // User cancelled the crop — do not upload
+          if (mounted) setState(() => _isUploading = false);
+          return;
+        }
+
+        final response = await ProfileService.uploadProfilePhoto(cropped);
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           ScaffoldMessenger.of(context).showSnackBar(
