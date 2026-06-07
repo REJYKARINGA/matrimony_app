@@ -4,6 +4,7 @@ class ContactInfo {
   final bool isContactUnlocked;
   final String permissionRequestStatus;
   final bool mandatoryPermissionForUnlock;
+  final bool freeUnlockEnabled;
 
   ContactInfo({
     this.email,
@@ -11,6 +12,7 @@ class ContactInfo {
     this.isContactUnlocked = false,
     this.permissionRequestStatus = 'none',
     this.mandatoryPermissionForUnlock = false,
+    this.freeUnlockEnabled = false,
   });
 
   factory ContactInfo.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class ContactInfo {
       isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1,
       permissionRequestStatus: json['permission_request_status']?.toString() ?? 'none',
       mandatoryPermissionForUnlock: json['mandatory_permission_for_unlock'] == true || json['mandatory_permission_for_unlock'] == 1,
+      freeUnlockEnabled: json['free_unlock_enabled'] == true || json['free_unlock_enabled'] == 1,
     );
   }
 }

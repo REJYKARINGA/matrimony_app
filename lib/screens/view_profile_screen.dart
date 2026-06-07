@@ -2600,6 +2600,43 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ] else if (_user?.contactInfo?.mandatoryPermissionForUnlock == true &&
                 _permissionRequestStatus != 'approved') ...[
               // Permission is mandatory and no approval yet - hide payment buttons
+            ] else if (_user?.contactInfo?.freeUnlockEnabled == true) ...[
+              // Free unlock offer is active - show full-width button matching theme
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGreen.withOpacity(0.3),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: () => _checkVerificationAndProceed(() => _unlockContactFree()),
+                    icon: const Icon(Icons.download_rounded, size: 22),
+                    label: const Text(
+                      'Unlock Free',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: AppColors.cardDark,
+                      elevation: 0,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
             ] else ...[
               Row(
                 children: [
@@ -2874,7 +2911,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
-                    color: Colors.white70,
+                    color: AppColors.textDark,
                     letterSpacing: 0.3,
                   ),
                 ),
@@ -2970,8 +3007,8 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               'Contact Details',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.w500,
-                color: Colors.white70,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textDark,
               ),
             ),
             SizedBox(height: 24),
@@ -3050,7 +3087,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 width: double.infinity,
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('Close', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
+                  child: Text('Close', style: TextStyle(color: AppColors.cardDark, fontWeight: FontWeight.w500)),
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: AppColors.midnightEmerald,
@@ -3586,6 +3623,53 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to create payment order')));
+    }
+  }
+
+  Future<void> _unlockContactFree() async {
+    setState(() => _isActionLoading = true);
+    try {
+      final response = await PaymentService.unlockContactFree(widget.userId);
+      final data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        if (mounted) {
+          setState(() => _contactUnlocked = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(child: Text('Contact unlocked for free!')),
+                ],
+              ),
+              backgroundColor: Color(0xFFFF6B35),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+          _loadUserProfile();
+          _loadWalletBalance();
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(data['message'] ?? 'Failed to unlock contact'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isActionLoading = false);
     }
   }
 

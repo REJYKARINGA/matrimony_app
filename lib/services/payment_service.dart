@@ -50,6 +50,14 @@ class PaymentService {
     );
   }
 
+  static Future<http.Response> unlockContactFree(int unlockedUserId) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/payment/unlock-contact-free',
+      method: 'POST',
+      body: {'unlocked_user_id': unlockedUserId},
+    );
+  }
+
   static Future<http.Response> checkContactUnlock(int userId) async {
     return await ApiService.makeRequest('${ApiService.baseUrl}/payment/check-unlock/$userId');
   }
