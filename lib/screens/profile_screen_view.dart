@@ -19,6 +19,7 @@ import 'preferences_screen.dart';
 import 'profile_photos_screen.dart';
 import 'verification_screen.dart';
 import 'photo_requests_screen.dart';
+import 'permission_requests_screen.dart';
 import 'map_picker_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../utils/app_colors.dart';
@@ -378,6 +379,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         subtitle: const Text('Manage who can access your photos', style: TextStyle(fontSize: 12)),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PhotoRequestsScreen())),
+                      ),
+                      const SizedBox(height: 8),
+                      ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.deepEmerald.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.person_search_rounded, color: AppColors.deepEmerald, size: 20),
+                        ),
+                        title: const Text('Permission Requests', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                        subtitle: const Text('Approve or reject contact unlock requests', style: TextStyle(fontSize: 12)),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PermissionRequestsScreen())),
                       ),
                     ]),
                     const SizedBox(height: 24),

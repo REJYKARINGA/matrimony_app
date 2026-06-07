@@ -95,6 +95,46 @@ class PaymentService {
       },
     );
   }
+
+  // ─── Permission-based Unlock Requests ────────────────────────────────
+
+  static Future<http.Response> requestPermission(int targetUserId) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/payment/request-permission',
+      method: 'POST',
+      body: {'target_user_id': targetUserId},
+    );
+  }
+
+  static Future<http.Response> getIncomingPermissionRequests() async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/permission-requests/incoming');
+  }
+
+  static Future<http.Response> getSentPermissionRequests() async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/permission-requests/sent');
+  }
+
+  static Future<http.Response> checkPermissionRequest(int userId) async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/check-permission-request/$userId');
+  }
+
+  static Future<http.Response> approvePermissionRequest(int requestId) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/payment/permission-requests/$requestId/approve',
+      method: 'POST',
+    );
+  }
+
+  static Future<http.Response> rejectPermissionRequest(int requestId) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/payment/permission-requests/$requestId/reject',
+      method: 'POST',
+    );
+  }
+
+  static Future<http.Response> getPendingPermissionCount() async {
+    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/permission-requests/pending-count');
+  }
 }
 
 

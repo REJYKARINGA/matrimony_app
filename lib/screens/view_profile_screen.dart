@@ -59,6 +59,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   String? _unlockedFatherName;
   String? _unlockedMotherName;
   bool _isLoadingContactDetails = false;
+
+  // Permission-based unlock
+  String _permissionRequestStatus = 'none';  // none | pending | approved | rejected
+  bool _isSendingPermissionRequest = false;
   
   // Compatibility Match Score
   double _compatibilityScore = 0.0;
@@ -140,6 +144,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
           // Set unlock status directly from profile response contact_info
           if (user.contactInfo != null) {
             _contactUnlocked = user.contactInfo!.isContactUnlocked;
+            _permissionRequestStatus = user.contactInfo!.permissionRequestStatus;
           }
           // Reset cached unlocked details on refresh
           _unlockedPhone = null;
@@ -863,7 +868,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               child: Opacity(
                 opacity: 0.3,
                 child: Image.asset(
-                  'assets/images/splash_bg.png',
+                  'assets/images/engagement_bg.png',
                   fit: BoxFit.cover,
                   errorBuilder: (ctx, err, st) => Container(),
                 ),
@@ -874,70 +879,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               physics: const BouncingScrollPhysics(),
               slivers: [
                 _buildSliverAppBar(),
-                SliverToBoxAdapter(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.transparent,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (_user?.status == 'blocked')
-                          Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade50,
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.red.shade200),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.red.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                )
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.gpp_bad, color: Colors.red.shade800, size: 28),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'SCAM ALERT',
-                                        style: TextStyle(
-                                          color: Colors.red.shade900,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 14,
-                                          letterSpacing: 1.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'This profile has been blocked by Admin for: ${_user?.blockReason ?? 'Suspicious Activity'}. If you have contacted them on WhatsApp, please exercise extreme caution.',
-                                        style: TextStyle(
-                                          color: Colors.red.shade800,
-                                          fontSize: 13,
-                                          height: 1.3,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (_user?.hasHiddenPhotos != true || (!_user!.photoRequestPending && !_user!.photoRequestRejected)) 
-                          _buildPhotoGallery(),
-                        _buildProfileDetails(),
-                        _buildFooter(),
-                        const SizedBox(height: 120), // Space for sticky bottom bar
-                      ],
-                    ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    <Widget>[
+                      if (_user?.status == 'blocked')
+                        _buildBlockedWarning(),
+                      if (_user?.hasHiddenPhotos != true || (!_user!.photoRequestPending && !_user!.photoRequestRejected)) 
+                        _buildPhotoGallery(),
+                      _buildProfileDetails(),
+                      _buildFooter(),
+                      const SizedBox(height: 120),
+                    ],
                   ),
                 ),
               ],
@@ -1576,6 +1528,57 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 
+  Widget _buildBlockedWarning() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.red.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.gpp_bad, color: Colors.red.shade800, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'SCAM ALERT',
+                  style: TextStyle(
+                    color: Colors.red.shade900,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'This profile has been blocked by Admin for: ${_user?.blockReason ?? 'Suspicious Activity'}. If you have contacted them on WhatsApp, please exercise extreme caution.',
+                  style: TextStyle(
+                    color: Colors.red.shade800,
+                    fontSize: 13,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPhotoGallery() {
     final bool hasHidden = _user?.hasHiddenPhotos == true;
     final List<ProfilePhoto> photos = _user?.profilePhotos ?? [];
@@ -2151,13 +2154,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     child: Icon(icon, color: AppColors.midnightEmerald, size: 22),
                   ),
                   const SizedBox(width: 14),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.midnightEmerald,
-                      letterSpacing: 0.3,
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.midnightEmerald,
+                        letterSpacing: 0.3,
+                      ),
                     ),
                   ),
                 ],
@@ -2367,13 +2372,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                     child: Icon(icon, color: AppColors.midnightEmerald, size: 22),
                   ),
                   const SizedBox(width: 14),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.midnightEmerald,
-                      letterSpacing: 0.3,
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.midnightEmerald,
+                        letterSpacing: 0.3,
+                      ),
                     ),
                   ),
                 ],
@@ -2445,13 +2452,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                 child: Icon(Icons.phone, color: AppColors.midnightEmerald, size: 22),
               ),
               SizedBox(width: 14),
-              Text(
-                'Contact Information',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.midnightEmerald,
-                  letterSpacing: 0.3,
+              Expanded(
+                child: Text(
+                  'Contact Information',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.midnightEmerald,
+                    letterSpacing: 0.3,
+                  ),
                 ),
               ),
               if (_contactUnlocked) ...[
@@ -2583,96 +2592,249 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ),
             SizedBox(height: 16),
             SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          AppColors.primaryGreen,
-                          AppColors.deepGreen, // Darker Gold
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryGreen.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
+            // Check if mandatory permission is required and not yet approved
+            if (_user?.contactInfo?.mandatoryPermissionForUnlock == true &&
+                _permissionRequestStatus != 'approved' &&
+                _permissionRequestStatus != 'none') ...[
+              // Hidden - permission flow status will show next
+            ] else if (_user?.contactInfo?.mandatoryPermissionForUnlock == true &&
+                _permissionRequestStatus != 'approved') ...[
+              // Permission is mandatory and no approval yet - hide payment buttons
+            ] else ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            AppColors.primaryGreen,
+                            AppColors.deepGreen,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _checkVerificationAndProceed(_showPaymentOptions),
-                      icon: Icon(Icons.account_balance_wallet, size: 18),
-                      label: Text(
-                        'Wallet',
-                        style: TextStyle(fontWeight: FontWeight.w500),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primaryGreen.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: AppColors.cardDark,
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _checkVerificationAndProceed(_showPaymentOptions),
+                        icon: Icon(Icons.account_balance_wallet, size: 18),
+                        label: Text(
+                          'Wallet',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: AppColors.cardDark,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFF004D40), // Very Dark Teal
-                          Color(0xFF0A3A2A), // Deep Emerald
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF0A3A2A).withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFF004D40),
+                            Color(0xFF0A3A2A),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    child: ElevatedButton.icon(
-                      onPressed: () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
-                      icon: Icon(Icons.payment, size: 18),
-                      label: Text(
-                        'Pay Now',
-                        style: TextStyle(fontWeight: FontWeight.w500),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF0A3A2A).withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        foregroundColor: AppColors.cardDark,
-                        elevation: 0,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      child: ElevatedButton.icon(
+                        onPressed: () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
+                        icon: Icon(Icons.payment, size: 18),
+                        label: Text(
+                          'Pay Now',
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: AppColors.cardDark,
+                          elevation: 0,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                ],
+              ),
+              SizedBox(height: 8),
+            ],
+            // Ask Permission button or status messages
+            if (_permissionRequestStatus == 'none')
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: OutlinedButton.icon(
+                  onPressed: _isSendingPermissionRequest ? null : () => _sendPermissionRequest(),
+                  icon: _isSendingPermissionRequest
+                      ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.deepEmerald))
+                      : Icon(Icons.person_search_rounded, size: 20),
+                  label: Text(
+                    _isSendingPermissionRequest ? 'Sending Request...' : 'Ask Permission',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.deepEmerald,
+                    side: BorderSide(color: AppColors.deepEmerald.withOpacity(0.4)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
                 ),
-              ],
-            ),
-            SizedBox(height: 8),
+              )
+            else if (_permissionRequestStatus == 'pending')
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.hourglass_empty, color: Colors.orange.shade700, size: 18),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Permission Requested — Awaiting Reply',
+                        style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.w500, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else if (_permissionRequestStatus == 'approved')
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryGreen.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle, color: AppColors.primaryGreen, size: 18),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Permission Granted — You can now unlock via Wallet',
+                        style: TextStyle(color: AppColors.primaryGreen, fontWeight: FontWeight.w500, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else if (_permissionRequestStatus == 'rejected')
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.red.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.cancel_outlined, color: Colors.red.shade400, size: 18),
+                    SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Permission Declined',
+                        style: TextStyle(color: Colors.red.shade400, fontWeight: FontWeight.w500, fontSize: 13),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            SizedBox(height: 4),
           ],
         ],
       ),
     );
+  }
+
+  Future<void> _sendPermissionRequest() async {
+    setState(() => _isSendingPermissionRequest = true);
+    try {
+      final response = await PaymentService.requestPermission(widget.userId);
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (mounted) {
+          setState(() => _permissionRequestStatus = 'pending');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(child: Text('Permission request sent!')),
+                ],
+              ),
+              backgroundColor: AppColors.deepEmerald,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(data['error'] ?? 'Failed to send request'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSendingPermissionRequest = false);
+    }
   }
 
   Widget _buildUnlockedContactRow(IconData icon, String label, String value, {Widget? trailing}) {

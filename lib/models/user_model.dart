@@ -2,11 +2,15 @@ class ContactInfo {
   final String? email;
   final String? phone;
   final bool isContactUnlocked;
+  final String permissionRequestStatus;
+  final bool mandatoryPermissionForUnlock;
 
   ContactInfo({
     this.email,
     this.phone,
     this.isContactUnlocked = false,
+    this.permissionRequestStatus = 'none',
+    this.mandatoryPermissionForUnlock = false,
   });
 
   factory ContactInfo.fromJson(Map<String, dynamic> json) {
@@ -14,6 +18,8 @@ class ContactInfo {
       email: json['email']?.toString(),
       phone: json['phone']?.toString(),
       isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1,
+      permissionRequestStatus: json['permission_request_status']?.toString() ?? 'none',
+      mandatoryPermissionForUnlock: json['mandatory_permission_for_unlock'] == true || json['mandatory_permission_for_unlock'] == 1,
     );
   }
 }
@@ -83,7 +89,10 @@ class User {
     final contactInfo = contactInfoJson != null 
         ? ContactInfo.fromJson(contactInfoJson) 
         : (json['is_contact_unlocked'] != null 
-            ? ContactInfo(isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1) 
+            ? ContactInfo(
+                isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1,
+                permissionRequestStatus: json['permission_request_status']?.toString() ?? 'none',
+              ) 
             : null);
 
     return User(

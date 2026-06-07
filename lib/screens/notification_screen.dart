@@ -17,6 +17,7 @@ import 'profile_photos_screen.dart';
 import 'photo_requests_screen.dart';
 import 'notification_settings_screen.dart';
 import 'wallet_transactions_screen.dart';
+import 'permission_requests_screen.dart';
 import '../utils/app_colors.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -371,6 +372,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
         badgeIcon = Icons.cancel_outlined;
         badgeColor = const Color(0xFFFF2D55);
         break;
+      case 'contact_unlock_request':
+        badgeIcon = Icons.person_search_rounded;
+        badgeColor = primaryCyan;
+        break;
+      case 'contact_unlock_request_approved':
+        badgeIcon = Icons.check_circle_rounded;
+        badgeColor = AppColors.primaryGreen;
+        break;
+      case 'contact_unlock_request_rejected':
+        badgeIcon = Icons.cancel_outlined;
+        badgeColor = const Color(0xFFFF2D55);
+        break;
       case 'wallet_transfer_otp':
       case 'wallet_transfer_received':
         badgeIcon = Icons.account_balance_wallet_rounded;
@@ -455,6 +468,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             ),
           );
+        } else if (type == 'contact_unlock_request') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const PermissionRequestsScreen(initialTab: 0),
+            ),
+          );
+        } else if (type == 'contact_unlock_request_approved' || type == 'contact_unlock_request_rejected') {
+          if (notification['sender_id'] != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ViewProfileScreen(userId: notification['sender_id']),
+              ),
+            );
+          }
         } else if (notification['sender_id'] != null) {
           Navigator.push(
             context,
@@ -490,7 +519,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     shape: BoxShape.circle,
                     border: Border.all(color: AppColors.mintTint, width: 2),
                   ),
-                  child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster') || type == 'scam_alert')
+                  child: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update' || type == 'photo_request_rejected' || type.toString().startsWith('engagement_poster') || type == 'scam_alert' || type == 'contact_unlock_request_approved' || type == 'contact_unlock_request_rejected')
                       ? CircleAvatar(
                           backgroundColor: (type == 'scam_alert' ? Colors.red.shade50 : AppColors.deepEmerald.withOpacity(0.12)),
                           child: Icon(badgeIcon, color: badgeColor, size: 26),
@@ -570,6 +599,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   (type == 'verification' || type == 'photo_verification') ? 
                     ((notification['message'] ?? '').toString().toLowerCase().contains('rejected') ? Icons.error_outline_rounded : Icons.verified_user_outlined) :
                   type.toString().startsWith('engagement_poster') ? Icons.celebration_outlined :
+                  type == 'contact_unlock_request' ? Icons.person_search_rounded :
+                  type == 'contact_unlock_request_approved' ? Icons.check_circle_outlined :
+                  type == 'contact_unlock_request_rejected' ? Icons.cancel_outlined :
                   type == 'suggestion_update' ? Icons.lightbulb_outline_rounded :
                   Icons.notifications_none_rounded,
                   size: 16,
