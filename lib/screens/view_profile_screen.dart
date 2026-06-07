@@ -64,6 +64,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   String _permissionRequestStatus = 'none';  // none | pending | approved | rejected
   bool _isSendingPermissionRequest = false;
   
+  // Free unlock countdown
+  Timer? _freeUnlockTimer;
+  String _freeUnlockRemaining = '';
+
   // Compatibility Match Score
   double _compatibilityScore = 0.0;
   List<Map<String, dynamic>> _matchAnalysis = [];
@@ -146,6 +150,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             _contactUnlocked = user.contactInfo!.isContactUnlocked;
             _permissionRequestStatus = user.contactInfo!.permissionRequestStatus;
           }
+          _startFreeUnlockCountdown();
           // Reset cached unlocked details on refresh
           _unlockedPhone = null;
           _unlockedFatherName = null;
@@ -2558,6 +2563,84 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ],
             SizedBox(height: 8),
           ] else ...[
+            // Locked state - show free unlock countdown if active
+            if (_user?.contactInfo?.freeUnlockEnabled == true)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryGreen.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(Icons.local_offer_rounded, color: Colors.white, size: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Free Unlock Offer',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'FREE',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 11,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (_freeUnlockRemaining.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Icon(Icons.timer_outlined, color: Colors.white, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Ends in $_freeUnlockRemaining',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             // Locked state - show masked phone
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -3626,6 +3709,50 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     }
   }
 
+  void _startFreeUnlockCountdown() {
+    _freeUnlockTimer?.cancel();
+    if (_user?.contactInfo?.freeUnlockEnabled != true) {
+      setState(() => _freeUnlockRemaining = '');
+      return;
+    }
+    final expiresAt = _user?.contactInfo?.freeUnlockExpiresAt;
+    if (expiresAt == null || expiresAt.isEmpty) {
+      setState(() => _freeUnlockRemaining = '');
+      return;
+    }
+    _updateFreeUnlockRemaining();
+    _freeUnlockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) _updateFreeUnlockRemaining();
+    });
+  }
+
+  void _updateFreeUnlockRemaining() {
+    final expiresAt = _user?.contactInfo?.freeUnlockExpiresAt;
+    if (expiresAt == null || expiresAt.isEmpty) {
+      _freeUnlockTimer?.cancel();
+      setState(() => _freeUnlockRemaining = '');
+      return;
+    }
+    final expiry = DateTime.tryParse(expiresAt);
+    if (expiry == null || expiry.isBefore(DateTime.now())) {
+      _freeUnlockTimer?.cancel();
+      setState(() => _freeUnlockRemaining = '');
+      return;
+    }
+    final diff = expiry.difference(DateTime.now());
+    final days = diff.inDays;
+    final hours = diff.inHours % 24;
+    final minutes = diff.inMinutes % 60;
+    final seconds = diff.inSeconds % 60;
+    if (days > 0) {
+      setState(() => _freeUnlockRemaining = '${days}d ${hours}h ${minutes}m ${seconds}s');
+    } else if (hours > 0) {
+      setState(() => _freeUnlockRemaining = '${hours}h ${minutes}m ${seconds}s');
+    } else {
+      setState(() => _freeUnlockRemaining = '${minutes}m ${seconds}s');
+    }
+  }
+
   Future<void> _unlockContactFree() async {
     setState(() => _isActionLoading = true);
     try {
@@ -4052,6 +4179,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   @override
   void dispose() {
     _interestTimer?.cancel();
+    _freeUnlockTimer?.cancel();
     _razorpay.clear();
     _animationController.dispose();
     _scrollController.dispose();
