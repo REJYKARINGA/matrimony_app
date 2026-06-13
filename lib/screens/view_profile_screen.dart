@@ -68,6 +68,17 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   Timer? _freeUnlockTimer;
   String _freeUnlockRemaining = '';
 
+  // Offer countdown
+  Timer? _offerTimer;
+  String _offerRemaining = '';
+
+  double get _unlockPrice => _user?.contactInfo?.discountedPrice ?? _user?.contactInfo?.unlockPrice ?? 49;
+  double get _baseUnlockPrice => _user?.contactInfo?.unlockPrice ?? 49;
+  ActiveFestival? get _activeFestival =>
+      (_user?.contactInfo?.activeFestivals != null && _user!.contactInfo!.activeFestivals.isNotEmpty)
+          ? _user!.contactInfo!.activeFestivals.first
+          : null;
+
   // Compatibility Match Score
   double _compatibilityScore = 0.0;
   List<Map<String, dynamic>> _matchAnalysis = [];
@@ -151,6 +162,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             _permissionRequestStatus = user.contactInfo!.permissionRequestStatus;
           }
           _startFreeUnlockCountdown();
+          _startOfferCountdown();
           // Reset cached unlocked details on refresh
           _unlockedPhone = null;
           _unlockedFatherName = null;
@@ -2675,6 +2687,71 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
             ),
             SizedBox(height: 16),
             SizedBox(height: 12),
+            // Discount offer banner (when free unlock is not active)
+            if (_activeFestival != null && _user?.contactInfo?.freeUnlockEnabled != true)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primaryGreen.withOpacity(0.9),
+                      AppColors.deepGreen.withOpacity(0.9),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryGreen.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.local_offer_rounded, color: Colors.white, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _activeFestival!.celebrationName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            _activeFestival!.offerDiscountType == 'percentage'
+                                ? '${(_activeFestival!.offerDiscount ?? 0).toStringAsFixed(0)}% OFF — ₹${_unlockPrice.toStringAsFixed(0)} only'
+                                : '₹${(_activeFestival!.offerDiscount ?? 0).toStringAsFixed(0)} OFF — ₹${_unlockPrice.toStringAsFixed(0)} only',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_activeFestival?.endsAt != null && _activeFestival!.endsAt!.isNotEmpty)
+                      _buildOfferCountdown(),
+                  ],
+                ),
+              ),
+            SizedBox(height: 12),
             // Check if mandatory permission is required and not yet approved
             if (_user?.contactInfo?.mandatoryPermissionForUnlock == true &&
                 _permissionRequestStatus != 'approved' &&
@@ -3513,7 +3590,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   }
 
   void _showPaymentOptions() {
-    if (_walletBalance >= 49) {
+    if (_walletBalance >= _unlockPrice) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -3527,9 +3604,31 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
               Text('Confirm Unlock'),
             ],
           ),
-          content: Text(
-            'Are you sure you want to unlock this contact? ₹49 will be deducted from your wallet.',
-            style: TextStyle(fontSize: 15),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Are you sure you want to unlock this contact? ${_unlockPrice < _baseUnlockPrice ? "₹${_unlockPrice.toStringAsFixed(0)} (₹${_baseUnlockPrice.toStringAsFixed(0)} with discount) will be deducted from your wallet." : "₹${_unlockPrice.toStringAsFixed(0)} will be deducted from your wallet."}',
+                style: TextStyle(fontSize: 15),
+              ),
+              if (_activeFestival != null && _unlockPrice < _baseUnlockPrice)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      Icon(Icons.local_offer_rounded, color: Colors.green, size: 16),
+                      SizedBox(width: 6),
+                      Text(
+                        _activeFestival!.offerDiscountType == 'percentage'
+                            ? '${(_activeFestival!.offerDiscount ?? 0).toStringAsFixed(0)}% discount applied!'
+                            : '₹${(_activeFestival!.offerDiscount ?? 0).toStringAsFixed(0)} discount applied!',
+                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
           actions: [
             TextButton(
@@ -3693,7 +3792,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   Future<void> _unlockWithDirectPayment() async {
     try {
       final response = await PaymentService.createOrder(
-        amount: 49,
+        amount: _unlockPrice,
         type: 'contact_unlock',
         unlockedUserId: widget.userId,
       );
@@ -3751,6 +3850,72 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     } else {
       setState(() => _freeUnlockRemaining = '${minutes}m ${seconds}s');
     }
+  }
+
+  void _startOfferCountdown() {
+    _offerTimer?.cancel();
+    final endsAt = _activeFestival?.endsAt;
+    if (endsAt == null || endsAt.isEmpty) {
+      setState(() => _offerRemaining = '');
+      return;
+    }
+    _updateOfferRemaining();
+    _offerTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) _updateOfferRemaining();
+    });
+  }
+
+  void _updateOfferRemaining() {
+    final endsAt = _activeFestival?.endsAt;
+    if (endsAt == null || endsAt.isEmpty) {
+      _offerTimer?.cancel();
+      setState(() => _offerRemaining = '');
+      return;
+    }
+    final expiry = DateTime.tryParse(endsAt);
+    if (expiry == null || expiry.isBefore(DateTime.now())) {
+      _offerTimer?.cancel();
+      setState(() => _offerRemaining = '');
+      return;
+    }
+    final diff = expiry.difference(DateTime.now());
+    final days = diff.inDays;
+    final hours = diff.inHours % 24;
+    final minutes = diff.inMinutes % 60;
+    final seconds = diff.inSeconds % 60;
+    if (days > 0) {
+      setState(() => _offerRemaining = '${days}d ${hours}h ${minutes}m ${seconds}s');
+    } else if (hours > 0) {
+      setState(() => _offerRemaining = '${hours}h ${minutes}m ${seconds}s');
+    } else {
+      setState(() => _offerRemaining = '${minutes}m ${seconds}s');
+    }
+  }
+
+  Widget _buildOfferCountdown() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.timer_outlined, color: Colors.white, size: 14),
+          const SizedBox(width: 4),
+          Text(
+            _offerRemaining.isNotEmpty ? _offerRemaining : 'Ending soon',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _unlockContactFree() async {
@@ -4180,6 +4345,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
   void dispose() {
     _interestTimer?.cancel();
     _freeUnlockTimer?.cancel();
+    _offerTimer?.cancel();
     _razorpay.clear();
     _animationController.dispose();
     _scrollController.dispose();

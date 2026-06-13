@@ -6,6 +6,9 @@ class ContactInfo {
   final bool mandatoryPermissionForUnlock;
   final bool freeUnlockEnabled;
   final String? freeUnlockExpiresAt;
+  final List<ActiveFestival> activeFestivals;
+  final double unlockPrice;
+  final double discountedPrice;
 
   ContactInfo({
     this.email,
@@ -15,9 +18,16 @@ class ContactInfo {
     this.mandatoryPermissionForUnlock = false,
     this.freeUnlockEnabled = false,
     this.freeUnlockExpiresAt,
+    this.activeFestivals = const [],
+    this.unlockPrice = 49,
+    this.discountedPrice = 49,
   });
 
   factory ContactInfo.fromJson(Map<String, dynamic> json) {
+    final festivalsList = (json['active_festivals'] as List?)
+            ?.map((f) => ActiveFestival.fromJson(f))
+            .toList() ??
+        [];
     return ContactInfo(
       email: json['email']?.toString(),
       phone: json['phone']?.toString(),
@@ -26,6 +36,38 @@ class ContactInfo {
       mandatoryPermissionForUnlock: json['mandatory_permission_for_unlock'] == true || json['mandatory_permission_for_unlock'] == 1,
       freeUnlockEnabled: json['free_unlock_enabled'] == true || json['free_unlock_enabled'] == 1,
       freeUnlockExpiresAt: json['free_unlock_expires_at']?.toString(),
+      activeFestivals: festivalsList,
+      unlockPrice: double.tryParse(json['unlock_price']?.toString() ?? '49') ?? 49,
+      discountedPrice: double.tryParse(json['discounted_price']?.toString() ?? '49') ?? 49,
+    );
+  }
+}
+
+class ActiveFestival {
+  final int id;
+  final String celebrationName;
+  final double? offerDiscount;
+  final String? offerDiscountType;
+  final double discountValue;
+  final String? endsAt;
+
+  ActiveFestival({
+    required this.id,
+    required this.celebrationName,
+    this.offerDiscount,
+    this.offerDiscountType,
+    this.discountValue = 0,
+    this.endsAt,
+  });
+
+  factory ActiveFestival.fromJson(Map<String, dynamic> json) {
+    return ActiveFestival(
+      id: json['id'] ?? 0,
+      celebrationName: json['celebration_name']?.toString() ?? '',
+      offerDiscount: json['offer_discount'] != null ? double.tryParse(json['offer_discount'].toString()) : null,
+      offerDiscountType: json['offer_discount_type']?.toString(),
+      discountValue: double.tryParse(json['discount_value']?.toString() ?? '0') ?? 0,
+      endsAt: json['ends_at']?.toString(),
     );
   }
 }
@@ -98,6 +140,14 @@ class User {
             ? ContactInfo(
                 isContactUnlocked: json['is_contact_unlocked'] == true || json['is_contact_unlocked'] == 1,
                 permissionRequestStatus: json['permission_request_status']?.toString() ?? 'none',
+                mandatoryPermissionForUnlock: json['mandatory_permission_for_unlock'] == true || json['mandatory_permission_for_unlock'] == 1,
+                freeUnlockEnabled: json['free_unlock_enabled'] == true || json['free_unlock_enabled'] == 1,
+                freeUnlockExpiresAt: json['free_unlock_expires_at']?.toString(),
+                activeFestivals: (json['active_festivals'] as List?)
+                    ?.map((f) => ActiveFestival.fromJson(f))
+                    .toList() ?? [],
+                unlockPrice: double.tryParse(json['unlock_price']?.toString() ?? '49') ?? 49,
+                discountedPrice: double.tryParse(json['discounted_price']?.toString() ?? '49') ?? 49,
               ) 
             : null);
 
