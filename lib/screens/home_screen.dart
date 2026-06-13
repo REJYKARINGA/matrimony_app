@@ -842,17 +842,20 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              Color(0xFFD84315),
-              Color(0xFFFF6D00),
-              Color(0xFFFF9800),
+              Color(0xFFF57C00),
+              Color(0xFFFF8F00),
+              Color(0xFFFFB300),
+              Color(0xFFFFC107),
+              Color(0xFFFFEB3B),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            stops: [0.0, 0.25, 0.50, 0.75, 1.0],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFBF360C).withOpacity(0.4),
+              color: const Color(0xFFF57C00).withOpacity(0.4),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -882,7 +885,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     Text(
                       festival.celebrationName,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                       ),
@@ -891,7 +894,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     Text(
                       '${festival.offerDiscountType == 'percentage' ? '${festival.offerDiscount?.toStringAsFixed(0)}%' : '₹${festival.offerDiscount?.toStringAsFixed(0)}'} OFF on contact unlocks',
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: Colors.black87,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -901,13 +904,13 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.black.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           'Ends ${festival.endsAt!.substring(0, 10)}',
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: Colors.black87,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                           ),
@@ -3221,7 +3224,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                  color: Colors.black.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: Colors.white.withOpacity(0.4),
