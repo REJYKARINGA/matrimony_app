@@ -885,7 +885,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     Text(
                       festival.celebrationName,
                       style: const TextStyle(
-                        color: Colors.black87,
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                       ),
@@ -894,7 +894,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     Text(
                       '${festival.offerDiscountType == 'percentage' ? '${festival.offerDiscount?.toStringAsFixed(0)}%' : '₹${festival.offerDiscount?.toStringAsFixed(0)}'} OFF on contact unlocks',
                       style: const TextStyle(
-                        color: Colors.black87,
+                        color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -910,7 +910,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         child: Text(
                           'Ends ${festival.endsAt!.substring(0, 10)}',
                           style: const TextStyle(
-                            color: Colors.black87,
+                            color: Colors.white,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                           ),
@@ -3224,7 +3224,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                             decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                 color: Colors.white.withOpacity(0.4),
