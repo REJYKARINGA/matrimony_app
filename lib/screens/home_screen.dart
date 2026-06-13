@@ -745,16 +745,17 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF1A237E), Color(0xFF4A148C)],
+            colors: [AppColors.softMint, AppColors.mintTint],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3), width: 1),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF4A148C).withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              color: AppColors.mintTint.withOpacity(0.5),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -765,12 +766,19 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryGreen.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: const Icon(
                   Icons.lock_open_rounded,
-                  color: Colors.white,
+                  color: AppColors.primaryGreen,
                   size: 28,
                 ),
               ),
@@ -782,7 +790,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     const Text(
                       'Free Unlock Offer',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.darkGreen,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
@@ -791,7 +799,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     Text(
                       'Unlock contacts for free during this promotional period.',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
+                        color: AppColors.bodyText.withOpacity(0.85),
                         fontSize: 12,
                       ),
                     ),
@@ -800,13 +808,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: AppColors.primaryGreen.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.primaryGreen.withOpacity(0.2)),
                         ),
                         child: Text(
                           expiryText,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                          style: const TextStyle(
+                            color: AppColors.darkGreen,
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                           ),
@@ -832,14 +841,21 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFE65100), Color(0xFFBF360C)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFF57C00),
+              Color(0xFFFF8F00),
+              Color(0xFFFFB300),
+              Color(0xFFFFC107),
+              Color(0xFFFFEB3B),
+            ],
+            stops: [0.0, 0.25, 0.50, 0.75, 1.0],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFBF360C).withOpacity(0.3),
+              color: const Color(0xFFF57C00).withOpacity(0.4),
               blurRadius: 12,
               offset: const Offset(0, 6),
             ),
@@ -852,7 +868,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withOpacity(0.25),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -869,17 +885,18 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     Text(
                       festival.celebrationName,
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                        color: Colors.black87,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       '${festival.offerDiscountType == 'percentage' ? '${festival.offerDiscount?.toStringAsFixed(0)}%' : '₹${festival.offerDiscount?.toStringAsFixed(0)}'} OFF on contact unlocks',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.85),
-                        fontSize: 12,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (festival.endsAt != null) ...[
@@ -887,15 +904,15 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.black.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           'Ends ${festival.endsAt!.substring(0, 10)}',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -2272,18 +2289,6 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               child: _buildDailyPickSection(),
             ),
 
-          // Festival Offer Card
-          if (_activeFestivals.isNotEmpty)
-            SliverToBoxAdapter(
-              child: _buildFestivalOfferCard(),
-            ),
-
-          // Free Unlock Offer Banner
-          if (_freeUnlockExpiresAt != null)
-            SliverToBoxAdapter(
-              child: _buildFreeUnlockBanner(),
-            ),
-
           // Visitors section
           if (_visitors.isNotEmpty)
             SliverToBoxAdapter(
@@ -2474,17 +2479,39 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       ),
                     );
                   }
-                  return SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      if (index == filteredUsers.length) {
-                        return _buildEndOfResultsCard();
-                      }
-                      return _buildDynamicProfileCard(
-                        context,
-                        filteredUsers[index],
-                      );
-                    }, childCount: filteredUsers.length + 1),
-                  );
+                  final showFestival = _activeFestivals.isNotEmpty;
+                    final showFreeUnlock = _freeUnlockExpiresAt != null;
+                    final n = filteredUsers.length;
+                    // Positions are relative to the profile list, clamped for small lists
+                    int festivalPos = n >= 3 ? 2 : (n >= 1 ? 1 : 0);
+                    int freeUnlockPos = festivalPos + 3;
+                    // Adjust for festival insertion shifting later positions
+                    if (showFestival && showFreeUnlock) freeUnlockPos++;
+                    int extra = 0;
+                    if (showFestival) extra++;
+                    if (showFreeUnlock) extra++;
+                    final totalCount = n + 1 + extra;
+
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        if (showFestival && index == festivalPos) {
+                          return _buildFestivalOfferCard();
+                        }
+                        if (showFreeUnlock && index == freeUnlockPos) {
+                          return _buildFreeUnlockBanner();
+                        }
+                        int realIndex = index;
+                        if (showFestival && index > festivalPos) realIndex--;
+                        if (showFreeUnlock && index > freeUnlockPos) realIndex--;
+                        if (realIndex >= n) {
+                          return _buildEndOfResultsCard();
+                        }
+                        return _buildDynamicProfileCard(
+                          context,
+                          filteredUsers[realIndex],
+                        );
+                      }, childCount: totalCount),
+                    );
                 }(),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
