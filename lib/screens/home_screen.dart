@@ -354,7 +354,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               final mins = diff.inMinutes.remainder(60);
               final secs = diff.inSeconds.remainder(60);
               if (days > 0) {
-                _festivalTimeLeft = '${days}d ${hours}h ${mins}m';
+                _festivalTimeLeft = '${days}d ${hours}h ${mins}m ${secs}s';
               } else if (hours > 0) {
                 _festivalTimeLeft = '${hours}h ${mins}m ${secs}s';
               } else {
@@ -378,7 +378,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
             final mins = diff.inMinutes.remainder(60);
             final secs = diff.inSeconds.remainder(60);
             if (days > 0) {
-              _freeUnlockTimeLeft = '${days}d ${hours}h ${mins}m';
+              _freeUnlockTimeLeft = '${days}d ${hours}h ${mins}m ${secs}s';
             } else if (hours > 0) {
               _freeUnlockTimeLeft = '${hours}h ${mins}m ${secs}s';
             } else if (mins > 0) {
