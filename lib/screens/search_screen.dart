@@ -962,6 +962,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   final ScrollController _scrollController = ScrollController();
   Set<int> _shortlistedUserIds = {};
   Set<int> _sentInterests = {};
+  Map<int, String> _sentInterestTimestamps = {};
   Set<int> _matchedUserIds = {};
   Map<int, Timer?> _interestTimers = {};
   Map<int, int> _interestCountdown = {};
@@ -1005,6 +1006,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       final sentResponse = await MatchingService.getSentInterests();
       final receivedResponse = await MatchingService.getReceivedInterests();
       Set<int> sentIds = {};
+      Map<int, String> sentTimestamps = {};
       Set<int> matchedIds = {};
 
       if (sentResponse.statusCode == 200) {
@@ -1014,6 +1016,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
           int? receiverId = int.tryParse(interest['receiver_id'].toString());
           if (receiverId != null) {
             sentIds.add(receiverId);
+            sentTimestamps[receiverId] = interest['sent_at']?.toString() ?? '';
             if (interest['status'] == 'accepted') matchedIds.add(receiverId);
           }
         }
@@ -1031,6 +1034,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
       if (mounted) {
         setState(() {
           _sentInterests = sentIds;
+          _sentInterestTimestamps = sentTimestamps;
           _matchedUserIds = matchedIds;
         });
       }
@@ -1112,6 +1116,47 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         }
       }
     });
+  }
+
+  Future<void> _handleSendReminder(int userId) async {
+    try {
+      final response = await MatchingService.getSentInterests();
+      if (response.statusCode != 200) return;
+      final data = json.decode(response.body);
+      List<dynamic> interestsData = data['interests']?['data'] ?? [];
+      int? interestId;
+      for (var interest in interestsData) {
+        int? receiverId = int.tryParse(interest['receiver_id'].toString());
+        if (receiverId == userId) {
+          interestId = int.tryParse(interest['id'].toString());
+          break;
+        }
+      }
+      if (interestId == null) return;
+
+      final remindResponse = await MatchingService.sendReminder(interestId);
+      if (!mounted) return;
+      if (remindResponse.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reminder sent successfully'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        final body = json.decode(remindResponse.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(body['error'] ?? 'Failed to send reminder'),
+            backgroundColor: Colors.orange,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error sending reminder: $e');
+    }
   }
 
   @override
@@ -1739,6 +1784,52 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                 ],
               ),
             ),
+            // Remind button - only if interest sent and 24h+ passed
+            if (_sentInterests.contains(user.id) &&
+                _sentInterestTimestamps[user.id] != null &&
+                _sentInterestTimestamps[user.id]!.isNotEmpty)
+              Positioned(
+                bottom: 84,
+                left: 0,
+                right: 0,
+                child: Builder(builder: (ctx) {
+                  final sentAt = DateTime.tryParse(_sentInterestTimestamps[user.id]!);
+                  final canRemind = sentAt != null &&
+                      DateTime.now().difference(sentAt).inHours >= 24;
+                  if (!canRemind) return const SizedBox.shrink();
+                  return Center(
+                    child: GestureDetector(
+                      onTap: () => _handleSendReminder(user.id!),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.notifications_active_rounded, color: Colors.white, size: 16),
+                            SizedBox(width: 6),
+                            Text(
+                              'Send Reminder',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
             // Clickable area for profile view (top part only to avoid blocking buttons)
             Positioned(
               top: 0,

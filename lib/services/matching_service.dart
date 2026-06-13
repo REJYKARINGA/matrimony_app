@@ -56,6 +56,13 @@ class MatchingService {
       '${ApiService.baseUrl}/matching/daily-pick',
     );
   }
+
+  static Future<http.Response> sendReminder(int interestId) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/matching/interest/$interestId/remind',
+      method: 'POST',
+    );
+  }
 }
 
 

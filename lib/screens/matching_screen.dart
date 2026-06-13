@@ -361,6 +361,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                 status: interest['status'],
                 isSentByMe: isSentByMe,
                 interestId: interest['id'],
+                sentAt: interest['sent_at']?.toString(),
               );
             }).toList(),
 
@@ -519,6 +520,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             status: interest['status'],
             isSentByMe: true,
             interestId: interest['id'],
+            sentAt: interest['sent_at']?.toString(),
           );
         },
       ),
@@ -589,6 +591,7 @@ class _MatchingScreenState extends State<MatchingScreen>
     bool isSentByMe = false,
     int? interestId,
     int? blockId,
+    String? sentAt,
   }) {
     final profile = user.userProfile;
     final isBlurred = (user.isDisplayImageVerified != true) || user.hasHiddenPhotos;
@@ -1135,6 +1138,52 @@ class _MatchingScreenState extends State<MatchingScreen>
                 ],
               ),
             ),
+            // Remind button - only if sent by me, interest is pending, and 24h+ passed
+            if (isSentByMe && status == 'pending' && sentAt != null && sentAt.isNotEmpty)
+              Positioned(
+                bottom: 84,
+                left: 0,
+                right: 0,
+                child: Builder(builder: (ctx) {
+                  final parsedSentAt = DateTime.tryParse(sentAt);
+                  final canRemind = parsedSentAt != null &&
+                      DateTime.now().difference(parsedSentAt).inHours >= 24;
+                  if (!canRemind) return const SizedBox.shrink();
+                  return Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (interestId != null) _sendReminder(interestId);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.4),
+                            width: 1,
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.notifications_active_rounded, color: Colors.white, size: 16),
+                            SizedBox(width: 6),
+                            Text(
+                              'Send Reminder',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
             // Clickable area for profile view (top part only to avoid blocking buttons)
             Positioned(
               top: 0,
@@ -1318,6 +1367,33 @@ class _MatchingScreenState extends State<MatchingScreen>
           ),
         ),
       );
+    }
+  }
+
+  Future<void> _sendReminder(int interestId) async {
+    try {
+      final response = await MatchingService.sendReminder(interestId);
+      if (!mounted) return;
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reminder sent successfully'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        final body = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(body['error'] ?? 'Failed to send reminder'),
+            backgroundColor: Colors.orange,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error sending reminder: $e');
     }
   }
 
