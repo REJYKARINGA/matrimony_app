@@ -2647,6 +2647,48 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     ),
                   ),
                 ),
+                // Festival Offer Badge - top right
+                if (user.contactInfo?.activeFestivals != null &&
+                    user.contactInfo!.activeFestivals.isNotEmpty)
+                  Positioned(
+                    top: 20,
+                    right: 20,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF9800), Color(0xFFF44336)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.local_offer_rounded, color: Colors.white, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            user.contactInfo!.activeFestivals.length == 1
+                                ? '${user.contactInfo!.activeFestivals.first.celebrationName} - ${user.contactInfo!.activeFestivals.first.offerDiscountType == 'percentage' ? "${user.contactInfo!.activeFestivals.first.offerDiscount?.toStringAsFixed(0)}%" : "₹${user.contactInfo!.activeFestivals.first.offerDiscount?.toStringAsFixed(0)}"} OFF'
+                                : '${user.contactInfo!.activeFestivals.length} Offers Active',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 Positioned(
                   left: 24,
                   right: 24,
