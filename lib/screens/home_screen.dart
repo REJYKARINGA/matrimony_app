@@ -328,6 +328,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   bool _applyRecentLoginFilter = false;
   bool _applyRecentRegistrationFilter = false;
   String? _freeUnlockExpiresAt;
+  List<ActiveFestival> _activeFestivals = [];
   
   @override
   void initState() {
@@ -804,6 +805,93 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                         ),
                         child: Text(
                           expiryText,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFestivalOfferCard() {
+    if (_activeFestivals.isEmpty) return const SizedBox.shrink();
+    final festival = _activeFestivals.first;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFE65100), Color(0xFFBF360C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFBF360C).withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.local_offer_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      festival.celebrationName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${festival.offerDiscountType == 'percentage' ? '${festival.offerDiscount?.toStringAsFixed(0)}%' : '₹${festival.offerDiscount?.toStringAsFixed(0)}'} OFF on contact unlocks',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (festival.endsAt != null) ...[
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Ends ${festival.endsAt!.substring(0, 10)}',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 10,
@@ -1911,6 +1999,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           }
         }
       }
+      if (_activeFestivals.isEmpty) {
+        for (var u in allUsers) {
+          if (u.contactInfo?.activeFestivals != null && u.contactInfo!.activeFestivals.isNotEmpty) {
+            _activeFestivals = u.contactInfo!.activeFestivals;
+            break;
+          }
+        }
+      }
     });
   }
 
@@ -2174,6 +2270,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           if (_dailyTopPick != null)
             SliverToBoxAdapter(
               child: _buildDailyPickSection(),
+            ),
+
+          // Festival Offer Card
+          if (_activeFestivals.isNotEmpty)
+            SliverToBoxAdapter(
+              child: _buildFestivalOfferCard(),
             ),
 
           // Free Unlock Offer Banner
