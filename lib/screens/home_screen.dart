@@ -329,7 +329,43 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   bool _applyRecentRegistrationFilter = false;
   String? _freeUnlockExpiresAt;
   List<ActiveFestival> _activeFestivals = [];
+  Timer? _festivalTimer;
+  String _festivalTimeLeft = '';
   
+  void _startFestivalCountdown() {
+    if (_activeFestivals.isEmpty) return;
+    final endsAt = _activeFestivals.first.endsAt;
+    if (endsAt == null) return;
+    final end = DateTime.tryParse(endsAt);
+    if (end == null) return;
+
+    void update() {
+      final now = DateTime.now();
+      final diff = end.difference(now);
+      if (diff.isNegative) {
+        _festivalTimeLeft = 'Ended';
+        _festivalTimer?.cancel();
+        return;
+      }
+      final days = diff.inDays;
+      final hours = diff.inHours.remainder(24);
+      final mins = diff.inMinutes.remainder(60);
+      final secs = diff.inSeconds.remainder(60);
+      if (days > 0) {
+        _festivalTimeLeft = '${days}d ${hours}h ${mins}m';
+      } else if (hours > 0) {
+        _festivalTimeLeft = '${hours}h ${mins}m ${secs}s';
+      } else {
+        _festivalTimeLeft = '${mins}m ${secs}s';
+      }
+      if (mounted) setState(() {});
+    }
+
+    update();
+    _festivalTimer?.cancel();
+    _festivalTimer = Timer.periodic(const Duration(seconds: 1), (_) => update());
+  }
+
   @override
   void initState() {
     super.initState();
@@ -376,7 +412,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   void _onScroll() {
     if (_interestTimers.isNotEmpty) {
       setState(() {
-        _interestTimers.forEach((key, timer) => timer?.cancel());
+    _festivalTimer?.cancel();
+    _interestTimers.forEach((key, timer) => timer?.cancel());
         _interestTimers.clear();
         _interestCountdown.clear();
       });
@@ -908,7 +945,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Ends ${festival.endsAt!.substring(0, 10)}',
+                          _festivalTimeLeft.isNotEmpty ? _festivalTimeLeft : 'Ends ${festival.endsAt!.substring(0, 10)}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,
@@ -2024,6 +2061,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           }
         }
       }
+      _startFestivalCountdown();
     });
   }
 
