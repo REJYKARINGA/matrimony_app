@@ -329,41 +329,69 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   bool _applyRecentRegistrationFilter = false;
   String? _freeUnlockExpiresAt;
   List<ActiveFestival> _activeFestivals = [];
-  Timer? _festivalTimer;
+  Timer? _countdownTimer;
   String _festivalTimeLeft = '';
+  String _freeUnlockTimeLeft = '';
   
-  void _startFestivalCountdown() {
-    if (_activeFestivals.isEmpty) return;
-    final endsAt = _activeFestivals.first.endsAt;
-    if (endsAt == null) return;
-    final end = DateTime.tryParse(endsAt);
-    if (end == null) return;
-
-    void update() {
+  void _startCountdowns() {
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
       final now = DateTime.now();
-      final diff = end.difference(now);
-      if (diff.isNegative) {
-        _festivalTimeLeft = 'Ended';
-        _festivalTimer?.cancel();
-        return;
-      }
-      final days = diff.inDays;
-      final hours = diff.inHours.remainder(24);
-      final mins = diff.inMinutes.remainder(60);
-      final secs = diff.inSeconds.remainder(60);
-      if (days > 0) {
-        _festivalTimeLeft = '${days}d ${hours}h ${mins}m';
-      } else if (hours > 0) {
-        _festivalTimeLeft = '${hours}h ${mins}m ${secs}s';
-      } else {
-        _festivalTimeLeft = '${mins}m ${secs}s';
-      }
-      if (mounted) setState(() {});
-    }
 
-    update();
-    _festivalTimer?.cancel();
-    _festivalTimer = Timer.periodic(const Duration(seconds: 1), (_) => update());
+      // Festival countdown
+      if (_activeFestivals.isNotEmpty) {
+        final endsAt = _activeFestivals.first.endsAt;
+        if (endsAt != null) {
+          final end = DateTime.tryParse(endsAt);
+          if (end != null) {
+            final diff = end.difference(now);
+            if (diff.isNegative) {
+              _festivalTimeLeft = 'Ended';
+            } else {
+              final days = diff.inDays;
+              final hours = diff.inHours.remainder(24);
+              final mins = diff.inMinutes.remainder(60);
+              final secs = diff.inSeconds.remainder(60);
+              if (days > 0) {
+                _festivalTimeLeft = '${days}d ${hours}h ${mins}m';
+              } else if (hours > 0) {
+                _festivalTimeLeft = '${hours}h ${mins}m ${secs}s';
+              } else {
+                _festivalTimeLeft = '${mins}m ${secs}s';
+              }
+            }
+          }
+        }
+      }
+
+      // Free unlock countdown
+      if (_freeUnlockExpiresAt != null) {
+        final end = DateTime.tryParse(_freeUnlockExpiresAt!);
+        if (end != null) {
+          final diff = end.difference(now);
+          if (diff.isNegative) {
+            _freeUnlockTimeLeft = 'Ended';
+          } else {
+            final days = diff.inDays;
+            final hours = diff.inHours.remainder(24);
+            final mins = diff.inMinutes.remainder(60);
+            final secs = diff.inSeconds.remainder(60);
+            if (days > 0) {
+              _freeUnlockTimeLeft = '${days}d ${hours}h ${mins}m';
+            } else if (hours > 0) {
+              _freeUnlockTimeLeft = '${hours}h ${mins}m ${secs}s';
+            } else if (mins > 0) {
+              _freeUnlockTimeLeft = '${mins}m ${secs}s';
+            } else {
+              _freeUnlockTimeLeft = '${secs}s';
+            }
+          }
+        }
+      }
+
+      setState(() {});
+    });
   }
 
   @override
@@ -383,6 +411,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     });
 
     _scrollController.addListener(_onScroll);
+
+    _startCountdowns();
     
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_hasInitialized) return;
@@ -412,8 +442,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   void _onScroll() {
     if (_interestTimers.isNotEmpty) {
       setState(() {
-    _festivalTimer?.cancel();
-    _interestTimers.forEach((key, timer) => timer?.cancel());
+        _interestTimers.forEach((key, timer) => timer?.cancel());
         _interestTimers.clear();
         _interestCountdown.clear();
       });
@@ -422,6 +451,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _interestTimers.forEach((key, timer) => timer?.cancel());
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
@@ -768,14 +798,9 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   }
 
   Widget _buildFreeUnlockBanner() {
-    final expiresAt = _freeUnlockExpiresAt;
-    String expiryText = '';
-    if (expiresAt != null) {
-      final parsed = DateTime.tryParse(expiresAt);
-      if (parsed != null) {
-        expiryText = 'Expires ${parsed.day.toString().padLeft(2, '0')}-${parsed.month.toString().padLeft(2, '0')}-${parsed.year} ${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}';
-      }
-    }
+    final expiryText = _freeUnlockTimeLeft.isNotEmpty
+        ? 'Ends in $_freeUnlockTimeLeft'
+        : '';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
@@ -2061,7 +2086,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           }
         }
       }
-      _startFestivalCountdown();
+      _startCountdowns();
     });
   }
 
