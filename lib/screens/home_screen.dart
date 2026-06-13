@@ -327,6 +327,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   bool _applyHideInterestedFilter = true;
   bool _applyRecentLoginFilter = false;
   bool _applyRecentRegistrationFilter = false;
+  String? _freeUnlockExpiresAt;
   
   @override
   void initState() {
@@ -725,6 +726,99 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           },
         );
       },
+    );
+  }
+
+  Widget _buildFreeUnlockBanner() {
+    final expiresAt = _freeUnlockExpiresAt;
+    String expiryText = '';
+    if (expiresAt != null) {
+      final parsed = DateTime.tryParse(expiresAt);
+      if (parsed != null) {
+        expiryText = 'Expires ${parsed.day.toString().padLeft(2, '0')}-${parsed.month.toString().padLeft(2, '0')}-${parsed.year} ${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}';
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF1A237E), Color(0xFF4A148C)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF4A148C).withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.lock_open_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Free Unlock Offer',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Unlock contacts for free during this promotional period.',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 12,
+                      ),
+                    ),
+                    if (expiryText.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          expiryText,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1809,6 +1903,14 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
     setState(() {
       _recommendedUsers = allUsers;
       _isLoadingRecommended = false;
+      if (_freeUnlockExpiresAt == null) {
+        for (var u in allUsers) {
+          if (u.contactInfo?.freeUnlockEnabled == true) {
+            _freeUnlockExpiresAt = u.contactInfo?.freeUnlockExpiresAt;
+            break;
+          }
+        }
+      }
     });
   }
 
@@ -1820,6 +1922,10 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
     if (authProvider.user != null && !authProvider.hasProfile && authProvider.user!.role != 'admin') {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_freeUnlockExpiresAt == null && user?.contactInfo?.freeUnlockEnabled == true) {
+      _freeUnlockExpiresAt = user?.contactInfo?.freeUnlockExpiresAt;
     }
 
     final scaffold = Scaffold(
@@ -2068,6 +2174,12 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           if (_dailyTopPick != null)
             SliverToBoxAdapter(
               child: _buildDailyPickSection(),
+            ),
+
+          // Free Unlock Offer Banner
+          if (_freeUnlockExpiresAt != null)
+            SliverToBoxAdapter(
+              child: _buildFreeUnlockBanner(),
             ),
 
           // Visitors section
