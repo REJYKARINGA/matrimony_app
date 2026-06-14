@@ -356,11 +356,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         contentPadding: EdgeInsets.zero,
                         leading: Container(
                           padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), shape: BoxShape.circle),
-                          child: const Icon(Icons.verified_user_outlined, color: Colors.green, size: 20),
+                          decoration: BoxDecoration(
+                            color: _user?.verification?.status == 'verified'
+                                ? Colors.green.withOpacity(0.1)
+                                : AppColors.mutedText.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            _user?.verification?.status == 'verified'
+                                ? Icons.verified_user_outlined
+                                : Icons.shield_outlined,
+                            color: _user?.verification?.status == 'verified'
+                                ? Colors.green
+                                : AppColors.mutedText,
+                            size: 20,
+                          ),
                         ),
                         title: const Text('Account Verification', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-                        subtitle: const Text('Verify your identity to get a verification badge', style: TextStyle(fontSize: 12)),
+                        subtitle: Text(
+                          _user?.verification?.status == 'verified'
+                              ? 'Your account is verified'
+                              : 'Verify your identity to get a verification badge',
+                          style: const TextStyle(fontSize: 12),
+                        ),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationScreen())),
                       ),
