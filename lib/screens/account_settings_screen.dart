@@ -278,7 +278,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                                 ? Icons.verified
                                 : Icons.verified_user_outlined,
                             color: user?.verification?.status == 'verified'
-                                ? AppColors.deepEmerald
+                                ? Colors.blue
                                 : AppColors.mutedText,
                             size: 24,
                           ),
@@ -304,7 +304,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.check_circle, size: 14, color: Colors.green[700]),
+                                Icon(Icons.check_circle, size: 14, color: Colors.blue),
                                 const SizedBox(width: 4),
                                 Text(
                                   'VERIFIED',

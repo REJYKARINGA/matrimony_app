@@ -1432,7 +1432,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                           ),
                           child: const Icon(
                             Icons.verified_rounded,
-                            color: AppColors.primaryGreen, // Branded Green
+                            color: Colors.blue, // Branded Green
                             size: 28,
                           ),
                         ),
@@ -4483,7 +4483,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
                         ),
                         if (user.userProfile?.isActiveVerified == true) ...[
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified, color: Color(0xFF0A3A2A), size: 14),
+                          const Icon(Icons.verified, color: Colors.blue, size: 14),
                         ],
                       ],
                     ),

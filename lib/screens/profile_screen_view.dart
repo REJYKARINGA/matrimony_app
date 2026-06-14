@@ -367,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? Icons.verified_user_outlined
                                 : Icons.shield_outlined,
                             color: _user?.verification?.status == 'verified'
-                                ? Colors.green
+                                ? Colors.blue
                                 : AppColors.mutedText,
                             size: 20,
                           ),
@@ -548,7 +548,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (_user?.verification?.status == 'verified') ...[
-                        const Icon(Icons.verified, color: AppColors.cardDark, size: 16),
+                        const Icon(Icons.verified, color: Colors.blue, size: 16),
                         const SizedBox(width: 4),
                       ],
                        Text(

@@ -1211,7 +1211,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                     ),
                                     const SizedBox(width: 8),
                                     if (profile?.isActiveVerified == true)
-                                      const Icon(Icons.verified, color: AppColors.primaryGreen, size: 18),
+                                      const Icon(Icons.verified, color: Colors.blue, size: 18),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
@@ -3016,7 +3016,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           if (user.userProfile?.isActiveVerified == true)
                             const Icon(
                               Icons.verified_rounded,
-                              color: AppColors.primaryGreen, // Turquoise
+                              color: Colors.blue,
                               size: 18,
                             ),
                         ],

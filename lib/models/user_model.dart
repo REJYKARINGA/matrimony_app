@@ -312,6 +312,7 @@ class UserProfile {
   final String? smoke;
   final String? alcohol;
   final bool? isActiveVerified;
+  final bool? isProfileActive;
   final bool? hidePhotos;
   final DateTime? createdAt;
   final int? ageOverride;
@@ -355,6 +356,7 @@ class UserProfile {
     this.smoke,
     this.alcohol,
     this.isActiveVerified,
+    this.isProfileActive,
     this.hidePhotos,
     this.createdAt,
     this.ageOverride,
@@ -374,7 +376,7 @@ class UserProfile {
       presentCity: json['present_city']?.toString(),
       presentCountry: json['present_country']?.toString(),
       profilePicture: json['profile_picture']?.toString(),
-      isActiveVerified: json['is_active_verified'] == true || json['is_active_verified'] == 1,
+      isActiveVerified: json['is_identity_verified'] == true || json['is_identity_verified'] == 1,
       ageOverride: json['age'],
     );
   }
@@ -417,7 +419,8 @@ class UserProfile {
       drugAddiction: json['drug_addiction'] == 1 || json['drug_addiction'] == true,
       smoke: json['smoke']?.toString(),
       alcohol: json['alcohol']?.toString(),
-      isActiveVerified: json['is_active_verified'] == 1 || json['is_active_verified'] == true,
+      isActiveVerified: json['is_identity_verified'] == 1 || json['is_identity_verified'] == true,
+      isProfileActive: json['is_profile_active'] == 1 || json['is_profile_active'] == true,
       hidePhotos: json['hide_photos'] == 1 || json['hide_photos'] == true,
       createdAt: json['created_at'] != null ? DateTime.parse(json['created_at']) : null,
       changedFields: json['changed_fields'] != null ? List<String>.from(json['changed_fields']) : null,
@@ -455,7 +458,8 @@ class UserProfile {
       'drug_addiction': drugAddiction,
       'smoke': smoke,
       'alcohol': alcohol,
-      'is_active_verified': isActiveVerified,
+      'is_identity_verified': isActiveVerified,
+      'is_profile_active': isProfileActive,
       'hide_photos': hidePhotos,
     };
   }

@@ -735,7 +735,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                         ),
                         if (user.userProfile?.isActiveVerified == true) ...[
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified, color: AppColors.primaryGreen, size: 14),
+                          const Icon(Icons.verified, color: Colors.blue, size: 14),
                         ],
                       ],
                     ),
@@ -1611,7 +1611,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                       if (user.userProfile?.isActiveVerified == true)
                         const Icon(
                           Icons.verified_rounded,
-                          color: AppColors.primaryGreen,
+                          color: Colors.blue,
                           size: 18,
                         ),
                     ],

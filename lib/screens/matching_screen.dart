@@ -793,7 +793,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                       if (user.userProfile?.isActiveVerified == true)
                         const Icon(
                           Icons.verified_rounded,
-                          color: AppColors.deepEmerald,
+                          color: Colors.blue,
                           size: 18,
                         ),
                       const Spacer(),

@@ -373,7 +373,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (user?.userProfile?.isActiveVerified == true)
                             Column(
                               children: [
-                                const Icon(Icons.verified_rounded, color: AppColors.royalGold, size: 28),
+                                const Icon(Icons.verified_rounded, color: Colors.blue, size: 28),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Verified',
