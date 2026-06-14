@@ -10,7 +10,7 @@ import '../services/api_service.dart';
 import '../services/profile_service.dart';
 import '../models/user_model.dart';
 import '../services/search_service.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import '../utils/app_colors.dart';
 
 class MessagesScreen extends StatefulWidget {
@@ -189,7 +189,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => ViewProfileScreen(userId: user.id!),
+                                            builder: (context) => UserProfileScreen(userId: user.id!),
                                           ),
                                         );
                                       }
@@ -617,7 +617,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ViewProfileScreen(userId: widget.otherUserId),
+                        builder: (context) => UserProfileScreen(userId: widget.otherUserId),
                       ),
                     );
                   },
@@ -925,7 +925,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ViewProfileScreen(userId: widget.otherUserId),
+                          builder: (context) => UserProfileScreen(userId: widget.otherUserId),
                         ),
                       );
                     },

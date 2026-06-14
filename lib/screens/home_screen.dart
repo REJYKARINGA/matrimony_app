@@ -15,11 +15,11 @@ import '../services/shortlist_service.dart';
 import '../services/profile_view_service.dart';
 import '../services/notification_service.dart';
 import '../models/user_model.dart';
-import 'profile_screen_view.dart';
+import 'my_profile_screen.dart';
 import 'matching_screen.dart';
 import 'messages_screen.dart';
 import 'settings_screen.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import 'notification_screen.dart';
 import '../services/reverb_service.dart';
 import '../services/message_service.dart';
@@ -1089,7 +1089,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               if (user.id != null) {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (c) => ViewProfileScreen(userId: user.id!)),
+                  MaterialPageRoute(builder: (c) => UserProfileScreen(userId: user.id!)),
                 );
               }
             },
@@ -2190,7 +2190,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                                MaterialPageRoute(builder: (context) => const MyProfileScreen()),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -2419,7 +2419,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (c) => ViewProfileScreen(userId: visitor.id!),
+                                builder: (c) => UserProfileScreen(userId: visitor.id!),
                               ),
                             ).then((_) => _loadVisitors()),
                             child: Container(
@@ -3326,7 +3326,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (c) => ViewProfileScreen(userId: user.id!),
+                          builder: (c) => UserProfileScreen(userId: user.id!),
                         ),
                       ),
                     ),

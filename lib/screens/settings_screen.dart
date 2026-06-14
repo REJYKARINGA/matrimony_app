@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
-import 'profile_screen_view.dart';
+import 'my_profile_screen.dart';
 import 'matching_screen.dart';
 import 'profile_photos_screen.dart';
 import 'account_settings_screen.dart';
@@ -419,7 +419,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+                          builder: (context) => const MyProfileScreen(),
                         ),
                       );
                     },

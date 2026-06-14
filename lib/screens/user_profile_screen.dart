@@ -24,16 +24,16 @@ import '../services/profile_share_service.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ViewProfileScreen extends StatefulWidget {
+class UserProfileScreen extends StatefulWidget {
   final int userId;
 
-  const ViewProfileScreen({Key? key, required this.userId}) : super(key: key);
+  const UserProfileScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
-  State<ViewProfileScreen> createState() => _ViewProfileScreenState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _ViewProfileScreenState extends State<ViewProfileScreen>
+class _UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   User? _user;
   bool _isLoading = true;
@@ -4403,7 +4403,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (c) => ViewProfileScreen(userId: user.id!),
+            builder: (c) => UserProfileScreen(userId: user.id!),
           ),
         );
       },
@@ -4586,6 +4586,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen>
     );
   }
 }
+
 
 
 

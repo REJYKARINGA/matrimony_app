@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../services/navigation_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import '../widgets/common_footer.dart';
 import '../utils/app_colors.dart';
 
@@ -421,7 +421,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (c) => ViewProfileScreen(userId: requester['id']),
+                    builder: (c) => UserProfileScreen(userId: requester['id']),
                   ),
                 );
               }

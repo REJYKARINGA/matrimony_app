@@ -5,7 +5,7 @@ import 'dart:ui';
 import '../models/user_model.dart';
 import '../services/matching_service.dart';
 import '../services/api_service.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import 'messages_screen.dart' as msg;
 import '../services/shortlist_service.dart';
 import 'package:provider/provider.dart';
@@ -1006,7 +1006,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ViewProfileScreen(userId: user.id!),
+                              builder: (context) => UserProfileScreen(userId: user.id!),
                             ),
                           );
                         },
@@ -1197,7 +1197,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ViewProfileScreen(userId: user.id!),
+                        builder: (context) => UserProfileScreen(userId: user.id!),
                       ),
                     );
                   },

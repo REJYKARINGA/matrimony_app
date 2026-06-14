@@ -8,7 +8,7 @@ import '../models/user_model.dart';
 import '../services/location_service.dart';
 import '../services/matching_service.dart';
 import '../services/shortlist_service.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import 'messages_screen.dart';
 import '../widgets/common_footer.dart';
 import 'preferences_screen.dart';
@@ -656,7 +656,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (c) => ViewProfileScreen(userId: user.id!),
+          builder: (c) => UserProfileScreen(userId: user.id!),
         ),
       ),
       child: Container(
@@ -1884,7 +1884,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (c) => ViewProfileScreen(userId: user.id!),
+                      builder: (c) => UserProfileScreen(userId: user.id!),
                     ),
                   ),
                 ),

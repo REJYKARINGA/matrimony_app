@@ -5,7 +5,7 @@ import '../services/payment_service.dart';
 import '../services/api_service.dart';
 import '../services/navigation_provider.dart';
 import '../widgets/common_footer.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 

@@ -6,7 +6,7 @@ import '../services/api_service.dart';
 import '../services/navigation_provider.dart';
 import '../widgets/common_footer.dart';
 import 'verification_screen.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 import 'messages_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -430,7 +430,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ViewProfileScreen(userId: notification['sender_id']),
+                builder: (context) => UserProfileScreen(userId: notification['sender_id']),
               ),
             );
           }
@@ -480,7 +480,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ViewProfileScreen(userId: notification['sender_id']),
+                builder: (context) => UserProfileScreen(userId: notification['sender_id']),
               ),
             );
           }
@@ -488,7 +488,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ViewProfileScreen(userId: notification['sender_id']),
+              builder: (context) => UserProfileScreen(userId: notification['sender_id']),
             ),
           );
         }

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../services/payment_service.dart';
 import '../services/api_service.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
-import 'view_profile_screen.dart';
+import 'user_profile_screen.dart';
 
 class WalletTransactionsScreen extends StatefulWidget {
   final String? initialMessage;
@@ -591,7 +591,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ViewProfileScreen(userId: unlockedUserId),
+                        builder: (_) => UserProfileScreen(userId: unlockedUserId),
                       ),
                     ),
                     child: card,

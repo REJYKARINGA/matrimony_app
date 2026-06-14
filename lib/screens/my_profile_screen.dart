@@ -24,14 +24,14 @@ import 'map_picker_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../utils/app_colors.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class MyProfileScreen extends StatefulWidget {
+  const MyProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<MyProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<MyProfileScreen> {
   User? _user;
   bool _isLoading = true;
   String? _errorMessage;
@@ -2507,6 +2507,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 }
+
 
 
 
