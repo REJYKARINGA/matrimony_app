@@ -370,20 +370,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ],
                             ),
                           ),
-                          Column(
-                            children: [
-                              const Icon(Icons.verified_rounded, color: AppColors.royalGold, size: 28),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Verified',
-                                style: TextStyle(
-                                  color: AppColors.royalGold.withOpacity(0.9),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w500,
+                          if (user?.userProfile?.isActiveVerified == true)
+                            Column(
+                              children: [
+                                const Icon(Icons.verified_rounded, color: AppColors.royalGold, size: 28),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Verified',
+                                  style: TextStyle(
+                                    color: AppColors.royalGold.withOpacity(0.9),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
