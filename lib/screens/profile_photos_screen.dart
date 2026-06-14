@@ -243,6 +243,20 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
     });
   }
 
+  Future<void> _saveReorder() async {
+    try {
+      List<int> ids = _photos.map<int>((p) => p['id'] as int).toList();
+      await ProfileService.reorderPhotos(ids);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save order: $e'), backgroundColor: Colors.red),
+        );
+      }
+      _loadProfilePhotos();
+    }
+  }
+
   Future<void> _toggleHidePhotos(bool value) async {
     setState(() {
       _isUpdatingPrivacy = true;
@@ -495,278 +509,17 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
 
                       const SizedBox(height: 20),
 
-                      // Photos grid
+                      // Photos grid with individual drag-and-drop
                       if (_photos.isNotEmpty)
                         Expanded(
-                          child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 250,
-                                  crossAxisSpacing: 16,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 0.85,
-                                ),
-                            itemCount: _photos.length,
-                            itemBuilder: (context, index) {
-                              final photo = _photos[index];
-                              final isPrimary = photo['is_primary'] == true;
-
-                              return Card(
-                                elevation: 2,
-                                color: AppColors.cardDark,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                  side: BorderSide(
-                                    color: AppColors.divider.withOpacity(0.5),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: Stack(
-                                        fit: StackFit.expand,
-                                        children: [
-                                          (photo['photo_url'] != null)
-                                              ? Image.network(
-                                                  ApiService.getImageUrl(photo['photo_url'] ?? photo['full_photo_url']),
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error, stackTrace) {
-                                                    return const Icon(Icons.broken_image, size: 50);
-                                                  },
-                                                )
-                                              : const Icon(Icons.image, size: 50),
-                                        ],
-                                      ),
-                                    ),
-                                    
-                                    // Rejected Overlay
-                                    if (photo['is_rejected'] == true || photo['is_rejected'] == 1 || photo['is_rejected'] == "1")
-                                      Positioned.fill(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white70.withOpacity(0.75),
-                                            borderRadius: BorderRadius.circular(16),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              const Icon(Icons.report_problem, color: Colors.redAccent, size: 36),
-                                              const SizedBox(height: 8),
-                                              const Text(
-                                                'REJECTED',
-                                                style: TextStyle(color: Colors.white,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 14,
-                                                  letterSpacing: 1.2,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Padding(
-                                                padding: const EdgeInsets.symmetric(horizontal: 12),
-                                                child: Text(
-                                                  photo['rejection_reason'] ?? 'This photo does not meet our guidelines',
-                                                  style: const TextStyle(color: Colors.white70,
-                                                    fontSize: 11,
-                                                    fontStyle: FontStyle.italic,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.yellow.shade700,
-                                                  borderRadius: BorderRadius.circular(20),
-                                                ),
-                                                child: const Text(
-                                                  'Invisible to others',
-                                                  style: TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 9,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-
-                                    // Pending Badge
-                                    if (photo['is_verified'] != true && photo['is_verified'] != 1 && photo['is_verified'] != "1" && 
-                                        photo['is_rejected'] != true && photo['is_rejected'] != 1 && photo['is_rejected'] != "1")
-                                      Positioned(
-                                        top: 8,
-                                        right: 8,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: Colors.orange.withOpacity(0.9),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              Icon(Icons.hourglass_empty, color: AppColors.cardDark, size: 12),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                'Pending',
-                                                style: TextStyle(color: Colors.white,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-
-                                    if (isPrimary)
-                                      Positioned(
-                                        top: 8,
-                                        left: 8,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 5,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            gradient: LinearGradient(
-                                              colors: [
-                                                AppColors.deepEmerald,
-                                                AppColors.deepEmerald,
-                                              ],
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.white70.withOpacity(
-                                                  0.2,
-                                                ),
-                                                blurRadius: 4,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ],
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: const [
-                                              Icon(
-                                                Icons.star,
-                                                color: AppColors.cardDark,
-                                                size: 14,
-                                              ),
-                                              SizedBox(width: 4),
-                                              Text(
-                                                'Primary',
-                                                style: TextStyle(color: Colors.white,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    Positioned(
-                                      bottom: 0,
-                                      left: 0,
-                                      right: 0,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.only(
-                                            bottomLeft: Radius.circular(16),
-                                            bottomRight: Radius.circular(16),
-                                          ),
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.transparent,
-                                              Colors.black.withOpacity(0.7),
-                                            ],
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              if (!isPrimary && 
-                                                  photo['is_rejected'] != true && 
-                                                  photo['is_rejected'] != 1 && 
-                                                  photo['is_rejected'] != "1")
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Color(
-                                                      0xFF00A87D,
-                                                    ).withOpacity(0.9),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                  ),
-                                                  child: IconButton(
-                                                    icon: const Icon(
-                                                      Icons.star_border,
-                                                      color: AppColors.cardDark,
-                                                      size: 20,
-                                                    ),
-                                                    tooltip: 'Set as Primary',
-                                                    onPressed: () =>
-                                                        _setAsPrimary(
-                                                          photo['id'],
-                                                        ),
-                                                    padding: EdgeInsets.zero,
-                                                    constraints:
-                                                        const BoxConstraints(
-                                                          minWidth: 40,
-                                                          minHeight: 40,
-                                                        ),
-                                                  ),
-                                                ),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red.withOpacity(
-                                                    0.9,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                                child: IconButton(
-                                                  icon: const Icon(
-                                                    Icons.delete,
-                                                    color: AppColors.cardDark,
-                                                    size: 20,
-                                                  ),
-                                                  tooltip: 'Delete',
-                                                  onPressed: () =>
-                                                      _deletePhoto(photo['id']),
-                                                  padding: EdgeInsets.zero,
-                                                  constraints:
-                                                      const BoxConstraints(
-                                                        minWidth: 40,
-                                                        minHeight: 40,
-                                                      ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
+                          child: SingleChildScrollView(
+                            child: Wrap(
+                              runSpacing: 16,
+                              spacing: 12,
+                              children: List.generate(_photos.length, (index) {
+                                return _buildPhotoCard(_photos[index], index);
+                              }),
+                            ),
                           ),
                         )
                       else
@@ -822,6 +575,209 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPhotoCard(dynamic photo, int index) {
+    final isPrimary = photo['is_primary'] == true;
+    final isRejected = photo['is_rejected'] == true || photo['is_rejected'] == 1 || photo['is_rejected'] == "1";
+    final isPending = photo['is_verified'] != true && photo['is_verified'] != 1 && photo['is_verified'] != "1" && !isRejected;
+
+    Widget card = ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        height: 240,
+        decoration: BoxDecoration(
+          color: AppColors.cardDark,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.divider.withOpacity(0.5)),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            (photo['photo_url'] != null || photo['full_photo_url'] != null)
+                ? Image.network(
+                    ApiService.getImageUrl(photo['photo_url'] ?? photo['full_photo_url']),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, size: 40);
+                    },
+                  )
+                : const Icon(Icons.image, size: 40),
+
+            // Rejected Overlay
+            if (isRejected)
+              Container(
+                color: Colors.white70.withOpacity(0.75),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.report_problem, color: Colors.redAccent, size: 28),
+                    const SizedBox(height: 4),
+                    const Text('REJECTED', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 11, letterSpacing: 1.2)),
+                    const SizedBox(height: 2),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        photo['rejection_reason'] ?? '',
+                        style: const TextStyle(color: Colors.white70, fontSize: 9, fontStyle: FontStyle.italic),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(color: Colors.yellow.shade700, borderRadius: BorderRadius.circular(20)),
+                      child: const Text('Invisible', style: TextStyle(color: Colors.white70, fontSize: 8, fontWeight: FontWeight.w500)),
+                    ),
+                  ],
+                ),
+              ),
+
+            // Pending Badge
+            if (isPending)
+              Positioned(
+                top: 6, right: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                  decoration: BoxDecoration(color: Colors.orange.withOpacity(0.9), borderRadius: BorderRadius.circular(10)),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.hourglass_empty, color: AppColors.cardDark, size: 10),
+                      SizedBox(width: 3),
+                      Text('Pending', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Primary Badge
+            if (isPrimary)
+              Positioned(
+                top: 6, left: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(colors: [AppColors.deepEmerald, AppColors.deepEmerald]),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: AppColors.cardDark, size: 11),
+                      SizedBox(width: 3),
+                      Text('Primary', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Actions bar
+            Positioned(
+              bottom: 0, left: 0, right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (!isPrimary && !isRejected)
+                        GestureDetector(
+                          onTap: () => _setAsPrimary(photo['id']),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(color: const Color(0xFF00A87D).withOpacity(0.9), borderRadius: BorderRadius.circular(6)),
+                            child: const Icon(Icons.star_border, color: AppColors.cardDark, size: 16),
+                          ),
+                        ),
+                      GestureDetector(
+                        onTap: () => _deletePhoto(photo['id']),
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(color: Colors.red.withOpacity(0.9), borderRadius: BorderRadius.circular(6)),
+                          child: const Icon(Icons.delete, color: AppColors.cardDark, size: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return DragTarget<int>(
+      onAcceptWithDetails: (details) {
+        final from = details.data;
+        if (from == index || from == 0 || index == 0) return;
+        setState(() {
+          final item = _photos.removeAt(from);
+          _photos.insert(index, item);
+        });
+        _saveReorder();
+      },
+      builder: (context, candidateData, rejectedData) {
+        final isHovering = candidateData.isNotEmpty;
+        final cardContent = AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          transform: isHovering ? Matrix4.translationValues(0, -8, 0) : Matrix4.identity(),
+          width: (MediaQuery.of(context).size.width - 44) / 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              card,
+              const SizedBox(height: 6),
+              if (!isPrimary)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.divider.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.drag_handle, size: 16, color: AppColors.mutedText),
+                      SizedBox(width: 6),
+                      Text('Hold & drag', style: TextStyle(fontSize: 12, color: AppColors.mutedText)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+        if (isPrimary) return cardContent;
+        return LongPressDraggable<int>(
+          data: index,
+          delay: const Duration(milliseconds: 150),
+          feedback: Material(
+            elevation: 8,
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              width: 140,
+              height: 180,
+              child: card,
+            ),
+          ),
+          childWhenDragging: Opacity(
+            opacity: 0.3,
+            child: cardContent,
+          ),
+          child: cardContent,
+        );
+      },
     );
   }
 

@@ -248,6 +248,14 @@ class ProfileService {
     var streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);
   }
+
+  static Future<http.Response> reorderPhotos(List<int> photoIds) async {
+    return await ApiService.makeRequest(
+      '${ApiService.baseUrl}/profiles/photos/reorder',
+      method: 'PUT',
+      body: {'order': photoIds},
+    );
+  }
 }
 
 
