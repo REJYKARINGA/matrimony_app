@@ -100,10 +100,14 @@ class User {
   final int reportsCount;
   final bool isReportedByMe;
   final String? blockReason;
+  final String? firstName;
+  final String? lastName;
 
   User({
     this.id,
     this.matrimonyId,
+    this.firstName,
+    this.lastName,
     required this.email,
     this.phone,
     this.role,
@@ -154,6 +158,8 @@ class User {
     return User(
       id: json['id'],
       matrimonyId: json['matrimony_id']?.toString(),
+      firstName: json['first_name']?.toString() ?? contactInfoJson?['first_name']?.toString(),
+      lastName: json['last_name']?.toString() ?? contactInfoJson?['last_name']?.toString(),
       // Prefer contact_info email/phone, fall back to top-level fields (own profile)
       email: contactInfoJson?['email']?.toString() ?? json['email']?.toString() ?? '',
       phone: contactInfoJson?['phone']?.toString() ?? json['phone']?.toString(),
@@ -365,8 +371,8 @@ class UserProfile {
 
   factory UserProfile.fromCardJson(Map<String, dynamic> json) {
     return UserProfile(
-      firstName: '', 
-      lastName: '',
+      firstName: json['first_name']?.toString() ?? '', 
+      lastName: json['last_name']?.toString() ?? '',
       height: json['height'],
       maritalStatus: json['marital_status']?.toString(),
       caste: json['caste']?.toString(),

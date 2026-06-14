@@ -4397,6 +4397,20 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   Widget _buildResultCard(User user) {
     final profile = user.userProfile;
+    String userInitials = '';
+    
+    final fName = profile?.firstName.isNotEmpty == true ? profile!.firstName : (user.firstName ?? '');
+    final lName = profile?.lastName.isNotEmpty == true ? profile!.lastName : (user.lastName ?? '');
+    
+    if (fName.isNotEmpty) {
+      userInitials += fName[0].toUpperCase() + '*' * (fName.length - 1);
+    }
+    if (lName.isNotEmpty) {
+      if (userInitials.isNotEmpty) userInitials += ' ';
+      userInitials += lName[0].toUpperCase() + '*' * (lName.length - 1);
+    }
+    
+    if (userInitials.isEmpty) userInitials = user.matrimonyId ?? 'User';
 
     return GestureDetector(
       onTap: () {
@@ -4443,6 +4457,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               )
                             : _buildPlaceholderBackground(profile?.gender, size: 40),
                       ),
+                      // Add watermark with matrimony_id
+                      if (user.displayImage != null)
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: AppColors.primaryGreen, width: 1),
+                            ),
+                            child: Text(
+                              user.matrimonyId ?? '',
+                              style: const TextStyle(
+                                color: AppColors.primaryGreen,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       if (user.displayImage != null && (user.hasHiddenPhotos && !user.isContactUnlocked || !user.isDisplayImageVerified))
                         Positioned.fill(
                           child: ClipRRect(
@@ -4474,11 +4510,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     Row(
                       children: [
                         Text(
-                          user.matrimonyId ?? 'User',
+                          userInitials,
                           style: const TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
-                            color: AppColors.cardDark,
+                            color: AppColors.textDark,
                           ),
                         ),
                         if (user.userProfile?.isActiveVerified == true) ...[
