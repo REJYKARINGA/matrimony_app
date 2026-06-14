@@ -273,9 +273,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                             color: AppColors.deepEmerald.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(
-                            Icons.verified,
-                            color: AppColors.deepEmerald,
+                          child: Icon(
+                            user?.verification?.status == 'verified'
+                                ? Icons.verified
+                                : Icons.verified_user_outlined,
+                            color: user?.verification?.status == 'verified'
+                                ? AppColors.deepEmerald
+                                : AppColors.mutedText,
                             size: 24,
                           ),
                         ),
