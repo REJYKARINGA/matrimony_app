@@ -765,7 +765,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
+        backgroundColor: AppColors.backgroundLight,
         body: SafeArea(
           child: Column(
             children: [
@@ -773,7 +773,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               const Expanded(
                 child: Center(
                   child: CircularProgressIndicator(
-                    color: Color(0xFF0A3A2A),
+                    color: AppColors.primaryGreen,
                     strokeWidth: 3,
                   ),
                 ),
@@ -786,7 +786,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     if (_errorMessage != null) {
       return Scaffold(
-        backgroundColor: AppColors.midnightEmerald,
+        backgroundColor: AppColors.backgroundLight,
         body: SafeArea(
           child: Column(
             children: [
@@ -801,7 +801,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.white70.withOpacity(0.1),
+                            color: Colors.black.withOpacity(0.1),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -828,7 +828,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white70,
+                              color: AppColors.bodyText,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -844,8 +844,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ElevatedButton(
                             onPressed: _loadUserProfile,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0A3A2A),
-                              foregroundColor: AppColors.cardDark,
+                              backgroundColor: AppColors.primaryGreen,
+                              foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 40,
                                 vertical: 16,
