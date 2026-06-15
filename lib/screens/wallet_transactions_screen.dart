@@ -16,22 +16,38 @@ class WalletTransactionsScreen extends StatefulWidget {
   State<WalletTransactionsScreen> createState() => _WalletTransactionsScreenState();
 }
 
-class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
+class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> with WidgetsBindingObserver {
   double _walletBalance = 0.0;
   List<dynamic> _transactions = [];
   bool _isLoading = true;
   int? _currentTransactionId;
   String _selectedFilter = 'all';
+  bool _paymentLaunched = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadData();
 
     if (widget.initialMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showHighlightDialog(widget.initialMessage!);
       });
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _paymentLaunched) {
+      _paymentLaunched = false;
+      _loadData();
     }
   }
 
@@ -653,10 +669,6 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }
 
 class _TransferDialog extends StatefulWidget {

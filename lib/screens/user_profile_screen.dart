@@ -34,10 +34,11 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   User? _user;
   bool _isLoading = true;
   String? _errorMessage;
+  bool _paymentLaunched = false;
   dynamic _interestSent;
   dynamic _interestReceived;
   bool _isActionLoading = false;
@@ -99,6 +100,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -3806,6 +3808,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        if (data['already_unlocked'] == true) {
+          _loadWalletBalance();
+          _checkContactUnlock();
+          return;
+        }
         _openWebPayment(data, amount: _unlockPrice, type: 'contact_unlock', unlockedUserId: widget.userId);
       }
     } catch (e) {
@@ -4069,6 +4076,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
+      _paymentLaunched = true;
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
@@ -4264,12 +4272,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _interestTimer?.cancel();
     _freeUnlockTimer?.cancel();
     _offerTimer?.cancel();
     _animationController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _paymentLaunched) {
+      _paymentLaunched = false;
+      _loadWalletBalance();
+      _checkContactUnlock();
+    }
   }
 
   Widget _buildRecommendedProfilesSection() {
