@@ -1222,14 +1222,26 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           fit: StackFit.expand,
           children: [
              if (displayImage != null) ...[
-               Stack(
-                 fit: StackFit.expand,
-                 children: [
-                   Image.network(
-                    ApiService.getImageUrl(displayImage),
-                    fit: BoxFit.cover,
-                  ),
-                   const WatermarkOverlay(),
+                GestureDetector(
+                  onTap: () {
+                    final photos = _user?.profilePhotos ?? [];
+                    final combined = <ProfilePhoto>[
+                      ProfilePhoto(
+                        photoUrl: displayImage,
+                        isVerified: _user?.isDisplayImageVerified ?? false,
+                      ),
+                      ...photos,
+                    ];
+                    _showFullScreenImage(0, combined);
+                  },
+                  child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.network(
+                     ApiService.getImageUrl(displayImage),
+                     fit: BoxFit.cover,
+                   ),
+                    const WatermarkOverlay(),
                    if (_user?.isDisplayImageVerified != true || _user?.hasHiddenPhotos == true)
                     BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
@@ -1297,8 +1309,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ),
                     ),
                  ],
+                ),
                ),
-              IgnorePointer(
+               IgnorePointer(
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
