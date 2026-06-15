@@ -10,6 +10,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import '../utils/app_config.dart';
 
 class ProfileShareService {
   static final ScreenshotController screenshotController = ScreenshotController();
@@ -23,12 +24,14 @@ class ProfileShareService {
     final String age = '${profile.age ?? 'N/A'} yrs';
     final String height = profile.height != null ? '${profile.height} cm' : 'N/A';
     final String location = '${profile.city ?? ''}, ${profile.state ?? ''}'.trim();
+    final String salary = profile.annualIncome != null ? '₹${profile.annualIncome!.toStringAsFixed(0)}/yr' : 'N/A';
     final String job = profile.occupation ?? 'N/A';
     final String education = profile.education ?? 'N/A';
     final String religion = profile.religion ?? 'N/A';
     final String caste = profile.caste ?? 'N/A';
 
     // 1. Prepare Text Summary for WhatsApp
+    final String profileUrl = '${AppConfig.rawBaseUrl}/profile/$matrimonyId';
     final String shareText = """
 🌟 *Profile from Vivah Matrimony* 🌟
 
@@ -37,7 +40,10 @@ class ProfileShareService {
 *Community:* $religion, $caste
 *Education:* $education
 *Profession:* $job
+*Income:* $salary
 *Location:* $location
+
+🔗 View Profile: $profileUrl
 
 Check out this profile on Vivah Matrimony app!
 """;
@@ -151,6 +157,7 @@ Check out this profile on Vivah Matrimony app!
                 _buildInfoRow(Icons.groups, 'Religion & Caste', '$religion, $caste'),
                 _buildInfoRow(Icons.school, 'Education', education),
                 _buildInfoRow(Icons.work, 'Profession', job),
+                _buildInfoRow(Icons.account_balance_wallet_rounded, 'Income', salary),
                 _buildInfoRow(Icons.location_on, 'Location', location),
                 
                 const SizedBox(height: 30),
