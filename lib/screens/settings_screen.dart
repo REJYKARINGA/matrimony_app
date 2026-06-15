@@ -16,6 +16,7 @@ import 'privacy_policy_screen.dart';
 import 'security_settings_screen.dart';
 import 'verification_screen.dart';
 import 'share_suggestion_screen.dart';
+import '../services/profile_share_service.dart';
 import 'notification_settings_screen.dart';
 
 import '../services/payment_service.dart';
@@ -363,14 +364,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                             color: Colors.white70,
                                           ),
                                         ),
-                                      ],
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (user?.userProfile?.isActiveVerified == true)
+                                        const SizedBox(width: 8),
+                                        CircleAvatar(
+                                          radius: 11,
+                                          backgroundColor: Colors.white.withOpacity(0.2),
+                                          child: IconButton(
+                                            icon: const Icon(Icons.share_rounded, size: 13, color: Colors.white70),
+                                            onPressed: () => ProfileShareService.shareProfile(context, user!),
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                          ),
+                                        ),
+                                       ],
+                                     ],
+                                   ),
+                                 ),
+                               ],
+                             ),
+                           ),
+                           if (user?.userProfile?.isActiveVerified == true)
                             Column(
                               children: [
                                 const Icon(Icons.verified_rounded, color: Colors.blue, size: 28),
