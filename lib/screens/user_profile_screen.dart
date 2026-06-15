@@ -1153,26 +1153,26 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
           ),
         ),
-        // Share Button
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: CircleAvatar(
-            backgroundColor: _isCollapsed ? Colors.transparent : Colors.black26,
-            child: IconButton(
-              icon: Icon(
-                Icons.share_rounded, 
-                color: _isCollapsed ? Colors.black87 : Colors.white, 
-                size: 20
-              ),
-              tooltip: 'Share Profile',
-              onPressed: () {
-                if (_user != null) {
-                  if (_contactUnlocked || (_user?.contactInfo?.isContactUnlocked ?? false)) { ProfileShareService.shareProfile(context, _user!); } else { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Unlock contact to share profile!"), backgroundColor: Colors.orange, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); }
-                }
-              },
-            ),
-          ),
-        ),
+        // Share Button - In future we might use this so don't remove
+        // Padding(
+        //   padding: const EdgeInsets.only(right: 8.0),
+        //   child: CircleAvatar(
+        //     backgroundColor: _isCollapsed ? Colors.transparent : Colors.black26,
+        //     child: IconButton(
+        //       icon: Icon(
+        //         Icons.share_rounded, 
+        //         color: _isCollapsed ? Colors.black87 : Colors.white, 
+        //         size: 20
+        //       ),
+        //       tooltip: 'Share Profile',
+        //       onPressed: () {
+        //         if (_user != null) {
+        //           if (_contactUnlocked || (_user?.contactInfo?.isContactUnlocked ?? false)) { ProfileShareService.shareProfile(context, _user!); } else { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Unlock contact to share profile!"), backgroundColor: Colors.orange, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); }
+        //         }
+        //       },
+        //     ),
+        //   ),
+        // ),
         // Wallet Button
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
@@ -1889,21 +1889,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ),
             ),
 
-            // Share
-            GestureDetector(
-              onTap: () {
-                if (_user != null) {
-                  if (_contactUnlocked || (_user?.contactInfo?.isContactUnlocked ?? false)) { ProfileShareService.shareProfile(context, _user!); } else { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Unlock contact to share profile!"), backgroundColor: Colors.orange, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); }
-                }
-              },
-              child: _buildFloatingButton(
-                icon: Icons.share_rounded,
-                color: Colors.white,
-                iconColor: AppColors.deepEmerald,
-                size: 54,
-                shadowColor: Colors.black.withOpacity(0.05),
-              ),
-            ),
+            // Share - In future we might use this so don't remove
+            // GestureDetector(
+            //   onTap: () {
+            //     if (_user != null) {
+            //       if (_contactUnlocked || (_user?.contactInfo?.isContactUnlocked ?? false)) { ProfileShareService.shareProfile(context, _user!); } else { ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: const Text("Unlock contact to share profile!"), backgroundColor: Colors.orange, behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); }
+            //     }
+            //   },
+            //   child: _buildFloatingButton(
+            //     icon: Icons.share_rounded,
+            //     color: Colors.white,
+            //     iconColor: AppColors.deepEmerald,
+            //     size: 54,
+            //     shadowColor: Colors.black.withOpacity(0.05),
+            //   ),
+            // ),
 
             // Like (Heart/Check) - Hide if we have an active interest state handled by the new action bar
             if (!isMatched && !isPending && !isSent)
