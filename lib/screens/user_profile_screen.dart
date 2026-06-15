@@ -17,12 +17,12 @@ import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import 'verification_screen.dart';
 import 'wallet_transactions_screen.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../services/photo_request_service.dart';
 import '../widgets/watermark_overlay.dart';
 import '../services/profile_share_service.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/app_config.dart';
 
 class UserProfileScreen extends StatefulWidget {
   final int userId;
@@ -50,7 +50,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Razorpay _razorpay;
   final ScrollController _scrollController = ScrollController();
   bool _isCollapsed = false;
 
@@ -111,11 +110,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero).animate(
           CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
         );
-
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
 
     _scrollController.addListener(() {
       if (_scrollController.hasClients) {
@@ -3812,7 +3806,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        _openRazorpay(data);
+        _openWebPayment(data, amount: _unlockPrice, type: 'contact_unlock', unlockedUserId: widget.userId);
       }
     } catch (e) {
       ScaffoldMessenger.of(
@@ -4008,7 +4002,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
-          _openRazorpay(data);
+          _openWebPayment(data, amount: amount, type: 'wallet_recharge');
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -4048,121 +4042,35 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  void _openRazorpay(Map<String, dynamic> orderData) {
+  Future<void> _openWebPayment(Map<String, dynamic> orderData, {required double amount, required String type, int? unlockedUserId}) async {
+    final token = await ApiService.getToken();
+    if (token == null) return;
+
     setState(() {
       _currentTransactionId = orderData['transaction_id'];
     });
 
-    final options = {
-      'key': orderData['key'],
-      'amount': (orderData['amount'] * 100).toInt(),
-      'currency': 'INR',
-      'name': 'Matrimony App',
-      'description': 'Payment',
-      'order_id': orderData['order_id'],
-      'prefill': {'contact': _user?.phone ?? '', 'email': _user?.email ?? ''},
-      'theme': {'color': '#00C897'},
-    };
+    var url = '${AppConfig.rawBaseUrl}/recharge'
+        '?order_id=${orderData['order_id']}'
+        '&amount=${(amount * 100).toInt()}'
+        '&type=$type'
+        '&token=$token'
+        '&transaction_id=${orderData['transaction_id']}';
 
-    _razorpay.open(options);
-  }
-
-  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    try {
-      final razorpayOrderId = response.orderId;
-      final razorpayPaymentId = response.paymentId;
-      final razorpaySignature = response.signature;
-
-      if (razorpayOrderId == null || razorpayPaymentId == null || razorpaySignature == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid payment response')),
-        );
-        return;
-      }
-
-      final verifyResponse = await PaymentService.verifyPayment(
-        razorpayOrderId: razorpayOrderId,
-        razorpayPaymentId: razorpayPaymentId,
-        razorpaySignature: razorpaySignature,
-        transactionId: _currentTransactionId ?? 0,
-        unlockedUserId: widget.userId,
-      );
-
-      if (verifyResponse.statusCode == 200) {
-        final data = json.decode(verifyResponse.body);
-        final String type = data['type'] ?? '';
-
-        if (type == 'contact_unlock') {
-          if (mounted) {
-            setState(() {
-              _contactUnlocked = true;
-            });
-          }
-          _loadUserProfile();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.check_circle, color: AppColors.cardDark),
-                  SizedBox(width: 8),
-                  Text('Contact unlocked successfully!'),
-                ],
-              ),
-              backgroundColor: AppColors.primaryGreen,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  Icon(Icons.check_circle, color: AppColors.cardDark),
-                  SizedBox(width: 8),
-                  Text('Wallet recharged successfully!'),
-                ],
-              ),
-              backgroundColor: AppColors.primaryGreen,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-        }
-        _loadWalletBalance();
-      }
-    } catch (e) {
-      print('Verification error: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Payment verification failed')));
+    if (unlockedUserId != null) {
+      url += '&unlocked_user_id=$unlockedUserId';
     }
-  }
 
-  void _handlePaymentError(PaymentFailureResponse response) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Payment failed: ${response.message}'),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
+    if (orderData['discount_applied'] == true) {
+      url += '&original_price=${orderData['original_price']}'
+          '&festival_name=${Uri.encodeComponent(orderData['festival_name'] ?? '')}'
+          '&festival_discount=${orderData['festival_discount_amount'] ?? 0}';
+    }
 
-  void _handleExternalWallet(ExternalWalletResponse response) async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('External wallet selected: ${response.walletName}'),
-        backgroundColor: Colors.orange,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   void _showReportDialog() {
@@ -4359,7 +4267,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     _interestTimer?.cancel();
     _freeUnlockTimer?.cancel();
     _offerTimer?.cancel();
-    _razorpay.clear();
     _animationController.dispose();
     _scrollController.dispose();
     super.dispose();
