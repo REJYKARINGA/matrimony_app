@@ -46,17 +46,19 @@ Check out this profile on Vivah Matrimony app!
       // 2. Generate Image (Using a hidden widget)
       final Uint8List? imageBytes = await screenshotController.captureFromWidget(
         Material(
-          child: Container(
-            width: 400,
-            padding: const EdgeInsets.all(30),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF00A87D), Color(0xFF00A87D)],
-              ),
-            ),
-            child: Column(
+          child: Stack(
+            children: [
+              Container(
+                width: 400,
+                padding: const EdgeInsets.all(30),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF00A87D), Color(0xFF00A87D)],
+                  ),
+                ),
+                child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Header
@@ -166,9 +168,19 @@ Check out this profile on Vivah Matrimony app!
               ],
             ),
           ),
-        ),
-        delay: const Duration(milliseconds: 200), // Increased delay for image loading
-      );
+          // Watermark overlay
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: _ShareWatermarkPainter(),
+              ),
+            ),
+          ),
+        ],
+      ),
+      ),
+      delay: const Duration(milliseconds: 200), // Increased delay for image loading
+    );
 
       if (imageBytes != null && !kIsWeb) {
         final directory = await getTemporaryDirectory();
@@ -231,5 +243,49 @@ Check out this profile on Vivah Matrimony app!
   }
 }
 
+class _ShareWatermarkPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final textStyle = TextStyle(
+      color: Colors.grey.shade700.withOpacity(0.7),
+      fontSize: 18,
+      fontWeight: FontWeight.w700,
+      shadows: [
+        Shadow(
+          blurRadius: 2,
+          color: Colors.black.withOpacity(0.1),
+          offset: const Offset(1, 1),
+        ),
+      ],
+    );
+
+    final watermarks = ['Vivah4Ever', 'Kerala Matrimony'];
+    final positions = [
+      Offset(size.width * 0.2, size.height * 0.25),
+      Offset(size.width * 0.7, size.height * 0.35),
+      Offset(size.width * 0.25, size.height * 0.75),
+      Offset(size.width * 0.75, size.height * 0.65),
+    ];
+    const angle = -3.14159 / 4;
+
+    for (int i = 0; i < positions.length; i++) {
+      final text = watermarks[i % watermarks.length];
+      final textPainter = TextPainter(
+        text: TextSpan(text: text, style: textStyle),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+
+      canvas.save();
+      canvas.translate(positions[i].dx, positions[i].dy);
+      canvas.rotate(angle);
+      textPainter.paint(canvas, Offset(-textPainter.width / 2, -textPainter.height / 2));
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 
