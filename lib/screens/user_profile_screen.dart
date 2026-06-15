@@ -1620,11 +1620,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           padding: EdgeInsets.fromLTRB(20, 30, 20, 15),
           child: Text(
             'Photo Gallery',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: AppColors.cardDark),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.primaryGreen),
           ),
         ),
         SizedBox(
-          height: 140,
+          height: 210,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
