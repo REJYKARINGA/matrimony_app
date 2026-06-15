@@ -9,7 +9,7 @@ class WatermarkOverlay extends StatelessWidget {
   const WatermarkOverlay({
     Key? key,
     this.watermarks = const ['Vivah4Ever', 'Kerala Matrimony'],
-    this.opacity = 0.15,
+    this.opacity = 0.3,
     this.angle = -math.pi / 4,
   }) : super(key: key);
 
@@ -44,9 +44,9 @@ class _WatermarkPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final textStyle = TextStyle(
-      color: Colors.grey.shade700.withOpacity(0.4), // Darker grey with higher opacity
+      color: Colors.grey.shade700.withOpacity(0.7),
       fontSize: 18,
-      fontWeight: FontWeight.w500,
+      fontWeight: FontWeight.w700,
       shadows: [
         Shadow(
           blurRadius: 2,
