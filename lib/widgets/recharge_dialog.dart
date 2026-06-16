@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
+import '../services/labels_service.dart';
 import '../screens/wallet_transactions_screen.dart';
 
 class RechargeRequiredDialog extends StatelessWidget {
@@ -60,8 +61,8 @@ class RechargeRequiredDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Recharge Required',
+            Text(
+              LabelsService.instance.labels.wallet.rechargeRequired,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w500,
@@ -82,26 +83,34 @@ class RechargeRequiredDialog extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const WalletTransactionsScreen(),
-                    ),
-                  );
-                },
+                onPressed: LabelsService.instance.labels.pricing.isInMaintenance
+                    ? null
+                    : () {
+                        Navigator.of(context).pop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WalletTransactionsScreen(),
+                          ),
+                        );
+                      },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryCyan,
-                  foregroundColor: Colors.white,
+                  backgroundColor: LabelsService.instance.labels.pricing.isInMaintenance
+                      ? Colors.grey.shade300
+                      : AppColors.primaryCyan,
+                  foregroundColor: LabelsService.instance.labels.pricing.isInMaintenance
+                      ? Colors.grey.shade500
+                      : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'Recharge Now',
+                child: Text(
+                  LabelsService.instance.labels.pricing.isInMaintenance
+                      ? 'Under Maintenance'
+                      : LabelsService.instance.labels.wallet.rechargeNow,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -113,7 +122,7 @@ class RechargeRequiredDialog extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'Later',
+                LabelsService.instance.labels.wallet.later,
                 style: TextStyle(
                   color: Colors.grey.shade500,
                   fontWeight: FontWeight.w500,

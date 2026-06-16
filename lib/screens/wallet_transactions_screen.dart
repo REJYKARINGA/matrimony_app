@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../services/payment_service.dart';
-import '../services/api_service.dart';
-import '../utils/app_config.dart';
+import '../services/labels_service.dart';
+import '../services/razorpay_service.dart';
+import '../widgets/wallet_maintenance_overlay.dart';
 import '../utils/app_colors.dart';
 import 'user_profile_screen.dart';
 
@@ -16,38 +16,21 @@ class WalletTransactionsScreen extends StatefulWidget {
   State<WalletTransactionsScreen> createState() => _WalletTransactionsScreenState();
 }
 
-class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> with WidgetsBindingObserver {
+class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
   double _walletBalance = 0.0;
   List<dynamic> _transactions = [];
   bool _isLoading = true;
-  int? _currentTransactionId;
   String _selectedFilter = 'all';
-  bool _paymentLaunched = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _loadData();
 
     if (widget.initialMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _showHighlightDialog(widget.initialMessage!);
       });
-    }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && _paymentLaunched) {
-      _paymentLaunched = false;
-      _loadData();
     }
   }
 
@@ -90,6 +73,9 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
   }
 
   Future<void> _loadData() async {
+    await LabelsService.instance.reload();
+    final p = LabelsService.instance.labels.pricing;
+    debugPrint('WALLET_MAINT_AFTER_RELOAD: isActive=${p.walletIsActive} iosMaint=${p.walletInMaintenanceIos} androidMaint=${p.walletInMaintenanceAndroid} inMaint=${p.isInMaintenance}');
     setState(() => _isLoading = true);
     try {
       final results = await Future.wait([
@@ -115,10 +101,13 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final pricing = LabelsService.instance.labels.pricing;
+    final inMaint = pricing.isInMaintenance;
+    debugPrint('WALLET_MAINT: isActive=${pricing.walletIsActive} iosMaint=${pricing.walletInMaintenanceIos} androidMaint=${pricing.walletInMaintenanceAndroid} inMaint=$inMaint');
+    final screen = Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text('Wallet & Transactions'),
+        title: Text(LabelsService.instance.labels.wallet.title),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: AppColors.primaryGradient,
@@ -127,23 +116,26 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
         foregroundColor: AppColors.cardDark,
         elevation: 0,
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadData,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    _buildBalanceCard(),
-                    _buildQuickRecharge(),
-                    _buildUsageFeeSummary(),
-                    _buildTransactionHistory(),
-                  ],
-                ),
-              ),
-      ),
+      body: inMaint
+          ? const WalletMaintenanceOverlay(child: SizedBox.shrink())
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        children: [
+                          _buildBalanceCard(),
+                          _buildQuickRecharge(),
+                          _buildUsageFeeSummary(),
+                          _buildTransactionHistory(),
+                        ],
+                      ),
+                    ),
+            ),
     );
+    return screen;
   }
 
   Widget _buildBalanceCard() {
@@ -171,13 +163,13 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Available Balance',
+                  Text(
+                    LabelsService.instance.labels.wallet.balanceLabel,
                     style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '₹${_walletBalance.toStringAsFixed(2)}',
+                    LabelsService.instance.curr(_walletBalance.toStringAsFixed(2)),
                     style: const TextStyle(color: Colors.white,
                       fontSize: 36,
                       fontWeight: FontWeight.w500,
@@ -188,7 +180,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
               ElevatedButton.icon(
                 onPressed: _showTransferDialog,
                 icon: const Icon(Icons.send_rounded, size: 18),
-                label: const Text('Transfer'),
+                label: Text(LabelsService.instance.labels.wallet.transfer),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.midnightEmerald.withOpacity(0.2),
                   foregroundColor: AppColors.cardDark,
@@ -299,24 +291,41 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
   }
 
   Widget _buildQuickRecharge() {
+    final tiers = LabelsService.instance.labels.pricing.tiers;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Quick Recharge',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          Text(
+            LabelsService.instance.labels.wallet.quickRecharge,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _rechargeButton(199),
-              _rechargeButton(499),
-              _rechargeButton(999),
-            ],
-          ),
+          if (tiers.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'No recharge plans available',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+              ),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: tiers.map((tier) {
+                final amt = (tier['amount'] as num).toDouble();
+                return _rechargeButton(amt);
+              }).toList(),
+            ),
         ],
       ),
     );
@@ -324,18 +333,19 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
 
   Widget _rechargeButton(double amount) {
     return InkWell(
+      borderRadius: BorderRadius.circular(12),
       onTap: () => _handleRecharge(amount),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.cardDark,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)), // Turquoise border
+          border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)),
         ),
         child: Text(
-          '₹$amount',
+          LabelsService.instance.curr(amount.toStringAsFixed(0)),
           style: const TextStyle(
-            color: AppColors.primaryGreen, // Turquoise text
+            color: AppColors.primaryGreen,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -356,8 +366,8 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Transaction History',
+          Text(
+            LabelsService.instance.labels.wallet.transactionHistory,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 12),
@@ -366,32 +376,32 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _filterChip('all', 'All', Icons.list_rounded),
+                _filterChip('all', LabelsService.instance.labels.filters.all, Icons.list_rounded),
                 if (_transactions.any((t) => t['type'] == 'wallet_recharge')) ...[
                   const SizedBox(width: 8),
-                  _filterChip('wallet_recharge', 'Recharges', Icons.add_circle_rounded),
+                  _filterChip('wallet_recharge', LabelsService.instance.labels.filters.recharges, Icons.add_circle_rounded),
                 ],
                 if (_transactions.any((t) => t['type'] == 'contact_unlock')) ...[
                   const SizedBox(width: 8),
-                  _filterChip('contact_unlock', 'Unlocks', Icons.lock_open_rounded),
+                  _filterChip('contact_unlock', LabelsService.instance.labels.filters.unlocks, Icons.lock_open_rounded),
                 ],
                 if (_transactions.any((t) => t['type'] == 'usage_fee')) ...[
                   const SizedBox(width: 8),
-                  _filterChip('usage_fee', 'Usage Fees', Icons.timelapse_rounded),
+                  _filterChip('usage_fee', LabelsService.instance.labels.filters.usageFees, Icons.timelapse_rounded),
                 ],
                 if (_transactions.any((t) => t['type'] == 'wallet_transfer')) ...[
                   const SizedBox(width: 8),
-                  _filterChip('wallet_transfer', 'Transfers', Icons.swap_horiz_rounded),
+                  _filterChip('wallet_transfer', LabelsService.instance.labels.filters.transfers, Icons.swap_horiz_rounded),
                 ],
               ],
             ),
           ),
           const SizedBox(height: 16),
           if (filtered.isEmpty)
-            const Center(
+            Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 40),
-                child: Text('No transactions in this category'),
+                child: Text(LabelsService.instance.labels.wallet.noTransactions),
               ),
             )
           else
@@ -413,21 +423,22 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
                 Color iconColor;
                 String typeLabel;
 
+                final lbl = LabelsService.instance.labels;
                 if (isCredit) {
                   iconData = Icons.add_circle_rounded;
                   iconBg = Colors.green.withOpacity(0.12);
                   iconColor = Colors.green.shade700;
-                  typeLabel = 'Wallet Recharge';
+                  typeLabel = lbl.filters.recharges;
                 } else if (isUsageFee) {
                   iconData = Icons.timelapse_rounded;
                   iconBg = Colors.orange.withOpacity(0.12);
                   iconColor = Colors.orange.shade800;
-                  typeLabel = 'Usage Fee';
+                  typeLabel = lbl.filters.usageFees;
                 } else if (isContactUnlock) {
                   iconData = Icons.lock_open_rounded;
                   iconBg = AppColors.primaryGreen.withOpacity(0.10);
                   iconColor = AppColors.primaryGreen;
-                  typeLabel = 'Contact Unlock';
+                  typeLabel = lbl.filters.unlocks;
                 } else if (isWalletTransfer) {
                   iconData = Icons.swap_horiz_rounded;
                   iconBg = Colors.purple.withOpacity(0.12);
@@ -549,7 +560,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '${isCredit ? '+' : '-'}₹$amount',
+                              '${isCredit ? '+' : '-'}${LabelsService.instance.curr(amount)}',
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 color: isCredit
@@ -619,33 +630,28 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> wit
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        _openWebPayment(data, amount);
+        RazorpayService.openCheckout(
+          key: data['key'],
+          amount: amount,
+          orderId: data['order_id'],
+          transactionId: data['transaction_id'],
+          onSuccess: () {
+            _loadData();
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Recharge successful!'), backgroundColor: Colors.green),
+            );
+          },
+          onError: (msg) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(msg), backgroundColor: Colors.red),
+            );
+          },
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to initialize payment')),
       );
-    }
-  }
-
-  Future<void> _openWebPayment(Map<String, dynamic> orderData, double amount) async {
-    final token = await ApiService.getToken();
-    if (token == null) return;
-
-    setState(() {
-      _currentTransactionId = orderData['transaction_id'];
-    });
-
-    final url = '${AppConfig.rawBaseUrl}/recharge'
-        '?order_id=${orderData['order_id']}'
-        '&amount=${(amount * 100).toInt()}'
-        '&type=wallet_recharge'
-        '&token=$token'
-        '&transaction_id=${orderData['transaction_id']}';
-
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -955,7 +961,7 @@ class _TransferDialogState extends State<_TransferDialog> {
             SnackBar(
               content: Text('DEBUG: Recipient OTP is ${data['otp']}'), 
               backgroundColor: Colors.orange,
-              duration: const Duration(seconds: 8)
+              duration: const Duration(seconds: 8),
             ),
           );
         }

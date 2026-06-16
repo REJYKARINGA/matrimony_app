@@ -1,9 +1,14 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/api_service.dart';
+import '../services/labels_service.dart';
 
 class PaymentService {
+  /// Returns the prefix for payment API endpoints
+  static String get _p => '${ApiService.baseUrl}/tx';
+
   static Future<http.Response> getWalletBalance() async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/wallet/balance');
+    return await ApiService.makeRequest('$_p/bal');
   }
 
   static Future<http.Response> createOrder({
@@ -12,7 +17,7 @@ class PaymentService {
     int? unlockedUserId,
   }) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/create-order',
+      '$_p/ord',
       method: 'POST',
       body: {
         'amount': amount,
@@ -30,7 +35,7 @@ class PaymentService {
     int? unlockedUserId,
   }) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/verify',
+      '$_p/vrf',
       method: 'POST',
       body: {
         'razorpay_order_id': razorpayOrderId,
@@ -44,7 +49,7 @@ class PaymentService {
 
   static Future<http.Response> unlockContactWithWallet(int unlockedUserId) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/unlock-contact-wallet',
+      '$_p/uwl',
       method: 'POST',
       body: {'unlocked_user_id': unlockedUserId},
     );
@@ -52,26 +57,26 @@ class PaymentService {
 
   static Future<http.Response> unlockContactFree(int unlockedUserId) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/unlock-contact-free',
+      '$_p/ufr',
       method: 'POST',
       body: {'unlocked_user_id': unlockedUserId},
     );
   }
 
   static Future<http.Response> checkContactUnlock(int userId) async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/check-unlock/$userId');
+    return await ApiService.makeRequest('$_p/ck/$userId');
   }
 
   static Future<http.Response> getTransactionHistory() async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/transactions');
+    return await ApiService.makeRequest('$_p/hst');
   }
 
   static Future<http.Response> getTodayUnlockCount() async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/today-unlock-count');
+    return await ApiService.makeRequest('$_p/duc');
   }
 
   static Future<http.Response> searchUser(String query) async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/search-user?query=$query');
+    return await ApiService.makeRequest('$_p/su?query=$query');
   }
 
   static Future<http.Response> requestTransferOtp({
@@ -79,7 +84,7 @@ class PaymentService {
     required double amount,
   }) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/request-transfer-otp',
+      '$_p/rto',
       method: 'POST',
       body: {
         'recipient_id': recipientId,
@@ -94,7 +99,7 @@ class PaymentService {
     required String otp,
   }) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/transfer-wallet',
+      '$_p/tfr',
       method: 'POST',
       body: {
         'recipient_id': recipientId,
@@ -108,40 +113,40 @@ class PaymentService {
 
   static Future<http.Response> requestPermission(int targetUserId) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/request-permission',
+      '$_p/rqp',
       method: 'POST',
       body: {'target_user_id': targetUserId},
     );
   }
 
   static Future<http.Response> getIncomingPermissionRequests() async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/permission-requests/incoming');
+    return await ApiService.makeRequest('$_p/pmi');
   }
 
   static Future<http.Response> getSentPermissionRequests() async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/permission-requests/sent');
+    return await ApiService.makeRequest('$_p/pms');
   }
 
   static Future<http.Response> checkPermissionRequest(int userId) async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/check-permission-request/$userId');
+    return await ApiService.makeRequest('$_p/cpk/$userId');
   }
 
   static Future<http.Response> approvePermissionRequest(int requestId) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/permission-requests/$requestId/approve',
+      '$_p/pap/$requestId',
       method: 'POST',
     );
   }
 
   static Future<http.Response> rejectPermissionRequest(int requestId) async {
     return await ApiService.makeRequest(
-      '${ApiService.baseUrl}/payment/permission-requests/$requestId/reject',
+      '$_p/prj/$requestId',
       method: 'POST',
     );
   }
 
   static Future<http.Response> getPendingPermissionCount() async {
-    return await ApiService.makeRequest('${ApiService.baseUrl}/payment/permission-requests/pending-count');
+    return await ApiService.makeRequest('$_p/ppc');
   }
 }
 

@@ -35,6 +35,45 @@
   <!-- cropperjs for image_cropper -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+  <!-- Razorpay Web Checkout -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    function openRazorpayCheckout(key, amount, orderId, name, description, color, callbackName) {
+      var options = {
+        key: key,
+        amount: amount,
+        currency: 'INR',
+        order_id: orderId,
+        name: name,
+        description: description,
+        theme: { color: color },
+        handler: function(response) {
+          // Call back into Flutter with success data
+          if (window[callbackName + '_success']) {
+            window[callbackName + '_success'](
+              response.razorpay_payment_id,
+              response.razorpay_order_id,
+              response.razorpay_signature
+            );
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            if (window[callbackName + '_dismiss']) {
+              window[callbackName + '_dismiss']();
+            }
+          }
+        }
+      };
+      var rzp = new Razorpay(options);
+      rzp.on('payment.failed', function(response) {
+        if (window[callbackName + '_error']) {
+          window[callbackName + '_error'](response.error.description || 'Payment failed');
+        }
+      });
+      rzp.open();
+    }
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

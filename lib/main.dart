@@ -19,7 +19,9 @@ import 'screens/blocked_screen.dart';
 import 'screens/force_update_screen.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 import 'services/version_check_service.dart';
+import 'services/labels_service.dart';
 import 'widgets/network_overlay.dart';
+import 'utils/app_colors.dart';
 
 
 void main() {
@@ -78,23 +80,18 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _animation;
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+  late AnimationController _bgController;
 
   @override
   void initState() {
     super.initState();
-    
-    // Initialize animation controller for the loading bar
-    _animationController = AnimationController(
-      duration: const Duration(seconds: 2),
+
+    _bgController = AnimationController(
       vsync: this,
-    );
-    
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
-    _animationController.forward();
-    
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+
     // Global Screenshot & Screen Recording Protection (Android)
     _enableScreenProtection();
     
@@ -114,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _bgController.dispose();
     super.dispose();
   }
 
@@ -137,6 +134,9 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
         return;
       }
     }
+
+    // Load payment labels from server (avoids hardcoded strings in APK binary)
+    await LabelsService.instance.load();
 
     // Check if user is already logged in
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -238,41 +238,50 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
               ),
               const SizedBox(height: 40),
-              // Linear Progress Indicator
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 80),
-                child: AnimatedBuilder(
-                  animation: _animation,
-                  builder: (context, child) {
-                    return Container(
-                      width: double.infinity,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: FractionallySizedBox(
-                        alignment: Alignment.centerLeft,
-                        widthFactor: _animation.value,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF00A87D), // Turquoise
-                                Color(0xFF00A87D), // Deep blue
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              _buildCustomLoadingBar(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCustomLoadingBar() {
+    return Container(
+      width: 160,
+      height: 6,
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(3),
+      ),
+      child: AnimatedBuilder(
+        animation: _bgController,
+        builder: (context, _) {
+          return FractionallySizedBox(
+            alignment: Alignment.centerLeft,
+            widthFactor: (_bgController.value * 0.6) + 0.2,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primaryGreen.withOpacity(0.4),
+                    AppColors.primaryGreen,
+                    AppColors.primaryGreen.withOpacity(0.4),
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryGreen.withOpacity(0.3),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

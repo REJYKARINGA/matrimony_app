@@ -30,6 +30,7 @@ import '../widgets/common_footer.dart';
 import 'search_screen.dart';
 import 'preferences_screen.dart';
 import '../utils/app_colors.dart';
+import '../services/labels_service.dart';
 import '../widgets/recharge_dialog.dart';
 import 'wallet_transactions_screen.dart';
 import '../widgets/wallet_recharge_paywall.dart';
@@ -849,8 +850,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Free Unlock Offer',
+                    Text(
+                      LabelsService.instance.labels.unlock.freeUnlockOffer,
                       style: TextStyle(
                         color: AppColors.darkGreen,
                         fontSize: 15,
@@ -859,7 +860,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Unlock contacts for free during this promotional period.',
+                      LabelsService.instance.labels.unlock.unlockFreeDesc,
                       style: TextStyle(
                         color: AppColors.bodyText.withOpacity(0.85),
                         fontSize: 12,
@@ -2728,8 +2729,8 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                                 ),
                               ],
                             ),
-                            child: const Text(
-                              'Recharge to View',
+                            child: Text(
+                              LabelsService.instance.labels.wallet.recharge,
                               style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500),
                             ),
                           ),
@@ -2785,7 +2786,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           text,
           style: TextStyle(
             fontSize: 13,
-            fontWeight: isSelected ? FontWeight.w500 : FontWeight.w500,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
             color: isSelected ? Colors.white : Colors.grey.shade800,
             letterSpacing: -0.2,
           ),

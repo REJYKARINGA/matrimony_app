@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/wallet_transactions_screen.dart';
+import '../services/labels_service.dart';
 
 class WalletRechargePaywall extends StatelessWidget {
   final String? errorMessage;
@@ -8,11 +9,51 @@ class WalletRechargePaywall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lbl = LabelsService.instance.labels;
+
+    if (lbl.pricing.isInMaintenance) {
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        sliver: SliverToBoxAdapter(
+          child: Column(
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.construction_rounded, size: 44, color: Colors.orange.shade400),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Wallet Under Maintenance',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'We are upgrading our payment system.\nWallet features will come soon!',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final List<Map<String, dynamic>> rechargeOptions = [
-      {'amount': 199, 'contacts': 4, 'popular': false},
-      {'amount': 499, 'contacts': 10, 'popular': true},
-      {'amount': 999, 'contacts': 20, 'popular': false},
-      {'amount': 1999, 'contacts': 40, 'popular': false},
+      ...lbl.pricing.tiers.asMap().entries.map((entry) {
+        final t = entry.value;
+        return {
+          'amount': t['amount'],
+          'contacts': t['contacts'],
+          'popular': entry.key == 1,
+        };
+      }),
+      if (lbl.pricing.tiers.length <= 3)
+        {'amount': 1999, 'contacts': 40, 'popular': false},
     ];
 
     return SliverPadding(
@@ -27,8 +68,8 @@ class WalletRechargePaywall extends StatelessWidget {
                   children: [
                     const Icon(Icons.account_balance_wallet_rounded, size: 64, color: Color(0xFF00A87D)),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Recharge Required',
+                    Text(
+                      lbl.wallet.rechargeRequired,
                       style: TextStyle(fontSize: 26, fontWeight: FontWeight.w500, letterSpacing: -0.5),
                     ),
                   ],
@@ -103,7 +144,7 @@ class WalletRechargePaywall extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Wallet Recharge of ₹$amount',
+                            '${LabelsService.instance.labels.wallet.recharge} of ${LabelsService.instance.curr(amount.toString())}',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
@@ -152,7 +193,7 @@ class WalletRechargePaywall extends StatelessWidget {
                             ],
                           ),
                           child: Text(
-                            '₹$amount',
+                            LabelsService.instance.curr(amount.toString()),
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w500,

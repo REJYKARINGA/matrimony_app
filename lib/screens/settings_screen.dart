@@ -20,6 +20,7 @@ import '../services/profile_share_service.dart';
 import 'notification_settings_screen.dart';
 
 import '../services/payment_service.dart';
+import '../services/labels_service.dart';
 import 'wallet_transactions_screen.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -198,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           )
                         : Text(
-                            '₹${_walletBalance.toStringAsFixed(0)}',
+                            LabelsService.instance.curr(_walletBalance.toStringAsFixed(0)),
                             style: const TextStyle(
                               color: AppColors.deepEmerald,
                               fontWeight: FontWeight.w500,
@@ -519,8 +520,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _buildMenuItem(
                     context: context,
                     icon: Icons.account_balance_wallet,
-                    title: 'Wallet & Transactions',
-                    subtitle: 'Recharge and view history',
+                    title: LabelsService.instance.labels.settings.walletTitle,
+                    subtitle: LabelsService.instance.labels.settings.walletSubtitle,
                     onTap: () async {
                       await Navigator.push(
                         context,

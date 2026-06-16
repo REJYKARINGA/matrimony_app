@@ -22,6 +22,8 @@ import '../widgets/watermark_overlay.dart';
 import '../services/profile_share_service.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/labels_service.dart';
+import '../services/razorpay_service.dart';
 import '../utils/app_config.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -34,17 +36,16 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with SingleTickerProviderStateMixin {
   User? _user;
   bool _isLoading = true;
   String? _errorMessage;
-  bool _paymentLaunched = false;
+
   dynamic _interestSent;
   dynamic _interestReceived;
   bool _isActionLoading = false;
   bool _contactUnlocked = false;
   double _walletBalance = 0.0;
-  int? _currentTransactionId;
   int _todayUnlockCount = 0;
   int _dailyUnlockLimit = 20; // Default, will be updated from backend
   Set<int> _shortlistedUserIds = {};
@@ -100,7 +101,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -1200,7 +1200,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '₹${_walletBalance.toStringAsFixed(0)}',
+                    LabelsService.instance.curr(_walletBalance.toStringAsFixed(0)),
                     style: TextStyle(
                       color: _isCollapsed ? AppColors.deepEmerald : Colors.white,
                       fontWeight: FontWeight.w500,
@@ -2479,15 +2479,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ),
               SizedBox(width: 14),
               Expanded(
-                child: Text(
-                  'Contact Information',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.midnightEmerald,
-                    letterSpacing: 0.3,
+                  child: Text(
+                    LabelsService.instance.labels.unlock.contactInfo,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.midnightEmerald,
+                      letterSpacing: 0.3,
+                    ),
                   ),
-                ),
               ),
               if (_contactUnlocked) ...[
                 SizedBox(width: 8),
@@ -2503,7 +2503,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Icon(Icons.lock_open, color: AppColors.primaryGreen, size: 12),
                       SizedBox(width: 4),
                       Text(
-                        'Unlocked',
+                        LabelsService.instance.labels.unlock.unlocked,
                         style: TextStyle(
                           fontSize: 11,
                           color: AppColors.primaryGreen,
@@ -2545,7 +2545,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 onPressed: _showContactDetailsModal,
                 icon: Icon(Icons.visibility_outlined, size: 22),
                 label: Text(
-                  'View Contact Details',
+                  LabelsService.instance.labels.unlock.viewContact,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -2616,7 +2616,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'Free Unlock Offer',
+                            LabelsService.instance.labels.unlock.freeUnlockOffer,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -2789,8 +2789,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   child: ElevatedButton.icon(
                     onPressed: () => _checkVerificationAndProceed(() => _unlockContactFree()),
                     icon: const Icon(Icons.download_rounded, size: 22),
-                    label: const Text(
-                      'Unlock Free',
+                    label: Text(
+                      LabelsService.instance.labels.unlock.unlockFree,
                       style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -2834,7 +2834,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         onPressed: () => _checkVerificationAndProceed(_showPaymentOptions),
                         icon: Icon(Icons.account_balance_wallet, size: 18),
                         label: Text(
-                          'Wallet',
+                          LabelsService.instance.labels.unlock.unlockWithWallet,
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -2872,15 +2872,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         ],
                       ),
                       child: ElevatedButton.icon(
-                        onPressed: () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
+                        onPressed: LabelsService.instance.labels.pricing.isInMaintenance
+                            ? null
+                            : () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
                         icon: Icon(Icons.payment, size: 18),
                         label: Text(
-                          'Pay Now',
+                          LabelsService.instance.labels.pricing.isInMaintenance
+                              ? 'Pay Now (Maintenance)'
+                              : LabelsService.instance.labels.unlock.payNow,
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
-                          foregroundColor: AppColors.cardDark,
+                          foregroundColor: LabelsService.instance.labels.pricing.isInMaintenance
+                              ? Colors.grey
+                              : AppColors.cardDark,
                           elevation: 0,
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(
@@ -2905,7 +2911,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ? SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.deepEmerald))
                       : Icon(Icons.person_search_rounded, size: 20),
                   label: Text(
-                    _isSendingPermissionRequest ? 'Sending Request...' : 'Ask Permission',
+                    _isSendingPermissionRequest
+                        ? LabelsService.instance.labels.unlock.sendingRequest
+                        : LabelsService.instance.labels.unlock.askPermission,
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                   ),
                   style: OutlinedButton.styleFrom(
@@ -2931,7 +2939,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        'Permission Requested — Awaiting Reply',
+                        LabelsService.instance.labels.unlock.permissionRequested,
                         style: TextStyle(color: Colors.orange.shade700, fontWeight: FontWeight.w500, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
@@ -2955,7 +2963,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        'Permission Granted — You can now unlock via Wallet',
+                        LabelsService.instance.labels.unlock.permissionGranted,
                         style: TextStyle(color: AppColors.primaryGreen, fontWeight: FontWeight.w500, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
@@ -2979,7 +2987,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        'Permission Declined',
+                        LabelsService.instance.labels.unlock.permissionDeclined,
                         style: TextStyle(color: Colors.red.shade400, fontWeight: FontWeight.w500, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
@@ -3610,7 +3618,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             children: [
               Icon(Icons.help_outline_rounded, color: Color(0xFF0A3A2A)),
               SizedBox(width: 8),
-              Text('Confirm Unlock'),
+              Text(LabelsService.instance.labels.unlock.confirmUnlock),
             ],
           ),
           content: Column(
@@ -3618,7 +3626,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Are you sure you want to unlock this contact? ${_unlockPrice < _baseUnlockPrice ? "₹${_unlockPrice.toStringAsFixed(0)} (₹${_baseUnlockPrice.toStringAsFixed(0)} with discount) will be deducted from your wallet." : "₹${_unlockPrice.toStringAsFixed(0)} will be deducted from your wallet."}',
+                '${LabelsService.instance.labels.unlock.confirmUnlockDesc} ${_unlockPrice < _baseUnlockPrice ? "${LabelsService.instance.curr(_unlockPrice.toStringAsFixed(0))} (${LabelsService.instance.curr(_baseUnlockPrice.toStringAsFixed(0))} with discount) will be deducted from your wallet." : "${LabelsService.instance.curr(_unlockPrice.toStringAsFixed(0))} will be deducted from your wallet."}',
                 style: TextStyle(fontSize: 15),
               ),
               if (_activeFestival != null && _unlockPrice < _baseUnlockPrice)
@@ -3655,7 +3663,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text('Confirm & Unlock'),
+              child: Text(LabelsService.instance.labels.unlock.confirmUnlock),
             ),
           ],
         ),
@@ -3671,11 +3679,11 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             children: [
               Icon(Icons.warning_amber_rounded, color: Colors.orange),
               SizedBox(width: 8),
-              Text('Insufficient Balance'),
+              Text(LabelsService.instance.labels.unlock.insufficientBalance),
             ],
           ),
           content: Text(
-            'Your wallet balance is ₹${_walletBalance.toStringAsFixed(0)}. Would you like to recharge your wallet?',
+            '${LabelsService.instance.labels.unlock.insufficientBalance}: ${LabelsService.instance.curr(_walletBalance.toStringAsFixed(0))}. Would you like to recharge?',
             style: TextStyle(fontSize: 15),
           ),
           actions: [
@@ -3694,7 +3702,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: Text('Recharge'),
+              child: Text(LabelsService.instance.labels.wallet.recharge),
             ),
           ],
         ),
@@ -3985,17 +3993,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'Recharge Wallet',
+          LabelsService.instance.labels.wallet.recharge,
           style: TextStyle(fontWeight: FontWeight.w500),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildRechargeOption(199.0, context),
-            _buildRechargeOption(499.0, context),
-            _buildRechargeOption(999.0, context),
-            _buildRechargeOption(1999.0, context),
-          ],
+          children: LabelsService.instance.labels.pricing.tiers.map((tier) {
+            final amt = (tier['amount'] as num).toDouble();
+            return _buildRechargeOption(amt, context);
+          }).toList(),
         ),
       ),
     );
@@ -4035,7 +4041,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       child: ListTile(
         leading: Icon(Icons.account_balance_wallet, color: Color(0xFF0A3A2A)),
         title: Text(
-          '₹${amount.toStringAsFixed(0)}',
+          LabelsService.instance.curr(amount.toStringAsFixed(0)),
           style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         trailing: Icon(
@@ -4050,35 +4056,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Future<void> _openWebPayment(Map<String, dynamic> orderData, {required double amount, required String type, int? unlockedUserId}) async {
-    final token = await ApiService.getToken();
-    if (token == null) return;
-
-    setState(() {
-      _currentTransactionId = orderData['transaction_id'];
-    });
-
-    var url = '${AppConfig.rawBaseUrl}/recharge'
-        '?order_id=${orderData['order_id']}'
-        '&amount=${(amount * 100).toInt()}'
-        '&type=$type'
-        '&token=$token'
-        '&transaction_id=${orderData['transaction_id']}';
-
-    if (unlockedUserId != null) {
-      url += '&unlocked_user_id=$unlockedUserId';
-    }
-
-    if (orderData['discount_applied'] == true) {
-      url += '&original_price=${orderData['original_price']}'
-          '&festival_name=${Uri.encodeComponent(orderData['festival_name'] ?? '')}'
-          '&festival_discount=${orderData['festival_discount_amount'] ?? 0}';
-    }
-
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      _paymentLaunched = true;
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+    RazorpayService.openCheckout(
+      key: orderData['key'],
+      amount: amount,
+      orderId: orderData['order_id'],
+      transactionId: orderData['transaction_id'],
+      unlockedUserId: unlockedUserId?.toString(),
+      onSuccess: () {
+        _loadWalletBalance();
+        if (type == 'contact_unlock') _checkContactUnlock();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(type == 'contact_unlock' ? 'Contact unlocked!' : 'Recharge successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      },
+      onError: (msg) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg), backgroundColor: Colors.red),
+        );
+      },
+    );
   }
 
   void _showReportDialog() {
@@ -4272,7 +4271,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _interestTimer?.cancel();
     _freeUnlockTimer?.cancel();
     _offerTimer?.cancel();
@@ -4281,14 +4279,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     super.dispose();
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && _paymentLaunched) {
-      _paymentLaunched = false;
-      _loadWalletBalance();
-      _checkContactUnlock();
-    }
-  }
+
 
   Widget _buildRecommendedProfilesSection() {
     return Column(
