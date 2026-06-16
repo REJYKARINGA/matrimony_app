@@ -190,7 +190,7 @@ class BlockedScreen extends StatelessWidget {
                   
                   const SizedBox(height: 40),
                   const Text(
-                    'Security by Vivah4Ever Protection System',
+                    'Security by Nikkah Match Protection System',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 12,

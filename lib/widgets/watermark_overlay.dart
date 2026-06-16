@@ -8,7 +8,7 @@ class WatermarkOverlay extends StatelessWidget {
 
   const WatermarkOverlay({
     Key? key,
-    this.watermarks = const ['Vivah4Ever', 'Kerala Matrimony'],
+    this.watermarks = const ['Nikkah Match'],
     this.opacity = 0.3,
     this.angle = -math.pi / 4,
   }) : super(key: key);

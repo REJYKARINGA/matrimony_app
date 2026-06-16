@@ -6,7 +6,7 @@ class ThemeProvider extends ChangeNotifier {
 
   bool get isDarkMode => _isDarkMode;
 
-  // Light Mode Colors (Matched to Vivah4Ever Logo)
+  // Light Mode Colors (Matched to Nikkah Match Logo)
   static const Color lightPrimary = AppColors.primaryBlue;
   static const Color lightSecondary = AppColors.primaryCyan;
   static const Color lightBackground = AppColors.background;

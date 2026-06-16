@@ -3299,31 +3299,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       ),
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.midnightEmerald.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.favorite_rounded,
-              color: AppColors.midnightEmerald,
-              size: 32,
-            ),
+          Image.asset(
+            'assets/images/detailed_nikkah_match_logo.png',
+            width: double.infinity,
+            fit: BoxFit.fitWidth,
           ),
-          const SizedBox(height: 20),
-          const Text(
-            'Vivah4Ever',
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w500,
-              color: AppColors.midnightEmerald,
-              letterSpacing: 1.5,
-            ),
-          ),
+          
           const SizedBox(height: 6),
           const Text(
-            'Trusted Kerala Matrimony Services',
+            'Trusted Nikkah Match Services',
             style: TextStyle(
               fontSize: 14,
               color: AppColors.mutedText,
@@ -3352,8 +3336,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ),
           ),
           const SizedBox(height: 30),
-          const Text(
-            '© 2026 Vivah4Ever. All Rights Reserved.',
+          Text(
+            '© ${DateTime.now().year} Nikkah Match. All Rights Reserved.',
             style: TextStyle(
               fontSize: 13,
               color: AppColors.midnightEmerald,

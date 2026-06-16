@@ -331,7 +331,7 @@ class _WalletMaintenanceOverlayState extends State<WalletMaintenanceOverlay>
               Icon(Icons.email_outlined, size: 16, color: AppColors.primaryGreen),
               const SizedBox(width: 6),
               const Text(
-                'rejykaringa2000@gmail.com',
+                'support@nikkahmatch.com',
                 style: TextStyle(fontSize: 13, color: Colors.black54, fontWeight: FontWeight.w500),
               ),
             ],

@@ -210,17 +210,17 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Logo container with elegant design
-              Container(
-                width: 200,
-                height: 200,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Image.asset(
-                  'assets/images/app_logo_v2.png',
+                  'assets/images/detailed_nikkah_match_logo.png',
+                  width: double.infinity,
                   fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 40),
               Text(
-                'Vivah4Ever',
+                'Nikkah Match',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w500,
@@ -230,7 +230,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
               const SizedBox(height: 8),
               Text(
-                'Kerala Matrimony',
+                'Nikkah Match',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,

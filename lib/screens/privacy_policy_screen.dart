@@ -43,7 +43,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _buildSection(
               '1. INTRODUCTION',
               [
-                'Vivah Matrimony ("we," "us," "our") is committed to protecting your privacy.',
+                'Nikkah Match ("we," "us," "our") is committed to protecting your privacy.',
                 'This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our matrimonial services.',
                 'Please read this policy carefully to understand our practices regarding your personal data.',
               ],
@@ -169,7 +169,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Portability: Receive your data in a structured format',
                 'Opt-Out: Unsubscribe from promotional communications',
                 'Restriction: Request limitation of data processing',
-                'To exercise these rights, contact: support@vivahmatrimony.com',
+                'To exercise these rights, contact: support@nikkahmatch.com',
               ],
             ),
             _buildSection(
@@ -224,18 +224,18 @@ class PrivacyPolicyScreen extends StatelessWidget {
               '18. GRIEVANCE OFFICER',
               [
                 'In accordance with Indian law, we have appointed a Grievance Officer',
-                'For privacy concerns, contact: grievance@vivahmatrimony.com',
+                'For privacy concerns, contact: grievance@nikkahmatch.com',
                 'Response Time: Within 48 hours',
-                'Escalation: If unresolved, contact support@vivahmatrimony.com',
+                'Escalation: If unresolved, contact support@nikkahmatch.com',
               ],
             ),
             _buildSection(
               '19. CONTACT US',
               [
                 'For privacy-related questions or concerns:',
-                'Email: support@vivahmatrimony.com',
-                'Privacy Email: privacy@vivahmatrimony.com',
-                'Grievance Officer: grievance@vivahmatrimony.com',
+                'Email: support@nikkahmatch.com',
+                'Privacy Email: privacy@nikkahmatch.com',
+                'Grievance Officer: grievance@nikkahmatch.com',
                 'Address: [Your Business Address]',
                 'Phone: [Your Contact Number]',
               ],

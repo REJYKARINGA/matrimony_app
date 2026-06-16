@@ -125,7 +125,7 @@ class LandingScreen extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.all(12),
                       child: Image.asset(
-                        'assets/images/app_logo_v2.png',
+                        'assets/images/nikkah_match_app_logo.png',
                         fit: BoxFit.contain,
                       ),
                     ),

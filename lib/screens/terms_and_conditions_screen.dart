@@ -155,10 +155,10 @@ class TermsAndConditionsScreen extends StatelessWidget {
             _buildSection(
               '12. LIMITATION OF LIABILITY',
               [
-                'Vivah Matrimony shall not be liable for indirect, incidental, or consequential damages.',
+                'Nikkah Match shall not be liable for indirect, incidental, or consequential damages.',
                 'We are not responsible for personal injury, financial losses, or offline meetings.',
                 'Our total liability shall not exceed ₹1,000 or the amount you paid in the last 6 months.',
-                'You agree to indemnify Vivah Matrimony from claims arising from your use of the Platform.',
+                'You agree to indemnify Nikkah Match from claims arising from your use of the Platform.',
               ],
             ),
             _buildSection(
@@ -198,8 +198,8 @@ class TermsAndConditionsScreen extends StatelessWidget {
             _buildSection(
               '17. CONTACT INFORMATION',
               [
-                'Email: support@vivahmatrimony.com',
-                'Grievance Officer: grievance@vivahmatrimony.com',
+                'Email: support@nikkahmatch.com',
+                'Grievance Officer: grievance@nikkahmatch.com',
                 'Response Time: Within 48 hours',
               ],
             ),

@@ -33,7 +33,7 @@ class ProfileShareService {
     // 1. Prepare Text Summary for WhatsApp
     final String profileUrl = '${AppConfig.rawBaseUrl}/profile/$matrimonyId';
     final String shareText = """
-🌟 *Profile from Vivah Matrimony* 🌟
+🌟 *Profile from Nikkah Match* 🌟
 
 *Name:* $name ($matrimonyId)
 *Age/Height:* $age, $height
@@ -45,7 +45,7 @@ class ProfileShareService {
 
 🔗 View Profile: $profileUrl
 
-Check out this profile on Vivah Matrimony app!
+Check out this profile on Nikkah Match app!
 """;
 
     try {
@@ -73,7 +73,7 @@ Check out this profile on Vivah Matrimony app!
                     const Icon(Icons.favorite, color: Colors.white, size: 24),
                     const SizedBox(width: 10),
                     const Text(
-                      'VIVAH MATRIMONY',
+                      'NIKKAH MATCH',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -164,7 +164,7 @@ Check out this profile on Vivah Matrimony app!
                 const Divider(color: Colors.white54),
                 const SizedBox(height: 10),
                 const Text(
-                  'Contact Vivah Matrimony to connect!',
+                  'Contact Nikkah Match to connect!',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 12,
@@ -266,7 +266,7 @@ class _ShareWatermarkPainter extends CustomPainter {
       ],
     );
 
-    final watermarks = ['Vivah4Ever', 'Kerala Matrimony'];
+    final watermarks = ['Nikkah Match'];
     final positions = [
       Offset(size.width * 0.2, size.height * 0.25),
       Offset(size.width * 0.7, size.height * 0.35),

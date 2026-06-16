@@ -23,7 +23,12 @@ class ApiService {
 
   static String get baseUrl => AppConfig.baseUrl;
 
+  static String get _fallbackBaseUrl => AppConfig.fallbackBaseUrl;
+
   static String get authUrl => '$baseUrl/auth';
+
+  static String _workingBaseUrl = '';
+  static String get workingBaseUrl => _workingBaseUrl.isNotEmpty ? _workingBaseUrl : baseUrl;
 
   // Store token in SharedPreferences
   static Future<void> storeToken(String token) async {
@@ -63,34 +68,48 @@ class ApiService {
       requestHeaders.addAll(headers);
     }
 
-    http.Response response;
+    try {
+      return await _tryRequest(url, method: method, headers: requestHeaders, body: body);
+    } on SocketException catch (_) {
+      if (_workingBaseUrl == _fallbackBaseUrl) rethrow;
 
-    switch (method.toUpperCase()) {
-      case 'GET':
-        response = await http.get(Uri.parse(url), headers: requestHeaders);
-        break;
-      case 'POST':
-        response = await http.post(
-          Uri.parse(url),
-          headers: requestHeaders,
-          body: body != null ? jsonEncode(body) : null,
-        );
-        break;
-      case 'PUT':
-        response = await http.put(
-          Uri.parse(url),
-          headers: requestHeaders,
-          body: body != null ? jsonEncode(body) : null,
-        );
-        break;
-      case 'DELETE':
-        response = await http.delete(Uri.parse(url), headers: requestHeaders);
-        break;
-      default:
-        throw Exception('Unsupported HTTP method: $method');
+      String fallbackUrl = url.replaceFirst(baseUrl, _fallbackBaseUrl);
+      final response = await _tryRequest(fallbackUrl, method: method, headers: requestHeaders, body: body);
+      _workingBaseUrl = _fallbackBaseUrl;
+      return response;
     }
+  }
 
-    return response;
+  static Future<http.Response> _tryRequest(
+    String url, {
+    required String method,
+    Map<String, String>? headers,
+    dynamic body,
+  }) async {
+    try {
+      switch (method.toUpperCase()) {
+        case 'GET':
+          return await http.get(Uri.parse(url), headers: headers).timeout(const Duration(seconds: 10));
+        case 'POST':
+          return await http.post(
+            Uri.parse(url),
+            headers: headers,
+            body: body != null ? jsonEncode(body) : null,
+          ).timeout(const Duration(seconds: 10));
+        case 'PUT':
+          return await http.put(
+            Uri.parse(url),
+            headers: headers,
+            body: body != null ? jsonEncode(body) : null,
+          ).timeout(const Duration(seconds: 10));
+        case 'DELETE':
+          return await http.delete(Uri.parse(url), headers: headers).timeout(const Duration(seconds: 10));
+        default:
+          throw Exception('Unsupported HTTP method: $method');
+      }
+    } on SocketException catch (_) {
+      rethrow;
+    }
   }
 
   // Authentication methods
@@ -418,16 +437,16 @@ class ApiService {
     
     // For web, use the proxy to avoid CORS issues
     if (kIsWeb && path.startsWith('/storage/')) {
-      return '$baseUrl/images/proxy?path=${Uri.encodeComponent(path)}';
+      return '${workingBaseUrl}/images/proxy?path=${Uri.encodeComponent(path)}';
     }
     
     // If it's a storage path but doesn't have the base URL
     if (path.startsWith('/storage/')) {
-      return baseUrl.replaceAll('/api', '') + path;
+      return workingBaseUrl.replaceAll('/api', '') + path;
     }
     
     // Fallback: append to base URL (without /api)
-    return baseUrl.replaceAll('/api', '') + path;
+    return workingBaseUrl.replaceAll('/api', '') + path;
   }
 
   // Test method for Reverb broadcasting

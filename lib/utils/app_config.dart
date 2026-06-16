@@ -11,10 +11,15 @@ class AppConfig {
 
   static AppEnvironment get environment => _environment;
 
+  // static String get primaryBaseUrl => 'https://nikkahmatch.in/api';
+  // static String get primaryBaseUrl => 'https://wishigrove.com/api';
+  static String get primaryBaseUrl => 'http://43.205.99.214/api';
+  static String get fallbackBaseUrl => 'http://43.205.99.214/api';
+
   static String get baseUrl {
     switch (_environment) {
       case AppEnvironment.prod:
-        return 'http://43.205.99.214/api';
+        return primaryBaseUrl;
       case AppEnvironment.test:
         return 'https://matrimonybackend-test.up.railway.app/api'; // Change this as needed
       case AppEnvironment.dev:

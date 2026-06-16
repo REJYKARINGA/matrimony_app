@@ -146,8 +146,8 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                           const SizedBox(height: 20),
                           Text(
                             widget.versionInfo.forceUpdate
-                                ? 'Please update to the latest version to continue using Vivah4Ever.'
-                                : 'A newer version of Vivah4Ever is available. Update for the best experience.',
+                                ? 'Please update to the latest version to continue using Nikkah Match.'
+                                : 'A newer version of Nikkah Match is available. Update for the best experience.',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.grey,
@@ -201,7 +201,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                     ],
                     const SizedBox(height: 40),
                     const Text(
-                      'Vivah4Ever',
+                      'Nikkah Match',
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: 12,
