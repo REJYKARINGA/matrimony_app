@@ -24,6 +24,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/labels_service.dart';
 import '../services/razorpay_service.dart';
+import '../services/review_service.dart';
 import '../utils/app_config.dart';
 
 class UserProfileScreen extends StatefulWidget {
@@ -3728,6 +3729,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         }
         _loadWalletBalance();
         _loadUserProfile();      // Reload to get fresh contact_info from API
+        ReviewService.instance.incrementUnlockAndTryReview();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -4064,7 +4066,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       unlockedUserId: unlockedUserId?.toString(),
       onSuccess: () {
         _loadWalletBalance();
-        if (type == 'contact_unlock') _checkContactUnlock();
+        if (type == 'contact_unlock') {
+          _checkContactUnlock();
+          ReviewService.instance.incrementUnlockAndTryReview();
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(type == 'contact_unlock' ? 'Contact unlocked!' : 'Recharge successful!'),

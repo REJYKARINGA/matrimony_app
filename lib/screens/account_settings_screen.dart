@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/review_service.dart';
 import 'verification_screen.dart';
 import 'terms_and_conditions_screen.dart';
 import 'privacy_policy_screen.dart';
@@ -24,6 +25,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isLoading = false;
   String? _updatedEmail;
   String? _updatedPhone;
+  bool _ratingDisabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ReviewService.instance.isRatingDisabled().then((v) {
+      if (mounted) setState(() => _ratingDisabled = v);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -362,6 +372,63 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     ),
                   ],
                 ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // App Rating Preference Section
+            _buildSectionHeader('RATING', Icons.star_border_outlined),
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider.withOpacity(0.5)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: SwitchListTile(
+                secondary: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.deepEmerald.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.star_half_rounded,
+                    color: AppColors.deepEmerald,
+                    size: 22,
+                  ),
+                ),
+                title: const Text(
+                  'Rate Reminders',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                subtitle: Text(
+                  _ratingDisabled
+                      ? 'Rate reminders are turned off'
+                      : 'Get a reminder to rate the app after every 10 contact unlocks',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: _ratingDisabled ? Colors.orange : Colors.grey[600],
+                  ),
+                ),
+                value: !_ratingDisabled,
+                activeColor: AppColors.deepEmerald,
+                onChanged: (value) {
+                  ReviewService.instance.setRatingDisabled(!value);
+                  setState(() => _ratingDisabled = !value);
+                },
               ),
             ),
 

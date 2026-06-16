@@ -81,6 +81,7 @@ dependencies:
   flutter_windowmanager_plus: ^1.0.1
   connectivity_plus: ^7.1.1
   package_info_plus: ^10.1.0
+  in_app_review: ^2.0.9
 
 
 dev_dependencies:
