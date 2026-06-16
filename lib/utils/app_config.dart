@@ -11,9 +11,9 @@ class AppConfig {
 
   static AppEnvironment get environment => _environment;
 
-  // static String get primaryBaseUrl => 'https://nikkahmatch.in/api';
   // static String get primaryBaseUrl => 'https://wishigrove.com/api';
-  static String get primaryBaseUrl => 'http://43.205.99.214/api';
+  // static String get primaryBaseUrl => 'http://43.205.99.214/api';
+  static String get primaryBaseUrl => 'https://nikkahmatch.in/api';
   static String get fallbackBaseUrl => 'http://43.205.99.214/api';
 
   static String get baseUrl {
