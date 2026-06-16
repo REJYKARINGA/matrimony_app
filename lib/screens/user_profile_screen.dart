@@ -2850,53 +2850,53 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF004D40),
-                            Color(0xFF0A3A2A),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF0A3A2A).withOpacity(0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton.icon(
-                        onPressed: LabelsService.instance.labels.pricing.isInMaintenance
-                            ? null
-                            : () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
-                        icon: Icon(Icons.payment, size: 18),
-                        label: Text(
-                          LabelsService.instance.labels.pricing.isInMaintenance
-                              ? 'Pay Now (Maintenance)'
-                              : LabelsService.instance.labels.unlock.payNow,
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          foregroundColor: LabelsService.instance.labels.pricing.isInMaintenance
-                              ? Colors.grey
-                              : AppColors.cardDark,
-                          elevation: 0,
-                          shadowColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // SizedBox(width: 8),
+                  // Expanded(
+                  //   child: Container(
+                  //     height: 48,
+                  //     decoration: BoxDecoration(
+                  //       gradient: const LinearGradient(
+                  //         colors: [
+                  //           Color(0xFF004D40),
+                  //           Color(0xFF0A3A2A),
+                  //         ],
+                  //         begin: Alignment.topLeft,
+                  //         end: Alignment.bottomRight,
+                  //       ),
+                  //       borderRadius: BorderRadius.circular(14),
+                  //       boxShadow: [
+                  //         BoxShadow(
+                  //           color: const Color(0xFF0A3A2A).withOpacity(0.3),
+                  //           blurRadius: 12,
+                  //           offset: const Offset(0, 6),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     child: ElevatedButton.icon(
+                  //       onPressed: LabelsService.instance.labels.pricing.isInMaintenance
+                  //           ? null
+                  //           : () => _checkVerificationAndProceed(() => _unlockWithDirectPayment()),
+                  //       icon: Icon(Icons.payment, size: 18),
+                  //       label: Text(
+                  //         LabelsService.instance.labels.pricing.isInMaintenance
+                  //             ? 'Pay Now (Maintenance)'
+                  //             : LabelsService.instance.labels.unlock.payNow,
+                  //         style: TextStyle(fontWeight: FontWeight.w500),
+                  //       ),
+                  //       style: ElevatedButton.styleFrom(
+                  //         backgroundColor: Colors.transparent,
+                  //         foregroundColor: LabelsService.instance.labels.pricing.isInMaintenance
+                  //             ? Colors.grey
+                  //             : AppColors.cardDark,
+                  //         elevation: 0,
+                  //         shadowColor: Colors.transparent,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(12),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(height: 8),
