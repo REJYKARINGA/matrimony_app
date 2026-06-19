@@ -164,7 +164,7 @@ class _InterestNotificationDialogState extends State<InterestNotificationDialog>
                       Icon(Icons.notifications_active_rounded,
                           color: AppColors.primaryCyan, size: 14),
                       const SizedBox(width: 6),
-                      const Text(
+                      Text(
                         'Reminding you until you read it',
                         style: TextStyle(
                           color: AppColors.primaryBlue,

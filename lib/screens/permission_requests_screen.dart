@@ -27,7 +27,7 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
   Set<int> _approvingIds = {};
   Set<int> _rejectingIds = {};
 
-  static const Color primaryCyan = AppColors.deepEmerald;
+  static final Color primaryCyan = AppColors.deepEmerald;
 
   @override
   void initState() {
@@ -130,10 +130,10 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.midnightEmerald, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.midnightEmerald, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Permission Requests',
           style: TextStyle(color: AppColors.midnightEmerald, fontWeight: FontWeight.w500, fontSize: 18),
         ),
@@ -167,7 +167,7 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
 
   Widget _buildIncomingTab() {
     if (_isLoadingIncoming) {
-      return const Center(child: CircularProgressIndicator(color: primaryCyan));
+      return Center(child: CircularProgressIndicator(color: primaryCyan));
     }
     if (_incomingRequests.isEmpty) {
       return Center(
@@ -227,7 +227,7 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
                         children: [
                           Text(
                             '${senderProfile['first_name'] ?? ''} ${senderProfile['last_name'] ?? ''}'.trim(),
-                            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: AppColors.midnightEmerald),
+                            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: AppColors.midnightEmerald),
                           ),
                           const SizedBox(height: 2),
                           Text(
@@ -294,7 +294,7 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
                       color: AppColors.primaryGreen.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.check_circle, color: AppColors.primaryGreen, size: 16),
@@ -331,7 +331,7 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
 
   Widget _buildSentTab() {
     if (_isLoadingSent) {
-      return const Center(child: CircularProgressIndicator(color: primaryCyan));
+      return Center(child: CircularProgressIndicator(color: primaryCyan));
     }
     if (_sentRequests.isEmpty) {
       return Center(
@@ -406,7 +406,7 @@ class _PermissionRequestsScreenState extends State<PermissionRequestsScreen>
                     children: [
                       Text(
                         '${targetProfile['first_name'] ?? ''} ${targetProfile['last_name'] ?? ''}'.trim(),
-                        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: AppColors.midnightEmerald),
+                        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15, color: AppColors.midnightEmerald),
                       ),
                       const SizedBox(height: 2),
                       Text(

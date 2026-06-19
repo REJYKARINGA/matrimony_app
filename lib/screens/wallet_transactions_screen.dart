@@ -39,7 +39,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
             Icon(Icons.security_rounded, color: AppColors.primaryGreen),
             SizedBox(width: 10),
@@ -65,7 +65,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OKAY', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryGreen)),
+            child: Text('OKAY', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryGreen)),
           ),
         ],
       ),
@@ -109,7 +109,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
       appBar: AppBar(
         title: Text(LabelsService.instance.labels.wallet.title),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: AppColors.primaryGradient,
           ),
         ),
@@ -344,7 +344,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
         ),
         child: Text(
           LabelsService.instance.curr(amount.toStringAsFixed(0)),
-          style: const TextStyle(
+          style: TextStyle(
             color: AppColors.primaryGreen,
             fontWeight: FontWeight.w500,
           ),
@@ -526,7 +526,7 @@ class _WalletTransactionsScreenState extends State<WalletTransactionsScreen> {
                                       ),
                                       child: Text(
                                         unlockedUser['matrimony_id']?.toString() ?? '',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 11,
                                           fontWeight: FontWeight.w500,
                                           color: AppColors.primaryGreen,
@@ -771,7 +771,7 @@ class _TransferDialogState extends State<_TransferDialog> {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
-                    child: const Icon(Icons.person, color: AppColors.primaryGreen),
+                    child: Icon(Icons.person, color: AppColors.primaryGreen),
                   ),
                   title: Text(user['name']),
                   subtitle: Text(user['matrimony_id']),
@@ -865,7 +865,7 @@ class _TransferDialogState extends State<_TransferDialog> {
             children: [
               Text(
                 'Transfer ₹${_amount.toStringAsFixed(0)} to ${_selectedUser!['name']}',
-                style: const TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryGreen),
+                style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryGreen),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
@@ -997,7 +997,8 @@ class _TransferDialogState extends State<_TransferDialog> {
       setState(() => _isProcessing = false);
     }
   }
-}
+}
+
 
 
 

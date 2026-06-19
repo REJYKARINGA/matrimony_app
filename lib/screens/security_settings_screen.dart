@@ -132,7 +132,7 @@ class _SecuritySettingsScreenState extends State<SecuritySettingsScreen> {
                 color: AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text('Current', style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w500, fontSize: 10)),
+              child: Text('Current', style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w500, fontSize: 10)),
             )
           : null,
       ),

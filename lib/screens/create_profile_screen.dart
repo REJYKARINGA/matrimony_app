@@ -451,7 +451,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           title: Text(
             name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
               color: AppColors.midnightEmerald,
@@ -506,7 +506,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
                           color: AppColors.midnightEmerald,
@@ -524,7 +524,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Search $title...',
-                      prefixIcon: const Icon(Icons.search, color: AppColors.deepEmerald),
+                      prefixIcon: Icon(Icons.search, color: AppColors.deepEmerald),
                       filled: true,
                       fillColor: Colors.grey[100],
                       border: OutlineInputBorder(
@@ -636,7 +636,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 const SizedBox(height: 12),
                 Text(
                   state.errorText!,
-                  style: const TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w500, fontSize: 13),
+                  style: TextStyle(color: AppColors.primaryBlue, fontWeight: FontWeight.w500, fontSize: 13),
                 ),
               ],
             ],
@@ -713,7 +713,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                 const SizedBox(height: 12),
                 Text(
                   state.errorText!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.primaryBlue, 
                     fontWeight: FontWeight.w500, 
                     fontSize: 13,
@@ -1400,7 +1400,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: AppColors.primaryBlue,
@@ -1439,7 +1439,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w500,
                 color: AppColors.midnightEmerald,
                 fontSize: 14,
@@ -1469,7 +1469,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
-        suffixIcon: readOnly ? const Icon(Icons.arrow_drop_down_rounded, color: AppColors.primaryCyan) : null,
+        suffixIcon: readOnly ? Icon(Icons.arrow_drop_down_rounded, color: AppColors.primaryCyan) : null,
       ),
       validator: (val) {
         if (val == null || val.isEmpty) return 'Required';

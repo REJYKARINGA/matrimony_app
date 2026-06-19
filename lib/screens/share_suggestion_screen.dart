@@ -33,8 +33,8 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
     {'label': 'Other',          'icon': Icons.more_horiz_rounded},
   ];
 
-  static const _primaryColor = AppColors.deepEmerald;
-  static const _deepBlue    = AppColors.deepEmerald;
+  static final _primaryColor = AppColors.deepEmerald;
+  static final _deepBlue    = AppColors.deepEmerald;
 
   @override
   void dispose() {
@@ -105,7 +105,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
         appBar: AppBar(
           title: const Text('Share a Suggestion'),
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -156,7 +156,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               height: 100,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [_primaryColor, _deepBlue],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -215,7 +215,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                 _descController.clear();
                 _selectedPhotos.clear();
               }),
-              child: const Text(
+              child: Text(
                 'Submit another suggestion',
                 style: TextStyle(color: _primaryColor, fontWeight: FontWeight.w500),
               ),
@@ -240,7 +240,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [_primaryColor, _deepBlue],
@@ -442,7 +442,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
       future: ApiService.getMySuggestions(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: _primaryColor));
+          return Center(child: CircularProgressIndicator(color: _primaryColor));
         }
 
         if (snapshot.hasError || !snapshot.hasData) {
@@ -549,7 +549,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                                 ),
                                 child: Text(
                                   s['category'].toString().toUpperCase(),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
                                     color: AppColors.deepEmerald,
@@ -673,7 +673,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                       decoration: BoxDecoration(
                         color: _primaryColor.withOpacity(0.04),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border(left: const BorderSide(color: _primaryColor, width: 3)),
+                        border: Border(left: BorderSide(color: _primaryColor, width: 3)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -683,9 +683,9 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.comment_rounded, size: 12, color: _primaryColor),
+                                  Icon(Icons.comment_rounded, size: 12, color: _primaryColor),
                                   const SizedBox(width: 6),
-                                  const Text(
+                                  Text(
                                     'Developer Response',
                                     style: TextStyle(
                                       fontSize: 11,
@@ -871,7 +871,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
             label: const Text('Add Photos'),
             style: OutlinedButton.styleFrom(
               foregroundColor: _primaryColor,
-              side: const BorderSide(color: _primaryColor),
+              side: BorderSide(color: _primaryColor),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -897,7 +897,7 @@ class _ShareSuggestionScreenState extends State<ShareSuggestionScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: _primaryColor, width: 1.5),
+        borderSide: BorderSide(color: _primaryColor, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),

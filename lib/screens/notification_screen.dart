@@ -33,8 +33,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   String? _error;
 
   // Brand colors from Islamic Matrimonial palette
-  static const Color primaryCyan = AppColors.deepEmerald;
-  static const Color accentGreen = AppColors.primaryGreen;
+  static final Color primaryCyan = AppColors.deepEmerald;
+  static final Color accentGreen = AppColors.primaryGreen;
 
   @override
   void initState() {
@@ -151,7 +151,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           return true;
         },
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: primaryCyan))
+            ? Center(child: CircularProgressIndicator(color: primaryCyan))
             : _error != null
                 ? Center(child: Text(_error!))
               : _notifications.isEmpty
@@ -177,12 +177,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             backgroundColor: Colors.white,
                             elevation: 0,
                             leading: IconButton(
-                              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.midnightEmerald, size: 20),
+                              icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.midnightEmerald, size: 20),
                               onPressed: () => Navigator.pop(context),
                             ),
                             actions: [
                               IconButton(
-                                icon: const Icon(Icons.done_all_rounded, color: primaryCyan),
+                                icon: Icon(Icons.done_all_rounded, color: primaryCyan),
                                 onPressed: () async {
                                   await NotificationService.markAllAsRead();
                                   _loadNotifications();
@@ -204,7 +204,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                       const TextSpan(text: 'You have '),
                                       TextSpan(
                                         text: '$unreadCount Notifications',
-                                        style: const TextStyle(color: primaryCyan, fontWeight: FontWeight.w500),
+                                        style: TextStyle(color: primaryCyan, fontWeight: FontWeight.w500),
                                       ),
                                       const TextSpan(text: ' today.'),
                                     ],
@@ -279,7 +279,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
+                      gradient: LinearGradient(
                         colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -558,13 +558,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 14, height: 1.4),
+                      style: TextStyle(color: AppColors.midnightEmerald, fontSize: 14, height: 1.4),
                       children: [
                         TextSpan(
                           text: (type == 'verification' || type == 'photo_verification' || type == 'suggestion_update')
                               ? 'System Update: ' 
                               : (senderProfile != null ? '${senderProfile['first_name']} ${senderProfile['last_name']} ' : 'Someone '),
-                          style: const TextStyle(fontWeight: FontWeight.w500, color: primaryCyan),
+                          style: TextStyle(fontWeight: FontWeight.w500, color: primaryCyan),
                         ),
                         TextSpan(text: notification['message'] ?? 'sent you a notification'),
                       ],

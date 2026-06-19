@@ -155,13 +155,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         backgroundColor: AppColors.backgroundLight,
         centerTitle: true,
         elevation: 0,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           color: AppColors.midnightEmerald,
           fontSize: 22,
           fontWeight: FontWeight.w500,
           letterSpacing: -0.5,
         ),
-        iconTheme: const IconThemeData(color: AppColors.midnightEmerald),
+        iconTheme: IconThemeData(color: AppColors.midnightEmerald),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -187,10 +187,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.account_balance_wallet_rounded, size: 18, color: AppColors.deepEmerald),
+                    Icon(Icons.account_balance_wallet_rounded, size: 18, color: AppColors.deepEmerald),
                     const SizedBox(width: 6),
                     _isWalletLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 12,
                             height: 12,
                             child: CircularProgressIndicator(
@@ -200,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           )
                         : Text(
                             LabelsService.instance.curr(_walletBalance.toStringAsFixed(0)),
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.deepEmerald,
                               fontWeight: FontWeight.w500,
                               fontSize: 15,

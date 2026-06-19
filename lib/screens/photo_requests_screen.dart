@@ -24,7 +24,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
   String? _error;
   late TabController _tabController;
 
-  static const Color _cyan = AppColors.deepEmerald;
+  static final Color _cyan = AppColors.deepEmerald;
   static const Color _green = AppColors.royalGold;
 
   @override
@@ -188,7 +188,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [_cyan, _green],
                           ),
                           borderRadius: BorderRadius.circular(14),
@@ -269,7 +269,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
             ),
           ],
           body: _isLoading
-              ? const Center(child: CircularProgressIndicator(color: _cyan))
+              ? Center(child: CircularProgressIndicator(color: _cyan))
               : _error != null
                   ? Center(
                       child: Column(
@@ -439,7 +439,7 @@ class _PhotoRequestsScreenState extends State<PhotoRequestsScreen>
                         height: 64,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: const LinearGradient(colors: [_cyan, _green]),
+                          gradient: LinearGradient(colors: [_cyan, _green]),
                         ),
                         child: profilePicture != null
                             ? ClipOval(

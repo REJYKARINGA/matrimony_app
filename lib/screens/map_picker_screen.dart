@@ -122,7 +122,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       appBar: AppBar(
         title: const Text('Pick Location', style: TextStyle(fontWeight: FontWeight.w500, letterSpacing: 0.5)),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [AppColors.deepEmerald, AppColors.deepEmerald],
               begin: Alignment.topLeft,
@@ -181,7 +181,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                     alignment: Alignment.center,
                     children: [
                       Icon(Icons.location_on, size: 52, color: Colors.redAccent.withOpacity(0.9)),
-                      const Positioned(
+                      Positioned(
                         top: 10,
                         child: CircleAvatar(
                           radius: 8,
@@ -235,7 +235,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                   hintStyle: TextStyle(color: AppColors.midnightEmerald, fontSize: 14),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  prefixIcon: const Icon(Icons.search, color: AppColors.deepEmerald),
+                  prefixIcon: Icon(Icons.search, color: AppColors.deepEmerald),
                   suffixIcon: _searchController.text.isNotEmpty 
                     ? IconButton(
                         icon: const Icon(Icons.cancel, size: 20, color: Colors.grey),
@@ -274,7 +274,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               },
               backgroundColor: AppColors.midnightEmerald,
               elevation: 4,
-              child: const Icon(Icons.my_location, color: AppColors.deepEmerald),
+              child: Icon(Icons.my_location, color: AppColors.deepEmerald),
             ),
           ),
           // Bottom Actions
@@ -288,7 +288,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               decoration: BoxDecoration(
                 gradient: _addressData == null 
                   ? LinearGradient(colors: [Colors.grey.shade400, Colors.grey.shade500])
-                  : const LinearGradient(
+                  : LinearGradient(
                       colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,

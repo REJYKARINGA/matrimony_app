@@ -378,10 +378,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         color: AppColors.primaryGreen.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.favorite, color: AppColors.primaryGreen, size: 20),
+                      child: Icon(Icons.favorite, color: AppColors.primaryGreen, size: 20),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Text(
                         'Sent you an interest request',
                         style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, color: AppColors.midnightEmerald),
@@ -428,14 +428,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.primaryGreen,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.check_rounded, color: Colors.white, size: 18),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -767,7 +767,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           child: Column(
             children: [
               _buildAppBar(lightBackground: true),
-              const Expanded(
+              Expanded(
                 child: Center(
                   child: CircularProgressIndicator(
                     color: AppColors.primaryGreen,
@@ -1626,7 +1626,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(20, 30, 20, 15),
           child: Text(
             'Photo Gallery',
@@ -2009,7 +2009,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         size: 22,
                       ),
                       const SizedBox(width: 10),
-                      const Text(
+                      Text(
                         'About',
                         style: TextStyle(
                           fontSize: 20,
@@ -2184,7 +2184,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: AppColors.midnightEmerald,
@@ -2263,7 +2263,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     color: AppColors.primaryGreen.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.insights_rounded, color: AppColors.primaryGreen, size: 24),
+                  child: Icon(Icons.insights_rounded, color: AppColors.primaryGreen, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -2286,7 +2286,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   children: [
                     Text(
                       '${(_compatibilityScore * 100).toInt()}%',
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w500, color: AppColors.primaryGreen),
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500, color: AppColors.primaryGreen),
                     ),
                     Icon(
                       _isCompatibilityExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
@@ -2307,7 +2307,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             // Summary Line
             Row(
               children: [
-                const Icon(Icons.check_circle_outline_rounded, color: AppColors.primaryGreen, size: 20),
+                Icon(Icons.check_circle_outline_rounded, color: AppColors.primaryGreen, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -2402,7 +2402,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   Expanded(
                     child: Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: AppColors.midnightEmerald,
@@ -2482,7 +2482,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               Expanded(
                   child: Text(
                     LabelsService.instance.labels.unlock.contactInfo,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
                       color: AppColors.midnightEmerald,
@@ -2814,7 +2814,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                     child: Container(
                       height: 48,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
+                        gradient: LinearGradient(
                           colors: [
                             AppColors.primaryGreen,
                             AppColors.deepGreen,
@@ -3223,7 +3223,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           _unlockedPhone ?? 'Not provided',
                           trailing: _unlockedPhone != null
                               ? IconButton(
-                                  icon: const Icon(Icons.copy, color: AppColors.primaryGreen, size: 20),
+                                  icon: Icon(Icons.copy, color: AppColors.primaryGreen, size: 20),
                                   onPressed: () {
                                     Clipboard.setData(ClipboardData(text: _unlockedPhone!));
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -4279,7 +4279,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Recommended Profiles',
                 style: TextStyle(
                   fontSize: 22,
@@ -4389,7 +4389,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             ),
                             child: Text(
                               user.matrimonyId ?? '',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: AppColors.primaryGreen,
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,

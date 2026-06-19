@@ -157,7 +157,7 @@ class GenderCard extends StatelessWidget {
                   ),
                 ),
                 child: isSelected
-                    ? const Icon(Icons.circle, size: 12, color: AppColors.primaryBlue)
+                    ? Icon(Icons.circle, size: 12, color: AppColors.primaryBlue)
                     : const SizedBox(width: 12, height: 12),
               ),
             ),
@@ -368,12 +368,12 @@ class StepNavigationButtons extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: onBack,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.primaryBlue),
+                    side: BorderSide(color: AppColors.primaryBlue),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Back',
                     style: TextStyle(
                       color: AppColors.primaryBlue,
@@ -468,7 +468,7 @@ class CustomDatePickerField extends StatelessWidget {
                 color: AppColors.background, // Light cyan from logo
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.calendar_today,
                 color: AppColors.primaryBlue, // Deep blue from logo
                 size: 40,
@@ -537,7 +537,7 @@ class _CustomDatePickerModalState extends State<CustomDatePickerModal> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(width: 40),
-              const Text(
+              Text(
                 'SET BIRTHDAY',
                 style: TextStyle(
                   fontSize: 16,

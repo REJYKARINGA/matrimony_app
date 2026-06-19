@@ -41,7 +41,7 @@ class _EngagementPosterInfoScreenState
   final ImagePicker _picker = ImagePicker();
 
   // Design Tokens - Matching the Gray-White premium theme
-  static const Color primaryCyan = AppColors.deepEmerald;
+  static final Color primaryCyan = AppColors.deepEmerald;
   static const Color backgroundGray = AppColors.backgroundLight;
   static const Color cardGray = AppColors.backgroundLight;
   static const Color textBlack = AppColors.textDark;
@@ -89,7 +89,7 @@ class _EngagementPosterInfoScreenState
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library, color: primaryCyan),
+              leading: Icon(Icons.photo_library, color: primaryCyan),
               title: const Text('Choose from Gallery'),
               onTap: () async {
                 Navigator.pop(context);
@@ -107,7 +107,7 @@ class _EngagementPosterInfoScreenState
               },
             ),
             ListTile(
-              leading: const Icon(Icons.camera_alt, color: primaryCyan),
+              leading: Icon(Icons.camera_alt, color: primaryCyan),
               title: const Text('Take a Photo'),
               onTap: () async {
                 Navigator.pop(context);
@@ -139,7 +139,7 @@ class _EngagementPosterInfoScreenState
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
+            colorScheme: ColorScheme.light(
               primary: primaryCyan,
               onPrimary: AppColors.cardDark,
               onSurface: Colors.black,
@@ -199,7 +199,7 @@ class _EngagementPosterInfoScreenState
             return AlertDialog(
               content: Row(
                 children: [
-                  const CircularProgressIndicator(color: primaryCyan),
+                  CircularProgressIndicator(color: primaryCyan),
                   const SizedBox(width: 20),
                   Text(isUpdate ? 'Updating engagement poster...' : 'Uploading engagement poster...'),
                 ],
@@ -298,7 +298,7 @@ class _EngagementPosterInfoScreenState
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('OK', style: TextStyle(color: primaryCyan)),
+                  child: Text('OK', style: TextStyle(color: primaryCyan)),
                 ),
               ],
             ),
@@ -317,7 +317,7 @@ class _EngagementPosterInfoScreenState
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('OK', style: TextStyle(color: primaryCyan)),
+                child: Text('OK', style: TextStyle(color: primaryCyan)),
               ),
             ],
           ),
@@ -616,7 +616,7 @@ class _EngagementPosterInfoScreenState
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.calendar_today, color: primaryCyan),
+                                Icon(Icons.calendar_today, color: primaryCyan),
                                 const SizedBox(width: 12),
                                 Text(
                                   _engagementDate != null
@@ -654,12 +654,12 @@ class _EngagementPosterInfoScreenState
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
+                              borderSide: BorderSide(
                                 color: primaryCyan,
                                 width: 2,
                               ),
                             ),
-                            prefixIcon: const Icon(Icons.title, color: primaryCyan),
+                            prefixIcon: Icon(Icons.title, color: primaryCyan),
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -689,12 +689,12 @@ class _EngagementPosterInfoScreenState
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
+                              borderSide: BorderSide(
                                 color: primaryCyan,
                                 width: 2,
                               ),
                             ),
-                            prefixIcon: const Icon(
+                            prefixIcon: Icon(
                               Icons.message,
                               color: primaryCyan,
                             ),
@@ -728,12 +728,12 @@ class _EngagementPosterInfoScreenState
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
+                              borderSide: BorderSide(
                                 color: primaryCyan,
                                 width: 2,
                               ),
                             ),
-                            prefixIcon: const Icon(
+                            prefixIcon: Icon(
                               Icons.favorite,
                               color: primaryCyan,
                             ),
@@ -771,7 +771,7 @@ class _EngagementPosterInfoScreenState
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.event_busy, color: primaryCyan),
+                                Icon(Icons.event_busy, color: primaryCyan),
                                 const SizedBox(width: 12),
                                 Text(
                                   _displayExpireAt != null
@@ -908,7 +908,7 @@ class _EngagementPosterInfoScreenState
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.celebration_rounded,
                         size: 56,
                         color: AppColors.deepEmerald,
@@ -1105,7 +1105,7 @@ class _EngagementPosterInfoScreenState
 
                   // Show loader, existing poster, or upload button
                   if (_isLoading)
-                    const Center(child: CircularProgressIndicator(color: primaryCyan))
+                    Center(child: CircularProgressIndicator(color: primaryCyan))
                   else if (_existingPoster != null)
                     _buildExistingPosterCard()
                   else
@@ -1183,7 +1183,7 @@ class _EngagementPosterInfoScreenState
               child: Center(
                 child: Text(
                   '$number',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: primaryCyan,
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
@@ -1241,7 +1241,7 @@ class _EngagementPosterInfoScreenState
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
               color: primaryCyan,
@@ -1418,7 +1418,7 @@ class _EngagementPosterInfoScreenState
                           ),
                         Text(
                           partnerId,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: primaryCyan,
                           ),
@@ -1486,7 +1486,7 @@ class _EngagementPosterInfoScreenState
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
-                            const Icon(Icons.verified, size: 14, color: primaryCyan),
+                            Icon(Icons.verified, size: 14, color: primaryCyan),
                           if (_existingPoster?['is_verified'] == true || _existingPoster?['is_verified'] == 1)
                             const SizedBox(width: 4),
                           Text(

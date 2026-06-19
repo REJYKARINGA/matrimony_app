@@ -116,7 +116,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Chats',
                     style: TextStyle(
                       fontSize: 32,
@@ -130,7 +130,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             ),
 
             if (_isLoading && _conversations.isEmpty)
-              const Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.primaryGreen)))
+              Expanded(child: Center(child: CircularProgressIndicator(color: AppColors.primaryGreen)))
             else
               Expanded(
                 child: RefreshIndicator(
@@ -668,7 +668,7 @@ class _ChatScreenState extends State<ChatScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.darkGreen, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.darkGreen, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         titleSpacing: 0,
@@ -730,20 +730,20 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.otherUserName, style: const TextStyle(color: AppColors.bodyText, fontSize: 16, fontWeight: FontWeight.w500)),
-                const Text('Online', style: TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight.w500)),
+                Text('Online', style: TextStyle(color: AppColors.primaryGreen, fontSize: 12, fontWeight: FontWeight.w500)),
               ],
             ),
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.more_vert_rounded, color: AppColors.darkGreen), onPressed: () {}),
+          IconButton(icon: Icon(Icons.more_vert_rounded, color: AppColors.darkGreen), onPressed: () {}),
         ],
       ),
       body: Column(
         children: [
           Expanded(
             child: _isLoading 
-              ? const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
+              ? Center(child: CircularProgressIndicator(color: AppColors.primaryGreen))
               : _messages.isEmpty 
                   ? _buildProfileCard()
                   : ListView.builder(
@@ -812,7 +812,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onTap: _sendMessage,
                   child: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(color: AppColors.primaryGreen, shape: BoxShape.circle),
+                    decoration: BoxDecoration(color: AppColors.primaryGreen, shape: BoxShape.circle),
                     child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
                   ),
                 ),

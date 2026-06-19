@@ -13,7 +13,7 @@ class ContactUsScreen extends StatelessWidget {
         title: const Text('Contact Us'),
         elevation: 0,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -110,7 +110,7 @@ class ContactUsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: const [
+                        children: [
                           Icon(
                             Icons.access_time,
                             color: AppColors.deepEmerald,

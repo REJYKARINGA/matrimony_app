@@ -18,7 +18,7 @@ class LandingScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
               // Title with logo colors
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
                   children: [
@@ -159,7 +159,7 @@ class LandingScreen extends StatelessWidget {
                   height: 56,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(32.5),
-                    gradient: const LinearGradient(
+                    gradient: LinearGradient(
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [

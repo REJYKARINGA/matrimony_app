@@ -661,7 +661,7 @@ class _ProfilePhotosScreenState extends State<ProfilePhotosScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [AppColors.deepEmerald, AppColors.deepEmerald]),
+                    gradient: LinearGradient(colors: [AppColors.deepEmerald, AppColors.deepEmerald]),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Row(

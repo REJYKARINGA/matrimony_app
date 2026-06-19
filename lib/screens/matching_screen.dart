@@ -37,9 +37,9 @@ class _MatchingScreenState extends State<MatchingScreen>
   String? _errorMessage;
 
   // Theme accent colors (Islamic Green palette)
-  static const Color gradientCyan = AppColors.primaryGreen;
-  static const Color gradientLightBlue = AppColors.deepGreen;
-  static const Color accentGreen = AppColors.primaryGreen;
+  static final Color gradientCyan = AppColors.primaryGreen;
+  static final Color gradientLightBlue = AppColors.deepGreen;
+  static final Color accentGreen = AppColors.primaryGreen;
 
   int? _currentUserId;
 
@@ -226,7 +226,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                   elevation: 0,
                   scrolledUnderElevation: 0,
                   backgroundColor: Colors.white,
-                  title: const Text(
+                  title: Text(
                     'Matches & Interests',
                     style: TextStyle(color: AppColors.darkGreen,
                       fontWeight: FontWeight.w500,
@@ -234,7 +234,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                     ),
                   ),
                   centerTitle: true,
-                  iconTheme: const IconThemeData(color: AppColors.darkGreen),
+                  iconTheme: IconThemeData(color: AppColors.darkGreen),
                   flexibleSpace: FlexibleSpaceBar(
                     collapseMode: CollapseMode.pin,
                     background: Container(),
@@ -313,13 +313,11 @@ class _MatchingScreenState extends State<MatchingScreen>
 
   Widget _buildDeclinedInterestsTab() {
     if (_isLoading) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        children: const [
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-        ],
+      return Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryGreen,
+          strokeWidth: 2.5,
+        ),
       );
     }
     
@@ -406,13 +404,11 @@ class _MatchingScreenState extends State<MatchingScreen>
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        children: const [
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-        ],
+      return Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryGreen,
+          strokeWidth: 2.5,
+        ),
       );
     }
 
@@ -474,13 +470,11 @@ class _MatchingScreenState extends State<MatchingScreen>
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        children: const [
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-        ],
+      return Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryGreen,
+          strokeWidth: 2.5,
+        ),
       );
     }
 
@@ -531,13 +525,11 @@ class _MatchingScreenState extends State<MatchingScreen>
     final theme = Theme.of(context);
 
     if (_isLoading) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        children: const [
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-          SkeletonProfileCard(),
-        ],
+      return Center(
+        child: CircularProgressIndicator(
+          color: AppColors.primaryGreen,
+          strokeWidth: 2.5,
+        ),
       );
     }
 
@@ -1013,7 +1005,7 @@ class _MatchingScreenState extends State<MatchingScreen>
                         child: Container(
                           height: 55,
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                               colors: [AppColors.primaryGreen, AppColors.darkGreen],
@@ -1447,7 +1439,7 @@ class _MatchingScreenState extends State<MatchingScreen>
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [AppColors.primaryGreen, AppColors.darkGreen],
                 ),
                 boxShadow: [

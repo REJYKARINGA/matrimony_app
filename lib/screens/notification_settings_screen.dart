@@ -102,7 +102,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AppColors.midnightEmerald,
@@ -160,10 +160,10 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Notification Settings',
           style: TextStyle(
             color: AppColors.midnightEmerald,
@@ -181,7 +181,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
         ),
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: CircularProgressIndicator(color: AppColors.deepEmerald),
             )
           : ListView(

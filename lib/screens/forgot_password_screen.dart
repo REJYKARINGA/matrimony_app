@@ -340,7 +340,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+                      borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -373,7 +373,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+                      borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
                     ),
                   ),
                   validator: (value) {
@@ -390,7 +390,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Container(
             height: 56,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.primaryCyan, AppColors.primaryBlue],
               ),
               borderRadius: BorderRadius.circular(16),
@@ -511,7 +511,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+                borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
               ),
             ),
             validator: (value) {
@@ -533,7 +533,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Container(
             height: 56,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.primaryCyan, AppColors.primaryBlue],
               ),
               borderRadius: BorderRadius.circular(16),
@@ -738,7 +738,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+                borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
               ),
             ),
             validator: (value) {
@@ -785,7 +785,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+                borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
               ),
             ),
             validator: (value) {
@@ -802,7 +802,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Container(
             height: 56,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.primaryCyan, AppColors.primaryBlue],
               ),
               borderRadius: BorderRadius.circular(16),

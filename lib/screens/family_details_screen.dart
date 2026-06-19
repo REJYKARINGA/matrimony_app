@@ -167,7 +167,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Family details updated successfully!'),
             backgroundColor: AppColors.deepEmerald,
           ),
@@ -197,7 +197,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       return Scaffold(
         backgroundColor: AppColors.offWhite,
         appBar: _buildAppBar(),
-        body: const Center(
+        body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -497,7 +497,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
                           height: 56,
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
+                              gradient: LinearGradient(
                                 colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -552,10 +552,10 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      title: const Text(
+      title: Text(
         'Family Details',
         style: TextStyle(color: AppColors.midnightEmerald, fontSize: 20, fontWeight: FontWeight.w500),
       ),
@@ -583,7 +583,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
           const SizedBox(width: 10),
           Text(
             title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.midnightEmerald, letterSpacing: 0.2),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.midnightEmerald, letterSpacing: 0.2),
           ),
         ],
       ),
@@ -600,7 +600,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      style: TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: AppColors.mutedText),
@@ -615,7 +615,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
         fillColor: Colors.white,
@@ -633,7 +633,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   }) {
     return DropdownButtonFormField<String>(
       value: value,
-      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      style: TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       dropdownColor: Colors.white,
       decoration: InputDecoration(
         labelText: label,
@@ -649,7 +649,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
         fillColor: Colors.white,
@@ -666,7 +666,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
   }) {
     return DropdownButtonFormField<bool>(
       value: value,
-      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      style: TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       dropdownColor: Colors.white,
       decoration: InputDecoration(
         labelText: label,
@@ -681,7 +681,7 @@ class _FamilyDetailsScreenState extends State<FamilyDetailsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
         fillColor: Colors.white,

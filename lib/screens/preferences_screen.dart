@@ -342,7 +342,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               CircularProgressIndicator(color: AppColors.deepEmerald),
               SizedBox(height: 16),
               Text('Loading preferences...', style: TextStyle(color: AppColors.mutedText)),
@@ -703,7 +703,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               height: 54,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [AppColors.deepEmerald, AppColors.midnightEmerald],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -763,11 +763,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.white,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new, color: AppColors.midnightEmerald, size: 20),
         onPressed: () => Navigator.of(context).pop(),
       ),
       title: Column(
-        children: const [
+        children: [
           Text(
             'Preferences',
             style: TextStyle(
@@ -823,7 +823,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             hintText: hint,
             prefixIcon: Icon(icon, color: AppColors.deepEmerald),
             suffixIcon: IconButton(
-              icon: const Icon(Icons.add_circle_rounded, color: AppColors.deepEmerald),
+              icon: Icon(Icons.add_circle_rounded, color: AppColors.deepEmerald),
               onPressed: () => onAdd(controller.text.trim()),
             ),
             border: OutlineInputBorder(
@@ -836,7 +836,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+              borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
             ),
             filled: true,
             fillColor: AppColors.midnightEmerald,
@@ -880,7 +880,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         const SizedBox(height: 20),
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
             color: AppColors.midnightEmerald,
@@ -919,11 +919,11 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.payments_rounded, size: 20, color: AppColors.deepEmerald),
+                  Icon(Icons.payments_rounded, size: 20, color: AppColors.deepEmerald),
                   const SizedBox(width: 10),
                   Text(
                     'Monthly: ₹${_formatSalary(_incomeRange.start)} - ₹${_formatSalary(_incomeRange.end)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: AppColors.midnightEmerald,
@@ -939,7 +939,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 ),
                 child: Text(
                   'Annual: ${minAnnual.toStringAsFixed(1)} - ${maxAnnual.toStringAsFixed(1)} L',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                     color: AppColors.deepEmerald,
@@ -1027,7 +1027,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color: AppColors.midnightEmerald,
@@ -1108,7 +1108,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color: AppColors.midnightEmerald,
@@ -1161,7 +1161,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           Icons.location_city_rounded,
           hint: 'Type a place and tap search icon',
           suffixIcon: IconButton(
-            icon: const Icon(Icons.person_search_rounded, color: AppColors.deepEmerald),
+            icon: Icon(Icons.person_search_rounded, color: AppColors.deepEmerald),
             onPressed: () async {
               final query = _locationSearchController.text.trim();
               if (query.isEmpty) return;
@@ -1188,7 +1188,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         // Districts Section
         if (_preferredLocations.isNotEmpty) ...[
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Preferred Districts (Broad Area Match)',
             style: TextStyle(
               fontSize: 14,
@@ -1225,7 +1225,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         // Cities Section
         if (_preferredCities.isNotEmpty) ...[
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Preferred Cities (Coordinate Distance Match)',
             style: TextStyle(
               fontSize: 14,
@@ -1376,7 +1376,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       controller: controller,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       maxLines: maxLines,
-      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      style: TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
@@ -1392,7 +1392,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
         fillColor: Colors.white,
@@ -1424,7 +1424,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: AppColors.deepEmerald, width: 2),
+          borderSide: BorderSide(color: AppColors.deepEmerald, width: 2),
         ),
         filled: true,
         fillColor: Colors.white,
@@ -1439,7 +1439,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         return DropdownMenuItem(value: item, child: Text(displayText));
       }).toList(),
       onChanged: onChanged,
-      style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
+      style: TextStyle(color: AppColors.midnightEmerald, fontSize: 15),
       dropdownColor: Colors.white,
     );
   }
@@ -1624,7 +1624,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                       Flexible(
                         child: Text(
                           label,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             color: AppColors.midnightEmerald,
@@ -1642,7 +1642,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           ),
                           child: Text(
                             '${selectedIds.length}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
                               color: AppColors.deepEmerald,
@@ -1779,7 +1779,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                 child: TextField(
                   controller: controller,
                   onChanged: onSearchChanged,
-                  style: const TextStyle(color: AppColors.midnightEmerald, fontSize: 14),
+                  style: TextStyle(color: AppColors.midnightEmerald, fontSize: 14),
                   decoration: InputDecoration(
                     hintText: 'Search $label...',
                     hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
@@ -1832,7 +1832,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           Text(option['name'] ?? ''),
                           if (isTrending) ...[
                             const SizedBox(width: 4),
-                            const Icon(Icons.trending_up, size: 14, color: AppColors.deepEmerald),
+                            Icon(Icons.trending_up, size: 14, color: AppColors.deepEmerald),
                           ],
                         ],
                       ),
@@ -1907,7 +1907,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
                   color: AppColors.midnightEmerald,
@@ -1966,7 +1966,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isSelected) ...[
-              const Icon(Icons.check, size: 16, color: AppColors.deepEmerald),
+              Icon(Icons.check, size: 16, color: AppColors.deepEmerald),
               const SizedBox(width: 8),
             ],
             Text(

@@ -141,6 +141,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     // Load theme colors from server (dynamic branding)
     await ThemeConfigService.instance.load();
+    if (context.mounted) {
+      Provider.of<ThemeProvider>(context, listen: false).applyConfig();
+    }
 
     // Check if user is already logged in
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -222,19 +225,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 40),
-              Text(
-                'Nikkah Match',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF00A87D), // Turquoise from logo
-                  letterSpacing: -0.5,
-                ),
-              ),
+
               const SizedBox(height: 8),
               Text(
-                'Nikkah Match',
+                'loading...',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,

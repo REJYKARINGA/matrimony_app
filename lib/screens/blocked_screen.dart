@@ -19,7 +19,7 @@ class BlockedScreen extends StatelessWidget {
           // Background elegant gradient at top
           Container(
             height: MediaQuery.of(context).size.height * 0.4,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -51,7 +51,7 @@ class BlockedScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.security_rounded,
                       color: AppColors.deepEmerald,
                       size: 60,
@@ -172,7 +172,7 @@ class BlockedScreen extends StatelessWidget {
                             }
                           },
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: AppColors.deepEmerald),
+                            side: BorderSide(color: AppColors.deepEmerald),
                             foregroundColor: AppColors.deepEmerald,
                             padding: const EdgeInsets.symmetric(vertical: 18),
                             shape: RoundedRectangleBorder(

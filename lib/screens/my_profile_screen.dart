@@ -173,7 +173,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
     if (_isLoading) {
       return Scaffold(
         backgroundColor: AppColors.offWhite,
-        body: const Center(
+        body: Center(
           child: CircularProgressIndicator(
             color: AppColors.deepEmerald,
             strokeWidth: 3,
@@ -185,7 +185,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
     if (_errorMessage != null) {
       return Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -391,7 +391,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
                             color: AppColors.deepEmerald.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.photo_library_rounded, color: AppColors.deepEmerald, size: 20),
+                          child: Icon(Icons.photo_library_rounded, color: AppColors.deepEmerald, size: 20),
                         ),
                         title: const Text('Photo Requests', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
                         subtitle: const Text('Manage who can access your photos', style: TextStyle(fontSize: 12)),
@@ -406,7 +406,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
                             color: AppColors.deepEmerald.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.person_search_rounded, color: AppColors.deepEmerald, size: 20),
+                          child: Icon(Icons.person_search_rounded, color: AppColors.deepEmerald, size: 20),
                         ),
                         title: const Text('Permission Requests', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
                         subtitle: const Text('Approve or reject contact unlock requests', style: TextStyle(fontSize: 12)),
@@ -461,7 +461,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
           fit: StackFit.expand,
           children: [
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -515,7 +515,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
                                   ? NetworkImage(ApiService.getImageUrl(_user!.displayImage!))
                                   : null,
                               child: _user?.displayImage == null
-                                  ? const Icon(Icons.person, size: 55, color: AppColors.deepEmerald)
+                                  ? Icon(Icons.person, size: 55, color: AppColors.deepEmerald)
                                   : null,
                             ),
                             // No watermark on own profile avatar
@@ -533,7 +533,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
                               BoxShadow(color: Colors.white70, blurRadius: 4, offset: Offset(0, 2)),
                             ],
                           ),
-                          child: const Icon(Icons.camera_alt, size: 16, color: AppColors.deepEmerald),
+                          child: Icon(Icons.camera_alt, size: 16, color: AppColors.deepEmerald),
                         ),
                       ),
                     ],
@@ -775,7 +775,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
                   ),
                   child: Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       color: AppColors.deepEmerald,
                       fontWeight: FontWeight.w500,
@@ -830,7 +830,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
     return Container(
       height: 54,
       decoration: BoxDecoration(
-        gradient: isOutlined ? null : const LinearGradient(colors: [AppColors.deepEmerald, AppColors.deepEmerald]),
+        gradient: isOutlined ? null : LinearGradient(colors: [AppColors.deepEmerald, AppColors.deepEmerald]),
         color: isOutlined ? const Color(0xFFE0F7FA) : null,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -886,7 +886,7 @@ class _ProfileScreenState extends State<MyProfileScreen> {
               const Text('Profile Photos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: AppColors.bodyText)),
               TextButton(
                 onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
-                child: const Text('Manage', style: TextStyle(color: AppColors.deepEmerald, fontWeight: FontWeight.w500)),
+                child: Text('Manage', style: TextStyle(color: AppColors.deepEmerald, fontWeight: FontWeight.w500)),
               ),
             ],
           ),
@@ -1400,7 +1400,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Search $title...',
-                      prefixIcon: const Icon(Icons.search, color: AppColors.deepEmerald),
+                      prefixIcon: Icon(Icons.search, color: AppColors.deepEmerald),
                       filled: true,
                       fillColor: Colors.grey[100],
                       border: OutlineInputBorder(
@@ -1510,7 +1510,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         fontWeight: FontWeight.w500,
         fontSize: 14,
       ),
-      floatingLabelStyle: const TextStyle(
+      floatingLabelStyle: TextStyle(
         color: AppColors.deepEmerald,
         fontWeight: FontWeight.w500,
       ),
@@ -1524,7 +1524,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
-        borderSide: const BorderSide(color: AppColors.deepEmerald, width: 1.5),
+        borderSide: BorderSide(color: AppColors.deepEmerald, width: 1.5),
       ),
       filled: true,
       fillColor: AppColors.softMint,
@@ -1598,7 +1598,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.darkGreen, size: 20),
+                  icon: Icon(Icons.arrow_back_ios_new, color: AppColors.darkGreen, size: 20),
                   onPressed: () => Navigator.pop(context),
                 ),
                 const Expanded(
@@ -1794,7 +1794,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: _buildModernInputDecoration(
                         label: 'Caste',
                         icon: Icons.groups_rounded,
-                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
+                        suffixIcon: Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1823,7 +1823,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: _buildModernInputDecoration(
                         label: 'Sub-Caste',
                         icon: Icons.group_work_rounded,
-                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
+                        suffixIcon: Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1855,7 +1855,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: _buildModernInputDecoration(
                         label: 'Education',
                         icon: Icons.school_rounded,
-                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
+                        suffixIcon: Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -1876,7 +1876,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: _buildModernInputDecoration(
                         label: 'Occupation',
                         icon: Icons.business_center_rounded,
-                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
+                        suffixIcon: Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -2008,7 +2008,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         icon: Icons.home_rounded,
                         helperText: 'Tap icon to auto-fill location details',
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.travel_explore, color: AppColors.deepEmerald),
+                          icon: Icon(Icons.travel_explore, color: AppColors.deepEmerald),
                           onPressed: _triggerCityLookup,
                         ),
                       ),
@@ -2051,7 +2051,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: _buildModernInputDecoration(
                         label: 'District',
                         icon: Icons.map_rounded,
-                        suffixIcon: const Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
+                        suffixIcon: Icon(Icons.arrow_drop_down_rounded, color: AppColors.deepEmerald),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -2200,21 +2200,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _buildActionButton(
                       label: 'Family Details',
                       icon: Icons.family_restroom_rounded,
-                      gradient: const [AppColors.deepEmerald, AppColors.deepEmerald],
+                      gradient: [AppColors.deepEmerald, AppColors.deepEmerald],
                       onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const FamilyDetailsScreen())),
                     ),
                     const SizedBox(height: 12),
                     _buildActionButton(
                       label: 'Edit Preferences',
                       icon: Icons.settings_rounded,
-                      gradient: const [AppColors.deepEmerald, AppColors.deepEmerald],
+                      gradient: [AppColors.deepEmerald, AppColors.deepEmerald],
                       onPressed: () => Navigator.pushNamed(context, '/preferences'),
                     ),
                     const SizedBox(height: 12),
                     _buildActionButton(
                       label: 'Manage Photos',
                       icon: Icons.photo_library_rounded,
-                      gradient: const [AppColors.primaryGreen, AppColors.darkGreen],
+                      gradient: [AppColors.primaryGreen, AppColors.darkGreen],
                       onPressed: () => Navigator.pushNamed(context, '/profile-photos'),
                     ),
 
@@ -2246,7 +2246,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             height: 56,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              gradient: const LinearGradient(
+              gradient: LinearGradient(
                 colors: [AppColors.deepEmerald, AppColors.deepEmerald],
               ),
               boxShadow: [

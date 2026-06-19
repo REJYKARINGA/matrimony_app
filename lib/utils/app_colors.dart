@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Colors (Islamic Matrimonial Theme - Green Palette)
-  static const Color primaryGreen = Color(0xFF00C897);
-  static const Color deepGreen = Color(0xFF00A87D);
-  static const Color darkGreen = Color(0xFF00875F);
-  static const Color mintTint = Color(0xFFD4F5EB);
-  static const Color softMint = Color(0xFFE8FBF5);
+  // Brand Colors (Dynamic)
+  static Color primaryGreen = const Color(0xFF00C897);
+  static Color deepGreen = const Color(0xFF00A87D);
+  static Color darkGreen = const Color(0xFF00875F);
+  static Color mintTint = const Color(0xFFD4F5EB);
+  static Color softMint = const Color(0xFFE8FBF5);
   
   // Neutrals
   static const Color white = Colors.white;
@@ -16,29 +16,29 @@ class AppColors {
   static const Color bodyText = Color(0xFF212121);
 
   // Legacy/Compatibility Mapping (Updating to match new theme)
-  static const Color primaryBlue = Color(0xFF00C897); // Mapping to primaryGreen
-  static const Color primaryCyan = Color(0xFF00A87D); // Mapping to deepGreen
+  static Color get primaryBlue => primaryGreen;
+  static Color get primaryCyan => deepGreen;
   static const Color background = offWhite;
   
   static const Color lightGrey = Color(0xFFEEEEEE);
   static const Color darkGrey = Color(0xFF666666);
   
   // Gradients (Updated for Green Theme)
-  static const LinearGradient primaryGradient = LinearGradient(
+  static LinearGradient get primaryGradient => LinearGradient(
     colors: [primaryGreen, deepGreen],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
 
-  static const LinearGradient verticalGradient = LinearGradient(
+  static LinearGradient get verticalGradient => LinearGradient(
     colors: [primaryGreen, deepGreen],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
   );
 
   // --- Legacy Theme Colors Mapped to Current Theme ---
-  static const Color midnightEmerald = darkGreen;
-  static const Color deepEmerald = primaryGreen;
+  static Color get midnightEmerald => darkGreen;
+  static Color get deepEmerald => primaryGreen;
   static const Color cardDark = Color(0xFFFFFFFF); // Cards are white in new theme
   static const Color textDark = bodyText;
   static const Color backgroundLight = offWhite;

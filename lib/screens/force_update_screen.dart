@@ -47,7 +47,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
           children: [
             Container(
               height: MediaQuery.of(context).size.height * 0.4,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -77,7 +77,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.system_update_rounded,
                         color: AppColors.deepEmerald,
                         size: 60,
@@ -185,7 +185,7 @@ class _ForceUpdateScreenState extends State<ForceUpdateScreen> {
                         child: OutlinedButton(
                           onPressed: () => Navigator.of(context).pop(),
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: AppColors.deepEmerald),
+                            side: BorderSide(color: AppColors.deepEmerald),
                             foregroundColor: AppColors.deepEmerald,
                             padding: const EdgeInsets.symmetric(vertical: 18),
                             shape: RoundedRectangleBorder(

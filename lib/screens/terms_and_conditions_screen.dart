@@ -10,7 +10,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Terms & Conditions'),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -269,7 +269,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
@@ -356,7 +356,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
@@ -376,7 +376,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.deepEmerald,
@@ -429,7 +429,7 @@ class TermsAndConditionsScreen extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: const Row(
+      child: Row(
         children: [
           Icon(
             Icons.info_outline,

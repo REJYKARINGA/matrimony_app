@@ -321,7 +321,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.deepEmerald),
+                borderSide: BorderSide(color: AppColors.deepEmerald),
               ),
             ),
           ),
@@ -340,7 +340,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [AppColors.primaryCyan, AppColors.primaryBlue],
                 ),
                 boxShadow: [
@@ -398,7 +398,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     children: [
                       Icon(Icons.add_a_photo_outlined, color: AppColors.deepEmerald.withOpacity(0.5), size: 32),
                       const SizedBox(height: 8),
-                      const Text('Upload Photo', style: TextStyle(color: AppColors.deepEmerald, fontSize: 12, fontWeight: FontWeight.w500)),
+                      Text('Upload Photo', style: TextStyle(color: AppColors.deepEmerald, fontSize: 12, fontWeight: FontWeight.w500)),
                     ],
                   ),
           ),

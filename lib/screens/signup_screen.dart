@@ -157,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          const Text(
+                          Text(
                             'Account',
                             style: TextStyle(
                               fontSize: 34,
@@ -237,7 +237,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                             height: 16,
                                             child: CircularProgressIndicator(strokeWidth: 2),
                                           )
-                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryCyan)),
+                                        : Text('Submit', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryCyan)),
                                   ),
                                 ),
                               ],
@@ -279,7 +279,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                             height: 16,
                                             child: CircularProgressIndicator(strokeWidth: 2),
                                           )
-                                        : const Text('Submit', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryCyan)),
+                                        : Text('Submit', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primaryCyan)),
                                   ),
                                 ),
                               ],
@@ -387,7 +387,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                         children: [
                                           TextSpan(
                                             text: 'Terms and Conditions',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               color: AppColors.primaryCyan,
                                               fontWeight: FontWeight.w500,
                                             ),
@@ -454,7 +454,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                 height: 56,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(28),
-                                  gradient: const LinearGradient(
+                                  gradient: LinearGradient(
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
                                     colors: [
@@ -514,7 +514,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                                             );
                                             if (success && mounted) {
                                               ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
+                                                SnackBar(
                                                   content: Text('Account created successfully!'),
                                                    backgroundColor: AppColors.primaryCyan,
                                                   behavior: SnackBarBehavior.floating,
@@ -592,7 +592,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: const Text(
+                            child: Text(
                               'Sign In',
                               style: TextStyle(
                                 color: AppColors.primaryCyan,
@@ -676,7 +676,7 @@ class _SignupScreenState extends State<SignupScreen> with TickerProviderStateMix
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(
+              borderSide: BorderSide(
                 color: AppColors.primaryCyan,
                 width: 2,
               ),

@@ -211,9 +211,10 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                   Expanded(
                     child: Container(
                       height: 48,
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.04),
@@ -225,13 +226,14 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                       child: TextField(
                         controller: _idSearchController,
                         onChanged: (val) => setState(() {}),
+                        style: const TextStyle(color: Color(0xFF333333), fontSize: 14),
                         decoration: InputDecoration(
                           hintText: 'Search by Matrimony ID',
                           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primaryGreen, size: 20),
+                          prefixIcon: Icon(Icons.search_rounded, color: AppColors.primaryGreen, size: 20),
                           suffixIcon: _idSearchController.text.trim().isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.send_rounded, color: AppColors.primaryGreen, size: 18),
+                                icon: Icon(Icons.send_rounded, color: AppColors.primaryGreen, size: 18),
                                 onPressed: () {
                                   if (_idSearchController.text.trim().isNotEmpty) {
                                     _navigateToResults({
@@ -243,7 +245,11 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                                 },
                               )
                             : null,
+                          filled: true,
+                          fillColor: Colors.white,
                           border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         ),
                         onSubmitted: (value) {
@@ -339,7 +345,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
             ),
           ),
           if (_isLoading)
-            const SliverFillRemaining(
+            SliverFillRemaining(
               child: Center(child: CircularProgressIndicator(color: AppColors.primaryGreen)),
             )
           else if (_error != null)
@@ -405,7 +411,7 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
           else if (_tabController.index == 1)
             // Shortlisted Tab
             _isLoadingShortlisted
-              ? const SliverFillRemaining(
+              ? SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator(color: AppColors.deepEmerald)),
                 )
               : _shortlistedError != null
@@ -793,11 +799,11 @@ class _SearchScreenState extends State<SearchScreen> with TickerProviderStateMix
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.near_me_rounded, color: AppColors.primaryGreen, size: 8),
+                              Icon(Icons.near_me_rounded, color: AppColors.primaryGreen, size: 8),
                               const SizedBox(width: 2),
                               Text(
                                 '${user.distance!.toStringAsFixed(1)} KM',
-                                style: const TextStyle(color: AppColors.primaryGreen, fontSize: 9, fontWeight: FontWeight.w500),
+                                style: TextStyle(color: AppColors.primaryGreen, fontSize: 9, fontWeight: FontWeight.w500),
                               ),
                             ],
                           ),
@@ -1363,7 +1369,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune_rounded, color: AppColors.primaryGreen),
+            icon: Icon(Icons.tune_rounded, color: AppColors.primaryGreen),
             onPressed: () {
                Navigator.of(context).pushReplacementNamed('/preferences');
             },
@@ -1382,7 +1388,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         itemCount: _users.length + (_isLoading ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _users.length) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(16.0),
                 child: CircularProgressIndicator(color: AppColors.primaryGreen),

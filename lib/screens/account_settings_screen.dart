@@ -144,7 +144,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         decoration: InputDecoration(
                           labelText: 'Email',
                           labelStyle: const TextStyle(color: AppColors.mutedText),
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.email_outlined,
                             color: AppColors.deepEmerald,
                           ),
@@ -160,7 +160,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                               color: AppColors.deepEmerald,
                               width: 2,
                             ),
@@ -177,7 +177,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         decoration: InputDecoration(
                           labelText: 'Phone',
                           labelStyle: const TextStyle(color: AppColors.mutedText),
-                          prefixIcon: const Icon(
+                          prefixIcon: Icon(
                             Icons.phone_outlined,
                             color: AppColors.deepEmerald,
                           ),
@@ -193,7 +193,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                               color: AppColors.deepEmerald,
                               width: 2,
                             ),
@@ -209,7 +209,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         height: 52,
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                             ),
                             borderRadius: BorderRadius.circular(12),
@@ -353,7 +353,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.deepEmerald,
-                          side: const BorderSide(
+                          side: BorderSide(
                             color: AppColors.deepEmerald,
                             width: 1.5,
                           ),
@@ -400,7 +400,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     color: AppColors.deepEmerald.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.star_half_rounded,
                     color: AppColors.deepEmerald,
                     size: 22,
@@ -485,7 +485,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                               color: AppColors.deepEmerald,
                               width: 2,
                             ),
@@ -534,7 +534,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
+                            borderSide: BorderSide(
                               color: AppColors.deepEmerald,
                               width: 2,
                             ),
@@ -567,7 +567,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         height: 52,
                         child: Container(
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               colors: [AppColors.deepEmerald, AppColors.deepEmerald],
                             ),
                             borderRadius: BorderRadius.circular(12),
@@ -816,7 +816,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         color: AppColors.deepEmerald.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.description_outlined,
                         color: AppColors.deepEmerald,
                         size: 22,
@@ -851,7 +851,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         color: AppColors.deepEmerald.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.privacy_tip_outlined,
                         color: AppColors.deepEmerald,
                         size: 22,
