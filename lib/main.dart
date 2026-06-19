@@ -20,6 +20,7 @@ import 'screens/force_update_screen.dart';
 import 'package:flutter_windowmanager_plus/flutter_windowmanager_plus.dart';
 import 'services/version_check_service.dart';
 import 'services/labels_service.dart';
+import 'services/theme_config_service.dart';
 import 'widgets/network_overlay.dart';
 import 'utils/app_colors.dart';
 
@@ -137,6 +138,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     // Load payment labels from server (avoids hardcoded strings in APK binary)
     await LabelsService.instance.load();
+
+    // Load theme colors from server (dynamic branding)
+    await ThemeConfigService.instance.load();
 
     // Check if user is already logged in
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
