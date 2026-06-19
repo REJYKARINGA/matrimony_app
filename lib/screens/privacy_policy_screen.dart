@@ -15,8 +15,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppColors.deepEmerald, // Turquoise
-                AppColors.deepEmerald, // Deep Blue
+                AppColors.deepEmerald,
+                AppColors.deepEmerald,
               ],
             ),
           ),
@@ -41,203 +41,112 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _buildHeader(),
             const SizedBox(height: 24),
             _buildSection(
-              '1. INTRODUCTION',
+              'WELCOME TO NIKKAH MATCH',
               [
-                'Nikkah Match ("we," "us," "our") is committed to protecting your privacy.',
-                'This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our matrimonial services.',
-                'Please read this policy carefully to understand our practices regarding your personal data.',
+                'Nikkah Match is a newly launched platform (2026) dedicated to providing a trusted and sincere matchmaking experience. We use the best-in-class features to keep scammers and fake profiles away, ensuring a safe environment for genuine seekers. Your privacy is our priority, and we are committed to protecting your personal information.',
+                'This Privacy Policy explains how we collect, use, share, and safeguard your information when you use our mobile application, website, and related services (collectively referred to as the "Service").',
+                'By using our Service, you agree to the practices described in this Privacy Policy. If you do not agree, please discontinue use of the Service immediately.',
               ],
             ),
             _buildSection(
-              '2. INFORMATION WE COLLECT',
+              'INFORMATION WE COLLECT',
               [
-                'Personal Information: Name, email address, phone number, date of birth, gender',
-                'Profile Information: Religion, caste, education, occupation, income, location, marital status',
-                'Photos and Media: Profile pictures, engagement posters, and other uploaded images',
-                'Preference Data: Your match preferences including age, height, religion, caste, location',
-                'Usage Data: Login times, profiles viewed, interests sent, messages exchanged',
-                'Device Information: IP address, browser type, operating system, device identifiers',
-                'Location Data: GPS coordinates (with your permission) for distance-based matching',
-                'Payment Information: Transaction details, subscription history, wallet balance (processed securely through Razorpay)',
+                'Account Information: Name, email address, phone number, gender, date of birth, and password.',
+                'Profile Information: Photos, videos, preferences, bio, interests, and other personal details you choose to share.',
+                'Communication Data: Messages, chats, and interactions with other users.',
+                'Payment Information: Details for premium services or subscriptions (processed securely through third-party payment providers).',
+                'Selfie Verification Data: If you opt to verify your identity using our selfie verification feature, we may collect your photo and use it to confirm your identity.',
               ],
             ),
             _buildSection(
-              '3. HOW WE COLLECT INFORMATION',
+              'AUTOMATICALLY COLLECTED INFORMATION',
               [
-                'Directly from you when you register, create a profile, or update information',
-                'Automatically through cookies, log files, and tracking technologies',
-                'From your activity on the Platform (profiles viewed, interests sent, matches)',
-                'From third-party services (payment processors, analytics providers)',
-                'When you contact customer support or respond to surveys',
+                'Device Information: IP address, device type, operating system, browser type, and app usage data.',
+                'Precise Location: GPS data collected with your explicit consent to provide location-based features (e.g., matches nearby).',
+                'Approximate Location: Derived from your IP address for general location services.',
+                'Usage Data: Interactions within the app, such as swipes, likes, and time spent on features.',
               ],
             ),
             _buildSection(
-              '4. HOW WE USE YOUR INFORMATION',
+              'COOKIES AND TRACKING TECHNOLOGIES',
               [
-                'To create and maintain your matrimonial profile',
-                'To provide match suggestions based on your preferences',
-                'To facilitate communication between matched users',
-                'To process payments and manage subscriptions',
-                'To verify profiles and photos for authenticity',
-                'To send notifications about interests, matches, and messages',
-                'To improve our services and Platform features',
-                'To detect and prevent fraud, spam, and abuse',
-                'To comply with legal obligations and enforce our Terms',
-                'To send promotional communications (with your consent)',
+                'Cookies: Small files stored on your device to remember preferences, improve app functionality, and analyze performance.',
+                'Web Beacons and Pixels: Tiny graphics embedded in our app or emails to track engagement and app usage.',
+                'Log Data: Automatically collected information about your interactions, such as pages viewed and features used.',
               ],
             ),
             _buildSection(
-              '5. INFORMATION SHARING AND DISCLOSURE',
+              'HOW WE USE YOUR INFORMATION',
               [
-                'With Other Users: Your profile information (name, photos, details) is visible to other users for matchmaking purposes',
-                'With Service Providers: Payment processors (Razorpay), cloud hosting, analytics, customer support tools',
-                'With Legal Authorities: When required by law, court order, or government request',
-                'With Your Consent: When you explicitly agree to share information',
-                'Business Transfers: In connection with merger, acquisition, or sale of assets',
-                'We do NOT sell your personal data to third parties for commercial purposes',
+                'Create your account and manage your profile.',
+                'Suggest compatible matches and enhance interactions.',
+                'Use geolocation to display nearby matches and calculate approximate distances.',
+                'Enable and process selfie verification to ensure the authenticity of user accounts.',
+                'Remember your preferences and login information.',
+                'Track app performance and user behavior to improve our features.',
+                'Provide tailored advertising based on your interactions.',
+                'Detect and prevent unauthorized access, fraud, or abuse.',
+                'Monitor for suspicious activities to maintain platform safety.',
+                'Send you notifications, updates, and promotional messages.',
+                'Respond to customer service inquiries.',
+                'Analyze usage trends to improve app performance and develop new features.',
+                'Fulfill legal obligations and comply with regulatory requirements.',
               ],
             ),
             _buildSection(
-              '6. INFORMATION VISIBLE TO OTHER USERS',
+              'SELFIE VERIFICATION',
               [
-                'Public Profile Information: Name, age, height, religion, caste, education, occupation, location',
-                'Photos: Profile pictures (verified photos receive a badge)',
-                'Matrimony ID: Your unique identifier (e.g., VE1234567)',
-                'Preferences: Your match preferences may be partially visible',
-                'Activity Status: When you were last active on the Platform',
-                'Contact information is NOT displayed publicly on your profile',
+                'Selfie verification is used to confirm the authenticity of your profile and ensure that users on the platform are genuine. By providing a selfie for verification, you consent to the collection and processing of your image for verification purposes and comparison of the selfie with your uploaded profile photos.',
+                'Your selfie is processed using secure algorithms to verify your identity. Once verification is complete, your selfie may be stored securely or deleted, depending on the retention policy outlined in this Privacy Policy.',
+                'Selfie data is encrypted and stored securely. We do not share your selfie with other users or third parties, except for trusted vendors assisting with verification (bound by strict confidentiality agreements).',
               ],
             ),
             _buildSection(
-              '7. COOKIES AND TRACKING',
+              'SHARING YOUR INFORMATION',
               [
-                'We use cookies to enhance your experience and analyze Platform traffic',
-                'Types of cookies used: Essential, Performance, Analytics, Advertising',
-                'You can control cookie settings through your browser',
-                'Disabling cookies may limit some Platform features',
-                'Third-party services may also use cookies (Google Analytics, Razorpay)',
+                'With Other Users: Profile details, such as name, photos, bio, and approximate location, are visible to other users. Selfie verification status (e.g., "Verified Profile") may be displayed on your profile, but your selfie image will not be shared.',
+                'With Service Providers: Data, including selfie data, may be shared with trusted vendors who assist in verification, payment processing, hosting, analytics, and marketing.',
+                'For Legal Obligations: Information may be disclosed to comply with legal processes, enforce agreements, or protect the rights of others.',
+                'Business Transfers: If our company undergoes a merger, acquisition, or sale, your data may be transferred to the new entity.',
               ],
             ),
             _buildSection(
-              '8. LOCATION SERVICES',
+              'YOUR RIGHTS AND CHOICES',
               [
-                'We collect location data to calculate distance between profiles',
-                'Location is used for distance-based match suggestions',
-                'You can disable location services in your device settings',
-                'Some features may be limited without location access',
-                'Location data is encrypted and stored securely',
+                'GDPR Rights (EU Users): Access - Request a copy of your data, including selfie verification data. Correction - Update incorrect or incomplete information. Deletion - Request the deletion of your data, including selfie data. Data Portability - Receive your data in a transferable format. Withdraw Consent - Revoke permission for selfie verification and other data processing.',
+                'CCPA Rights (California Users): Access - Request details about the personal data we collect and share. Opt-Out - Prevent the sale of your personal data (we do not sell data). Deletion - Request the deletion of your personal data, including selfie data.',
+                'To exercise these rights, contact us at support@nikkahmatch.com',
               ],
             ),
             _buildSection(
-              '9. PAYMENT AND FINANCIAL DATA',
+              'SECURITY MEASURES',
               [
-                'Payments are processed through Razorpay payment gateway',
-                'We do not store your complete credit/debit card details',
-                'Transaction history is stored for your reference',
-                'Wallet balance and transactions are recorded in your account',
-                'All payment data is encrypted using industry-standard security',
+                'Encryption: Selfie data and other sensitive information are encrypted during transmission and storage.',
+                'Access Control: Limited access to selfie data and other personal information to authorized personnel only.',
+                'Audits: Regular security reviews to ensure compliance with privacy standards.',
               ],
             ),
             _buildSection(
-              '10. DATA RETENTION',
+              'DATA RETENTION',
               [
-                'We retain your data while your account is active',
-                'Inactive accounts may be archived after 2 years of no activity',
-                'You can request account deletion at any time',
-                'Some data may be retained for legal compliance even after deletion',
-                'Deleted profiles are removed from public view immediately',
-                'Backup copies may retain data for up to 90 days after deletion',
+                'Account Information: Retained until your account is deleted.',
+                'Selfie Data: Retained for the duration of your account to validate your profile, or deleted immediately after verification depending on the process used.',
+                'Geolocation Data: Stored temporarily to enhance matching services.',
               ],
             ),
             _buildSection(
-              '11. DATA SECURITY',
+              'UPDATES TO THIS PRIVACY POLICY',
               [
-                'We implement industry-standard security measures to protect your data',
-                'Data is encrypted in transit (SSL/TLS) and at rest',
-                'Access to personal data is restricted to authorized personnel',
-                'Regular security audits and updates are conducted',
-                'Password hashing is used to protect login credentials',
-                'Despite our efforts, no system is 100% secure',
+                'We may update this Privacy Policy periodically to reflect changes in our practices or legal requirements.',
+                'Significant updates will be communicated via app notifications or emails.',
               ],
             ),
             _buildSection(
-              '12. YOUR PRIVACY RIGHTS',
+              'CONTACT US',
               [
-                'Access: Request a copy of your personal data',
-                'Correction: Update or correct inaccurate information',
-                'Deletion: Request deletion of your account and data',
-                'Portability: Receive your data in a structured format',
-                'Opt-Out: Unsubscribe from promotional communications',
-                'Restriction: Request limitation of data processing',
-                'To exercise these rights, contact: support@nikkahmatch.com',
-              ],
-            ),
-            _buildSection(
-              '13. COMMUNICATION PREFERENCES',
-              [
-                'Service Notifications: Match alerts, interest notifications, messages (cannot be disabled)',
-                'Email Notifications: You can manage email preferences in settings',
-                'SMS Notifications: You can opt-out of promotional SMS',
-                'Push Notifications: Control through your device settings',
-                'Promotional Communications: Unsubscribe anytime via email link',
-              ],
-            ),
-            _buildSection(
-              '14. CHILDREN\'S PRIVACY',
-              [
-                'Our services are only available to users 18 years and older',
-                'We do not knowingly collect data from children under 18',
-                'If we discover underage users, their accounts will be terminated',
-                'Parents should monitor their children\'s online activity',
-              ],
-            ),
-            _buildSection(
-              '15. THIRD-PARTY SERVICES',
-              [
-                'Razorpay: Payment processing (subject to Razorpay\'s privacy policy)',
-                'Cloud Hosting: Data storage on secure cloud servers',
-                'Analytics: Google Analytics for usage tracking',
-                'Email/SMS Services: For notifications and communications',
-                'We are not responsible for third-party privacy practices',
-              ],
-            ),
-            _buildSection(
-              '16. INTERNATIONAL DATA TRANSFER',
-              [
-                'Your data may be transferred to and processed in India',
-                'By using the Platform, you consent to data transfer to India',
-                'We ensure adequate safeguards for international transfers',
-                'International users must comply with their local laws',
-              ],
-            ),
-            _buildSection(
-              '17. CHANGES TO THIS PRIVACY POLICY',
-              [
-                'We may update this Privacy Policy from time to time',
-                'Changes will be posted on this page with updated date',
-                'Material changes will be communicated via email or notification',
-                'Continued use after changes constitutes acceptance',
-                'Please review this policy periodically for updates',
-              ],
-            ),
-            _buildSection(
-              '18. GRIEVANCE OFFICER',
-              [
-                'In accordance with Indian law, we have appointed a Grievance Officer',
-                'For privacy concerns, contact: grievance@nikkahmatch.com',
-                'Response Time: Within 48 hours',
-                'Escalation: If unresolved, contact support@nikkahmatch.com',
-              ],
-            ),
-            _buildSection(
-              '19. CONTACT US',
-              [
-                'For privacy-related questions or concerns:',
+                'If you have any questions or concerns about this Privacy Policy or your data, please contact us:',
                 'Email: support@nikkahmatch.com',
-                'Privacy Email: privacy@nikkahmatch.com',
-                'Grievance Officer: grievance@nikkahmatch.com',
-                'Address: [Your Business Address]',
-                'Phone: [Your Contact Number]',
+                'Response Time: Within 48 hours',
               ],
             ),
             const SizedBox(height: 30),
@@ -257,8 +166,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.deepEmerald, // Turquoise
-            AppColors.deepEmerald, // Deep Blue
+            AppColors.deepEmerald,
+            AppColors.deepEmerald,
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -270,15 +179,33 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(
-            Icons.privacy_tip_outlined,
-            size: 48,
-            color: AppColors.cardDark,
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.cardDark,
+              border: Border.all(
+                color: AppColors.primaryCyan,
+                width: 3,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryCyan.withOpacity(0.3),
+                  blurRadius: 15,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Image.asset(
+              'assets/images/nikkah_match_app_logo.png',
+              fit: BoxFit.contain,
+            ),
           ),
-          SizedBox(height: 12),
-          Text(
+          const SizedBox(height: 12),
+          const Text(
             'Privacy Policy',
             style: TextStyle(
               fontSize: 24,
@@ -288,7 +215,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            'Last Updated: March 2025',
+            'Last Updated: June 2026',
             style: TextStyle(
               fontSize: 14,
               color: Colors.white70,
@@ -326,8 +253,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppColors.deepEmerald, // Turquoise
-                      AppColors.deepEmerald, // Deep Blue
+                      AppColors.deepEmerald,
+                      AppColors.deepEmerald,
                     ],
                   ),
                   borderRadius: BorderRadius.circular(8),
@@ -343,15 +270,15 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 child: Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.cardDark,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.deepEmerald,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           ...points.map((point) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Row(
@@ -419,18 +346,3 @@ class PrivacyPolicyScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
